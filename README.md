@@ -14,3 +14,4 @@ Kho mã nguồn đầy đủ gồm Máy chủ Java **Teamobi 2026**, Cơ sở d�
 2. Chạy `1_Chay_Database_Va_Server.bat` để bật Database & Game Server (cổng `14445`).
 3. Mở `3_Mo_Client_Test_Game.bat` để vào game (Tài khoản Admin: `1` / `1` hoặc `admin` / `123456`).
 4. Khi mở Online LAN / Radmin VPN / VPS: đổi `127.0.0.1` thành IP máy chủ trong `Teamobi2026/SRC/Config.properties` và `Client_ChoNguoiChoiTaiVe/server_ip.txt`, sau đó chạy `4_Dong_Goi_Client_Zip_Cho_Nguoi_Choi.bat` gửi cho người chơi tải về.
+
