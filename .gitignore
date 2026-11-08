@@ -1,0 +1,21 @@
+# Các file nén gốc >100MB (đã được giải nén đầy đủ ra các thư mục tương ứng)
+/*.rar
+/*.zip
+/unity_build.log
+
+# Môi trường chạy cục bộ (JDK 21, MariaDB binaries & live InnoDB data files >100MB)
+# Database đã được xuất đầy đủ ra Teamobi2026/database_team2026_full_ready.sql
+/runtime/
+
+# Bộ nhớ đệm tự sinh của Unity (tự động tạo lại khi mở PRJ_2Tab_550K bằng Unity)
+PRJ_2Tab_550K/[Ll]ibrary/
+PRJ_2Tab_550K/[Tt]emp/
+PRJ_2Tab_550K/[Oo]bj/
+PRJ_2Tab_550K/[Ll]ogs/
+PRJ_2Tab_550K/*.csproj
+PRJ_2Tab_550K/*.sln
+
+# Thư mục biên dịch trung gian của Ant/NetBeans (giữ nguyên dist/*.jar để chạy ngay)
+Teamobi2026/SRC/build/
+SRC NRO NEW 01/Server/build/
+SRC NRO NEW 01/Login/build/
