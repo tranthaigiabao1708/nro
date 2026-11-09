@@ -973,6 +973,13 @@ namespace Game2
 			case "ts":
 				perform(44, null);
 				return true;
+			case "tsall":
+			case "tsa":
+				perform(50, null);
+				return true;
+			case "hts":
+				perform(51, null);
+				return true;
 			case "tsnguoi":
 				perform(48, null);
 				return true;
@@ -1736,6 +1743,8 @@ namespace Game2
 						myVector4.addElement(new Command("Tàn sát " + mob.getTemplate().name, 49, mob));
 					}
 				}
+				myVector4.addElement(new Command("Tàn sát tất cả", 50));
+				myVector4.addElement(new Command("Hủy tàn sát", 51));
 				myVector4.addElement(new Command(PickMob.tanSat ? "Tàn sát [Bật]" : "Tàn sát [Tắt]", 44));
 				myVector4.addElement(new Command(PickMob.tsPlayer ? "Tàn sát\nngười [Bật]" : "Tàn sát\nngười [Tắt]", 48));
 				myVector4.addElement(new Command(autoAttack ? "Tự đánh [Bật]" : "Tự đánh [Tắt]", 42));
@@ -1743,7 +1752,6 @@ namespace Game2
 				myVector4.addElement(new Command(PickMob.vuotDiaHinh ? "Vượt địa hình [Bật]" : "Vượt địa hình [Tắt]", 76));
 				myVector4.addElement(new Command(PickMob.telePem ? "Dịch chuyển\n[Bật]" : "Dịch chuyển\n[Tắt]", 80));
 				myVector4.addElement(new Command(PickMob.isGoBack ? "Goback Tọa Độ [Bật]" : "Goback Tọa Độ [Tắt]", 38));
-				myVector4.addElement(new Command("Xoá danh sách tàn sát", 51));
 				GameCanvas.menu.startAt(myVector4, 4);
 				break;
 			}
@@ -1771,9 +1779,20 @@ namespace Game2
 				perform(44, true);
 				break;
 			}
-			case 51:
+			case 50:
+				PickMob.IdMobsTanSat.Clear();
 				PickMob.TypeMobsTanSat.Clear();
-				GameScr.info1.addInfo("Đã xoá danh sách quái tàn sát!", 0);
+				PickMob.tsPlayer = false;
+				PickMob.tanSat = true;
+				GameScr.info1.addInfo("Tàn sát tất cả [Bật]", 0);
+				break;
+			case 51:
+				PickMob.tanSat = false;
+				PickMob.tsPlayer = false;
+				PickMob.IdMobsTanSat.Clear();
+				PickMob.TypeMobsTanSat.Clear();
+				Char.myCharz().currentMovePoint = null;
+				GameScr.info1.addInfo("Đã hủy tàn sát!", 0);
 				break;
 			case 52:
 				focusBoss = !focusBoss;
@@ -2953,6 +2972,8 @@ namespace Game2
 				{ "loadskill", "Tải lại ô skill" },
 				{ "ak", "Bật/tắt tự động tấn công" },
 				{ "ts", "Bật/tắt chế độ tàn sát" },
+				{ "tsa", "Tàn sát tất cả quái" },
+				{ "hts", "Hủy tàn sát & xoá DS quái" },
 				{ "vqmm", "Bật/tắt tự động VQMM" },
 				{ "ukhu", "Bật/tắt cập nhật khu tự động" },
 				{ "k X", "Chuyển đến khu X (VD: k 5)" },
