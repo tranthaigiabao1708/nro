@@ -2692,7 +2692,12 @@ public class UseItem {
     }
 
     private void MapRiengTu(Player pl, Item item) {
+        if (pl.zone != null && pl.zone.map.mapId == 164) {
+            ChangeMapService.gI().changeMapBySpaceShip(pl, pl.gender + 21, -1, 250);
+            return;
+        }
         ChangeMapService.gI().changeMapBySpaceShip(pl, 164, -1, 870);
+        Service.gI().sendThongBao(pl, "Bạn đã vào Khu up Sét Kích Hoạt (+20% tỉ lệ rơi SKH)");
     }
 
     private void VeTangNgoc(Player pl, Item item) {

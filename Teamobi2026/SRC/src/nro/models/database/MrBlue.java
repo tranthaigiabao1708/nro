@@ -713,6 +713,7 @@ public class MrBlue {
             player.itemTime.isUseAnDanh2 = timeAnDanh2 != 0;
             player.itemTime.isOpenPower = timeOpenPower != 0;
             player.itemTime.isUseMayDo = timeMayDo != 0;
+            player.itemTime.isUseCoBonLa = timeCoBonLa > 0;
             player.itemTime.isUseKhoBauX2 = timeKhoBauX2 != 0;
             player.itemTime.isUseBuaSanta = timeBuaSanta != 0;
             player.itemTime.isUseTDLT = timeUseTDLT != 0;

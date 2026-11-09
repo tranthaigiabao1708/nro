@@ -731,9 +731,15 @@ public class Mob {
             int ngoc = Util.nextInt(1, 1);
             list.add(new ItemMap(zone, 77, ngoc, x, yEnd, player.id));
         }
-        if (MapService.gI().isMapRiengTu(mapid)) {
-            int baseTileDrop = 2;
-            double tileDrop = baseTileDrop;
+        if (MapService.gI().isMapRiengTu(mapid) || MapService.gI().isMapUpSKH(mapid)) {
+            // Tỉ lệ trên thang 10.000: ngoài 3 map đầu = 1% (100), Khu up SKH (+20%) = 21% (2100), thêm Cỏ 4 lá (+20%) = 41% (4100)
+            int ratePer10000 = 100;
+            if (MapService.gI().isMapRiengTu(mapid)) {
+                ratePer10000 += 2000;
+            }
+            if (player.itemTime != null && player.itemTime.isUseCoBonLa) {
+                ratePer10000 += 2000;
+            }
 
             int totalOption236Param = 0;
             for (Item item : player.inventory.itemsBody) {
@@ -749,16 +755,16 @@ public class Mob {
             if (totalOption236Param > 100) {
                 totalOption236Param = 100;
             }
-
-            double percentFromOption236 = Math.pow(totalOption236Param / 100.0, 1.5) * 20.0; // max 20%
-            tileDrop *= (1 + percentFromOption236 / 100.0);
-
-            if (player.itemTime.isUseCoBonLa) {
-                tileDrop *= 1.5;
+            if (totalOption236Param > 0) {
+                double percentFromOption236 = Math.pow(totalOption236Param / 100.0, 1.5) * 20.0;
+                ratePer10000 = (int) Math.round(ratePer10000 * (1.0 + percentFromOption236 / 100.0));
+            }
+            if (ratePer10000 > 10000) {
+                ratePer10000 = 10000;
             }
 
-            // Check rơi đồ kích hoạt
-            if (Util.isTrue((int) tileDrop, 9999)) {
+            // Check rơi đồ Sét Kích Hoạt (Áo, Quần, Găng, Giày, Rada)
+            if (Util.isTrue(ratePer10000, 10000)) {
                 short itTemp = (short) ItemService.gI().randTempItemKichHoat(player.gender);
                 ItemMap it = new ItemMap(zone, itTemp, 1, x, yEnd, player.id);
                 List<Item.ItemOption> ops = ItemService.gI().getListOptionItemShop(itTemp);
@@ -774,55 +780,6 @@ public class Mob {
                 }
                 it.options.add(new Item.ItemOption(30, 0));
                 list.add(it);
-
-                //  ChatGlobalService.gI().ThongBaoRoiDo(player, player.name + " vừa nhặt được " + it.itemTemplate.name + " sét kích hoạt tại " + this.zone.map.mapName + " khu " + this.zone.zoneId);
-            }
-        }
-        if (MapService.gI().isMapUpSKH(mapid)) {
-            int baseTileDrop = 2;
-            double tileDrop = baseTileDrop;
-
-            int totalOption236Param = 0;
-            for (Item item : player.inventory.itemsBody) {
-                if (item != null && item.itemOptions != null) {
-                    for (Item.ItemOption op : item.itemOptions) {
-                        if (op.optionTemplate.id == 236) {
-                            totalOption236Param += op.param;
-                        }
-                    }
-                }
-            }
-
-            if (totalOption236Param > 100) {
-                totalOption236Param = 100;
-            }
-
-            double percentFromOption236 = Math.pow(totalOption236Param / 100.0, 1.5) * 20.0; // max 20%
-            tileDrop *= (1 + percentFromOption236 / 100.0);
-
-            if (player.itemTime.isUseCoBonLa) {
-                tileDrop *= 1.5;
-            }
-
-            // Check rơi đồ kích hoạt
-            if (Util.isTrue((int) tileDrop, 9999)) {
-                short itTemp = (short) ItemService.gI().randTempItemKichHoat(player.gender);
-                ItemMap it = new ItemMap(zone, itTemp, 1, x, yEnd, player.id);
-                List<Item.ItemOption> ops = ItemService.gI().getListOptionItemShop(itTemp);
-                if (!ops.isEmpty()) {
-                    it.options = ops;
-                }
-
-                int[] opsrand = ItemService.gI().randOptionItemKichHoat(player.gender);
-                for (int opId : opsrand) {
-                    if (opId > 0) {
-                        it.options.add(new Item.ItemOption(opId, 0));
-                    }
-                }
-                it.options.add(new Item.ItemOption(30, 0));
-                list.add(it);
-
-                //  ChatGlobalService.gI().ThongBaoRoiDo(player, player.name + " vừa nhặt được " + it.itemTemplate.name + " sét kích hoạt tại " + this.zone.map.mapName + " khu " + this.zone.zoneId);
             }
         }
 

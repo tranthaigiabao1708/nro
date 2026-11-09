@@ -220,11 +220,9 @@ public class ItemTime {
             }
         }
         if (isUseCoBonLa) {
-            long now = System.currentTimeMillis();
-            long timeLeft = (lastTimeUseCoBonLa + timeLengthCoBonLa) - now;
-            if (timeLeft <= 0) {
+            if (Util.canDoWithTime(lastTimeUseCoBonLa, TIME_CO_BON_LA)) {
                 isUseCoBonLa = false;
-                timeLengthCoBonLa = 0;
+                ItemTimeService.gI().removeItemTime(player, 13618);
             }
         }
         if (isUseKilis) {
