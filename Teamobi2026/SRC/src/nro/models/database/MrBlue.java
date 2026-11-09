@@ -622,58 +622,55 @@ public class MrBlue {
                 timeMayDo = Integer.parseInt(String.valueOf(dataArray.get(11)));
             }
             if (dataArray.size() > 12) {
-                timeKhoBauX2 = Integer.parseInt(String.valueOf(dataArray.get(12)));
+                timeCoBonLa = Long.parseLong(String.valueOf(dataArray.get(12)));
             }
             if (dataArray.size() > 13) {
+                timeKhoBauX2 = Integer.parseInt(String.valueOf(dataArray.get(13)));
             }
             if (dataArray.size() > 14) {
-                timeMeal = Integer.parseInt(String.valueOf(dataArray.get(14)));
+                timeBuaSanta = Integer.parseInt(String.valueOf(dataArray.get(14)));
             }
             if (dataArray.size() > 15) {
-                iconMeal = Integer.parseInt(String.valueOf(dataArray.get(15)));
+                timeMeal = Integer.parseInt(String.valueOf(dataArray.get(15)));
             }
             if (dataArray.size() > 16) {
-                timeUseTDLT = Integer.parseInt(String.valueOf(dataArray.get(16)));
+                iconMeal = Integer.parseInt(String.valueOf(dataArray.get(16)));
             }
             if (dataArray.size() > 17) {
-                timeUseCMS = Integer.parseInt(String.valueOf(dataArray.get(17)));
+                timeUseTDLT = Integer.parseInt(String.valueOf(dataArray.get(17)));
             }
             if (dataArray.size() > 18) {
-                timeUseGTPT = Integer.parseInt(String.valueOf(dataArray.get(18)));
+                timeUseCMS = Integer.parseInt(String.valueOf(dataArray.get(18)));
             }
             if (dataArray.size() > 19) {
-                timeUseDK = Integer.parseInt(String.valueOf(dataArray.get(19)));
+                timeUseGTPT = Integer.parseInt(String.valueOf(dataArray.get(19)));
             }
             if (dataArray.size() > 20) {
-                timeUseRX = Integer.parseInt(String.valueOf(dataArray.get(20)));
+                timeUseDK = Integer.parseInt(String.valueOf(dataArray.get(20)));
             }
             if (dataArray.size() > 21) {
-                timeMeal2 = Integer.parseInt(String.valueOf(dataArray.get(21)));
+                timeUseRX = Integer.parseInt(String.valueOf(dataArray.get(21)));
             }
             if (dataArray.size() > 22) {
-                iconMeal2 = Integer.parseInt(String.valueOf(dataArray.get(22)));
+                timeMeal2 = Integer.parseInt(String.valueOf(dataArray.get(22)));
             }
             if (dataArray.size() > 23) {
-            }
-            if (dataArray.size() > 24) {
-                timeUseNCD = Integer.parseInt(String.valueOf(dataArray.get(24)));
+                iconMeal2 = Integer.parseInt(String.valueOf(dataArray.get(23)));
             }
             if (dataArray.size() > 25) {
-                timeBuaSanta = Integer.parseInt(String.valueOf(dataArray.get(25)));
+                timeUseNCD = Integer.parseInt(String.valueOf(dataArray.get(25)));
             }
             if (dataArray.size() > 26) {
-                timeKilis = (int) Long.parseLong(String.valueOf(dataArray.get(26)));
+                timeNuocMia1 = Long.parseLong(String.valueOf(dataArray.get(26)));
             }
             if (dataArray.size() > 27) {
-                timeNuocMia1 = (int) Long.parseLong(String.valueOf(dataArray.get(27)));
+                timeNuocMia2 = Long.parseLong(String.valueOf(dataArray.get(27)));
             }
             if (dataArray.size() > 28) {
-                timeNuocMia2 = (int) Long.parseLong(String.valueOf(dataArray.get(28)));
+                timeNuocMia3 = Long.parseLong(String.valueOf(dataArray.get(28)));
             }
             if (dataArray.size() > 29) {
-                timeNuocMia3 = (int) Long.parseLong(String.valueOf(dataArray.get(28)));
-            }
-            if (dataArray.size() > 30) {
+                timeKilis = Long.parseLong(String.valueOf(dataArray.get(29)));
             }
 
             player.itemTime.lastTimeBoHuyet = System.currentTimeMillis() - (ItemTime.TIME_ITEM - timeBoHuyet);
