@@ -41,10 +41,6 @@ public class NpcManager {
             if (npc.tempId == ConstNpc.QUA_TRUNG && player.mabuEgg == null && player.zone.map.mapId == (21 + player.gender)) {
                 continue;
             } 
-            // Điều kiện loại trừ NPC dưa hấu
-            if (npc.tempId == ConstNpc.DUA_HAU && player.DuaHauEgg == null && player.zone.map.mapId == (21 + player.gender)) {
-                continue;
-            } 
             // Điều kiện loại trừ NPC CALICK dựa vào nhiệm vụ
             else if (npc.tempId == ConstNpc.CALICK && TaskService.gI().getIdTask(player) < ConstTask.TASK_21_0) {
                 continue;

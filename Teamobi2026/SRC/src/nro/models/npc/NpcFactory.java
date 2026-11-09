@@ -68,8 +68,6 @@ import nro.models.services.FriendAndEnemyService;
 import nro.models.consts.ConstNpc;
 import nro.models.boss.Boss_Manager.BossManager;
 import nro.models.clan.Clan;
-import nro.models.event.VuaHung;
-import nro.models.event.NoiBanh;
 import java.util.HashMap;
 import nro.models.map.service.ChangeMapService;
 import nro.models.player.Player;
@@ -85,11 +83,7 @@ import nro.models.services_dungeon.SuperDivineWaterService;
 import nro.models.services.SubMenuService;
 import nro.models.services.shenron.Shenron_Service;
 import java.util.List;
-import nro.models.event.XeNuocMia;
-import nro.models.npc_list.ChiChi;
 import nro.models.npc_list.DrMyuu;
-import nro.models.npc_list.DuaHau;
-import nro.models.npc_list.ToriBot;
 import nro.models.services.shenron.SummonDragon;
 import static nro.models.services.shenron.SummonDragon.SHENRON_1_STAR_WISHES_1;
 import static nro.models.services.shenron.SummonDragon.SHENRON_1_STAR_WISHES_2;
@@ -165,8 +159,6 @@ public class NpcFactory {
                     new Kibit(mapId, status, cx, cy, tempId, avatar);
                 case ConstNpc.OSIN ->
                     new Osin(mapId, status, cx, cy, tempId, avatar);
-                case ConstNpc.TORIBOT ->
-                    new ToriBot(mapId, status, cx, cy, tempId, avatar);
                 case ConstNpc.BABIDAY ->
                     new Babiday(mapId, status, cx, cy, tempId, avatar);
                 case ConstNpc.LY_TIEU_NUONG ->
@@ -217,16 +209,6 @@ public class NpcFactory {
                     new GiuMaDauBo(mapId, status, cx, cy, tempId, avatar);
                 case ConstNpc.TO_SU_KAIO ->
                     new ToSuKaio(mapId, status, cx, cy, tempId, avatar);
-                case ConstNpc.CHI_CHI ->
-                    new ChiChi(mapId, status, cx, cy, tempId, avatar);
-                case ConstNpc.HUNG_VUONG ->
-                    new VuaHung(mapId, status, cx, cy, tempId, avatar);
-                case ConstNpc.DUA_HAU ->
-                    new DuaHau(mapId, status, cx, cy, tempId, avatar);
-                case ConstNpc.NOI_BANH ->
-                    new NoiBanh(mapId, status, cx, cy, tempId, avatar);
-                case ConstNpc.XE_NUOC_MIA ->
-                    new XeNuocMia(mapId, status, cx, cy, tempId, avatar);
                 case ConstNpc.BARDOCK ->
                     new Bardock(mapId, status, cx, cy, tempId, avatar);
                 default ->

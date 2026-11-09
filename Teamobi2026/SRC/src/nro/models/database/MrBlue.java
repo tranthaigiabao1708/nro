@@ -53,7 +53,6 @@ import nro.models.services.PlayerService;
 import nro.models.task.BadgesTask;
 import nro.models.task.BadgesTaskService;
 import nro.models.data.LocalResultSet;
-import nro.models.npc.DuaHauEgg;
 import nro.models.player.KOLProgressData;
 
 public class MrBlue {
@@ -772,14 +771,6 @@ public class MrBlue {
             dataArray = (JSONArray) JSONValue.parse(rs.getString("data_mabu_egg"));
             if (!dataArray.isEmpty()) {
                 player.mabuEgg = new MabuEgg(player, Long.parseLong(String.valueOf(dataArray.get(0))),
-                        Long.parseLong(String.valueOf(dataArray.get(1))));
-            }
-            dataArray.clear();
-
-            //data dua hau
-            dataArray = (JSONArray) JSONValue.parse(rs.getString("data_duahau_egg"));
-            if (!dataArray.isEmpty()) {
-                player.DuaHauEgg = new DuaHauEgg(player, Long.parseLong(String.valueOf(dataArray.get(0))),
                         Long.parseLong(String.valueOf(dataArray.get(1))));
             }
             dataArray.clear();

@@ -679,42 +679,12 @@ public class Mob {
             }
         }
         if (MapService.gI().AllMap(mapid)) {
-            if (player != null) {
-                player.monsterKillCountAutoTrain++;
-            }
-
             if (player.event.luotNhanNgocMienPhi == 1) {
                 ItemMap item1 = new ItemMap(zone, 77, 1, x, yEnd, player.id);
                 ItemMap item2 = new ItemMap(zone, 77, 1, x + 10, yEnd, player.id);
                 list.add(item1);
                 list.add(item2);
                 player.event.luotNhanNgocMienPhi = 0;
-            }
-        }
-        if (MapService.gI().AllMap(mapid)) {
-            if (Util.isTrue(5, 100)) {
-                ItemMap it = new ItemMap(zone, 1798, 1, x, yEnd, player.id);
-                list.add(it);
-            }
-            if (Util.isTrue(5, 100)) {
-                ItemMap it = new ItemMap(zone, 1799, 1, x, yEnd, player.id);
-                list.add(it);
-            }
-            if (Util.isTrue(5, 100)) {
-                ItemMap it = new ItemMap(zone, 1800, 1, x, yEnd, player.id);
-                list.add(it);
-            }
-            if (Util.isTrue(5, 100)) {
-                ItemMap it = new ItemMap(zone, 1612, 1, x, yEnd, player.id);
-                list.add(it);
-            }
-            if (Util.isTrue(1, 100)) {
-                ItemMap it = new ItemMap(zone, 1801, 1, x, yEnd, player.id);
-                list.add(it);
-            }
-            if (Util.isTrue(1, 130)) {
-                ItemMap it = new ItemMap(zone, 1802, 1, x, yEnd, player.id);
-                list.add(it);
             }
         }
 
@@ -760,42 +730,6 @@ public class Mob {
         if (Util.isTrue(1, 1000000)) {
             int ngoc = Util.nextInt(1, 1);
             list.add(new ItemMap(zone, 77, ngoc, x, yEnd, player.id));
-        }
-        if (MapService.gI().isMapUpSKH(mapid)) {
-            int baseTileDrop = 1;
-            int tileDrop = baseTileDrop;
-            if (player.itemTime.isUseCoBonLa) {
-                tileDrop = (int) (baseTileDrop * 1.15);
-            }
-
-            if (Util.isTrue(tileDrop, 9999)) {
-                int soLuong = 1;
-                list.add(new ItemMap(zone, 1634, soLuong, x, yEnd, player.id));
-            }
-        }
-        if (MapService.gI().isMapDoanhTrai(mapid)) {
-            int baseTileDrop = 20;
-            int tileDrop = baseTileDrop;
-            if (player.itemTime.isUseCoBonLa) {
-                tileDrop = (int) (baseTileDrop * 1.15);
-            }
-
-            if (Util.isTrue(tileDrop, 100)) {
-                int soLuong = 1;
-                list.add(new ItemMap(zone, 1778, soLuong, x, yEnd, player.id));
-            }
-        }
-        if (MapService.gI().isMapRiengTu(mapid)) {
-            int baseTileDrop = 1;
-            int tileDrop = baseTileDrop;
-            if (player.itemTime.isUseCoBonLa) {
-                tileDrop = (int) (baseTileDrop * 1.15);
-            }
-
-            if (Util.isTrue(tileDrop, 19999)) {
-                int soLuong = 1;
-                list.add(new ItemMap(zone, 1634, soLuong, x, yEnd, player.id));
-            }
         }
         if (MapService.gI().isMapRiengTu(mapid)) {
             int baseTileDrop = 2;
@@ -1039,10 +973,6 @@ public class Mob {
         }
         if ((Util.isTrue(10, 100) || (player.isActive() && player.setClothes.checkSetDes() && Util.isTrue(20, 100))) && MapService.gI().isMapNgucTu(mapid)) {
             list.add(new ItemMap(zone, 1229, 1, x, yEnd, player.id));
-        }
-
-        if ((Util.isTrue(10, 100) && MapService.gI().isMapNguHanhSon(mapid))) {
-            list.add(new ItemMap(zone, Util.nextInt(541, 542), 1, x, yEnd, player.id));
         }
 
         if (this.zone.map.mapId >= 0) {

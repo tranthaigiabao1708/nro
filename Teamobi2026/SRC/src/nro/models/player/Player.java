@@ -65,7 +65,6 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import nro.models.minigame.ChonAiDay_Gem;
 import nro.models.minigame.ChonAiDay_Gold;
-import nro.models.npc.DuaHauEgg;
 import nro.models.player_badges.Badges;
 import nro.models.player_badges.BadgesData;
 import nro.models.services.ItemTimeService;
@@ -187,7 +186,6 @@ public class Player implements Runnable {
     public SetClothes setClothes;
     public EffectSkill effectSkill;
     public MabuEgg mabuEgg;
-    public DuaHauEgg DuaHauEgg;
     public TaskPlayer playerTask;
     public ItemTime itemTime;
     public Fusion fusion;
@@ -561,11 +559,6 @@ public class Player implements Runnable {
                     if (this.zone != null && this.zone.map.mapId == (21 + this.gender)) {
                         if (this.mabuEgg != null) {
                             this.mabuEgg.sendMabuEgg();
-                        }
-                    }
-                    if (this.zone != null && this.zone.map.mapId == (21 + this.gender)) {
-                        if (this.DuaHauEgg != null) {
-                            this.DuaHauEgg.sendDuaHauEgg();
                         }
                     }
 
@@ -1703,10 +1696,6 @@ public class Player implements Runnable {
         if (mabuEgg != null) {
             mabuEgg.dispose();
             mabuEgg = null;
-        }
-        if (DuaHauEgg != null) {
-            DuaHauEgg.dispose();
-            DuaHauEgg = null;
         }
         if (playerTask != null) {
             playerTask.dispose();

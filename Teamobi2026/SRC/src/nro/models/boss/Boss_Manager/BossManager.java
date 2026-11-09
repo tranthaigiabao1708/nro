@@ -15,7 +15,6 @@ import nro.models.boss.Boss_mini.AnTrom;
 import nro.models.boss.Boss_mini.Odo;
 import nro.models.boss.Boss_mini.RongNhi;
 import nro.models.boss.Boss_mini.SoiHecQuyn;
-import nro.models.boss.Boss_mini.Virut;
 import nro.models.boss.Broly.Broly;
 import nro.models.boss.Cell.SieuBoHung;
 import nro.models.boss.Cell.XENCON1;
@@ -83,23 +82,12 @@ import nro.models.boss.yardrat.TAPSU1;
 import nro.models.boss.yardrat.TAPSU2;
 import nro.models.boss.yardrat.TAPSU3;
 import nro.models.boss.yardrat.TAPSU4;
-import nro.models.boss.event.Halloween.BiMa;
-import nro.models.boss.event.Halloween.Doi;
-import nro.models.boss.event.Halloween.MaTroi;
-import nro.models.boss.event_hung_vuong.SonTinh;
-import nro.models.boss.event_hung_vuong.ThuyTinh;
-import nro.models.boss.event_trung_thu.KhiDot;
-import nro.models.boss.event_trung_thu.NguyetThan;
-import nro.models.boss.event_trung_thu.NhatThan;
-import nro.models.boss.event_tet.LanCon;
-import nro.models.boss.event_noel.OngGiaNoel;
 import nro.models.player.Player;
 import nro.models.network.Message;
 import nro.models.map.service.MapService;
 import java.util.ArrayList;
 import java.util.List;
 import nro.models.boss.Baby.Baby;
-import nro.models.boss.Boss_mini.MatTroi;
 import nro.models.boss.cumber.Cumber;
 import nro.models.map.Zone;
 import nro.models.mob_bigboss.GauTuongCuop;
@@ -160,8 +148,6 @@ public class BossManager implements Runnable {
         this.createBoss(BossID.AN_TROM, 5);
         this.createBoss(BossID.O_DO1, 5);
         this.createBoss(BossID.BABY, 2);
-        this.createBoss(BossID.MAT_TROI, 20);
-
     }
 
     public void createBoss(int bossID, int total) {
@@ -311,12 +297,6 @@ public class BossManager implements Runnable {
                     new XENCON7();
                 case BossID.COOLER ->
                     new Cooler();
-                case BossID.KHIDOT ->
-                    new KhiDot();
-                case BossID.NGUYETTHAN ->
-                    new NguyetThan();
-                case BossID.NHATTHAN ->
-                    new NhatThan();
                 case BossID.GOLDEN_FRIEZA ->
                     new GoldenFrieza();
                 case BossID.DEATH_BEAM_1 ->
@@ -329,28 +309,10 @@ public class BossManager implements Runnable {
                     new DeathBeam4();
                 case BossID.DEATH_BEAM_5 ->
                     new DeathBeam5();
-                case BossID.BIMA ->
-                    new BiMa();
-                case BossID.MATROI ->
-                    new MaTroi();
-                case BossID.DOI ->
-                    new Doi();
-                case BossID.ONG_GIA_NOEL ->
-                    new OngGiaNoel();
-                case BossID.SON_TINH ->
-                    new SonTinh();
-                case BossID.THUY_TINH ->
-                    new ThuyTinh();
-                case BossID.LAN_CON ->
-                    new LanCon();
                 case BossID.SOI_HEC_QUYN1 ->
                     new SoiHecQuyn();
                 case BossID.O_DO1 ->
                     new Odo();
-                case BossID.Virut ->
-                    new Virut();
-                case BossID.MAT_TROI ->
-                    new MatTroi();
                 case BossID.BLACK_GOKU ->
                     new BlackGoku();
                 case BossID.CUMBER ->

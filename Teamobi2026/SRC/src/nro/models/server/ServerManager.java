@@ -156,9 +156,6 @@ public class ServerManager {
 
     private boolean shouldUpdateTop() {
         return Manager.isTopMaydamChanged
-                || Manager.isTopSukienChanged
-                || Manager.isTopSukien1Changed
-                || Manager.isTopSukien2Changed
                 || Manager.isTopWhisChanged;
     }
 
@@ -173,15 +170,6 @@ public class ServerManager {
         try (Connection con = LocalManager.gI().getConnection()) {
             if (Manager.isTopMaydamChanged) {
                 Manager.Topmaydam = Manager.realTop(Manager.queryTopmaydam, con);
-            }
-            if (Manager.isTopSukienChanged) {
-                Manager.Topsukien = Manager.realTop(Manager.queryTopsukien, con);
-            }
-            if (Manager.isTopSukien1Changed) {
-                Manager.Topsukien1 = Manager.realTop(Manager.queryTopsukien1, con);
-            }
-            if (Manager.isTopSukien2Changed) {
-                Manager.Topsukien1 = Manager.realTop(Manager.queryTopsukien1, con);
             }
             if (Manager.isTopWhisChanged) {
                 Manager.Topwhis = Manager.realTop(Manager.queryTopwhis, con);

@@ -1,18 +1,13 @@
 package nro.models.boss;
 
 import nro.models.boss.Boss_Manager.BrolyManager;
-import nro.models.boss.Boss_Manager.LunarNewYearEventManager;
 import nro.models.boss.Boss_Manager.GasDestroyManager;
 import nro.models.boss.Boss_Manager.RedRibbonHQManager;
 import nro.models.boss.Boss_Manager.SkillSummonedManager;
 import nro.models.boss.Boss_Manager.TreasureUnderSeaManager;
 import nro.models.boss.Boss_Manager.FinalBossManager;
-import nro.models.boss.Boss_Manager.HalloweenEventManager;
-import nro.models.boss.Boss_Manager.ChristmasEventManager;
-import nro.models.boss.Boss_Manager.TrungThuEventManager;
 import nro.models.boss.Boss_Manager.YardartManager;
 import nro.models.boss.Boss_Manager.SnakeWayManager;
-import nro.models.boss.Boss_Manager.HungVuongEventManager;
 import nro.models.boss.Boss_Manager.OtherBossManager;
 import nro.models.boss.Boss_Manager.BossManager;
 import nro.models.consts.AppearType;
@@ -172,16 +167,8 @@ public class Boss extends Player implements IBoss {
                 SnakeWayManager.gI().addBoss(this);
             case PHOBANKGHD ->
                 GasDestroyManager.gI().addBoss(this);
-            case TRUNGTHU_EVENT ->
-                TrungThuEventManager.gI().addBoss(this);
-            case HALLOWEEN_EVENT ->
-                HalloweenEventManager.gI().addBoss(this);
-            case CHRISTMAS_EVENT ->
-                ChristmasEventManager.gI().addBoss(this);
-            case HUNGVUONG_EVENT ->
-                HungVuongEventManager.gI().addBoss(this);
-            case TET_EVENT ->
-                LunarNewYearEventManager.gI().addBoss(this);
+            default ->
+                BossManager.gI().addBoss(this);
         }
 
         this.bossAppearTogether = new Boss[this.data.length][];

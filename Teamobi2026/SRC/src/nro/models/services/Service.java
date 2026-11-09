@@ -46,7 +46,6 @@ import nro.models.matches.TOP;
 import nro.models.mob_bigboss.GauTuongCuop;
 import nro.models.npc.NonInteractiveNPC;
 import nro.models.npc.Npc;
-import nro.models.npc_list.DuaHau;
 import nro.models.player_system.Template.Part;
 import nro.models.server.Manager;
 

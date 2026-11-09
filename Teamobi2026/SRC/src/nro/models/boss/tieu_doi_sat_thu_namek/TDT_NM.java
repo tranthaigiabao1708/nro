@@ -56,8 +56,6 @@ public class TDT_NM extends Boss {
         Service.gI().dropItemMap(this.zone, it1);
         Service.gI().dropItemMap(this.zone, it2);
         int diem = 5;
-        plKill.event.addEventPoint(diem);
-        Service.gI().sendThongBao(plKill, "+5 Point");
     }
 
     @Override

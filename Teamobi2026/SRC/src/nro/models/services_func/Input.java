@@ -172,10 +172,6 @@ public class Input {
                         BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.DAI_GIA_MOI_NHU, cuantity1);
                         BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.EM_XINH_EM_DEP, cuantity1);
 
-                        int eventPointBonus = (cuantity1 / 10000) * 50;
-                        player.event.addEventPoint(eventPointBonus);
-
-                        Service.gI().sendThongBao(player, "Bạn nhận thêm " + eventPointBonus + " điểm sự kiện!");
                         Service.gI().sendThongBao(player, "Đã đổi thành công. Bạn nhận được " + soLuongThoiVang + " thỏi vàng và " + soLuongVe + " vé tặng ngọc.");
                     }
                 }
@@ -203,10 +199,6 @@ public class Input {
                         BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.DAI_GIA_MOI_NHU, quantity);
                         BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.EM_XINH_EM_DEP, quantity);
 
-                        int eventPointBonus = (quantity / 10000) * 50;
-                        player.event.addEventPoint(eventPointBonus);
-
-                        Service.gI().sendThongBao(player, "Bạn nhận thêm " + eventPointBonus + " điểm sự kiện!");
                         Service.gI().sendThongBao(player, "Đã nạp thành công. Bạn nhận được " + quantity + " ngọc và " + soLuongVe + " vé tặng ngọc.");
                     }
                 }

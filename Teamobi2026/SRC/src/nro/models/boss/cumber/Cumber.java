@@ -77,8 +77,6 @@ public class Cumber extends Boss {
         }
         TaskService.gI().checkDoneTaskKillBoss(plKill, this);
         int diem = 5;
-        plKill.event.addEventPoint(diem);
-        Service.gI().sendThongBao(plKill, "+5 Point");
     }
     @Override
     public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {

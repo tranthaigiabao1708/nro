@@ -677,13 +677,7 @@ public class PlayerDAO {
                 String mabuEgg = dataArray.toJSONString();
                 dataArray.clear();
 
-                //data dưa hấu
-                if (player.DuaHauEgg != null) {
-                    dataArray.add(player.DuaHauEgg.lastTimeCreate);
-                    dataArray.add(player.DuaHauEgg.timeDone);
-                }
-                String DuaHauEgg = dataArray.toJSONString();
-                dataArray.clear();
+                String DuaHauEgg = "[]";
 
                 //data bùa
                 dataArray.add(player.charms.tdTriTue);

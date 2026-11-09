@@ -2,7 +2,6 @@ package nro.models.player;
 
 import lombok.Getter;
 import lombok.Setter;
-import nro.models.player.Player;
 
 /**
  * @author By Mr Blue
@@ -18,17 +17,15 @@ public class PlayerEvent {
     public PlayerEvent(Player player) {
         this.player = player;
     }
-    
+
     public void addEventPoint(int num) {
-        eventPoint += num;
+        // Sự kiện đang tắt: không cộng điểm sự kiện
     }
-    
+
     public void subEventPoint(int num) {
-        eventPoint -= num;
+        // Sự kiện đang tắt
     }
 
     public void update() {
-       
     }
-
 }

@@ -85,8 +85,6 @@ public class BlackGoku extends Boss {
         }
         TaskService.gI().checkDoneTaskKillBoss(plKill, this);
         int diem = 5;
-        plKill.event.addEventPoint(diem);
-        Service.gI().sendThongBao(plKill, "+5 Point");
     }
 
     @Override

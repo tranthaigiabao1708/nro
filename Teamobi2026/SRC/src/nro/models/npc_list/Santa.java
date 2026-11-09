@@ -99,8 +99,6 @@ public class Santa extends Npc {
                         case 6:
                             if (soLuong >= 1) {
                                 ShopService.gI().opendShop(player, "SANTA_DANH_HIEU", false);
-                            } else {
-                                ShopService.gI().opendShop(player, "SHOP_VIP", false);
                             }
                             break;
                     }

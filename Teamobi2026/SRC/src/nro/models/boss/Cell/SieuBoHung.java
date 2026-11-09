@@ -132,8 +132,6 @@ public class SieuBoHung extends Boss {
             Item optionalItem = ItemService.gI().createNewItem((short) dropOptional);
             Service.gI().dropItemMap(zone, optionalItemMap);
             int diem = 5;
-            plKill.event.addEventPoint(diem);
-            Service.gI().sendThongBao(plKill, "+5 Point");
         }
 
         TaskService.gI().checkDoneTaskKillBoss(plKill, this);

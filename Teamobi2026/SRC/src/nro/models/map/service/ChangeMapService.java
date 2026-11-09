@@ -574,11 +574,6 @@ public class ChangeMapService {
             if (player.mabuEgg != null) {
                 player.mabuEgg.sendMabuEgg();
             }
-            if (player.zone != null && player.zone.map.mapId == (21 + player.gender)) {
-                if (player.DuaHauEgg != null) {
-                    player.DuaHauEgg.sendDuaHauEgg();
-                }
-            }
         }
     }
 

@@ -49,10 +49,7 @@ public class TrungUyThep extends Boss {
 
     @Override
     public void reward(Player plKill) {
-        int diem = 5;
-        plKill.event.addEventPoint(diem);
-        Service.gI().sendThongBao(plKill, "+5 Point");
-        // Xác suất rơi item 1560 (50%)
+        // Xác suất rơi item 17 (50%)
         if (Util.isTrue(50, 100)) {
             ItemMap it = new ItemMap(
                     this.zone,
@@ -77,16 +74,6 @@ public class TrungUyThep extends Boss {
             );
             Service.gI().dropItemMap(this.zone, it);
         }
-        // 100% rơi item 1824
-        ItemMap it = new ItemMap(
-                this.zone,
-                1824,
-                1,
-                this.location.x,
-                this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24),
-                plKill.id
-        );
-        Service.gI().dropItemMap(this.zone, it);
     }
 
     @Override
