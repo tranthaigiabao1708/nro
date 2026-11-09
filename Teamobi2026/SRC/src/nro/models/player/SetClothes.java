@@ -34,6 +34,7 @@ public class SetClothes {
     public byte nappa;
     public byte giamSatThuong;
     public byte cadicM;
+    public byte gohan;
 
     public byte worldcup;
     public byte setDHD;
@@ -170,6 +171,11 @@ public class SetClothes {
                         isActSet = true;
                         cadicM++;
                         break;
+                    case 233:
+                    case 234:
+                        isActSet = true;
+                        gohan++;
+                        break;
                 }
 
                 if (isActSet) {
@@ -195,6 +201,7 @@ public class SetClothes {
         this.thanVuTruKaio = 0;
         this.nail = 0;
         this.cadicM = 0;
+        this.gohan = 0;
         this.setDHD = 0;
         this.worldcup = 0;
         this.godClothes = false;

@@ -90,17 +90,15 @@ public class Trade {
 
     public void addItemTrade(Player pl, byte index, int quantity) {
         if (pl.getSession().actived) {
-            if (index == -1) { // Giao dịch vàng
-                if (quantity > MAX_GOLD_TRADE_PER_TIME || quantity < 0) {
-                    Service.gI().sendThongBao(pl, "Số vàng giao dịch không được vượt quá " + MAX_GOLD_TRADE_PER_TIME + " vàng.");
-                    sendUpdateGoldTrade(pl); // Cập nhật lại số vàng hiển thị về 0 hoặc giá trị hợp lệ
-                    return;
-                }
+            if (index == -1) { // Cấm giao dịch vàng trực tiếp
                 if (pl.equals(this.player1)) {
-                    goldTrade1 = quantity;
+                    goldTrade1 = 0;
                 } else {
-                    goldTrade2 = quantity;
+                    goldTrade2 = 0;
                 }
+                Service.gI().sendThongBao(pl, "Không được phép giao dịch vàng, chỉ được phép giao dịch Thỏi vàng thường!");
+                sendUpdateGoldTrade(pl);
+                return;
             } else { // Giao dịch vật phẩm
                 Item item = null;
                 if (pl.equals(this.player1)) {
@@ -116,8 +114,11 @@ public class Trade {
                 }
                 if (isItemCannotTran(item)) {
                     removeItemTrade(pl, index);
+                    if (item.template.id == 457) {
+                        Service.gI().sendThongBao(pl, "Thỏi vàng khóa không được phép giao dịch!");
+                    }
                 } else {
-                    if (quantity > 99) {
+                    if (quantity > 99 && item.template.id != 457) {
                         int n = quantity / 99;
                         int left = quantity % 99;
                         for (int i = 0; i < n; i++) {
@@ -218,6 +219,9 @@ public class Trade {
     }
 
     private boolean isItemCannotTran(Item item) {
+        if (item.isSKH()) {
+            return false;
+        }
         for (Item.ItemOption io : item.itemOptions) {
             if (io.optionTemplate.id == 30) {
                 return true;

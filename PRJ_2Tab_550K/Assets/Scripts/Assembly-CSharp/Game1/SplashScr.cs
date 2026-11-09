@@ -43,29 +43,11 @@ namespace Game1
 				SoundMn.gI().getStrOption();
 				ServerListScreen.linkDefault = Management.GetIpServer();
 				ServerListScreen.ListIP = ServerListScreen.linkDefault;
-				if (Management.HasExternalConfig || Rms.loadRMSInt("svselect") == -1)
+				if (Rms.loadRMSInt("svselect") == -1)
 				{
-					string[] array = Res.split(ServerListScreen.linkDefault.Trim(), ",", 0);
-					mResources.loadLanguague(sbyte.Parse(array[array.Length - 2]));
-					ServerListScreen.nameServer = new string[array.Length - 2];
-					ServerListScreen.address = new string[array.Length - 2];
-					ServerListScreen.port = new short[array.Length - 2];
-					ServerListScreen.language = new sbyte[array.Length - 2];
-					ServerListScreen.hasConnected = new bool[2];
-					for (int i = 0; i < array.Length - 2; i++)
-					{
-						string[] array2 = Res.split(array[i].Trim(), ":", 0);
-						ServerListScreen.nameServer[i] = array2[0];
-						ServerListScreen.address[i] = array2[1];
-						ServerListScreen.port[i] = short.Parse(array2[2]);
-						ServerListScreen.language[i] = sbyte.Parse(array2[3].Trim());
-					}
-					GameCanvas.serverScr.switchToMe();
+					Rms.saveRMSInt("svselect", 0);
 				}
-				else
-				{
-					ServerListScreen.LoadIP();
-				}
+				ServerListScreen.LoadIP();
 			}
 			splashScrStat++;
 			if (splashScrStat >= 150)

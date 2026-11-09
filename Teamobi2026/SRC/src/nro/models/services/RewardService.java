@@ -1674,7 +1674,6 @@ public class RewardService {
             int[] idOption = ACTIVATION_SET[gender][Util.nextInt(0, 2)];
             list.add(new ItemOption(idOption[0], 1)); // tên set
             list.add(new ItemOption(idOption[1], 1)); // hiệu ứng set
-            list.add(new ItemOption(30, 7)); // không thể giao dịch
         }
     }
 

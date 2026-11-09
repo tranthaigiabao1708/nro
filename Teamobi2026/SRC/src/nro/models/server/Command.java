@@ -284,17 +284,31 @@ parameterizedCommands.put("tb ", (player, text) -> {
                     }
                 }
 
-                for (int i = 0; i < quantity; i++) {
-                    Item item = ItemService.gI().createNewItem((short) itemId);
+                Item sampleItem = ItemService.gI().createNewItem((short) itemId);
+                if (sampleItem != null && sampleItem.template != null && sampleItem.template.isUpToUp) {
+                    sampleItem.quantity = quantity;
                     if (!customOptions.isEmpty()) {
-                        item.itemOptions = new ArrayList<>(customOptions);
+                        sampleItem.itemOptions = new ArrayList<>(customOptions);
                     } else {
                         List<Item.ItemOption> ops = ItemService.gI().getListOptionItemShop((short) itemId);
                         if (!ops.isEmpty()) {
-                            item.itemOptions = ops;
+                            sampleItem.itemOptions = ops;
                         }
                     }
-                    InventoryService.gI().addItemBag(player, item);
+                    InventoryService.gI().addItemBag(player, sampleItem);
+                } else {
+                    for (int i = 0; i < quantity; i++) {
+                        Item item = ItemService.gI().createNewItem((short) itemId);
+                        if (!customOptions.isEmpty()) {
+                            item.itemOptions = new ArrayList<>(customOptions);
+                        } else {
+                            List<Item.ItemOption> ops = ItemService.gI().getListOptionItemShop((short) itemId);
+                            if (!ops.isEmpty()) {
+                                item.itemOptions = ops;
+                            }
+                        }
+                        InventoryService.gI().addItemBag(player, item);
+                    }
                 }
 
                 InventoryService.gI().sendItemBags(player);
@@ -302,6 +316,32 @@ parameterizedCommands.put("tb ", (player, text) -> {
 
             } catch (Exception e) {
                 Service.gI().sendThongBao(player, "Lỗi cú pháp! Dùng: i <itemId> <số lượng> [optionId:value]");
+            }
+        });
+
+        parameterizedCommands.put("tv ", (player, text) -> {
+            try {
+                int quantity = Integer.parseInt(text.replaceAll("tv ", "").trim());
+                Item item = ItemService.gI().createNewItem((short) 457, quantity);
+                item.itemOptions.add(new Item.ItemOption(73, 0));
+                InventoryService.gI().addItemBag(player, item);
+                InventoryService.gI().sendItemBags(player);
+                Service.gI().sendThongBao(player, "Đã nhận " + quantity + " Thỏi vàng thường (có thể giao dịch)!");
+            } catch (Exception e) {
+                Service.gI().sendThongBao(player, "Cú pháp: tv <số lượng>");
+            }
+        });
+
+        parameterizedCommands.put("tvk ", (player, text) -> {
+            try {
+                int quantity = Integer.parseInt(text.replaceAll("tvk ", "").trim());
+                Item item = ItemService.gI().createNewItem((short) 457, quantity);
+                item.itemOptions.add(new Item.ItemOption(30, 0));
+                InventoryService.gI().addItemBag(player, item);
+                InventoryService.gI().sendItemBags(player);
+                Service.gI().sendThongBao(player, "Đã nhận " + quantity + " Thỏi vàng khóa (không thể giao dịch)!");
+            } catch (Exception e) {
+                Service.gI().sendThongBao(player, "Cú pháp: tvk <số lượng>");
             }
         });
     }

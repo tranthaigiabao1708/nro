@@ -59,7 +59,7 @@ public class SummonDragon {
 
     public static final String[] SHENRON_1_STAR_WISHES_1
             = new String[]{"Giàu có\n+2 Tỏi\nVàng", "Găng tay\nđang mang\nlên 1 cấp", "Chí mạng\nGốc +2%",
-                "Thay\nChiêu 2-3\nĐệ tử", "Điều ước\nkhác"};
+                "Thay\nChiêu 2-3\nĐệ tử", "+20%\nMay mắn", "Điều ước\nkhác"};
     public static final String[] SHENRON_1_STAR_WISHES_2
             = new String[]{"Đẹp trai\nnhất\nVũ trụ", "Giàu có\n+10K\nNgọc", "+200 Tr\nSức mạnh\nvà tiềm\nnăng",
                 "Găng tay đệ\nđang mang\nlên 1 cấp",
@@ -352,6 +352,15 @@ public class SummonDragon {
                             }
                         } else {
                             Service.gI().sendThongBao(playerSummonShenron, "Ngươi làm gì có đệ tử?");
+                            reOpenShenronWishes(playerSummonShenron);
+                            return;
+                        }
+                        break;
+                    case 4: // +20% May mắn
+                        if (this.playerSummonShenron.nPoint.luckDragon < 20) {
+                            this.playerSummonShenron.nPoint.luckDragon = 20;
+                        } else {
+                            Service.gI().sendThongBao(playerSummonShenron, "Điều ước này đã quá sức với ta, ta sẽ cho ngươi chọn lại");
                             reOpenShenronWishes(playerSummonShenron);
                             return;
                         }

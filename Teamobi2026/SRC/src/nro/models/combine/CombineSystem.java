@@ -74,9 +74,9 @@ public class CombineSystem {
             case 16 ->
                 50;
             case 15 ->
-                94;
+                50;
             case 14 ->
-                108;
+                50;
             case 441 ->
                 95;
             case 442 ->
@@ -112,9 +112,9 @@ public class CombineSystem {
             case 16 ->
                 3;
             case 15 ->
-                2;
+                6;
             case 14 ->
-                2;
+                9;
             case 441 ->
                 5;
             case 442 ->
