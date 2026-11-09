@@ -488,11 +488,14 @@ public class Input {
                 }
                 case BANSLL -> {
                     int sltv = Math.abs(Integer.parseInt(text[0]));
+                    if (sltv <= 0) {
+                        return;
+                    }
                     long cost = (long) sltv * 37000000;
-                    Item ThoiVang = InventoryService.gI().findItemBag(player, 457);
-                    if (ThoiVang != null) {
-                        if (ThoiVang.quantity < sltv) {
-                            Service.gI().sendThongBao(player, "Bạn chỉ có " + ThoiVang.quantity + " Thỏi vàng");
+                    int totalThoiVang = InventoryService.gI().getTotalQuantityBag(player, 457);
+                    if (totalThoiVang > 0) {
+                        if (totalThoiVang < sltv) {
+                            Service.gI().sendThongBao(player, "Bạn chỉ có " + totalThoiVang + " Thỏi vàng");
                         } else {
                             if (player.inventory.gold + cost > Inventory.LIMIT_GOLD) {
                                 int slban = (int) ((Inventory.LIMIT_GOLD - player.inventory.gold) / 37000000);
@@ -504,13 +507,15 @@ public class Input {
                                     Service.gI().sendThongBao(player, "Số lượng trong khoảng 1 tới " + slban);
                                 }
                             } else {
-                                InventoryService.gI().subQuantityItemsBag(player, ThoiVang, sltv);
+                                InventoryService.gI().subQuantityItemsBagPriorityLocked(player, 457, sltv);
                                 InventoryService.gI().sendItemBags(player);
                                 player.inventory.gold += cost;
                                 Service.gI().sendMoney(player);
                                 Service.gI().sendThongBao(player, "Đã bán " + sltv + " Thỏi vàng thu được " + Util.numberToMoney(cost) + " vàng");
                             }
                         }
+                    } else {
+                        Service.gI().sendThongBao(player, "Bạn không có Thỏi vàng trong hành trang");
                     }
                 }
                 case TANG_NGOC_HONG -> {

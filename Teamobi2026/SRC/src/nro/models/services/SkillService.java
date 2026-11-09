@@ -741,7 +741,7 @@ public class SkillService {
                     //nổ
                     player.playerSkill.prepareTuSat = !player.playerSkill.prepareTuSat;
                     int rangeBom = SkillUtil.getRangeBom(player.playerSkill.skillSelect.point);
-                    if (player.setClothes.cadicM == 2) {
+                    if (player.setClothes.cadicM >= 2) {
                         rangeBom = SkillUtil.getRangeBom(player.playerSkill.skillSelect.point) + 200;
                     }
                     long dame = player.nPoint.hp;

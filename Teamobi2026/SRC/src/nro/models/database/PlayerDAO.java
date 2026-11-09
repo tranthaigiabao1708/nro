@@ -134,8 +134,8 @@ public class PlayerDAO {
                     item.add(10); //số lượng
                     options.add(opt.toJSONString());
                     opt.clear();
-                } else if (i == 1 && CustomConfig.STARTER_GOLD_BAR > 0) { // thỏi vàng tân thủ
-                    opt.add(73);
+                } else if (i == 1 && CustomConfig.STARTER_GOLD_BAR > 0) { // thỏi vàng tân thủ (khóa)
+                    opt.add(30);
                     opt.add(0);
                     item.add(457);
                     item.add(CustomConfig.STARTER_GOLD_BAR);
@@ -417,7 +417,7 @@ public class PlayerDAO {
                 dataArray.add(player.nPoint.defg);
                 dataArray.add(player.nPoint.critg);
                 dataArray.add(player.nPoint.critdragon);
-                dataArray.add(0);
+                dataArray.add(player.nPoint.luckDragon);
                 dataArray.add(hp);
                 dataArray.add(mp);
                 String point = dataArray.toJSONString();

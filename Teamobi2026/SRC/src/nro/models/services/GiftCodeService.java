@@ -64,21 +64,18 @@ public class GiftCodeService {
                         Item itemGiftTemplate = ItemService.gI().createNewItem((short) idItem);
                         if (itemGiftTemplate != null) {
                             Item itemGift = new Item((short) idItem);
-
-                            if (itemGift.template.type == 0 || itemGift.template.type == 1 || itemGift.template.type == 2 || itemGift.template.type == 3
-                                    || itemGift.template.type == 4 || itemGift.template.type == 5) {
-                                if (itemGift.template.id == 457) {
-                                    itemGift.itemOptions.add(new Item.ItemOption(30, 0));
-                                } else {
-                                    itemGift.itemOptions = giftcode.option.get(key);
-                                    itemGift.quantity = quantity;
-                                    InventoryService.gI().addItemBag(player, itemGift);
+                            java.util.List<Item.ItemOption> giftOpts = giftcode.option.get(key);
+                            if (giftOpts != null) {
+                                for (Item.ItemOption io : giftOpts) {
+                                    itemGift.itemOptions.add(new Item.ItemOption(io.optionTemplate.id, io.param));
                                 }
-                            } else {
-                                itemGift.itemOptions = giftcode.option.get(key);
-                                itemGift.quantity = quantity;
-                                InventoryService.gI().addItemBag(player, itemGift);
                             }
+                            if (itemGift.template.id == 457) {
+                                itemGift.itemOptions.clear();
+                                itemGift.itemOptions.add(new Item.ItemOption(30, 0));
+                            }
+                            itemGift.quantity = quantity;
+                            InventoryService.gI().addItemBag(player, itemGift);
                             textGift += "|1|x" + quantity + " " + itemGift.template.name + "\b";
                         }
                     }

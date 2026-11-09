@@ -230,12 +230,10 @@ namespace Game2
 		{
 			isRegistering = false;
 			SoundMn.gI().stopAll();
+			focus = 0;
+			isLogin2 = false;
 			tfUser.isFocus = true;
 			tfPass.isFocus = false;
-			if (GameCanvas.isTouch)
-			{
-				tfUser.isFocus = false;
-			}
 			GameCanvas.loadBG(1);
 			base.switchToMe();
 		}
@@ -692,23 +690,20 @@ namespace Game2
 			if (GameCanvas.keyPressed[(!Main.isPC) ? 2 : 21] || GameCanvas.keyPressed[(!Main.isPC) ? 8 : 22] || GameCanvas.keyPressed[16])
 			{
 				GameCanvas.clearKeyPressed();
-				if (!isLogin2 || isRes)
+				if (focus == 1)
 				{
-					if (focus == 1)
-					{
-						tfUser.isFocus = false;
-						tfPass.isFocus = true;
-					}
-					else if (focus == 0)
-					{
-						tfUser.isFocus = true;
-						tfPass.isFocus = false;
-					}
-					else
-					{
-						tfUser.isFocus = false;
-						tfPass.isFocus = false;
-					}
+					tfUser.isFocus = false;
+					tfPass.isFocus = true;
+				}
+				else if (focus == 0)
+				{
+					tfUser.isFocus = true;
+					tfPass.isFocus = false;
+				}
+				else
+				{
+					tfUser.isFocus = false;
+					tfPass.isFocus = false;
 				}
 			}
 			if (GameCanvas.isTouch)
@@ -734,7 +729,7 @@ namespace Game2
 				center = cmdOK;
 				left = ModFunc.cmdAccManager;
 			}
-			if (GameCanvas.isPointerJustRelease && (!isLogin2 || isRes) && !ModFunc.isOpenAccMAnager)
+			if (GameCanvas.isPointerJustRelease && !ModFunc.isOpenAccMAnager)
 			{
 				if (GameCanvas.isPointerHoldIn(tfUser.x, tfUser.y, tfUser.width, tfUser.height))
 				{

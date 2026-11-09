@@ -261,7 +261,6 @@ public class ItemService {
             for (int subId : getOptionIdsBySKH(skhId)) {
                 item.itemOptions.add(new Item.ItemOption(subId, 1));
             }
-            item.itemOptions.add(new Item.ItemOption(30, 1));
         }
         return item;
     }
@@ -1145,7 +1144,6 @@ public class ItemService {
     private void Option_All(List<ItemOption> item, int skhId) {
         item.add(new ItemOption(skhId, 1));
         item.add(new ItemOption(ID(skhId), 1));
-        item.add(new ItemOption(30, 1));
     }
 
     public int ID(int skhId) {

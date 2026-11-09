@@ -123,11 +123,9 @@ namespace Game2.Assets.src.g
 		{
 			SoundMn.gI().stopAll();
 			focus = 0;
-			if (GameCanvas.isTouch)
-			{
-				tfUsername.isFocus = false;
-				focus = -1;
-			}
+			tfUsername.isFocus = true;
+			tfPassword.isFocus = false;
+			tfMaGioiThieu.isFocus = false;
 			base.switchToMe();
 		}
 
@@ -276,7 +274,7 @@ namespace Game2.Assets.src.g
 				}
 				processFocus();
 			}
-			else if (GameCanvas.keyPressed[22])
+			else if (GameCanvas.keyPressed[22] || GameCanvas.keyPressed[16])
 			{
 				focus++;
 				if (focus > 2)
@@ -285,7 +283,7 @@ namespace Game2.Assets.src.g
 				}
 				processFocus();
 			}
-			if (GameCanvas.keyPressed[21] || GameCanvas.keyPressed[22])
+			if (GameCanvas.keyPressed[21] || GameCanvas.keyPressed[22] || GameCanvas.keyPressed[16])
 			{
 				GameCanvas.clearKeyPressed();
 				if (focus == 1)

@@ -65,6 +65,90 @@ public class InventoryService {
         return this.findItem(player.inventory.itemsBox, tempId);
     }
 
+    public boolean isLockedItem(Item item) {
+        if (item == null || !item.isNotNullItem() || item.itemOptions == null) {
+            return false;
+        }
+        for (Item.ItemOption io : item.itemOptions) {
+            if (io != null && io.optionTemplate != null && io.optionTemplate.id == 30) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getTotalQuantityBag(Player player, int tempId) {
+        int total = 0;
+        if (player != null && player.inventory != null && player.inventory.itemsBag != null) {
+            for (Item item : player.inventory.itemsBag) {
+                if (item != null && item.isNotNullItem() && item.template.id == tempId) {
+                    total += item.quantity;
+                }
+            }
+        }
+        return total;
+    }
+
+    public int getTotalUnlockedQuantityBag(Player player, int tempId) {
+        int total = 0;
+        if (player != null && player.inventory != null && player.inventory.itemsBag != null) {
+            for (Item item : player.inventory.itemsBag) {
+                if (item != null && item.isNotNullItem() && item.template.id == tempId && !isLockedItem(item)) {
+                    total += item.quantity;
+                }
+            }
+        }
+        return total;
+    }
+
+    public boolean subQuantityItemsBagPriorityLocked(Player player, int tempId, int quantity) {
+        if (quantity <= 0 || getTotalQuantityBag(player, tempId) < quantity) {
+            return false;
+        }
+        int remaining = quantity;
+        // Ưu tiên trừ vật phẩm khóa (có option 30) trước
+        for (Item item : player.inventory.itemsBag) {
+            if (remaining <= 0) {
+                break;
+            }
+            if (item != null && item.isNotNullItem() && item.template.id == tempId && isLockedItem(item)) {
+                int take = Math.min(item.quantity, remaining);
+                subQuantityItemsBag(player, item, take);
+                remaining -= take;
+            }
+        }
+        // Nếu vẫn còn thiếu thì trừ tiếp vật phẩm thường (không khóa)
+        for (Item item : player.inventory.itemsBag) {
+            if (remaining <= 0) {
+                break;
+            }
+            if (item != null && item.isNotNullItem() && item.template.id == tempId && !isLockedItem(item)) {
+                int take = Math.min(item.quantity, remaining);
+                subQuantityItemsBag(player, item, take);
+                remaining -= take;
+            }
+        }
+        return remaining == 0;
+    }
+
+    public boolean subQuantityItemsBagUnlockedOnly(Player player, int tempId, int quantity) {
+        if (quantity <= 0 || getTotalUnlockedQuantityBag(player, tempId) < quantity) {
+            return false;
+        }
+        int remaining = quantity;
+        for (Item item : player.inventory.itemsBag) {
+            if (remaining <= 0) {
+                break;
+            }
+            if (item != null && item.isNotNullItem() && item.template.id == tempId && !isLockedItem(item)) {
+                int take = Math.min(item.quantity, remaining);
+                subQuantityItemsBag(player, item, take);
+                remaining -= take;
+            }
+        }
+        return remaining == 0;
+    }
+
     public boolean isExistItem(List<Item> list, int tempId) {
         try {
             return this.findItem(list, tempId) != null;
@@ -819,7 +903,15 @@ public class InventoryService {
     }
 
     public boolean addItemList(List<Item> items, Item itemAdd) {
-        if (itemAdd.itemOptions.isEmpty()) {
+        if (itemAdd.template != null && itemAdd.template.id == 457) {
+            boolean locked = isLockedItem(itemAdd);
+            itemAdd.itemOptions.clear();
+            if (locked) {
+                itemAdd.itemOptions.add(new Item.ItemOption(30, 0));
+            } else {
+                itemAdd.itemOptions.add(new Item.ItemOption(73, 0));
+            }
+        } else if (itemAdd.itemOptions.isEmpty()) {
             itemAdd.itemOptions.add(new Item.ItemOption(73, 0));
         }
 

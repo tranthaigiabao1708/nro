@@ -993,14 +993,15 @@ public class ShopService {
                 }
                 break;
             default:
-                if (InventoryService.gI().findItemBag(pl, itSpec) == null || !InventoryService.gI().findItemBag(pl, itSpec).isNotNullItem()) {
+                int totalHave = InventoryService.gI().getTotalQuantityBag(pl, itSpec);
+                if (totalHave <= 0) {
                     Service.gI().sendThongBao(pl, "Không tìm thấy " + itS.template.name);
                     isBuy = false;
-                } else if (InventoryService.gI().findItemBag(pl, itSpec).quantity < buySpec) {
+                } else if (totalHave < buySpec) {
                     Service.gI().sendThongBao(pl, "Bạn không có đủ " + buySpec + " " + itS.template.name);
                     isBuy = false;
                 } else {
-                    InventoryService.gI().subQuantityItemsBag(pl, InventoryService.gI().findItemBag(pl, itSpec), buySpec);
+                    InventoryService.gI().subQuantityItemsBagPriorityLocked(pl, itSpec, buySpec);
                     isBuy = true;
                 }
                 break;

@@ -195,9 +195,9 @@ public class Controller implements IMessageHandler {
                     }
                     break;
                 case 42:
-//                    //Đăng ký tài khoản nhanh
-//                    Service.gI().regisAccount(_session, _msg);
-//                    break;
+                    // Đăng ký tài khoản nhanh (Message 42)
+                    regisAccountFast(_session, _msg);
+                    break;
                 case -127:
                     if (player != null) {
                         LuckyRound.gI().readOpenBall(player, _msg);
@@ -890,10 +890,64 @@ public class Controller implements IMessageHandler {
                         regUser, regPass, CustomConfig.STARTER_VND, CustomConfig.STARTER_GOLD_BAR);
             }
             Logger.success("[Register] Đã đăng ký tài khoản mới thành công: " + regUser + "\n");
+            session.uu = regUser;
+            session.pp = regPass;
             Message msgDone = new Message(-102);
             msgDone.writer().writeByte(1);
             session.sendMessage(msgDone);
             msgDone.cleanup();
+        } catch (Exception e) {
+            Logger.logException(Controller.class, e);
+            Service.gI().sendThongBaoOK(session, "Không thể đăng ký tài khoản, vui lòng thử lại!");
+        } finally {
+            if (checkExist != null) {
+                checkExist.dispose();
+            }
+        }
+    }
+
+    private void regisAccountFast(MySession session, Message msg) {
+        LocalResultSet checkExist = null;
+        try {
+            String s1 = msg.reader().readUTF().trim();
+            String s2 = msg.reader().readUTF();
+            String regUser = s1;
+            String regPass = s2;
+            if (msg.reader().available() > 1) {
+                for (int i = 0; i < 5; i++) {
+                    msg.reader().readUTF();
+                }
+                regUser = msg.reader().readUTF().trim();
+                regPass = msg.reader().readUTF();
+            } else if (msg.reader().available() == 1) {
+                msg.reader().readBoolean();
+            }
+            if (regUser.isEmpty() || regUser.length() < 4 || regUser.length() > 60) {
+                Service.gI().sendThongBaoOK(session, "Tên tài khoản không hợp lệ (từ 4 đến 60 ký tự)!");
+                return;
+            }
+            if (regPass == null || regPass.isEmpty() || regPass.length() > 60) {
+                Service.gI().sendThongBaoOK(session, "Mật khẩu không hợp lệ!");
+                return;
+            }
+            checkExist = LocalManager.executeQuery("SELECT id FROM account WHERE username = ? LIMIT 1", regUser);
+            if (checkExist.first()) {
+                Service.gI().sendThongBaoOK(session, "Tài khoản này đã tồn tại, vui lòng chọn tên khác!");
+                return;
+            }
+            LocalManager.executeUpdate(
+                    "INSERT INTO account (username, password, email, active, vnd, thoi_vang, token, xsrf_token, newpass) VALUES (?, ?, '', 1, ?, ?, '', '', '')",
+                    regUser, regPass, CustomConfig.STARTER_VND, CustomConfig.STARTER_GOLD_BAR);
+            Logger.success("[Register] Đã đăng ký tài khoản mới thành công: " + regUser + "\n");
+            if (session.zoomLevel == 0) {
+                session.zoomLevel = 2;
+            }
+            session.uu = regUser;
+            session.pp = regPass;
+            Message msgSwitch = new Message(-88);
+            session.sendMessage(msgSwitch);
+            msgSwitch.cleanup();
+            Service.gI().sendThongBaoOK(session, "Đăng ký tài khoản thành công!");
         } catch (Exception e) {
             Logger.logException(Controller.class, e);
             Service.gI().sendThongBaoOK(session, "Không thể đăng ký tài khoản, vui lòng thử lại!");

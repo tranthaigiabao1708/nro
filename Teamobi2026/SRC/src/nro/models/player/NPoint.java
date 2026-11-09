@@ -40,6 +40,10 @@ public class NPoint {
     private Player player;
     long timeXinbatoBuff;
 
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
     public NPoint(Player player) {
         this.player = player;
         this.tlHp = new ArrayList<>();
@@ -72,6 +76,7 @@ public class NPoint {
     public int dame, dameg;
     public int def, defg;
     public int crit, critg, critdragon;
+    public int luckDragon;
     public byte speed = 8;
 
     public boolean teleport;
@@ -715,6 +720,9 @@ public class NPoint {
         setLtdb();
         setThoBulma();
         setTinhNhatNguyetAn();
+        if (this.player.setClothes != null && this.player.setClothes.gohan == 5) {
+            this.tlGold += 30;
+        }
     }
 
     private void setLtdb() {
@@ -1104,6 +1112,7 @@ public class NPoint {
 
         if (this.player.setClothes.nail >= 2) {
             this.tlDameCrit.add(10);
+            this.tlSDCM += 10;
         }
         // Xử lý thức ăn 2
         if (this.player.itemTime != null && this.player.itemTime.isEatMeal2 && this.player.itemTime.iconMeal2 == 8061) {
@@ -1234,8 +1243,8 @@ public class NPoint {
             this.crit += 10;
         }
 
-        if (player.setClothes.thanVuTruKaio >= 1) {
-            this.crit += 10 / 100;
+        if (player.setClothes.thanVuTruKaio >= 2) {
+            this.crit += 10;
         }
     }
 
@@ -1406,13 +1415,12 @@ public class NPoint {
                 break;
             case Skill.MASENKO:
                 if (intrinsic != null && intrinsic.id == 9) {
-                    percentXDame += intrinsic.param1;
+                    percentDameIntrinsic = intrinsic.param1;
                 }
+                percentDameSkill = skillSelect.damage;
                 if (this.player.setClothes.nail == 5) {
-                    percentXDame += 80;
+                    percentXDame = 80;
                 }
-
-                percentDameSkill = skillSelect.damage + percentXDame;
                 break;
 
             case Skill.LIEN_HOAN:
@@ -1427,7 +1435,7 @@ public class NPoint {
             case Skill.KAIOKEN:
                 percentDameSkill = skillSelect.damage;
                 if (player.setClothes.thanVuTruKaio == 5) {
-                    percentXDame = 30;
+                    percentXDame = 100;
                 }
                 break;
             case Skill.DICH_CHUYEN_TUC_THOI:

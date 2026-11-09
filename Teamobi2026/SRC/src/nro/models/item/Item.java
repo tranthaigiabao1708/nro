@@ -137,8 +137,11 @@ public class Item {
 
     public boolean isSKH() {
         for (ItemOption itemOption : itemOptions) {
-            if (itemOption.optionTemplate.id >= 127 && itemOption.optionTemplate.id <= 135) {
-                return true;
+            if (itemOption != null && itemOption.optionTemplate != null) {
+                int opId = itemOption.optionTemplate.id;
+                if ((opId >= 127 && opId <= 144) || (opId >= 233 && opId <= 248)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -228,9 +231,9 @@ public class Item {
             case 16 ->
                 new ItemOption(50, 3);
             case 15 ->
-                new ItemOption(94, 2);
+                new ItemOption(50, 6);
             case 14 ->
-                new ItemOption(108, 2);
+                new ItemOption(50, 9);
 
             case 441 ->
                 new ItemOption(95, 5);

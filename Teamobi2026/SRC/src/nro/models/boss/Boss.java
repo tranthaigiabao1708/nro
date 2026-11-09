@@ -624,14 +624,29 @@ public class Boss extends Player implements IBoss {
                 || !MapService.gI().isMapBanDoKhoBau(this.zone.map.mapId))) {
             if (!plKill.isBot) {
                 reward(plKill);
+                dropThoiVangBoss(plKill);
             }
             ServerNotify.gI().notify(plKill.name + ": Đã tiêu diệt được " + this.name + " mọi người đều ngưỡng mộ.");
             this.changeStatus(BossStatus.DIE);
         } else {
             if (plKill != null && !plKill.isBot) {
                 reward(plKill);
+                dropThoiVangBoss(plKill);
             }
             this.changeStatus(BossStatus.DIE);
+        }
+    }
+
+    protected void dropThoiVangBoss(Player plKill) {
+        try {
+            if (plKill != null && this.zone != null) {
+                int yGround = this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24);
+                nro.models.map.ItemMap thoiVangThuong = new nro.models.map.ItemMap(this.zone, 457, 1, this.location.x, yGround, plKill.id);
+                thoiVangThuong.options.add(new nro.models.item.Item.ItemOption(73, 0));
+                Service.gI().dropItemMap(this.zone, thoiVangThuong);
+            }
+        } catch (Exception e) {
+            Logger.logException(Boss.class, e);
         }
     }
 

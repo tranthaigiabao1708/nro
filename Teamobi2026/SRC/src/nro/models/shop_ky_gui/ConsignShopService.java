@@ -103,13 +103,7 @@ public class ConsignShopService {
     }
 
     private boolean SubThoiVang(Player pl, int quatity) {
-        for (Item item : pl.inventory.itemsBag) {
-            if (item.isNotNullItem() && item.template.id == 457 && item.quantity >= quatity) {
-                nro.models.services.InventoryService.gI().subQuantityItemsBag(pl, item, quatity);
-                return true;
-            }
-        }
-        return false;
+        return nro.models.services.InventoryService.gI().subQuantityItemsBagUnlockedOnly(pl, 457, quatity);
     }
 
     public void buyItem(Player pl, int id) {
@@ -130,11 +124,10 @@ public class ConsignShopService {
         }
         boolean isBuy = false;
         if (it.goldSell > 0) {
-            if (pl.inventory.gold >= it.goldSell) {
-                pl.inventory.gold -= it.goldSell;
+            if (SubThoiVang(pl, it.goldSell)) {
                 isBuy = true;
             } else {
-                Service.gI().sendThongBao(pl, "Bạn không đủ vàng để mua vật phẩm");
+                Service.gI().sendThongBao(pl, "Bạn không đủ Thỏi vàng thường để mua vật phẩm");
                 isBuy = false;
             }
         } else if (it.gemSell > 0) {
@@ -333,7 +326,8 @@ public class ConsignShopService {
 
     public boolean itemCanConsign(Item it) {
         if (it != null && it.template != null) {
-            if (it.itemOptions.stream().anyMatch(op -> op.optionTemplate.id == 86)
+            if (it.isSKH()
+                    || it.itemOptions.stream().anyMatch(op -> op.optionTemplate.id == 86)
                     || it.itemOptions.stream().anyMatch(op -> op.optionTemplate.id == 87)
                     || it.template.type == 14
                     || it.template.type == 15
@@ -383,11 +377,13 @@ public class ConsignShopService {
             }
 
             Item it = ItemService.gI().copyItem(pl.inventory.itemsBag.get(id));
-            for (Item.ItemOption daubuoi : it.itemOptions) {
-                if (daubuoi.optionTemplate.id == 30) {
-                    Service.gI().sendThongBao(pl, "Vật phẩm không thể kí gửi");
-                    openShopKyGui(pl);
-                    return;
+            if (!it.isSKH()) {
+                for (Item.ItemOption daubuoi : it.itemOptions) {
+                    if (daubuoi.optionTemplate.id == 30) {
+                        Service.gI().sendThongBao(pl, "Vật phẩm không thể kí gửi");
+                        openShopKyGui(pl);
+                        return;
+                    }
                 }
             }
             if (money <= 0 || quantity > it.quantity) {
