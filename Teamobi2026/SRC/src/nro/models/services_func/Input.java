@@ -29,6 +29,7 @@ import nro.models.Bot.NewBot;
 import nro.models.Bot.BotGiaoDich;
 import nro.models.consts.ConstTaskBadges;
 import nro.models.player.Inventory;
+import nro.models.server.CustomConfig;
 import nro.models.server.Manager;
 import nro.models.services.ClanService;
 import nro.models.map.service.ChangeMapService;
@@ -80,6 +81,7 @@ public class Input {
     public static final int BOTBOSS = 32;
     public static final int BOTATTACKPLAYER = 33;
     public static final int FIND_PLAYER_GIFT_RUBY = 34;
+    public static final int EDIT_LOGIN_NOTICE = 599;
 
     private static Input intance;
 
@@ -575,6 +577,18 @@ public class Input {
                         }
                     }
                 }
+                case EDIT_LOGIN_NOTICE -> {
+                    if (player.isAdmin()) {
+                        String raw = text.length > 0 ? text[0] : "";
+                        CustomConfig.updateLoginNotice(raw);
+                        if (CustomConfig.SERVER_LOGIN_NOTICE.isEmpty()) {
+                            Service.gI().sendThongBao(player, "Đã tắt bảng thông báo khi vào game!");
+                        } else {
+                            Service.gI().sendThongBao(player, "Đã cập nhật bảng thông báo mới cho toàn máy chủ!");
+                            Service.gI().sendThongBaoFromAdmin(player, CustomConfig.SERVER_LOGIN_NOTICE);
+                        }
+                    }
+                }
             }
         } catch (Exception e) {
         }
@@ -743,6 +757,15 @@ public class Input {
     public void createFormBotAttackPlayer(Player pl) {
         createForm(pl, BOTATTACKPLAYER, "Buff Bot Tấn Công Người",
                 new SubInput("số lượng bot", NUMERIC));
+    }
+
+    public void createFormEditLoginNotice(Player pl) {
+        String current = CustomConfig.SERVER_LOGIN_NOTICE.isEmpty()
+                ? "(Đang tắt)"
+                : CustomConfig.SERVER_LOGIN_NOTICE.replace("\n", " | ");
+        createForm(pl, EDIT_LOGIN_NOTICE,
+                "Sửa thông báo vào game (dùng | để xuống dòng, gõ off để tắt)\nHiện tại: " + current,
+                new SubInput("Nội dung thông báo mới", ANY));
     }
 
     public static class SubInput {

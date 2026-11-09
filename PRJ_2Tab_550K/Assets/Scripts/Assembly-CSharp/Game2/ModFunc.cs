@@ -239,7 +239,7 @@ namespace Game2
 
 		public static bool isEffectInven = false;
 
-	 public static bool isLogo = true;
+		public static bool isLogo = false;
 
 		public static bool isLogoGif = false;
 
@@ -1296,7 +1296,6 @@ namespace Game2
 
 		public void Paint(mGraphics g)
 		{
-			g.drawImage(imgLogoBig, GameCanvas.w / 2, 30, 3);
 			int imageWidth = mGraphics.getImageWidth(GameScr.imgHP);
 			int imageWidth2 = mGraphics.getImageWidth(GameScr.imgMP);
 			mFont.tahoma_7_red.drawStringBorder(g, NinjaUtil.getMoneys(Char.myCharz().cHP), 84 + imageWidth / 2, 4, mFont.CENTER, mFont.tahoma_7_grey);
@@ -2380,30 +2379,16 @@ namespace Game2
 		public static void LoadLogoImages()
 		{
 			imgBg = GameCanvas.LoadImageFromRoot("/bg/bg.png");
-            if (isLogo)
-            {
-                imgLogoBig = GameCanvas.loadImage("/mainimage/logo1.png");
-                imgLogoBig = GameCanvas.loadImage("/mainimage/logo1.png");
-            }
-            if (imgLogoBig == null)
-			{
-				isLogo = true;
-				Rms.saveRMSInt("logo", 0);
-			}
-			LoadLogoGif();
+			isLogo = false;
+			imgLogoBig = null;
 		}
 
 		public static void LoadLogoGif()
 		{
-			for (int i = 0; i < FrameGif; i++)
-			{
-				logos[i] = GameCanvas.loadImage("/logogif/logo-" + i + ".png");
-			}
 		}
 
 		public static void PaintLogoGif(mGraphics g, int x, int y, int anchor)
 		{
-			g.drawImage(imgLogoBig, x, y + 10, anchor);
 		}
 
 		public static void LoadLogoGifMenu()

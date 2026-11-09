@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Management
 {
-    public static bool isLogo = true;
+    public static bool isLogo = false;
 
     public const string DefaultServer = "Teamobi 2026:127.0.0.1:14445:0,0,0";
 

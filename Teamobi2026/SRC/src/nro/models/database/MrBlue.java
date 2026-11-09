@@ -63,11 +63,25 @@ public class MrBlue {
         LocalResultSet rs = null;
         Player plInGame;
         try {
+            if (session.uu != null) {
+                session.uu = session.uu.trim();
+            }
+            if (session.pp == null) {
+                session.pp = "";
+            }
             rs = LocalManager.executeQuery("select * from account where username = ? and password = ?", session.uu, session.pp);
             boolean hasAccount = rs.first();
+            // Hỗ trợ tài khoản Chơi mới (userAo) khi mở lại game lần sau (client gửi password = "" hoặc "a")
+            if (!hasAccount && session.uu != null && session.uu.startsWith("user")
+                    && (session.pp.isEmpty() || session.pp.equals("a"))) {
+                rs.dispose();
+                rs = LocalManager.executeQuery("select * from account where username = ? and password = ''", session.uu);
+                hasAccount = rs.first();
+            }
+            // Hỗ trợ tự động tạo tài khoản mới khi đăng nhập bằng bất kỳ tên TK / SĐT / Email mới nào (1..60 ký tự)
             if (!hasAccount && CustomConfig.AUTO_REGISTER
-                    && session.uu != null && session.uu.matches("^[a-zA-Z0-9_]{3,20}$")
-                    && session.pp != null && !session.pp.isEmpty()) {
+                    && session.uu != null && !session.uu.isEmpty() && session.uu.length() <= 60
+                    && !session.pp.isEmpty() && session.pp.length() <= 60) {
                 LocalResultSet checkExist = null;
                 try {
                     checkExist = LocalManager.executeQuery("select id from account where username = ? limit 1", session.uu);

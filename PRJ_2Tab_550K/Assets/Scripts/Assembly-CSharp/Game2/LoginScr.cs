@@ -288,49 +288,12 @@ namespace Game2
 				GameCanvas.startOKDlg(mResources.passwordBlank);
 				return;
 			}
-			if (tfUser.getText().Length < 5)
+			if (tfUser.getText().Length < 3)
 			{
 				GameCanvas.startOKDlg(mResources.accTooShort);
 				return;
 			}
-			int num = 0;
-			string text = null;
-			if (mResources.language == 2)
-			{
-				if (tfUser.getText().IndexOf("@") == -1 || tfUser.getText().IndexOf(".") == -1)
-				{
-					text = mResources.emailInvalid;
-				}
-				num = 0;
-			}
-			else
-			{
-				try
-				{
-					long.Parse(tfUser.getText());
-					if (tfUser.getText().Length < 8 || tfUser.getText().Length > 12 || (!tfUser.getText().StartsWith("0") && !tfUser.getText().StartsWith("84")))
-					{
-						text = mResources.phoneInvalid;
-					}
-					num = 1;
-				}
-				catch (Exception)
-				{
-					if (tfUser.getText().IndexOf("@") == -1 || tfUser.getText().IndexOf(".") == -1)
-					{
-						text = mResources.emailInvalid;
-					}
-					num = 0;
-				}
-			}
-			if (text != null)
-			{
-				GameCanvas.startOKDlg(text);
-			}
-			else
-			{
-				GameCanvas.msgdlg.setInfo(mResources.plsCheckAcc + ((num != 1) ? (mResources.email + ": ") : (mResources.phone + ": ")) + tfUser.getText() + "\n" + mResources.password + ": " + tfPass.getText(), new Command(mResources.ACCEPT, this, 4000, null), null, new Command(mResources.NO, GameCanvas.instance, 8882, null));
-			}
+			GameCanvas.msgdlg.setInfo(mResources.plsCheckAcc + "Tài khoản: " + tfUser.getText() + "\n" + mResources.password + ": " + tfPass.getText(), new Command(mResources.ACCEPT, this, 4000, null), null, new Command(mResources.NO, GameCanvas.instance, 8882, null));
 			GameCanvas.currentDialog = GameCanvas.msgdlg;
 		}
 

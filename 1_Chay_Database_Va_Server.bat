@@ -18,11 +18,24 @@ if %ERRORLEVEL% EQU 0 (
 
 echo.
 echo ====================================================================
-echo   [2/2] KHỞI ĐỘNG GAME SERVER TEAMOBI 2026 (PORT 14445)
+echo   [2/2] KIỂM TRA ^& KHỞI ĐỘNG GAME SERVER TEAMOBI 2026 (PORT 14445)
+echo ====================================================================
+netstat -ano | findstr ":14445 " | findstr "LISTENING" >nul
+if %ERRORLEVEL% EQU 0 (
+    echo [OK] Game Server ĐANG CHẠY SẴN trên cổng 14445!
+    echo      Đang mở luôn Client Game để bạn vào kiểm tra...
+    start "" "c:\mro\Client_ChoNguoiChoiTaiVe\Ngoc Rong.exe"
+    echo.
+    echo Nếu muốn tắt Server chạy ngầm để bật lại tại cửa sổ này, hãy gõ R rồi nhấn Enter.
+    set /p RESTART_CHOICE="Nhấn Enter để đóng thông báo (hoặc gõ R + Enter để khởi động lại Server): "
+    if /I not "%RESTART_CHOICE%"=="R" exit /b 0
+    for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":14445 " ^| findstr "LISTENING"') do taskkill /F /PID %%a >nul 2>&1
+    timeout /t 2 /nobreak >nul
+)
+
 echo   - Gõ "reload" + Enter tại cửa sổ này để nạp nóng Config ^& Shop
 echo   - Gõ "bt" + Enter để bảo trì an toàn (lưu Clan ^& Ký gửi)
 echo ====================================================================
 cd /d "c:\mro\Teamobi2026\SRC"
 "c:\mro\runtime\jdk21\bin\java.exe" -server -Xms512M -Xmx2048M -Dfile.encoding=UTF-8 -cp "lib/*;dist/NgocRongOnline.jar" nro.models.server.ServerManager
 PAUSE
-

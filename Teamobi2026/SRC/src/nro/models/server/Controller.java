@@ -724,6 +724,9 @@ public class Controller implements IMessageHandler {
                     case 0:
                         session.login(msg.reader().readUTF(), msg.reader().readUTF());
                         break;
+                    case 1:
+                        registerAccount(session, msg);
+                        break;
                     case 2:
                         Service.gI().setClientType(session, msg);
                         break;
@@ -847,11 +850,58 @@ public class Controller implements IMessageHandler {
     }
 
     private void sendThongBaoServer(Player player) {
-        Service.gI().sendThongBaoFromAdmin(player, "X3 Kinh nghiệm đến hết ngày 11/5."
-                + "\nSự kiện Goku Day."
-                + "\nĐua TOP nhận quà cực khủng."
-                + "\nTích điềm đổi quà."
-                + "\nChi tiết xem tại diễn đàn, fanpage.");
+        String notice = CustomConfig.SERVER_LOGIN_NOTICE;
+        if (notice != null && !notice.trim().isEmpty() && !notice.trim().equalsIgnoreCase("off")) {
+            Service.gI().sendThongBaoFromAdmin(player, notice.replace("|", "\n"));
+        }
+    }
+
+    private void registerAccount(MySession session, Message msg) {
+        LocalResultSet checkExist = null;
+        try {
+            String regUser = msg.reader().readUTF().trim();
+            String regPass = msg.reader().readUTF();
+            String userAo = "";
+            if (msg.reader().available() > 0) {
+                userAo = msg.reader().readUTF().trim();
+            }
+            if (regUser.isEmpty() || regUser.length() > 60) {
+                Service.gI().sendThongBaoOK(session, "Tên tài khoản không hợp lệ (từ 1 đến 60 ký tự)!");
+                return;
+            }
+            if (regPass == null || regPass.isEmpty() || regPass.length() > 60) {
+                Service.gI().sendThongBaoOK(session, "Mật khẩu không được để trống!");
+                return;
+            }
+            checkExist = LocalManager.executeQuery("SELECT id FROM account WHERE username = ? LIMIT 1", regUser);
+            if (checkExist.first()) {
+                Service.gI().sendThongBaoOK(session, "Tài khoản này đã tồn tại, vui lòng chọn tên khác!");
+                return;
+            }
+            int updated = 0;
+            if (!userAo.isEmpty()) {
+                updated = LocalManager.executeUpdate(
+                        "UPDATE account SET username = ?, password = ? WHERE username = ? AND password = ''",
+                        regUser, regPass, userAo);
+            }
+            if (updated <= 0) {
+                LocalManager.executeUpdate(
+                        "INSERT INTO account (username, password, email, active, vnd, thoi_vang, token, xsrf_token, newpass) VALUES (?, ?, '', 1, ?, ?, '', '', '')",
+                        regUser, regPass, CustomConfig.STARTER_VND, CustomConfig.STARTER_GOLD_BAR);
+            }
+            Logger.success("[Register] Đã đăng ký tài khoản mới thành công: " + regUser + "\n");
+            Message msgDone = new Message(-102);
+            msgDone.writer().writeByte(1);
+            session.sendMessage(msgDone);
+            msgDone.cleanup();
+        } catch (Exception e) {
+            Logger.logException(Controller.class, e);
+            Service.gI().sendThongBaoOK(session, "Không thể đăng ký tài khoản, vui lòng thử lại!");
+        } finally {
+            if (checkExist != null) {
+                checkExist.dispose();
+            }
+        }
     }
 
     public void createChar(MySession session, Message msg) {
@@ -859,10 +909,10 @@ public class Controller implements IMessageHandler {
             LocalResultSet rs = null;
             boolean created = false;
             try {
-                String name = msg.reader().readUTF();
+                String name = msg.reader().readUTF().trim();
                 int gender = msg.reader().readByte();
                 int hair = msg.reader().readByte();
-                if (name.length() >= 5 && name.length() <= 10) {
+                if (name.length() >= 3 && name.length() <= 12) {
                     rs = LocalManager.executeQuery("select * from player where name = ?", name);
                     if (rs.first()) {
                         Service.gI().sendThongBaoOK(session, "Tên nhân vật đã tồn tại");
@@ -872,7 +922,7 @@ public class Controller implements IMessageHandler {
                         } else {
                             boolean isNotIgnoreName = true;
                             for (String n : ConstIgnoreName.IGNORE_NAME) {
-                                if (name.equals(n)) {
+                                if (name.equalsIgnoreCase(n)) {
                                     Service.gI().sendThongBaoOK(session, "Tên nhân vật đã tồn tại");
                                     isNotIgnoreName = false;
                                     break;
@@ -884,7 +934,7 @@ public class Controller implements IMessageHandler {
                         }
                     }
                 } else {
-                    Service.gI().sendThongBaoOK(session, "Tên nhân vật chỉ đồng ý các ký tự a-z, 0-9 và chiều dài từ 5 đến 10 ký tự");
+                    Service.gI().sendThongBaoOK(session, "Tên nhân vật chỉ đồng ý các ký tự a-z, 0-9 và chiều dài từ 3 đến 12 ký tự");
                 }
             } catch (Exception e) {
                 Logger.logException(Controller.class, e);
@@ -900,7 +950,24 @@ public class Controller implements IMessageHandler {
     }
 
     public void login2(MySession session, Message msg) {
-        Service.gI().sendThongBaoOK(session, "Truy Cập: " + ServerManager.DOMAIN + "\n Đề Đăng Ký & Tải Game");
+        try {
+            if (!CustomConfig.AUTO_REGISTER) {
+                Service.gI().sendThongBaoOK(session, "Chức năng chơi mới hiện đang tạm đóng!");
+                return;
+            }
+            String userAo = "user" + (System.currentTimeMillis() % 100000000L) + Util.nextInt(10, 99);
+            LocalManager.executeUpdate(
+                    "INSERT INTO account (username, password, email, active, vnd, thoi_vang, token, xsrf_token, newpass) VALUES (?, '', '', 1, ?, ?, '', '', '')",
+                    userAo, CustomConfig.STARTER_VND, CustomConfig.STARTER_GOLD_BAR);
+            Logger.success("[PlayNew] Đã tạo tài khoản Chơi mới: " + userAo + "\n");
+            Message msgOut = new Message(-101);
+            msgOut.writer().writeUTF(userAo);
+            session.sendMessage(msgOut);
+            msgOut.cleanup();
+        } catch (Exception e) {
+            Logger.logException(Controller.class, e);
+            Service.gI().sendThongBaoOK(session, "Không thể tạo tài khoản chơi mới, vui lòng thử lại!");
+        }
     }
 
     public void sendInfo(MySession session) {

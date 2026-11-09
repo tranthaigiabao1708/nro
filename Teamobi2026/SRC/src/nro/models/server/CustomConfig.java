@@ -3,6 +3,9 @@ package nro.models.server;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -26,6 +29,9 @@ public class CustomConfig {
             this.chancePer1000 = chancePer1000;
         }
     }
+
+    // Nội dung bảng thông báo từ Admin khi người chơi vào game (để trống hoặc "off" để tắt)
+    public static volatile String SERVER_LOGIN_NOTICE = "Chúc chơi vui vẻ";
 
     // Tự động đăng ký tài khoản khi người chơi mới tải game đăng nhập lần đầu
     public static boolean AUTO_REGISTER = true;
@@ -55,6 +61,13 @@ public class CustomConfig {
         Properties prop = new Properties();
         try (InputStreamReader reader = new InputStreamReader(new FileInputStream("Config.properties"), StandardCharsets.UTF_8)) {
             prop.load(reader);
+
+            String rawNotice = prop.getProperty("custom.login_notice", "Chúc chơi vui vẻ");
+            if (rawNotice == null || rawNotice.trim().isEmpty() || rawNotice.trim().equalsIgnoreCase("off")) {
+                SERVER_LOGIN_NOTICE = "";
+            } else {
+                SERVER_LOGIN_NOTICE = rawNotice.trim().replace("|", "\n");
+            }
 
             AUTO_REGISTER = Boolean.parseBoolean(prop.getProperty("custom.autoregister", "true").trim());
             STARTER_VND = parseInt(prop.getProperty("custom.starter.vnd"), 100_000);
@@ -92,6 +105,38 @@ public class CustomConfig {
                     + ", DropMult=x" + DROP_RATE_MULT + ", StarterGold=" + STARTER_GOLD + "\n");
         } catch (Exception e) {
             Logger.error("[CustomConfig] Không đọc được cấu hình mở rộng, dùng mặc định: " + e.getMessage() + "\n");
+        }
+    }
+
+    public static synchronized void updateLoginNotice(String newNotice) {
+        String serialized;
+        if (newNotice == null || newNotice.trim().isEmpty() || newNotice.trim().equalsIgnoreCase("off")) {
+            SERVER_LOGIN_NOTICE = "";
+            serialized = "off";
+        } else {
+            String normalized = newNotice.trim().replace("\r\n", "\n").replace("\r", "\n");
+            SERVER_LOGIN_NOTICE = normalized.replace("|", "\n");
+            serialized = SERVER_LOGIN_NOTICE.replace("\n", "|");
+        }
+        try {
+            Path cfgPath = Paths.get("Config.properties");
+            if (Files.exists(cfgPath)) {
+                List<String> lines = Files.readAllLines(cfgPath, StandardCharsets.UTF_8);
+                boolean replaced = false;
+                for (int i = 0; i < lines.size(); i++) {
+                    if (lines.get(i).trim().startsWith("custom.login_notice=")) {
+                        lines.set(i, "custom.login_notice=" + serialized);
+                        replaced = true;
+                        break;
+                    }
+                }
+                if (!replaced) {
+                    lines.add("custom.login_notice=" + serialized);
+                }
+                Files.write(cfgPath, lines, StandardCharsets.UTF_8);
+            }
+        } catch (Exception e) {
+            Logger.error("[CustomConfig] Không lưu được custom.login_notice vào Config.properties: " + e.getMessage() + "\n");
         }
     }
 

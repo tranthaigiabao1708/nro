@@ -8,6 +8,8 @@ import nro.models.services.InventoryService;
 import nro.models.services.ItemService;
 import nro.models.services.PetService;
 import nro.models.services.Service;
+import nro.models.server.Command;
+import nro.models.services_func.Input;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -28,7 +30,11 @@ public class ToriBot extends Npc {
     public void openBaseMenu(Player player) {
         LocalDateTime currentDateTime = LocalDateTime.now();
         if (currentDateTime.isAfter(VIP_SEASON_END_DATE)) {
-            this.createOtherMenu(player, 0, "Ngươi tìm ta có việc gì?", "Đóng");
+            if (player.isAdmin()) {
+                this.createOtherMenu(player, 0, "Bảng điều khiển nhanh dành cho Admin:", "Sửa TB\nĐăng nhập", "Menu Admin", "Đóng");
+            } else {
+                this.createOtherMenu(player, 0, "Ngươi tìm ta có việc gì?", "Đóng");
+            }
         } else {
             int currentPurchases = player.vipPurchaseCount;
             String vipInfoMessage = "Lưu ý: nâng cấp VIP chỉ được tối đa 4 lần mỗi mùa (Bạn đã mua: " + currentPurchases + "/4 lần)";
@@ -53,12 +59,19 @@ public class ToriBot extends Npc {
                 remainingTimeString = "Còn " + days + " ngày " + hours + " giờ " + minutes + " phút " + seconds + " giây!";
             }
 
-            this.createOtherMenu(player, 0,
-                    "Trong thời gian mùa VIP diễn ra\n(Từ " + startDateStr + " đến hết " + endDateStr + ")\n"
-                    + "Thời gian còn lại: " + remainingTimeString + "\n"
-                    + // Thêm dòng thời gian còn lại
-                    "Tạo nhân vật mới sẽ được X2 Kinh nghiệm toàn mùa\n Nếu nâng cấp VIP sẽ được nhận\n nhiều ưu đãi hơn nữa.\n" + vipInfoMessage,
-                    "Vip 1", "Vip 2", "Vip 3", "Vip 4");
+            if (player.isAdmin()) {
+                this.createOtherMenu(player, 0,
+                        "Trong thời gian mùa VIP diễn ra\n(Từ " + startDateStr + " đến hết " + endDateStr + ")\n"
+                        + "Thời gian còn lại: " + remainingTimeString + "\n"
+                        + "Tạo nhân vật mới sẽ được X2 Kinh nghiệm toàn mùa\n Nếu nâng cấp VIP sẽ được nhận\n nhiều ưu đãi hơn nữa.\n" + vipInfoMessage,
+                        "Vip 1", "Vip 2", "Vip 3", "Vip 4", "Sửa TB\nĐăng nhập", "Menu Admin");
+            } else {
+                this.createOtherMenu(player, 0,
+                        "Trong thời gian mùa VIP diễn ra\n(Từ " + startDateStr + " đến hết " + endDateStr + ")\n"
+                        + "Thời gian còn lại: " + remainingTimeString + "\n"
+                        + "Tạo nhân vật mới sẽ được X2 Kinh nghiệm toàn mùa\n Nếu nâng cấp VIP sẽ được nhận\n nhiều ưu đãi hơn nữa.\n" + vipInfoMessage,
+                        "Vip 1", "Vip 2", "Vip 3", "Vip 4");
+            }
         }
     }
 
@@ -69,8 +82,16 @@ public class ToriBot extends Npc {
         }
         LocalDateTime currentDateTime = LocalDateTime.now();
         if (currentDateTime.isAfter(VIP_SEASON_END_DATE)) {
+            if (pl.isAdmin() && pl.idMark.getIndexMenu() == 0) {
+                if (select == 0) {
+                    Input.gI().createFormEditLoginNotice(pl);
+                    return;
+                } else if (select == 1) {
+                    Command.gI().check(pl, "a");
+                    return;
+                }
+            }
             Service.gI().sendThongBao(pl, "Mùa VIP đã kết thúc. Bạn không thể mua VIP vào lúc này.");
-           // openBaseMenu(pl);
             return;
         }
         switch (pl.idMark.getIndexMenu()) {
@@ -92,6 +113,16 @@ public class ToriBot extends Npc {
                         createOtherMenu(pl, 4, "Nâng cấp VIP 4 bạn sẽ nhận được\n1000 thỏi vàng, 10 phiếu giảm giá 80%\nX3 Kinh nghiệm toàn mùa\nCải trang hắc mị vĩnh viễn\nTặng 1 đệ tử mabu, 50 viên đá bảo vệ\nTàu ngầm cam 19 vĩnh viễn\nPet rồng nhí vĩnh viễn\n5 viên capsule kích hoạt\n20 thẻ rồng thần",
                                 "200.000\nđiềm mùa [" + pl.getSession().vnd + "]",
                                 "Đóng");
+                    case 4 -> {
+                        if (pl.isAdmin()) {
+                            Input.gI().createFormEditLoginNotice(pl);
+                        }
+                    }
+                    case 5 -> {
+                        if (pl.isAdmin()) {
+                            Command.gI().check(pl, "a");
+                        }
+                    }
                 }
             }
 

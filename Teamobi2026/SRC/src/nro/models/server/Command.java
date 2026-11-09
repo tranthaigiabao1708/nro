@@ -58,13 +58,14 @@ public class Command {
         adminCommands.put("getitem", player -> Input.gI().createFormGetItem(player));
         adminCommands.put("hs", player -> Service.gI().releaseCooldownSkill(player));
         adminCommands.put("d", player -> Service.gI().setPos(player, player.location.x, player.location.y + 10));
+        adminCommands.put("tb", player -> Input.gI().createFormEditLoginNotice(player));
         adminCommands.put("a", player -> NpcService.gI().createMenuConMeo(player, ConstNpc.MENU_ADMIN, -1,
                 "|0|Time start: " + ServerManager.timeStart
                 + "\nClients: " + Client.gI().getPlayers().size()
                 + "\n Sessions: " + SessionManager.gI().getNumSession()
                 + "\nThreads: " + Thread.activeCount()
                 + " luồng" + "\n" + SystemMetrics.ToString(),
-                "Ngọc rồng", "Đệ tử", "Bảo trì", "Tìm kiếm\nngười chơi", "Boss", "Đóng"));
+                "Ngọc rồng", "Đệ tử", "Bảo trì", "Tìm kiếm\nngười chơi", "Boss", "Sửa TB\nĐăng nhập", "Đóng"));
         adminCommands.put("nextnv", player -> {
             TaskService.gI().sendNextTaskMain(player);
             Service.gI().sendThongBao(player, "Đã qua nhiệm vụ tiếp theo!");
@@ -90,6 +91,7 @@ public class Command {
                 + "- m <mapId> : Dịch chuyển tới map\n"
                 + "- n <taskId> / nextnv : Chuyển nhiệm vụ / Qua nhanh NV\n"
                 + "- exp <số> / drop <số> : Đổi EXP / Tỉ lệ rơi đồ toàn SV\n"
+                + "- tb / tb <nội dung> : Sửa thông báo vào game (| để xuống dòng, off để tắt)\n"
                 + "- reload : Nạp nóng Config.properties & Shop\n"
                 + "- brl : Danh sách Boss | 1 : Menu Bot | hs : Hồi chiêu"));
     }
@@ -246,6 +248,17 @@ parameterizedCommands.put("drop ", (player, text) -> {
         Service.gI().sendThongBao(player, "Đã đổi Tỉ lệ rơi đồ = x" + newDrop);
     } catch (Exception e) {
         Service.gI().sendThongBao(player, "Sai cú pháp: drop <số>");
+    }
+});
+
+parameterizedCommands.put("tb ", (player, text) -> {
+    String newNotice = text.substring(3).trim();
+    CustomConfig.updateLoginNotice(newNotice);
+    if (CustomConfig.SERVER_LOGIN_NOTICE.isEmpty()) {
+        Service.gI().sendThongBao(player, "Đã tắt bảng thông báo khi vào game!");
+    } else {
+        Service.gI().sendThongBao(player, "Đã cập nhật bảng thông báo vào game!");
+        Service.gI().sendThongBaoFromAdmin(player, CustomConfig.SERVER_LOGIN_NOTICE);
     }
 });
 

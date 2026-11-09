@@ -509,6 +509,11 @@ public class NpcFactory {
                                 Input.gI().createFormFindPlayer(player);
                             case 4 ->
                                 BossManager.gI().showListBoss(player);
+                            case 5 -> {
+                                if (player.isAdmin()) {
+                                    Input.gI().createFormEditLoginNotice(player);
+                                }
+                            }
                         }
                     }
                     case ConstNpc.CONFIRM_DISSOLUTION_CLAN -> {
