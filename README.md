@@ -10,7 +10,10 @@ Kho mã nguồn chính thức của dự án **Ngọc Rồng NewGen**, bao gồm
 - `Teamobi2026/SRC/` : Mã nguồn Server Java đang vận hành của **Ngọc Rồng NewGen** (`Config.properties` kết nối trực tiếp tới `database.name=nro_newgen`, bản build `dist/NgocRongOnline.jar`, full `21.043` icon x4).
 - `PRJ_2Tab_550K/` : Mã nguồn Unity Client 2 Tab - Hành Trang Lưới (tự đọc IP từ `server_ip.txt`, hỗ trợ `Tàn sát tất cả`, menu `NRO Admin -> Build Client PC 2 Tab`).
 - `Client_ChoNguoiChoiTaiVe/` : Bộ Client PC cho người chơi tải về (cấu hình tên & IP máy chủ tại `server_ip.txt`).
-- `Hoisinhngocrong2025/` & `SRC NRO NEW 01/` : Kho tài nguyên Icon/Part và bản mẫu tham khảo đối chiếu.
+- `Mau_ThamKhao/` : **Chỉ chứa ảnh & data vật phẩm** lấy từ các bản mẫu để tham khảo khi thêm item mới (mã nguồn / bản build của bản mẫu đã được gỡ bỏ, không dùng để chạy):
+  - `Hoisinhngocrong2025/` : `icons_x4/` (~14.430 icon) + `nr_part.json`.
+  - `SRC_NRO_NEW_01/` : `resources/` (icon, ảnh, map...), `Eff/`, `mob/`, `item template.xlsx`, `ngocrong.sql` (data item mẫu).
+  - `Teamobi2026/` : `item.xlsx`, `database team2026.sql` (data item mẫu), `archive_removed_events_backup.sql` (NPC/shop sự kiện cũ), `Lệnh admin.docx`.
 
 ## Hướng dẫn chạy nhanh
 1. Chạy `1_Chay_Database_Va_Server.bat` để tự động bật MariaDB (cổng `3306`, tự nạp `Database_NgocRongNewGen/nro_newgen.sql` nếu máy mới chưa có DB `nro_newgen`) và khởi động Game Server **Ngọc Rồng NewGen** (cổng `14445`).

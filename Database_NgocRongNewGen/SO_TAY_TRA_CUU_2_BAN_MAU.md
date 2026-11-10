@@ -5,7 +5,7 @@ Tài liệu này tổng hợp cấu trúc cơ sở dữ liệu chính thức **`
 ---
 
 ## 1. Thông tin Database chính thức của Ngọc Rồng NewGen
-- **Tên Database (Schema):** `nro_newgen` (tách biệt hoàn toàn khỏi `team2026` và `ngocrong` của 2 bản mẫu)
+- **Tên Database (Schema):** `nro_newgen` (database mẫu `team2026` đã được xóa khỏi MariaDB; file SQL mẫu chỉ còn lưu để tra cứu tại `Mau_ThamKhao/Teamobi2026/database team2026.sql` và `Mau_ThamKhao/SRC_NRO_NEW_01/ngocrong.sql`)
 - **File SQL chính thức:** `Database_NgocRongNewGen/nro_newgen.sql` (mã hóa chuẩn `UTF-8`)
 - **Công cụ xuất nhanh sau khi chỉnh sửa DB:** Chạy `Database_NgocRongNewGen/Xuat_SQL_NewGen.bat`
 - **Tài khoản Admin mặc định duy nhất:**
@@ -34,7 +34,7 @@ Tài liệu này tổng hợp cấu trúc cơ sở dữ liệu chính thức **`
 - **Sét Kích Hoạt (SKH):** Rơi tại 3 map đầu mỗi hành tinh tỉ lệ cơ bản `1%` (`100/10.000`), vào **Khu up Sét Kích Hoạt** (`Map 164` qua **Vé khu up SKH** `ID 1787`) cộng thêm `+20%` (`21%`), dùng thêm **Cỏ bốn lá** (`ID 1635` bán tại Santa) cộng thêm `+20%` (`41%`), kết hợp thêm nội tại/trang bị tăng may mắn, Set Gohan và ước Rồng Thần (`+20%` may mắn). Đồ SKH rơi ra có thể giao dịch tự do.
 - **Ngọc Rồng 1–7 Sao (`ID 14..20`):** Ngọc Rồng 1s/2s/3s cộng `+9% / +6% / +3%` sức đánh; ước bộ 1 sao có tùy chọn nhận buff may mắn.
 - **Thỏi vàng (`ID 457`):** Phân biệt rõ Thỏi vàng khóa (rơi từ farm quái / giftcode — có `Option 30` Không thể giao dịch) và Thỏi vàng thường.
-- **Tinh gọn Sự kiện:** Đã gỡ toàn bộ vật phẩm sự kiện rác, Boss sự kiện và NPC sự kiện cũ (bản lưu đối chiếu nằm tại `Teamobi2026/archive_removed_events_backup.sql`).
+- **Tinh gọn Sự kiện:** Đã gỡ toàn bộ vật phẩm sự kiện rác, Boss sự kiện và NPC sự kiện cũ (bản lưu đối chiếu nằm tại `Mau_ThamKhao/Teamobi2026/archive_removed_events_backup.sql`).
 
 ---
 
