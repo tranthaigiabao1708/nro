@@ -138,6 +138,15 @@ public class EffectSkillService {
     }
 
     public void startStun(Player player, long lastTimeStartBlind, int timeBlind) {
+        startStun(player, lastTimeStartBlind, timeBlind, false);
+    }
+
+    public void startStun(Player player, long lastTimeStartBlind, int timeBlind, boolean alreadyCheckedResist) {
+        if (!alreadyCheckedResist && timeBlind < 13500 && player != null && player.nPoint != null
+                && player.nPoint.tlKhangKhongChe > 0 && Util.isTrue(player.nPoint.tlKhangKhongChe, 100)) {
+            Service.gI().chat(player, "Kháng khống chế!");
+            return;
+        }
         player.effectSkill.lastTimeStartStun = lastTimeStartBlind;
         player.effectSkill.timeStun = timeBlind;
         player.effectSkill.isStun = true;

@@ -92,6 +92,18 @@ public class ItemTimeService {
         if (player.itemTime.isUseCoBonLa) {
             sendItemTime(player, 13618, (int) ((TIME_CO_BON_LA - (System.currentTimeMillis() - player.itemTime.lastTimeUseCoBonLa)) / 1000));
         }
+        if (player.itemTime.isUseLuckDragon) {
+            int secondsLeft = (int) ((TIME_LUCK_DRAGON - (System.currentTimeMillis() - player.itemTime.lastTimeUseLuckDragon)) / 1000);
+            if (secondsLeft > 0) {
+                sendItemTime(player, ICON_LUCK_DRAGON, secondsLeft);
+            }
+        }
+        if (player.itemTime.isUseVeKhuSkh) {
+            int secondsLeft = (int) ((TIME_VE_KHU_SKH - (System.currentTimeMillis() - player.itemTime.lastTimeUseVeKhuSkh)) / 1000);
+            if (secondsLeft > 0) {
+                sendItemTime(player, ICON_VE_KHU_SKH, secondsLeft);
+            }
+        }
         if (player.itemTime.isUseNuocMia1) {
             sendItemTime(player, 13462, (int) ((TIME_NUOC_MIA1 - (System.currentTimeMillis() - player.itemTime.lastTimeUseNuocMia1)) / 1000));
         }

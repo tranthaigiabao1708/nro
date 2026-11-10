@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Game2.Assets.src.g;
 using Game2.Mod.XMAP;
-using UnityEditor;
 using UnityEngine;
-using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
 
 namespace Game2
 {
@@ -2576,7 +2574,9 @@ namespace Game2
                     }
                     mFont3.drawString(g, text2, num + 5, num2 + 10, mFont.LEFT);
                 }
+                SkhSlotEffect.PaintSlotBg(g, item, num5, num6, num7, num8);
                 SmallImage.drawSmallImage(g, item.template.iconID, num5 + num7 / 2, num6 + num8 / 2, 0, 3);
+                SkhSlotEffect.PaintSlotBorder(g, item, num5, num6, num7, num8);
                 if (item.itemOption != null)
                 {
                     for (int m = 0; m < item.itemOption.Length; m++)
@@ -5243,7 +5243,9 @@ else
                         }
                         mFont2.drawString(g, text2, num2 + 5, num3 + 11, mFont.LEFT);
                     }
+                    SkhSlotEffect.PaintSlotBg(g, item, num5, num6, num7, num8);
                     SmallImage.drawSmallImage(g, item.template.iconID, num5 + num7 / 2, num6 + num8 / 2, 0, 3);
+                    SkhSlotEffect.PaintSlotBorder(g, item, num5, num6, num7, num8);
                     if (item.itemOption != null)
                     {
                         for (int m = 0; m < item.itemOption.Length; m++)
@@ -5744,7 +5746,9 @@ else
                         }
                         mFont2.drawString(g, text2, num2 + 5, num3 + 10, mFont.LEFT);
                     }
+                    SkhSlotEffect.PaintSlotBg(g, item, num5, num6, num7, num8);
                     SmallImage.drawSmallImage(g, item.template.iconID, num5 + num7 / 2, num6 + num8 / 2, 0, 3);
+                    SkhSlotEffect.PaintSlotBorder(g, item, num5, num6, num7, num8);
                     if (item.itemOption != null)
                     {
                         for (int n = 0; n < item.itemOption.Length; n++)
@@ -5856,7 +5860,9 @@ else
                         }
                         mFont2.drawString(g, text2, num2 + 5, num3 + 11, mFont.LEFT);
                     }
+                    SkhSlotEffect.PaintSlotBg(g, item, num5, num6, num7, num8);
                     SmallImage.drawSmallImage(g, item.template.iconID, num5 + num7 / 2 - ((item.quantity > 1) ? 8 : 0), num6 + num8 / 2, 0, 3);
+                    SkhSlotEffect.PaintSlotBorder(g, item, num5, num6, num7, num8);
                     if (item.itemOption != null)
                     {
                         for (int m = 0; m < item.itemOption.Length; m++)
@@ -6018,7 +6024,9 @@ else
                         text += item.itemOption[0].getOptionString();
                     }
                     mFont.tahoma_7_blue.drawString(g, text, num + 5, num2 + 11, 0);
+                    SkhSlotEffect.PaintSlotBg(g, item, num4, num5, num6, num7);
                     SmallImage.drawSmallImage(g, item.template.iconID, num4 + num6 / 2, num5 + num7 / 2, 0, 3);
+                    SkhSlotEffect.PaintSlotBorder(g, item, num4, num5, num6, num7);
                 }
             }
             paintScrollArrow(g);
@@ -6465,7 +6473,9 @@ else
                     }
                     mFont2.drawString(g, text2, num + 5, num2 + 10, mFont.LEFT);
                 }
+                SkhSlotEffect.PaintSlotBg(g, item, num5, num6, num7, num8);
                 SmallImage.drawSmallImage(g, item.template.iconID, num5 + num7 / 2, num6 + num8 / 2, 0, 3);
+                SkhSlotEffect.PaintSlotBorder(g, item, num5, num6, num7, num8);
                 if (item.itemOption != null)
                 {
                     for (int m = 0; m < item.itemOption.Length; m++)
@@ -6586,7 +6596,9 @@ else
                         }
                         mFont2.drawString(g, text2, num4 + 5, num5 + 11, mFont.LEFT);
                     }
+                    SkhSlotEffect.PaintSlotBg(g, item, num7, num8, num9, num10);
                     SmallImage.drawSmallImage(g, item.template.iconID, num7 + num9 / 2, num8 + num10 / 2, 0, 3);
+                    SkhSlotEffect.PaintSlotBorder(g, item, num7, num8, num9, num10);
                     if (item.itemOption != null)
                     {
                         for (int n = 0; n < item.itemOption.Length; n++)
@@ -6731,7 +6743,9 @@ for (int i = 0; i < arrItemBody.Length; i++)
     g.drawRect(x - 2, y - 2, bodyCellW + 3, bodyCellH + 2);
     if (item != null)
     {
+        SkhSlotEffect.PaintSlotBg(g, item, x, y, bodyCellW, bodyCellH - 1);
         SmallImage.drawSmallImage(g, item.template.iconID, x + bodyCellW / 2, y + bodyCellH / 2, 0, 3);
+        SkhSlotEffect.PaintSlotBorder(g, item, x, y, bodyCellW, bodyCellH - 1);
     }
 }
 int bagCols = 5;
@@ -6755,7 +6769,9 @@ for (int i = 0; i < arrItemBag.Length; i++)
     g.drawRect(x - 2, y - 2, bodyCellW + 3, bodyCellH + 2);
     if (item != null)
     {
+        SkhSlotEffect.PaintSlotBg(g, item, x, y, bagCellW, bagCellH - 1);
         SmallImage.drawSmallImage(g, item.template.iconID, x + bagCellW / 2, y + bagCellH / 2, 0, 3);
+        SkhSlotEffect.PaintSlotBorder(g, item, x, y, bagCellW, bagCellH - 1);
         if (item.quantity > 1)
         {
             mFont.tahoma_7_yellow.drawString(g, item.quantity.ToString(), x + bagCellW - 1, y + bagCellH - mFont.tahoma_7_yellow.getHeight(), 1, mFont.tahoma_7b_dark);
@@ -7832,6 +7848,35 @@ paintScrollArrow(g);
             vItemCombine.removeAllElements();
         }
 
+        private static bool isNormalSkhForCombine(Item it)
+        {
+            if (it == null || it.template == null || it.itemOption == null)
+            {
+                return false;
+            }
+            if (it.template.type < 0 || it.template.type >= 5)
+            {
+                return false;
+            }
+            int tid = it.template.id;
+            if ((tid >= 555 && tid <= 567) || (tid >= 650 && tid <= 662) || (tid >= 1048 && tid <= 1062))
+            {
+                return false;
+            }
+            for (int i = 0; i < it.itemOption.Length; i++)
+            {
+                if (it.itemOption[i] != null && it.itemOption[i].optionTemplate != null)
+                {
+                    int oid = it.itemOption[i].optionTemplate.id;
+                    if ((oid >= 127 && oid <= 135) || oid == 233 || oid == 237 || oid == 241 || oid == 245)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         public void hideNow()
         {
             if (timeShow > 0)
@@ -8563,6 +8608,10 @@ else
                 currItem = (Item)GameCanvas.panel.vItemCombine.elementAt(selected);
                 MyVector myVector = new MyVector();
                 myVector.addElement(new Command(mResources.GETOUT, this, 6001, currItem));
+                if (GameCanvas.panel.vItemCombine.size() > 1)
+                {
+                    myVector.addElement(new Command("Bỏ chọn hết", this, 6003, currItem));
+                }
                 if (ModFunc.GI().isAutoPhaLe)
                 {
                     myVector.addElement(new Command("Nhập số sao", this, 8010, currItem));
@@ -8602,6 +8651,10 @@ else
             MyVector myVector = new MyVector();
             if (currentTabIndex < currentTabName.Length - ((GameCanvas.panel2 == null) ? 1 : 0) && type != 17)
             {
+                if (Char.myCharz().arrItemShop == null || currentTabIndex >= Char.myCharz().arrItemShop.Length || selected >= Char.myCharz().arrItemShop[currentTabIndex].Length)
+                {
+                    return;
+                }
                 currItem = Char.myCharz().arrItemShop[currentTabIndex][selected];
                 if (currItem != null)
                 {
@@ -8792,6 +8845,10 @@ else
                     else if (GameCanvas.panel.type == 12)
                     {
                         myVector.addElement(new Command(mResources.use_for_combine, this, 6000, currItem));
+                        if (isNormalSkhForCombine(currItem))
+                        {
+                            myVector.addElement(new Command("Chọn hết\nđồ SKH", this, 6002, currItem));
+                        }
                     }
                     else if (GameCanvas.panel.type == 13)
                     {
@@ -8831,6 +8888,10 @@ else
                         if (GameCanvas.panel.type == 12)
                         {
                             myVector.addElement(new Command(mResources.use_for_combine, this, 6000, currItem));
+                            if (isNormalSkhForCombine(currItem))
+                            {
+                                myVector.addElement(new Command("Chọn hết\nđồ SKH", this, 6002, currItem));
+                            }
                         }
                         else if (GameCanvas.panel.type == 13)
                         {
@@ -10148,7 +10209,9 @@ else
                 Item item2 = (Item)p;
                 for (int i = 0; i < GameCanvas.panel.vItemCombine.size(); i++)
                 {
-                    if (((Item)GameCanvas.panel.vItemCombine.elementAt(i)).template.id == item2.template.id)
+                    Item existingCombineItem = (Item)GameCanvas.panel.vItemCombine.elementAt(i);
+                    if (existingCombineItem == item2 || existingCombineItem.indexUI == item2.indexUI
+                        || ((item2.template == null || item2.template.type < 0 || item2.template.type >= 5) && existingCombineItem.template.id == item2.template.id))
                     {
                         GameCanvas.startOKDlg(mResources.already_has_item);
                         return;
@@ -10163,6 +10226,50 @@ else
                 if (ModFunc.GI().isAutoPhaLe)
                 {
                     ModFunc.GI().itemPhale = item2;
+                }
+            }
+            if (idAction == 6002)
+            {
+                int addedSkh = 0;
+                if (Char.myCharz().arrItemBag != null)
+                {
+                    for (int idx = 0; idx < Char.myCharz().arrItemBag.Length; idx++)
+                    {
+                        Item bagIt = Char.myCharz().arrItemBag[idx];
+                        if (!isNormalSkhForCombine(bagIt))
+                        {
+                            continue;
+                        }
+                        bool alreadySelected = false;
+                        for (int j = 0; j < GameCanvas.panel.vItemCombine.size(); j++)
+                        {
+                            Item exist = (Item)GameCanvas.panel.vItemCombine.elementAt(j);
+                            if (exist == bagIt || exist.indexUI == bagIt.indexUI)
+                            {
+                                alreadySelected = true;
+                                break;
+                            }
+                        }
+                        if (!alreadySelected)
+                        {
+                            bagIt.isSelect = true;
+                            GameCanvas.panel.vItemCombine.addElement(bagIt);
+                            addedSkh++;
+                        }
+                    }
+                }
+                if (GameCanvas.panel.currentTabIndex == 0)
+                {
+                    GameCanvas.panel.setTabCombine();
+                }
+                GameScr.info1.addInfo("Đã đưa " + addedSkh + " đồ SKH vào ô kết hợp (tổng: " + GameCanvas.panel.vItemCombine.size() + ")", 0);
+            }
+            if (idAction == 6003)
+            {
+                GameCanvas.panel.cleanCombine();
+                if (GameCanvas.panel.currentTabIndex == 0)
+                {
+                    GameCanvas.panel.setTabCombine();
                 }
             }
             if (idAction == 7000)

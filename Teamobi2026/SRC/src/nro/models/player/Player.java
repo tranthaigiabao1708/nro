@@ -158,6 +158,13 @@ public class Player implements Runnable {
     public long lastTimePlayerNotAttack;
     public int timeNotAttack = 1800000;
 
+    // Hệ thống Bảng Sưu Tập Set Kích Hoạt & Chọn Set Capsule Kích Hoạt
+    public Item[][] skhCollection;
+    public boolean claimedSkhAura;
+    public int pendingSkhOptionId = -1;
+    public int pendingSkhItemUseId = -1;
+    public byte pendingSkhTargetGender = -1;
+
     public boolean isPet;
     public boolean isNewPet;
     public boolean isNewPet1;
@@ -337,6 +344,10 @@ public class Player implements Runnable {
     public int rewardEggs;
     private long duaHauStartTime;
     public Player menuPlayer;
+    public nro.models.shop.ItemShop pendingBulkItemShop;
+    public long lastBulkMenuTime;
+    public int lastBulkMenuTempId = -1;
+    public boolean pendingBulkAutoCatchup;
     public boolean hasReducedPower = false;
     public long originalPower = -1;
     public boolean receivedKilis = false;
@@ -717,7 +728,18 @@ public class Player implements Runnable {
     }
 
     public byte getAura() {
-        if (!isPl() || this.Cards.isEmpty()) {
+        if (!isPl()) {
+            return -1;
+        }
+        if (this.inventory != null && this.inventory.itemsBody != null && this.inventory.itemsBody.size() > 10) {
+            Item auraItem = this.inventory.itemsBody.get(10);
+            if (auraItem != null && auraItem.isNotNullItem() && auraItem.template != null
+                    && auraItem.template.type == 35 && auraItem.template.part >= 0
+                    && nro.models.mob.Mob.isItemActiveOnPlayer(this, auraItem)) {
+                return (byte) auraItem.template.part;
+            }
+        }
+        if (this.Cards == null || this.Cards.isEmpty()) {
             return -1;
         }
         for (Card card : this.Cards) {
@@ -808,6 +830,18 @@ public class Player implements Runnable {
         }
     }
 
+    private boolean hasFusionOnlyOption(Item item) {
+        if (item == null || !item.isNotNullItem() || item.itemOptions == null) {
+            return false;
+        }
+        for (Item.ItemOption io : item.itemOptions) {
+            if (io.optionTemplate != null && io.optionTemplate.id == 38) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public short getHead() {
         if (this.isPl() && this.pet != null && this.fusion.typeFusion == ConstPlayer.HOP_THE_GOGETA || this.fusion.typeFusion == ConstPlayer.LUONG_LONG_NHAT_THE || this.fusion.typeFusion == ConstPlayer.HOP_THE_PORATA || this.fusion.typeFusion == ConstPlayer.HOP_THE_PORATA2 || this.fusion.typeFusion == ConstPlayer.HOP_THE_PORATA3) {
             Item item = inventory.itemsBody.get(5);
@@ -833,6 +867,12 @@ public class Player implements Runnable {
         } else if (effectSkill != null && effectSkill.isSocola) {
             return 412;
         } else if (fusion != null && fusion.typeFusion != ConstPlayer.NON_FUSION) {
+            if (inventory != null && inventory.itemsBody.size() > 5 && hasFusionOnlyOption(inventory.itemsBody.get(5))) {
+                int headId = inventory.itemsBody.get(5).template.head;
+                if (headId != -1) {
+                    return (short) headId;
+                }
+            }
             if (nPoint != null && nPoint.isGogeta) {
                 return 2100;
             } else if (fusion.typeFusion == ConstPlayer.LUONG_LONG_NHAT_THE) {
@@ -853,7 +893,7 @@ public class Player implements Runnable {
                 }
                 return idOutfitFusion[6 + this.gender][0];
             }
-        } else if (inventory != null && inventory.itemsBody.get(5).isNotNullItem()) {
+        } else if (inventory != null && inventory.itemsBody.get(5).isNotNullItem() && !hasFusionOnlyOption(inventory.itemsBody.get(5))) {
             int headId = inventory.itemsBody.get(5).template.head;
             if (headId != -1) {
                 return (short) headId;
@@ -890,6 +930,12 @@ public class Player implements Runnable {
         } else if (isPhuHoMapMabu && fusion != null && fusion.typeFusion == ConstPlayer.NON_FUSION) {
             return idOutfitGod[this.gender][1];
         } else if (fusion != null && fusion.typeFusion != ConstPlayer.NON_FUSION) {
+            if (inventory != null && inventory.itemsBody.size() > 5 && hasFusionOnlyOption(inventory.itemsBody.get(5))) {
+                int body = inventory.itemsBody.get(5).template.body;
+                if (body != -1) {
+                    return (short) body;
+                }
+            }
             if (nPoint != null && nPoint.isGogeta) {
                 return 2101;
             } else if (fusion.typeFusion == ConstPlayer.LUONG_LONG_NHAT_THE) {
@@ -910,7 +956,7 @@ public class Player implements Runnable {
                 }
                 return idOutfitFusion[6 + this.gender][1];
             }
-        } else if (inventory != null && inventory.itemsBody.get(5).isNotNullItem()) {
+        } else if (inventory != null && inventory.itemsBody.get(5).isNotNullItem() && !hasFusionOnlyOption(inventory.itemsBody.get(5))) {
             int body = inventory.itemsBody.get(5).template.body;
             if (body != -1) {
                 return (short) body;
@@ -950,6 +996,12 @@ public class Player implements Runnable {
         } else if (isPhuHoMapMabu && fusion != null && fusion.typeFusion == ConstPlayer.NON_FUSION) {
             return idOutfitGod[this.gender][2];
         } else if (fusion != null && fusion.typeFusion != ConstPlayer.NON_FUSION) {
+            if (inventory != null && inventory.itemsBody.size() > 5 && hasFusionOnlyOption(inventory.itemsBody.get(5))) {
+                int leg = inventory.itemsBody.get(5).template.leg;
+                if (leg != -1) {
+                    return (short) leg;
+                }
+            }
             if (nPoint != null && nPoint.isGogeta) {
                 return 2102;
             } else if (fusion.typeFusion == ConstPlayer.LUONG_LONG_NHAT_THE) {
@@ -970,7 +1022,7 @@ public class Player implements Runnable {
                 }
                 return idOutfitFusion[6 + this.gender][2];
             }
-        } else if (inventory != null && inventory.itemsBody.get(5).isNotNullItem()) {
+        } else if (inventory != null && inventory.itemsBody.get(5).isNotNullItem() && !hasFusionOnlyOption(inventory.itemsBody.get(5))) {
             int leg = inventory.itemsBody.get(5).template.leg;
             if (leg != -1) {
                 return (short) leg;
@@ -1017,7 +1069,14 @@ public class Player implements Runnable {
         }
         if (item.template.type == 24 || item.template.type == 23) {
             if (item.template.gender == 3 || item.template.gender == this.gender) {
-                return item.template.id;
+                if (item.template.part >= 0) {
+                    return (short) (item.template.part + 30000);
+                }
+                if (item.template.id < 500) {
+                    return item.template.id;
+                }
+                Short value = (Short) DataGame.MAP_MOUNT_NUM.get(item.template.id);
+                return value != null ? value : item.template.id;
             } else {
                 return -1;
             }
@@ -1593,6 +1652,14 @@ public class Player implements Runnable {
                         PetService.Pet2(this, 1680, 1681, 1682);
                         Service.gI().point(this);
                     }
+                    case 2003 -> {
+                        PetService.Pet2(this, 2099, 2100, 2101);
+                        Service.gI().point(this);
+                    }
+                    case 2004 -> {
+                        PetService.Pet2(this, 2102, 2103, 2104);
+                        Service.gI().point(this);
+                    }
                 }
             }
         }
@@ -1810,6 +1877,7 @@ public class Player implements Runnable {
         name = null;
         textThongBaoChangeMap = null;
         textThongBaoThua = null;
+        pendingBulkItemShop = null;
     }
 
     public String getLastChatMessage() {

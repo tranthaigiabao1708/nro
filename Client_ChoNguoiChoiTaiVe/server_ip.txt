@@ -1,10 +1,9 @@
 # =====================================================================
-# CẤU HÌNH ĐỊA CHỈ MÁY CHỦ NGỌC RỒNG 2026 (DÀNH CHO CLIENT 2 TAB)
+# CẤU HÌNH ĐỊA CHỈ MÁY CHỦ NGỌC RỒNG NEWGEN (DÀNH CHO CLIENT)
 # =====================================================================
 # - Chơi trên chính máy mở Server (Local): để 127.0.0.1:14445
 # - Chơi nhiều người qua mạng LAN / Radmin VPN / VPS:
 #   Đổi 127.0.0.1 thành IP máy chủ của Admin (ví dụ: 26.85.120.15:14445)
 #   Sau đó nén thư mục Client_ChoNguoiChoiTaiVe gửi cho người chơi tải về!
 # =====================================================================
-Teamobi 2026:127.0.0.1:14445:0,0,0
-
+Ngọc Rồng NewGen:127.0.0.1:14445:0,0,0

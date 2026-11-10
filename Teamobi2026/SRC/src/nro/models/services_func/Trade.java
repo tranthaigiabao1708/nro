@@ -219,38 +219,35 @@ public class Trade {
     }
 
     private boolean isItemCannotTran(Item item) {
-        if (item.isSKH()) {
-            return false;
+        if (item == null || !item.isNotNullItem()) {
+            return true;
         }
-        for (Item.ItemOption io : item.itemOptions) {
-            if (io.optionTemplate.id == 30) {
-                return true;
-            }
+        // Không cho phép giao dịch trang bị Hủy Diệt (kể cả Hủy Diệt kích hoạt), đồ khóa (Opt 30) hoặc có hạn sử dụng (Opt 93)
+        if (item.isDHD() || item.hasCannotTradeOrExpiry()) {
+            return true;
         }
         switch (item.template.id) {
             case 454:
+            case 570:
+            case 590:
             case 921:
+            case 1819:
                 return true;
         }
+        // Cho phép giao dịch: Trang bị Thần Linh, Set Kích Hoạt (thường & Thần Linh), và các Phụ kiện vĩnh viễn không khóa
+        if (item.isDTL() || item.isSKH() || item.isPhuKien()) {
+            return false;
+        }
         switch (item.template.type) {
-            case 27: //
-                if (item.template.id == 590) {
-                    return true;
-                } else {
-                    return false;
-                }
-            case 5: //cải trang
+            case 27:
+                return item.template.id == 590;
             case 6: //đậu thần
             case 7: //sách skill
             case 8: //vật phẩm nhiệm vụ
-            case 11: //flag bag
             case 13: //bùa
             case 22: //vệ tinh
-            case 23: //ván bay
-            case 24: //ván bay vip
             case 28: //cờ
             case 31: //bánh trung thu, bánh tết
-            case 32: //giáp tập luyện
                 return true;
             default:
                 return false;

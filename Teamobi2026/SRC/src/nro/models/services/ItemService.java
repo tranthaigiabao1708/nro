@@ -253,13 +253,53 @@ public class ItemService {
         }
     }
 
+    public void OpenCapsuleSKHWithSet(Player player, int itemUseId, int skhOptionId, int targetGender, int slotSelect) {
+        if (slotSelect < 0 || slotSelect > 4) {
+            return;
+        }
+        if (InventoryService.gI().getCountEmptyBag(player) <= 0) {
+            Service.gI().sendThongBao(player, "Bạn phải có ít nhất 1 ô trống trong hành trang!");
+            return;
+        }
+        Item itemUse = InventoryService.gI().findItem(player.inventory.itemsBag, itemUseId);
+        if (itemUse == null || itemUse.quantity < 1) {
+            Service.gI().sendThongBao(player, "Không tìm thấy Capsule Kích Hoạt trong hành trang!");
+            return;
+        }
+
+        int g = (targetGender >= 0 && targetGender <= 2) ? targetGender : (player.gender <= 2 ? player.gender : 2);
+        int[][][] starterItemIds = {
+            { // Trái Đất: Áo, Quần, Găng, Giày, Rada
+                {0, 33}, {6, 35}, {21, 24}, {27, 30}, {12, 57}
+            },
+            { // Namek: Áo, Quần, Găng, Giày, Rada
+                {1, 41}, {7, 43}, {22, 25}, {28, 31}, {12, 57}
+            },
+            { // Xayda: Áo, Quần, Găng, Giày, Rada
+                {2, 49}, {8, 51}, {23, 26}, {29, 32}, {12, 57}
+            }
+        };
+
+        int[] candidates = starterItemIds[g][slotSelect];
+        int itemId = candidates[Util.nextInt(candidates.length)];
+        Item item = createItemSKH(itemId, skhOptionId);
+        if (item != null) {
+            short openIcon = itemUse.template.iconID;
+            InventoryService.gI().subQuantityItemsBag(player, itemUse, 1);
+            InventoryService.gI().addItemBag(player, item);
+            InventoryService.gI().sendItemBags(player);
+            nro.models.combine.CombineService.gI().sendEffectOpenItem(player, openIcon, item.template.iconID);
+            Service.gI().sendThongBao(player, "Nhận được " + item.template.name + " (" + SkhCollectionService.getSetFullName(skhOptionId) + ")!");
+        }
+    }
+
     public Item createItemSKH(int itemId, int skhId) {
         Item item = createItemSetKichHoat(itemId, 1);
         if (item != null) {
             item.itemOptions.addAll(ItemService.gI().getListOptionItemShop((short) itemId));
-            item.itemOptions.add(new Item.ItemOption(skhId, 1));
+            item.itemOptions.add(new Item.ItemOption(skhId, 0));
             for (int subId : getOptionIdsBySKH(skhId)) {
-                item.itemOptions.add(new Item.ItemOption(subId, 1));
+                item.itemOptions.add(new Item.ItemOption(subId, 0));
             }
         }
         return item;
@@ -296,9 +336,9 @@ public class ItemService {
     public int[] getOptionIdsBySKH(int skhId) {
         switch (skhId) {
             case 127:
-                return new int[]{140};
-            case 128:
                 return new int[]{139};
+            case 128:
+                return new int[]{140};
             case 129:
                 return new int[]{141};
             case 130:
@@ -746,81 +786,40 @@ public class ItemService {
     }
 
     public int[] randOptionItemKichHoat(int gender) {
-        int op1 = -1;
-        int op2 = -1;
-        int op3 = -1;
-        int op4 = -1;
-        if (Util.isTrue(30, 100)) {
-            switch (gender) {
-                case 0 -> { // td
-                    op1 = 245;
-                    op2 = 246;
-                    op3 = 247;
-                    op4 = 248;
-                }
-                case 1 -> { // nm
-                    op1 = 237;
-                    op2 = 238;
-                    op3 = 239;
-                    op4 = 240;
-                }
-                default -> { // xd
-                    op1 = 241;
-                    op2 = 242;
-                    op3 = 243;
-                    op4 = 244;
-                }
-            }
+        // Phân bố chuẩn:
+        // - 80% rơi 1 trong 3 Set cơ bản của hành tinh
+        // - 20% rơi nhóm Set hiếm (10% Set Gohan + 10% Set Kích Hoạt Mới của hành tinh)
+        int roll = Util.nextInt(100);
+        if (roll < 80) {
+            int sub = Util.nextInt(3);
+            return switch (gender) {
+                case 0 -> switch (sub) { // Trái Đất
+                    case 0 -> new int[]{129, 141}; // Sôngôku
+                    case 1 -> new int[]{128, 140}; // Kirin
+                    default -> new int[]{127, 139}; // Thên Xin Hăng
+                };
+                case 1 -> switch (sub) { // Namek
+                    case 0 -> new int[]{130, 142}; // Picolo
+                    case 1 -> new int[]{131, 143}; // Ốc Tiêu
+                    default -> new int[]{132, 144}; // Pikkoro Daimao
+                };
+                default -> switch (sub) { // Xayda
+                    case 0 -> new int[]{133, 136}; // Kakarot
+                    case 1 -> new int[]{134, 137}; // Ca Đíc
+                    default -> new int[]{135, 138}; // Nappa
+                };
+            };
+        } else if (roll < 90) {
+            // 10%: Set Gohan
+            return new int[]{233, 234};
         } else {
-            switch (gender) {
-                case 0 -> { // td
-                    if (Util.isTrue(50, 100)) {
-                        op1 = 128;
-                        op2 = 140;
-                    } else if (Util.isTrue(50, 100)) {
-                        op1 = 127;
-                        op2 = 139;
-                    } else if (Util.isTrue(50, 100)) {
-                        op1 = 233;
-                        op2 = 234;
-                    } else {
-                        op1 = 129;
-                        op2 = 141;
-                    }
-                }
-                case 1 -> { // nm
-                    if (Util.isTrue(50, 100)) {
-                        op1 = 130;
-                        op2 = 142;
-                    } else if (Util.isTrue(50, 100)) {
-                        op1 = 131;
-                        op2 = 143;
-                    } else if (Util.isTrue(50, 100)) {
-                        op1 = 233;
-                        op2 = 234;
-                    } else {
-                        op1 = 132;
-                        op2 = 144;
-                    }
-                }
-                default -> { // xd
-                    if (Util.isTrue(50, 100)) {
-                        op1 = 134;
-                        op2 = 137;
-                    } else if (Util.isTrue(50, 100)) {
-                        op1 = 135;
-                        op2 = 138;
-                    } else if (Util.isTrue(50, 100)) {
-                        op1 = 233;
-                        op2 = 234;
-                    } else {
-                        op1 = 133;
-                        op2 = 136;
-                    }
-                }
-            }
+            // 10%: Set Kích Hoạt Mới theo hành tinh
+            return switch (gender) {
+                case 0 -> new int[]{245, 246, 247, 248}; // Set Thần Vũ Trụ Kaio
+                case 1 -> new int[]{237, 238, 239, 240}; // Set Nail
+                default -> new int[]{241, 242, 243, 244}; // Set Cađic M
+            };
         }
-        return new int[]{op1, op2, op3, op4};
     }
 
     public ItemMap randDoTL(Zone zone, int quantity, int x, int y, long id) {

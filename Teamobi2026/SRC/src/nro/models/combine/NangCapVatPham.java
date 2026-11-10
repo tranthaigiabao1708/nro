@@ -19,6 +19,10 @@ import nro.models.utils.Util;
  */
 public class NangCapVatPham {
 
+    private static boolean isDaBaoVe(Item item) {
+        return item != null && item.isNotNullItem() && (item.template.id == 987 || item.template.id == 1143);
+    }
+
     public static void showInfoCombine(Player player) {
         if (player.combineNew.itemsCombine.size() >= 2 && player.combineNew.itemsCombine.size() < 4) {
             if (player.combineNew.itemsCombine.stream().filter(item -> item.isNotNullItem() && item.template.type < 5).count() < 1) {
@@ -29,8 +33,8 @@ public class NangCapVatPham {
                 CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU, "Thiếu đá nâng cấp", "Đóng");
                 return;
             }
-            if (player.combineNew.itemsCombine.size() == 3 && player.combineNew.itemsCombine.stream().filter(item -> item.isNotNullItem() && item.template.id == 987).count() < 1) {
-                CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU, "Thiếu đồ nâng cấp", "Đóng");
+            if (player.combineNew.itemsCombine.size() == 3 && player.combineNew.itemsCombine.stream().filter(NangCapVatPham::isDaBaoVe).count() < 1) {
+                CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU, "Thiếu đá bảo vệ", "Đóng");
                 return;
             }
             Item itemDo = null;
@@ -38,7 +42,7 @@ public class NangCapVatPham {
             Item itemDBV = null;
             for (int j = 0; j < player.combineNew.itemsCombine.size(); j++) {
                 if (player.combineNew.itemsCombine.get(j).isNotNullItem()) {
-                    if (player.combineNew.itemsCombine.size() == 3 && player.combineNew.itemsCombine.get(j).template.id == 987) {
+                    if (player.combineNew.itemsCombine.size() == 3 && isDaBaoVe(player.combineNew.itemsCombine.get(j))) {
                         itemDBV = player.combineNew.itemsCombine.get(j);
                         continue;
                     }
@@ -92,8 +96,10 @@ public class NangCapVatPham {
                             + "Cần " + Util.numberToMoney(player.combineNew.goldCombine) + " vàng";
 
                     String daNPC = player.combineNew.itemsCombine.size() == 3 && itemDBV != null ? String.format("\nCần tốn %s đá bảo vệ", player.combineNew.countDaBaoVe) : "";
-                    if ((level == 2 || level == 4 || level == 6) && !(player.combineNew.itemsCombine.size() == 3 && itemDBV != null)) {
-                        npcSay += "\nNếu thất bại sẽ rớt xuống (+" + (level - 1) + ")";
+                    if (player.combineNew.itemsCombine.size() == 3 && itemDBV != null) {
+                        npcSay += "\n|2|Đã dùng Đá bảo vệ: thất bại không rớt cấp & không trừ chỉ số";
+                    } else if (level == 2 || level == 4 || level == 6) {
+                        npcSay += "\nNếu thất bại sẽ rớt xuống (+" + (level - 1) + ") và giảm chỉ số";
                     }
                     if (player.combineNew.countDaNangCap > itemDNC.quantity) {
                         CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
@@ -131,7 +137,7 @@ public class NangCapVatPham {
             if (player.combineNew.itemsCombine.stream().filter(item -> item.isNotNullItem() && item.template.type == 14).count() != 1) {
                 return;
             }
-            if (player.combineNew.itemsCombine.size() == 3 && player.combineNew.itemsCombine.stream().filter(item -> item.isNotNullItem() && item.template.id == 987).count() != 1) {
+            if (player.combineNew.itemsCombine.size() == 3 && player.combineNew.itemsCombine.stream().filter(NangCapVatPham::isDaBaoVe).count() != 1) {
                 return;
             }
             Item itemDo = null;
@@ -139,7 +145,7 @@ public class NangCapVatPham {
             Item itemDBV = null;
             for (int j = 0; j < player.combineNew.itemsCombine.size(); j++) {
                 if (player.combineNew.itemsCombine.get(j).isNotNullItem()) {
-                    if (player.combineNew.itemsCombine.size() == 3 && player.combineNew.itemsCombine.get(j).template.id == 987) {
+                    if (player.combineNew.itemsCombine.size() == 3 && isDaBaoVe(player.combineNew.itemsCombine.get(j))) {
                         itemDBV = player.combineNew.itemsCombine.get(j);
                         continue;
                     }

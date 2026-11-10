@@ -139,8 +139,53 @@ public class Item {
         for (ItemOption itemOption : itemOptions) {
             if (itemOption != null && itemOption.optionTemplate != null) {
                 int opId = itemOption.optionTemplate.id;
-                if ((opId >= 127 && opId <= 144) || (opId >= 233 && opId <= 248)) {
+                if (nro.models.services.SkhCollectionService.isAnySkhOptionId(opId)) {
                     return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isLinhThu() {
+        if (this.template == null) {
+            return false;
+        }
+        if (this.template.type == 21 || this.template.type == 72) {
+            return true;
+        }
+        if (this.template.type != 27) {
+            return false;
+        }
+        return switch (this.template.id) {
+            case 892, 893, 908, 909, 910, 916, 917, 918, 919, 936,
+                 942, 943, 944, 967, 1008, 1039, 1040, 1046, 1107, 1114,
+                 1188, 1202, 1203, 1207, 1224, 1225, 1226, 1243, 1244, 1256,
+                 1318, 1347, 1414, 1435, 1452, 1458, 1482, 1497, 1550, 1551,
+                 1564, 1568, 1573, 1596, 1597, 1611, 1620, 1621, 1622, 1629,
+                 1630, 1631, 1633, 1654, 1668, 1682, 1683, 1686, 1727, 1729,
+                 1750, 1765, 1766, 1767, 1768, 1769, 1770, 1771, 1789,
+                 2003, 2004 -> true;
+            default -> false;
+        };
+    }
+
+    public boolean isPhuKien() {
+        if (this.template == null) {
+            return false;
+        }
+        int t = this.template.type;
+        return t == 5 || t == 11 || t == 23 || t == 24 || t == 25 || t == 32 || t == 35 || isLinhThu();
+    }
+
+    public boolean hasCannotTradeOrExpiry() {
+        if (this.itemOptions != null) {
+            for (ItemOption io : this.itemOptions) {
+                if (io != null && io.optionTemplate != null) {
+                    int opId = io.optionTemplate.id;
+                    if (opId == 30 || opId == 93) {
+                        return true;
+                    }
                 }
             }
         }
@@ -289,7 +334,7 @@ public class Item {
     }
 
     public boolean canPhaLeHoa() {
-        return this.template != null && (this.template.type < 5 || this.template.type == 32);
+        return this.template != null && (this.template.type <= 5 || this.isPhuKien());
     }
 
     public Item cloneItem() {

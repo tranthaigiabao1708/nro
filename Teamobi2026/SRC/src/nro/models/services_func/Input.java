@@ -82,6 +82,7 @@ public class Input {
     public static final int BOTATTACKPLAYER = 33;
     public static final int FIND_PLAYER_GIFT_RUBY = 34;
     public static final int EDIT_LOGIN_NOTICE = 599;
+    public static final int BULK_BUY_SHOP_INPUT = 601;
 
     private static Input intance;
 
@@ -487,29 +488,43 @@ public class Input {
                     }
                 }
                 case BANSLL -> {
-                    int sltv = Math.abs(Integer.parseInt(text[0]));
+                    int sltv;
+                    try {
+                        sltv = Math.abs(Integer.parseInt(text[0].trim()));
+                    } catch (NumberFormatException e) {
+                        Service.gI().sendThongBao(player, "Số lượng nhập không hợp lệ!");
+                        return;
+                    }
                     if (sltv <= 0) {
                         return;
                     }
-                    long cost = (long) sltv * 37000000;
+                    long unitGold = Inventory.GOLD_BAR_SELL_PRICE;
+                    if (sltv > Inventory.LIMIT_GOLD / unitGold) {
+                        long maxSell = (Inventory.LIMIT_GOLD - player.inventory.gold) / unitGold;
+                        Service.gI().sendThongBao(player, maxSell >= 1
+                                ? "Tối đa chỉ có thể bán " + maxSell + " Thỏi vàng (giới hạn 500 Tỷ vàng)"
+                                : "Vàng mang trên người đã đạt giới hạn 500 Tỷ!");
+                        return;
+                    }
+                    long cost = (long) sltv * unitGold;
                     int totalThoiVang = InventoryService.gI().getTotalQuantityBag(player, 457);
                     if (totalThoiVang > 0) {
                         if (totalThoiVang < sltv) {
                             Service.gI().sendThongBao(player, "Bạn chỉ có " + totalThoiVang + " Thỏi vàng");
                         } else {
-                            if (player.inventory.gold + cost > Inventory.LIMIT_GOLD) {
-                                int slban = (int) ((Inventory.LIMIT_GOLD - player.inventory.gold) / 37000000);
+                            if (player.inventory.gold > Inventory.LIMIT_GOLD - cost) {
+                                int slban = (int) ((Inventory.LIMIT_GOLD - player.inventory.gold) / unitGold);
                                 if (slban < 1) {
-                                    Service.gI().sendThongBao(player, "Vàng sau khi bán vượt quá giới hạn");
+                                    Service.gI().sendThongBao(player, "Vàng sau khi bán vượt quá giới hạn 500 Tỷ vàng");
                                 } else if (slban < 2) {
-                                    Service.gI().sendThongBao(player, "Bạn chỉ có thể bán 1 Thỏi vàng");
+                                    Service.gI().sendThongBao(player, "Bạn chỉ có thể bán thêm 1 Thỏi vàng");
                                 } else {
-                                    Service.gI().sendThongBao(player, "Số lượng trong khoảng 1 tới " + slban);
+                                    Service.gI().sendThongBao(player, "Số lượng bán hợp lệ từ 1 tới " + slban);
                                 }
                             } else {
                                 InventoryService.gI().subQuantityItemsBagPriorityLocked(player, 457, sltv);
                                 InventoryService.gI().sendItemBags(player);
-                                player.inventory.gold += cost;
+                                player.inventory.addGold(cost);
                                 Service.gI().sendMoney(player);
                                 Service.gI().sendThongBao(player, "Đã bán " + sltv + " Thỏi vàng thu được " + Util.numberToMoney(cost) + " vàng");
                             }
@@ -517,6 +532,16 @@ public class Input {
                     } else {
                         Service.gI().sendThongBao(player, "Bạn không có Thỏi vàng trong hành trang");
                     }
+                }
+                case BULK_BUY_SHOP_INPUT -> {
+                    int qty;
+                    try {
+                        qty = Integer.parseInt(text[0].trim());
+                    } catch (NumberFormatException e) {
+                        Service.gI().sendThongBao(player, "Số lượng nhập không hợp lệ (1 - 99.999)!");
+                        return;
+                    }
+                    nro.models.shop.ShopService.gI().executeBulkBuy(player, qty);
                 }
                 case TANG_NGOC_HONG -> {
                     Player pl = Client.gI().getPlayer(text[0]);
@@ -714,7 +739,13 @@ public class Input {
     }
 
     public void createFormBanSLL(Player pl) {
-        createForm(pl, BANSLL, "Bạn muốn bán bao nhiêu [Thỏi vàng] ?", new SubInput("Số lượng", NUMERIC));
+        createForm(pl, BANSLL, "Bạn muốn bán bao nhiêu [Thỏi vàng] ? (1 Thỏi = 500 Tr vàng)", new SubInput("Số lượng", NUMERIC));
+    }
+
+    public void createFormBulkBuyShop(Player pl, String itemName, String unitPriceDesc) {
+        createForm(pl, BULK_BUY_SHOP_INPUT,
+                "Mua [" + itemName + "] - Giá: " + unitPriceDesc + "/cái",
+                new SubInput("Nhập số lượng (1 - 99999)", NUMERIC));
     }
 
     public void createFormGiaiTanBangHoi(Player pl) {

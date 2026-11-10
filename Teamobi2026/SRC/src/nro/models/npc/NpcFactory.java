@@ -340,6 +340,59 @@ public class NpcFactory {
                                 Service.gI().sendThongBao(player, "Lựa chọn không hợp lệ.");
                         }
                     }
+                    case ConstNpc.CAPSULE_KH_THUONG_CHON_SET -> {
+                        int[][] basicSets = {
+                            {129, 128, 127, 233}, // Trái Đất
+                            {130, 131, 132, 233}, // Namek
+                            {133, 134, 135, 233}  // Xayda
+                        };
+                        int g = (player.gender >= 0 && player.gender <= 2) ? player.gender : 0;
+                        if (select >= 0 && select < basicSets[g].length) {
+                            player.pendingSkhOptionId = basicSets[g][select];
+                            player.pendingSkhTargetGender = (byte) g;
+                            player.pendingSkhItemUseId = 1655;
+                            String setName = nro.models.services.SkhCollectionService.getSetFullName(player.pendingSkhOptionId);
+                            NpcService.gI().createMenuConMeo(player, ConstNpc.CAPSULE_KH_CHON_MON, -1,
+                                    "|8|Đã chọn: " + setName + "\n|2|Bước 2: Hãy chọn món trang bị bạn muốn nhận:",
+                                    "Áo", "Quần", "Găng", "Giày", "Rada");
+                        }
+                    }
+                    case ConstNpc.CAPSULE_KH_VIP_CHON_SET -> {
+                        int[] vipSets = {245, 237, 241};
+                        if (select >= 0 && select < vipSets.length) {
+                            player.pendingSkhOptionId = vipSets[select];
+                            player.pendingSkhTargetGender = (byte) select;
+                            player.pendingSkhItemUseId = 1990;
+                            String setName = nro.models.services.SkhCollectionService.getSetFullName(player.pendingSkhOptionId);
+                            NpcService.gI().createMenuConMeo(player, ConstNpc.CAPSULE_KH_CHON_MON, -1,
+                                    "|8|Đã chọn: " + setName + "\n|2|Bước 2: Hãy chọn món trang bị bạn muốn nhận:",
+                                    "Áo", "Quần", "Găng", "Giày", "Rada");
+                        }
+                    }
+                    case ConstNpc.CAPSULE_KH_CHON_MON -> {
+                        if (select >= 0 && select <= 4 && player.pendingSkhOptionId > 0 && player.pendingSkhItemUseId > 0) {
+                            ItemService.gI().OpenCapsuleSKHWithSet(player, player.pendingSkhItemUseId,
+                                    player.pendingSkhOptionId, player.pendingSkhTargetGender, select);
+                            player.pendingSkhOptionId = -1;
+                            player.pendingSkhItemUseId = -1;
+                        }
+                    }
+                    case ConstNpc.MENU_BULK_BUY_SHOP -> {
+                        switch (select) {
+                            case 0 ->
+                                nro.models.shop.ShopService.gI().executeBulkBuy(player, 1);
+                            case 1 ->
+                                nro.models.shop.ShopService.gI().executeBulkBuy(player, 10);
+                            case 2 ->
+                                nro.models.shop.ShopService.gI().executeBulkBuy(player, 100);
+                            case 3 ->
+                                nro.models.shop.ShopService.gI().executeBulkBuy(player, 1000);
+                            case 4 ->
+                                nro.models.shop.ShopService.gI().openCustomQuantityInput(player);
+                            default ->
+                                player.pendingBulkItemShop = null;
+                        }
+                    }
                     case ConstNpc.CAPSULE_KICH_HOAT -> {
                         try {
                             switch (select) {

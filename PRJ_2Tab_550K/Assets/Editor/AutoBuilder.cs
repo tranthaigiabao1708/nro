@@ -34,8 +34,8 @@ public static class AutoBuilder
                 new EditorBuildSettingsScene("Assets/Scenes/NROL1.unity", true)
             };
 
-            PlayerSettings.companyName = "Teamobi2026";
-            PlayerSettings.productName = "Ngoc Rong 2026";
+            PlayerSettings.companyName = "NgocRongNewGen";
+            PlayerSettings.productName = "Ngọc Rồng NewGen";
             PlayerSettings.runInBackground = true;
             PlayerSettings.fullScreenMode = FullScreenMode.Windowed;
             PlayerSettings.defaultScreenWidth = 1024;
@@ -47,6 +47,28 @@ public static class AutoBuilder
             if (!Directory.Exists(outDir))
             {
                 Directory.CreateDirectory(outDir);
+            }
+            else if (File.Exists(Path.Combine(outDir, "GameAssembly.dll")))
+            {
+                // Dọn bản IL2CPP cũ (giữ nguyên server_ip.txt) để tránh xung đột Mono2x vs IL2CPP
+                string backupDir = Path.Combine(Path.GetTempPath(), "NroOldClient_" + DateTime.Now.Ticks);
+                Directory.CreateDirectory(backupDir);
+                string[] oldFiles = { "GameAssembly.dll", "baselib.dll", "Ngoc Rong.exe", "UnityPlayer.dll", "UnityCrashHandler64.exe" };
+                foreach (string f in oldFiles)
+                {
+                    string fp = Path.Combine(outDir, f);
+                    if (File.Exists(fp))
+                    {
+                        try { File.Delete(fp); }
+                        catch { File.Move(fp, Path.Combine(backupDir, f)); }
+                    }
+                }
+                string oldDataDir = Path.Combine(outDir, "Ngoc Rong_Data");
+                if (Directory.Exists(oldDataDir))
+                {
+                    try { Directory.Delete(oldDataDir, true); }
+                    catch { Directory.Move(oldDataDir, Path.Combine(backupDir, "Ngoc Rong_Data")); }
+                }
             }
 
             string exePath = Path.Combine(outDir, "NgocRong2Tab.exe");

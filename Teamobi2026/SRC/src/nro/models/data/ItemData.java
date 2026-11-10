@@ -12,8 +12,8 @@ public class ItemData {
     public static void updateItem(MySession session) {
         updateItemOptionItemplate(session);
         updateItemArrHead2FTemplate(session);
-        updateItemTemplate(session, 750);
-        updateItemTemplate(session, 750, Manager.ITEM_TEMPLATES.size());
+        updateItemTemplate(session, 1000);
+        updateItemTemplate(session, 1000, Manager.ITEM_TEMPLATES.size());
     }
 
     private static void updateItemOptionItemplate(MySession session) {

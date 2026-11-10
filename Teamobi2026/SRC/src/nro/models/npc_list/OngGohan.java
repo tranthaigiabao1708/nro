@@ -1,19 +1,10 @@
 package nro.models.npc_list;
 
 import nro.models.consts.ConstNpc;
-import nro.models.database.PlayerDAO;
-import nro.models.item.Item;
-import nro.models.map.service.NpcService;
 import nro.models.npc.Npc;
 import nro.models.player.Player;
-import nro.models.services.InventoryService;
-import nro.models.services.ItemService;
-import nro.models.services.PetService;
-import nro.models.services.Service;
+import nro.models.services.SkhCollectionService;
 import nro.models.services.TaskService;
-import nro.models.services_func.Input;
-import nro.models.shop.ShopService;
-import nro.models.utils.Util;
 
 public class OngGohan extends Npc {
 
@@ -25,8 +16,13 @@ public class OngGohan extends Npc {
     public void openBaseMenu(Player player) {
         if (canOpenNpc(player)) {
             if (!TaskService.gI().checkDoneTaskTalkNpc(player, this)) {
-                NpcService.gI().createTutorial(player, tempId, this.avartar,
-                        "Con cố gắng theo Quy Lão Kame học thành tài, đừng lo lắng cho ta.");
+                this.createOtherMenu(player, ConstNpc.BASE_MENU,
+                        "Con cố gắng theo Quy Lão Kame học thành tài, đừng lo lắng cho ta.\n"
+                        + "Ta có dựng sẵn Bảng Sưu Tập Set Kích Hoạt trong nhà cho con đây!",
+                        "Bảng Sưu Tập\nSet Kích Hoạt",
+                        "Nhận Hào Quang\n(Đủ 5 Set)",
+                        "Hướng dẫn\nSet Kích Hoạt",
+                        "Đóng");
             }
         }
     }
@@ -36,9 +32,9 @@ public class OngGohan extends Npc {
         if (canOpenNpc(player)) {
             if (player.idMark.isBaseMenu()) {
                 switch (select) {
-                    case 0 -> {
-
-                    }
+                    case 0 -> SkhCollectionService.gI().openCollectionUI(player, 0);
+                    case 1 -> SkhCollectionService.gI().claimFiveSetAuraReward(player, false);
+                    case 2 -> SkhCollectionService.gI().showGuide(player);
                 }
             }
         }

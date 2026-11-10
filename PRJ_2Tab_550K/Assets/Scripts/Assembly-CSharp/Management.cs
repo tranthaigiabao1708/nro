@@ -7,11 +7,11 @@ public class Management
 {
     public static bool isLogo = true;
 
-    public const string DefaultServer = "Teamobi 2026:127.0.0.1:14445:0,0,0";
+    public const string DefaultServer = "Ngọc Rồng NewGen:127.0.0.1:14445:0,0,0";
 
     public static string IpServer = GetIpServer();
 
-    public static string LinkWeb = "Teamobi 2026";
+    public static string LinkWeb = "Ngọc Rồng NewGen";
 
     public static bool HasExternalConfig = false;
 
@@ -40,7 +40,7 @@ public class Management
                         }
                         HasExternalConfig = true;
                         // Hỗ trợ cả 3 định dạng:
-                        // 1) Teamobi 2026:26.15.88.99:14445:0,0,0
+                        // 1) Ngọc Rồng NewGen:26.15.88.99:14445:0,0,0
                         // 2) 26.15.88.99:14445
                         // 3) 26.15.88.99
                         if (line.Contains(","))
@@ -51,12 +51,12 @@ public class Management
                         string[] parts = line.Split(':');
                         if (parts.Length == 1)
                         {
-                            IpServer = "Teamobi 2026:" + parts[0].Trim() + ":14445:0,0,0";
+                            IpServer = "Ngọc Rồng NewGen:" + parts[0].Trim() + ":14445:0,0,0";
                             return IpServer;
                         }
                         if (parts.Length == 2)
                         {
-                            IpServer = "Teamobi 2026:" + parts[0].Trim() + ":" + parts[1].Trim() + ":0,0,0";
+                            IpServer = "Ngọc Rồng NewGen:" + parts[0].Trim() + ":" + parts[1].Trim() + ":0,0,0";
                             return IpServer;
                         }
                         if (parts.Length >= 3)

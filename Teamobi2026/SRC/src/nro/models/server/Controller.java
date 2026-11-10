@@ -213,6 +213,11 @@ public class Controller implements IMessageHandler {
                         IntrinsicService.gI().showMenu(player);
                     }
                     break;
+                case 118:
+                    if (player != null) {
+                        nro.models.services.SkhCollectionService.gI().handleClientMessage(player, _msg);
+                    }
+                    break;
                 case -34:
                     if (player != null) {
                         switch (_msg.reader().readByte()) {
@@ -405,9 +410,10 @@ public class Controller implements IMessageHandler {
                     if (player != null) {
                         try {
                             _msg.reader().readByte();
-                            int[] indexItem = new int[_msg.reader().readByte()];
+                            int count = _msg.reader().readUnsignedByte();
+                            int[] indexItem = new int[count];
                             for (int i = 0; i < indexItem.length; i++) {
-                                indexItem[i] = _msg.reader().readByte();
+                                indexItem[i] = _msg.reader().readUnsignedByte();
                             }
                             CombineService.gI().showInfoCombine(player, indexItem);
                         } catch (IOException e) {

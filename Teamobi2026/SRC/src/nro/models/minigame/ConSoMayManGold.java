@@ -79,9 +79,8 @@ public class ConSoMayManGold implements Runnable {
             return;
         }
 
-        Item thoiVang = InventoryService.gI().findItemBag(player, (short) 457);
-        if (thoiVang == null || thoiVang.quantity < this.cost) {
-            Service.gI().sendThongBao(player, "Bạn không đủ " + this.cost + " thỏi vàng để thực hiện");
+        if (InventoryService.gI().getTotalUnlockedQuantityBag(player, 457) < this.cost) {
+            Service.gI().sendThongBao(player, "Bạn không đủ " + this.cost + " thỏi vàng thường để thực hiện");
             return;
         }
 
@@ -101,7 +100,7 @@ public class ConSoMayManGold implements Runnable {
         data.conSoMayManNgoc = 0;
         data.conSoMayManVang = 1;
         players.add(data);
-        InventoryService.gI().subQuantityItemsBag(player, thoiVang, (int) this.cost);
+        InventoryService.gI().subQuantityItemsBagUnlockedOnly(player, 457, (int) this.cost);
         InventoryService.gI().sendItemBags(player);
         Service.gI().sendThongBao(player, "Bạn đã chọn số " + point + " bằng " + this.cost + " thỏi vàng.");
         Service.gI().showYourNumber(player, strNumber((int) player.id), null, null, 0);
@@ -113,9 +112,8 @@ public class ConSoMayManGold implements Runnable {
             return;
         }
 
-        Item thoiVang = InventoryService.gI().findItemBag(player, (short) 457);
-        if (thoiVang == null || thoiVang.quantity < this.cost) {
-            Service.gI().sendThongBao(player, "Bạn không đủ " + this.cost + " thỏi vàng để thực hiện");
+        if (InventoryService.gI().getTotalUnlockedQuantityBag(player, 457) < this.cost) {
+            Service.gI().sendThongBao(player, "Bạn không đủ " + this.cost + " thỏi vàng thường để thực hiện");
             return;
         }
 
@@ -144,7 +142,7 @@ public class ConSoMayManGold implements Runnable {
         data.conSoMayManNgoc = 0;
         data.conSoMayManVang = 1;
         players.add(data);
-        InventoryService.gI().subQuantityItemsBag(player, thoiVang, (int) this.cost);
+        InventoryService.gI().subQuantityItemsBagUnlockedOnly(player, 457, (int) this.cost);
         InventoryService.gI().sendItemBags(player);
         Service.gI().sendThongBao(player, "Bạn đã chọn ngẫu nhiên số lẻ " + generatedPoint + " bằng " + this.cost + " thỏi vàng.");
         Service.gI().showYourNumber(player, strNumber((int) player.id), null, null, 0);
@@ -156,9 +154,8 @@ public class ConSoMayManGold implements Runnable {
             return;
         }
 
-        Item thoiVang = InventoryService.gI().findItemBag(player, (short) 457);
-        if (thoiVang == null || thoiVang.quantity < this.cost) {
-            Service.gI().sendThongBao(player, "Bạn không đủ " + this.cost + " thỏi vàng để thực hiện");
+        if (InventoryService.gI().getTotalUnlockedQuantityBag(player, 457) < this.cost) {
+            Service.gI().sendThongBao(player, "Bạn không đủ " + this.cost + " thỏi vàng thường để thực hiện");
             return;
         }
 
@@ -187,7 +184,7 @@ public class ConSoMayManGold implements Runnable {
         data.conSoMayManNgoc = 0;
         data.conSoMayManVang = 1;
         players.add(data);
-        InventoryService.gI().subQuantityItemsBag(player, thoiVang, (int) this.cost);
+        InventoryService.gI().subQuantityItemsBagUnlockedOnly(player, 457, (int) this.cost);
         InventoryService.gI().sendItemBags(player);
         Service.gI().sendThongBao(player, "Bạn đã chọn ngẫu nhiên số chẵn " + generatedPoint + " bằng " + this.cost + " thỏi vàng.");
         Service.gI().showYourNumber(player, strNumber((int) player.id), null, null, 0);

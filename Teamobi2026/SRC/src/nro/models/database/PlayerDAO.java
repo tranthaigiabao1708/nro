@@ -352,10 +352,10 @@ public class PlayerDAO {
                     + "data_inventory, data_location, data_point, data_magic_tree, items_body, "
                     + "items_bag, items_box, items_box_lucky_round, items_daban, friends, enemies, data_intrinsic, data_item_time,"
                     + "data_task, data_mabu_egg, data_charm, skills, skills_shortcut, pet,"
-                    + "data_black_ball, data_side_task, BoughtSkill, dailyGift, masterDoesNotAttack, data_luyentap, data_achievement, giftcode, total_damage_maydam, data_duahau_egg, nhiem_vu_kol) "
+                    + "data_black_ball, data_side_task, BoughtSkill, dailyGift, masterDoesNotAttack, data_luyentap, data_achievement, giftcode, total_damage_maydam, data_duahau_egg, nhiem_vu_kol, data_skh_collection) "
                     + "values ()", userId, name, hair, gender, 0, -1, inventory, location, point, magicTree,
                     itemsBody, itemsBag, itemsBox, itemsBoxLuckyRound, itemsDaBan, friends, enemies, intrinsic,
-                    itemTime, task, mabuEgg, charms, skills, skillsShortcut, petData, dataBlackBall, dataSideTask, dataBoughtSkill, dailyGift, 0, luyenTapData, achievementData, giftCode, 0, DuaHauEgg, dataKol);
+                    itemTime, task, mabuEgg, charms, skills, skillsShortcut, petData, dataBlackBall, dataSideTask, dataBoughtSkill, dailyGift, 0, luyenTapData, achievementData, giftCode, 0, DuaHauEgg, dataKol, "[]");
             Logger.success(Logger.PURPLE + "Tạo player mới thành công!\n");
             return true;
         } catch (Exception e) {
@@ -417,7 +417,7 @@ public class PlayerDAO {
                 dataArray.add(player.nPoint.defg);
                 dataArray.add(player.nPoint.critg);
                 dataArray.add(player.nPoint.critdragon);
-                dataArray.add(player.nPoint.luckDragon);
+                dataArray.add(player.itemTime.isUseLuckDragon ? 20 : 0);
                 dataArray.add(hp);
                 dataArray.add(mp);
                 String point = dataArray.toJSONString();
@@ -638,8 +638,8 @@ public class PlayerDAO {
                 dataArray.add((player.itemTime.isUseNuocMia2 ? (ItemTime.TIME_NUOC_MIA2 - (System.currentTimeMillis() - player.itemTime.lastTimeUseNuocMia2)) : 0));
                 dataArray.add((player.itemTime.isUseNuocMia3 ? (ItemTime.TIME_NUOC_MIA3 - (System.currentTimeMillis() - player.itemTime.lastTimeUseNuocMia3)) : 0));
                 dataArray.add((player.itemTime.isUseKilis ? (ItemTime.TIME_KILIS - (System.currentTimeMillis() - player.itemTime.lastTimeUseKilis)) : 0));
-                dataArray.add(0);
-                dataArray.add(0);
+                dataArray.add((player.itemTime.isUseLuckDragon ? Math.max(0L, ItemTime.TIME_LUCK_DRAGON - (System.currentTimeMillis() - player.itemTime.lastTimeUseLuckDragon)) : 0));
+                dataArray.add((player.itemTime.isUseVeKhuSkh ? Math.max(0L, ItemTime.TIME_VE_KHU_SKH - (System.currentTimeMillis() - player.itemTime.lastTimeUseVeKhuSkh)) : 0));
                 String itemTime = dataArray.toJSONString();
                 dataArray.clear();
 
@@ -984,6 +984,7 @@ public class PlayerDAO {
                 String dataTaskBadges = JSONValue.toJSONString(player.dataTaskBadges);
 
                 String dataDailyGift = JSONValue.toJSONString(player.dailyGiftData);
+                String dataSkhCollection = nro.models.services.SkhCollectionService.toJson(player);
                 String query = "update player set head = ?, have_tennis_space_ship = ?, "
                         + "clan_id = ?, data_inventory = ?, data_location = ?, data_point = ?, data_magic_tree = ?, "
                         + "items_body = ?, items_bag = ?, items_box = ?, items_box_lucky_round = ?, items_daban = ?, friends = ?, "
@@ -992,7 +993,7 @@ public class PlayerDAO {
                         + "baovetaikhoan = ?, data_card = ?, lasttimepkcommeson = ?, bandokhobau = ?, doanhtrai = ?, conduongrandoc = ?, masterDoesNotAttack = ?, "
                         + "nhanthoivang = ?, ruonggo = ?, sieuthanthuy = ?, vodaisinhtu = ?, rongxuong = ?, data_item_event = ?, data_luyentap = ?, data_clan_task = ?, data_vip = ?, "
                         + "rank = ?, data_achievement = ?, giftcode = ?, event_point = ?, data_event = ?, dataBadges = ?, dataTaskBadges = ?, BoughtSkill = ?, LearnSkill = ?, "
-                        + "firstTimeLogin = ?,  dailyGift = ?, point_sukien = ?, thachdauwhis = ?, point_sukien1 = ?, point_maydam = ?, total_damage_maydam = ?, data_duahau_egg = ?, checkNhanQua = ?, nhiem_vu_kol = ?, point_sukien2 = ? where id = ?";
+                        + "firstTimeLogin = ?,  dailyGift = ?, point_sukien = ?, thachdauwhis = ?, point_sukien1 = ?, point_maydam = ?, total_damage_maydam = ?, data_duahau_egg = ?, checkNhanQua = ?, nhiem_vu_kol = ?, point_sukien2 = ?, data_skh_collection = ? where id = ?";
                 LocalManager.executeUpdate(query,
                         player.head,
                         player.haveTennisSpaceShip,
@@ -1055,6 +1056,7 @@ public class PlayerDAO {
                         checkNhanQua,
                         dataKol,
                         player.point_sukien2,
+                        dataSkhCollection,
                         player.id);
                 SuperRankDAO.updateData(player);
                 if (player.isOffline) {

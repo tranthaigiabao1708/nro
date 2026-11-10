@@ -3,6 +3,7 @@ package nro.models.item;
 import nro.models.player.NPoint;
 import nro.models.player.Player;
 import nro.models.services.Service;
+import nro.models.map.service.ChangeMapService;
 import nro.models.utils.Util;
 import nro.models.services.ItemTimeService;
 
@@ -20,6 +21,10 @@ public class ItemTime {
     public static final int TIME_MAY_DO = 1800000;
     public static final int TIME_MAY_DO2 = 1800000;
     public static final long TIME_CO_BON_LA = 30 * 60 * 1000L;
+    public static final long TIME_LUCK_DRAGON = 60 * 60 * 1000L;
+    public static final int ICON_LUCK_DRAGON = 419;
+    public static final long TIME_VE_KHU_SKH = 30 * 60 * 1000L;
+    public static final int ICON_VE_KHU_SKH = 13948;
     public static final int TIME_KILIS = 3600000;
     public static final int TIME_NUOC_MIA1 = 600_000;
     public static final int TIME_NUOC_MIA2 = 600_000;
@@ -65,6 +70,12 @@ public class ItemTime {
 
     public long lastTimeUseCoBonLa;
     public boolean isUseCoBonLa;
+
+    public long lastTimeUseLuckDragon;
+    public boolean isUseLuckDragon;
+
+    public long lastTimeUseVeKhuSkh;
+    public boolean isUseVeKhuSkh;
 
     public boolean isUseKilis;
     public long lastTimeUseKilis;
@@ -224,6 +235,29 @@ public class ItemTime {
                 isUseCoBonLa = false;
                 ItemTimeService.gI().removeItemTime(player, 13618);
             }
+        }
+        if (isUseLuckDragon) {
+            if (Util.canDoWithTime(lastTimeUseLuckDragon, TIME_LUCK_DRAGON)) {
+                isUseLuckDragon = false;
+                if (player != null && player.nPoint != null) {
+                    player.nPoint.luckDragon = 0;
+                }
+                ItemTimeService.gI().removeItemTime(player, ICON_LUCK_DRAGON);
+            }
+        }
+        if (isUseVeKhuSkh) {
+            if (Util.canDoWithTime(lastTimeUseVeKhuSkh, TIME_VE_KHU_SKH)) {
+                isUseVeKhuSkh = false;
+                ItemTimeService.gI().removeItemTime(player, ICON_VE_KHU_SKH);
+                if (player != null && player.zone != null && player.zone.map.mapId == 164) {
+                    ChangeMapService.gI().changeMapBySpaceShip(player, player.gender + 21, -1, 250);
+                    Service.gI().sendThongBao(player, "Vé khu up SKH đã hết thời gian (30 phút), bạn được đưa về nhà!");
+                }
+            }
+        } else if (player != null && player.isPl() && !player.isAdmin()
+                && player.zone != null && player.zone.map.mapId == 164) {
+            ChangeMapService.gI().changeMapBySpaceShip(player, player.gender + 21, -1, 250);
+            Service.gI().sendThongBao(player, "Vé khu up SKH đã hết hạn, bạn được đưa về nhà!");
         }
         if (isUseKilis) {
             if (Util.canDoWithTime(lastTimeUseKilis, TIME_KILIS)) {

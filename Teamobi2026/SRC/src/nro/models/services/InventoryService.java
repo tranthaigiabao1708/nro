@@ -78,7 +78,7 @@ public class InventoryService {
     }
 
     public int getTotalQuantityBag(Player player, int tempId) {
-        int total = 0;
+        long total = 0;
         if (player != null && player.inventory != null && player.inventory.itemsBag != null) {
             for (Item item : player.inventory.itemsBag) {
                 if (item != null && item.isNotNullItem() && item.template.id == tempId) {
@@ -86,11 +86,23 @@ public class InventoryService {
                 }
             }
         }
-        return total;
+        return (int) Math.min(Integer.MAX_VALUE, total);
+    }
+
+    public int getTotalLockedQuantityBag(Player player, int tempId) {
+        long total = 0;
+        if (player != null && player.inventory != null && player.inventory.itemsBag != null) {
+            for (Item item : player.inventory.itemsBag) {
+                if (item != null && item.isNotNullItem() && item.template.id == tempId && isLockedItem(item)) {
+                    total += item.quantity;
+                }
+            }
+        }
+        return (int) Math.min(Integer.MAX_VALUE, total);
     }
 
     public int getTotalUnlockedQuantityBag(Player player, int tempId) {
-        int total = 0;
+        long total = 0;
         if (player != null && player.inventory != null && player.inventory.itemsBag != null) {
             for (Item item : player.inventory.itemsBag) {
                 if (item != null && item.isNotNullItem() && item.template.id == tempId && !isLockedItem(item)) {
@@ -98,7 +110,7 @@ public class InventoryService {
                 }
             }
         }
-        return total;
+        return (int) Math.min(Integer.MAX_VALUE, total);
     }
 
     public boolean subQuantityItemsBagPriorityLocked(Player player, int tempId, int quantity) {
@@ -379,7 +391,7 @@ public class InventoryService {
 
         // Kiểm tra các loại item hợp lệ
         switch (item.template.type) {
-            case 0, 1, 2, 3, 4, 5, 32, 23, 24, 11, 27, 25 -> {
+            case 0, 1, 2, 3, 4, 5, 32, 23, 24, 11, 27, 25, 35 -> {
             }
             default -> {
                 Service.gI().sendThongBaoOK(player.isPet ? ((Pet) player).master : player, "Trang bị không phù hợp!1");
@@ -442,6 +454,9 @@ public class InventoryService {
             case 25:
                 index = player.isPet ? 8 : 10;
                 break;
+            case 35:
+                index = 10;
+                break;
         }
         if (player.isPet && (item.template.type == 11 || item.template.type == 25)) {
             Pet pet = (Pet) player;
@@ -452,7 +467,7 @@ public class InventoryService {
             }
         }
 
-        if (player.isPet && (item.template.type == 23 || item.template.type == 24 || item.template.type == 27)) {
+        if (player.isPet && (item.template.type == 23 || item.template.type == 24 || item.template.type == 27 || item.template.type == 35)) {
             Player recipient = ((Pet) player).master;
             if (recipient == null) {
                 recipient = player;
@@ -490,6 +505,7 @@ public class InventoryService {
             sendItemBody(player);
             Service.gI().point(player);
             Service.gI().Send_Caitrang(player);
+            RadarService.gI().sendAura(player, player.getAura(), player.getEffFront());
         }
     }
 
@@ -515,6 +531,7 @@ public class InventoryService {
             Service.gI().Send_Caitrang(player);
             Service.gI().sendFlagBag(player);
             Service.gI().point(player);
+            RadarService.gI().sendAura(player, player.getAura(), player.getEffFront());
         }
     }
 

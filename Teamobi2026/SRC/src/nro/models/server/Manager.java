@@ -33,6 +33,8 @@ import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -614,7 +616,7 @@ public final class Manager {
             Logger.success(Logger.RED + "Successfully loaded clan task (" + CLAN_TASKS_TEMPLATE.size() + ")\n");
 
             //load achievement template
-            ps = ConnectionDatabase.prepareStatement("select * from achievement_template");
+            ps = ConnectionDatabase.prepareStatement("select * from achievement_template order by id asc");
             rs = ps.executeQuery();
             while (rs.next()) {
                 ACHIEVEMENT_TEMPLATE.add(new AchievementTemplate(rs.getString("info1"), rs.getString("info2"), rs.getInt("money"), rs.getLong("max_count")));
@@ -626,7 +628,7 @@ public final class Manager {
 
             try {
                 while (true) {
-                    ps = ConnectionDatabase.prepareStatement("SELECT * FROM item_template LIMIT ? OFFSET ?");
+                    ps = ConnectionDatabase.prepareStatement("SELECT * FROM item_template ORDER BY id ASC LIMIT ? OFFSET ?");
                     ps.setInt(1, batchSize);
                     ps.setInt(2, offset);
                     rs = ps.executeQuery();
@@ -1027,7 +1029,9 @@ public final class Manager {
 
     public void loadProperties() throws IOException {
         Properties properties = new Properties();
-        properties.load(new FileInputStream("Config.properties"));
+        try (InputStreamReader reader = new InputStreamReader(new FileInputStream("Config.properties"), StandardCharsets.UTF_8)) {
+            properties.load(reader);
+        }
         Object value;
         if ((value = properties.get("server.sv")) != null) {
             SERVER = Byte.parseByte(String.valueOf(value));

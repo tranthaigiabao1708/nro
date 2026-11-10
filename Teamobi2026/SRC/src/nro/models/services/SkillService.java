@@ -519,10 +519,15 @@ public class SkillService {
                     }
                     Service.gI().setPos(player, plTarget.location.x, plTarget.location.y);
                     playerAttackPlayer(player, plTarget, miss);
-                    EffectSkillService.gI().setBlindDCTT(plTarget, System.currentTimeMillis(), timeChoangDCTT);
-                    EffectSkillService.gI().sendEffectPlayer(player, plTarget, EffectSkillService.TURN_ON_EFFECT, EffectSkillService.BLIND_EFFECT);
-                    PlayerService.gI().sendInfoHpMpMoney(plTarget);
-                    ItemTimeService.gI().sendItemTime(plTarget, 3779, timeChoangDCTT / 1000);
+                    if (plTarget.nPoint != null && plTarget.nPoint.tlKhangKhongChe > 0
+                            && Util.isTrue(plTarget.nPoint.tlKhangKhongChe, 100)) {
+                        Service.gI().chat(plTarget, "Kháng khống chế!");
+                    } else {
+                        EffectSkillService.gI().setBlindDCTT(plTarget, System.currentTimeMillis(), timeChoangDCTT);
+                        EffectSkillService.gI().sendEffectPlayer(player, plTarget, EffectSkillService.TURN_ON_EFFECT, EffectSkillService.BLIND_EFFECT);
+                        PlayerService.gI().sendInfoHpMpMoney(plTarget);
+                        ItemTimeService.gI().sendItemTime(plTarget, 3779, timeChoangDCTT / 1000);
+                    }
                 }
                 if (mobTarget != null) {
                     Service.gI().setPos(player, mobTarget.location.x, mobTarget.location.y);
@@ -537,9 +542,14 @@ public class SkillService {
                 EffectSkillService.gI().sendEffectUseSkill(player, Skill.THOI_MIEN);
                 int timeSleep = SkillUtil.getTimeThoiMien(player.playerSkill.skillSelect.point);
                 if (plTarget != null) {
-                    EffectSkillService.gI().setThoiMien(plTarget, System.currentTimeMillis(), timeSleep);
-                    EffectSkillService.gI().sendEffectPlayer(player, plTarget, EffectSkillService.TURN_ON_EFFECT, EffectSkillService.SLEEP_EFFECT);
-                    ItemTimeService.gI().sendItemTime(plTarget, 3782, timeSleep / 1000);
+                    if (plTarget.nPoint != null && plTarget.nPoint.tlKhangKhongChe > 0
+                            && Util.isTrue(plTarget.nPoint.tlKhangKhongChe, 100)) {
+                        Service.gI().chat(plTarget, "Kháng khống chế!");
+                    } else {
+                        EffectSkillService.gI().setThoiMien(plTarget, System.currentTimeMillis(), timeSleep);
+                        EffectSkillService.gI().sendEffectPlayer(player, plTarget, EffectSkillService.TURN_ON_EFFECT, EffectSkillService.SLEEP_EFFECT);
+                        ItemTimeService.gI().sendItemTime(plTarget, 3782, timeSleep / 1000);
+                    }
                 }
                 if (mobTarget != null) {
                     mobTarget.effectSkill.setThoiMien(System.currentTimeMillis(), timeSleep);
@@ -556,16 +566,28 @@ public class SkillService {
                 if (mobTarget instanceof GauTuongCuop) {
                     timeHold = 5000;
                 }
-                EffectSkillService.gI().setUseTroi(player, System.currentTimeMillis(), timeHold);
+                boolean resistedTroi = false;
                 if (plTarget != null && (!plTarget.playerSkill.prepareQCKK && !plTarget.playerSkill.prepareLaze && !plTarget.playerSkill.prepareTuSat)) {
-                    player.effectSkill.plAnTroi = plTarget;
-                    EffectSkillService.gI().sendEffectPlayer(player, plTarget, EffectSkillService.TURN_ON_EFFECT, EffectSkillService.HOLD_EFFECT);
-                    EffectSkillService.gI().setAnTroi(plTarget, player, System.currentTimeMillis(), timeHold);
+                    if (plTarget.nPoint != null && plTarget.nPoint.tlKhangKhongChe > 0
+                            && Util.isTrue(plTarget.nPoint.tlKhangKhongChe, 100)) {
+                        resistedTroi = true;
+                        Service.gI().chat(plTarget, "Kháng khống chế!");
+                    } else {
+                        EffectSkillService.gI().setUseTroi(player, System.currentTimeMillis(), timeHold);
+                        player.effectSkill.plAnTroi = plTarget;
+                        EffectSkillService.gI().sendEffectPlayer(player, plTarget, EffectSkillService.TURN_ON_EFFECT, EffectSkillService.HOLD_EFFECT);
+                        EffectSkillService.gI().setAnTroi(plTarget, player, System.currentTimeMillis(), timeHold);
+                    }
                 }
                 if (mobTarget != null) {
+                    if (!player.effectSkill.useTroi) {
+                        EffectSkillService.gI().setUseTroi(player, System.currentTimeMillis(), timeHold);
+                    }
                     player.effectSkill.mobAnTroi = mobTarget;
                     EffectSkillService.gI().sendEffectMob(player, mobTarget, EffectSkillService.TURN_ON_EFFECT, EffectSkillService.HOLD_EFFECT);
                     mobTarget.effectSkill.setTroi(System.currentTimeMillis(), timeHold);
+                } else if (plTarget != null && !resistedTroi && !player.effectSkill.useTroi) {
+                    EffectSkillService.gI().setUseTroi(player, System.currentTimeMillis(), timeHold);
                 }
                 affterUseSkill(player, player.playerSkill.skillSelect.template.id);
                 break;
@@ -621,9 +643,13 @@ public class SkillService {
                                 if (player.isPet && ((Pet) player).master.equals(pl)) {
                                     continue;
                                 }
+                                if (pl.nPoint.tlKhangKhongChe > 0 && Util.isTrue(pl.nPoint.tlKhangKhongChe, 100)) {
+                                    Service.gI().chat(pl, "Kháng khống chế!");
+                                    continue;
+                                }
                                 String[] text = {"Mắt của ta", "Chói mắt quá", "Đui mắt rồi", "Mù mắt rồi"};
                                 Service.gI().chat(pl, text[Util.nextInt(text.length)]);
-                                EffectSkillService.gI().startStun(pl, System.currentTimeMillis(), timeStun);
+                                EffectSkillService.gI().startStun(pl, System.currentTimeMillis(), timeStun, true);
                                 players.add(pl);
                             }
                         }

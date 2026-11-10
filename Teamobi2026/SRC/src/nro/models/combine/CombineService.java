@@ -36,6 +36,9 @@ public class CombineService {
     public static final int CHUYEN_HOA_TRANG_BI_NGOC = 995;
     public static final int PHAN_RA_TRANG_BI_KH = 996;
     public static final int TAI_TAO_CAPSULE_KH = 997;
+    public static final int TAI_TAO_CAPSULE_KH_VIP = 998;
+    public static final int NANG_CAP_THAN_LINH_SKH = 999;
+    public static final int NANG_CAP_HUY_DIET_SKH = 1000;
     public static final int NANG_CAP_SAO_PHA_LE = 100;
     public static final int DANH_BONG_SAO_PHA_LE = 101;
     public static final int CUONG_HOA_LO_SAO_PHA_LE = 102;
@@ -86,7 +89,9 @@ public class CombineService {
         player.combineNew.clearItemCombine();
         if (index.length > 0) {
             for (int i = 0; i < index.length; i++) {
-                player.combineNew.itemsCombine.add(player.inventory.itemsBag.get(index[i]));
+                if (index[i] >= 0 && index[i] < player.inventory.itemsBag.size()) {
+                    player.combineNew.itemsCombine.add(player.inventory.itemsBag.get(index[i]));
+                }
             }
         }
         switch (player.combineNew.typeCombine) {
@@ -106,7 +111,14 @@ public class CombineService {
                 PhanRaTrangBi.showInfoCombine(player);
                 break;
             case TAI_TAO_CAPSULE_KH:
+            case TAI_TAO_CAPSULE_KH_VIP:
                 TaiTaoCapsuleKichHoat.showInfoCombine(player);
+                break;
+            case NANG_CAP_THAN_LINH_SKH:
+                NangCapTrangBiKichHoat.showInfoThanLinhSKH(player);
+                break;
+            case NANG_CAP_HUY_DIET_SKH:
+                NangCapTrangBiKichHoat.showInfoHuyDietSKH(player);
                 break;
             case NHAP_NGOC_RONG:
                 NhapNgocRong.showInfoCombine(player);
@@ -188,7 +200,14 @@ public class CombineService {
                 PhanRaTrangBi.ThucHienPhanRa(player);
                 break;
             case TAI_TAO_CAPSULE_KH:
+            case TAI_TAO_CAPSULE_KH_VIP:
                 TaiTaoCapsuleKichHoat.thucHienTaiTao(player);
+                break;
+            case NANG_CAP_THAN_LINH_SKH:
+                NangCapTrangBiKichHoat.thucHienThanLinhSKH(player);
+                break;
+            case NANG_CAP_HUY_DIET_SKH:
+                NangCapTrangBiKichHoat.thucHienHuyDietSKH(player);
                 break;
             case NHAP_NGOC_RONG:
                 NhapNgocRong.nhapNgocRong(player);
@@ -614,9 +633,15 @@ public class CombineService {
             case CHUYEN_HOA_TRANG_BI_VANG:
                 return "Lưu ý trang bị mới\nphải hơn trang bị gốc\n1 bậc";
             case PHAN_RA_TRANG_BI_KH:
-                return "Ta sẽ phù phép\nphân rã thành\nkhoáng tái chế cho ngươi";
+                return "Ta sẽ phù phép phân rã\n1 hoặc nhiều đồ SKH thường\n(1 món = 1 Khoáng tái chế)";
             case TAI_TAO_CAPSULE_KH:
-                return "Ta sẽ phù phép\ntái tạo thành 1 viên\nCapsule kích hoạt tự chọn";
+                return "Tái tạo Capsule Thường\n(5 Khoáng tái chế)\nTự chọn Set KH thường";
+            case TAI_TAO_CAPSULE_KH_VIP:
+                return "Tái tạo Capsule VIP\n(10 Khoáng tái chế)\nTự chọn Set KH Mới";
+            case NANG_CAP_THAN_LINH_SKH:
+                return "Truyền nguyên Set KH\nsang Đồ Thần Linh cùng loại\n(Thất bại MẤT CẢ 2 MÓN!)";
+            case NANG_CAP_HUY_DIET_SKH:
+                return "Truyền nguyên Set KH\nsang Đồ Hủy Diệt cùng loại\n(Thất bại MẤT CẢ 2 MÓN!)";
             case NHAP_NGOC_RONG:
                 return "Ta sẽ phù phép\ncho 7 viên Ngọc Rồng\nthành 1 viên Ngọc Rồng cấp cao";
             case NANG_CAP_VAT_PHAM:
@@ -672,9 +697,15 @@ public class CombineService {
             case PHA_LE_HOA_TRANG_BI:
                 return "Chọn trang bị\n(Áo, quần, găng, giày hoặc rađa)\nSau đó chọn 'Nâng cấp'";
             case PHAN_RA_TRANG_BI_KH:
-                return "Vào hành trang\nChọn hay nhiều\nTrang bị kích hoạt cần rã\nSau đó chọn 'Phân rã'";
+                return "Vào hành trang\nChọn 1 hoặc nhiều Trang bị kích hoạt thường\n(CHỈ ĐƯỢC ĐẶT ĐỒ KÍCH HOẠT)\nMỗi món: 200 Tr vàng -> 1 Khoáng tái chế\nĐặt bao nhiêu món nhận bấy nhiêu Khoáng!";
             case TAI_TAO_CAPSULE_KH:
-                return "Vào hành trang\nChọn 3 khoáng tái chế\nChọn 1 Capsule vỡ\nSau đó chọn 'Tái tạo'";
+                return "Vào hành trang\nChọn đúng 5 Khoáng tái chế\nPhí: 500 Tr vàng\nNhận 1 Capsule Kích Hoạt Thường\n(Mở chọn Set KH thường & món đồ)";
+            case TAI_TAO_CAPSULE_KH_VIP:
+                return "Vào hành trang\nChọn đúng 10 Khoáng tái chế\nPhí: 1 Tỷ vàng\nNhận 1 Capsule Kích Hoạt VIP\n(Mở chọn Set KH Mới & món đồ)";
+            case NANG_CAP_THAN_LINH_SKH:
+                return "BẮT BUỘC đặt ĐÚNG 3 ô:\n- 1 Đồ SKH thường (phôi giữ nguyên Set)\n- 1 Đồ Thần Linh CÙNG LOẠI & HÀNH TINH\n  (Áo-Áo, Quần-Quần, Găng-Găng, Giày-Giày, Rada-Nhẫn)\n- 2 Khoáng tái chế (+ 500 Tr vàng, tỉ lệ 40%)\nCẤM đặt đồ khác! XỊT MẤT CẢ ĐỒ THẦN & ĐỒ SKH!";
+            case NANG_CAP_HUY_DIET_SKH:
+                return "BẮT BUỘC đặt ĐÚNG 3 ô:\n- 1 Đồ Thần Linh SKH (phôi giữ nguyên Set)\n- 1 Đồ Hủy Diệt CÙNG LOẠI & HÀNH TINH\n  (Áo-Áo, Quần-Quần, Găng-Găng, Giày-Giày, Nhẫn-Nhẫn)\n- 5 Khoáng tái chế (+ 2 Tỷ vàng, tỉ lệ 30%)\nCẤM đặt đồ khác! XỊT MẤT CẢ ĐỒ HỦY DIỆT & ĐỒ THẦN SKH!";
             case CHUYEN_HOA_TRANG_BI_NGOC:
             case CHUYEN_HOA_TRANG_BI_VANG:
                 return "Vào hành trang\nChọn trang bị gốc\n(Áo,quần,găng,giày hoặc rada)\ntừ cấp[+4] trở lên\nChọn tiếp trang bị mới\nchưa nâng cấp cần nhập thể\nsau đó chọn 'Nâng cấp'";

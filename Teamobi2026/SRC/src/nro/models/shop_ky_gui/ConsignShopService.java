@@ -326,13 +326,24 @@ public class ConsignShopService {
 
     public boolean itemCanConsign(Item it) {
         if (it != null && it.template != null) {
-            if (it.isSKH()
-                    || it.itemOptions.stream().anyMatch(op -> op.optionTemplate.id == 86)
-                    || it.itemOptions.stream().anyMatch(op -> op.optionTemplate.id == 87)
+            // Cấm ký gửi trang bị Hủy Diệt (kể cả Hủy Diệt SKH), vật phẩm khóa (Opt 30) hoặc có hạn sử dụng (Opt 93)
+            if (it.isDHD() || it.hasCannotTradeOrExpiry()) {
+                return false;
+            }
+            switch (it.template.id) {
+                case 454, 457, 570, 590, 921, 1819 -> {
+                    return false;
+                }
+            }
+            if (it.isDTL()
+                    || it.isSKH()
+                    || it.isPhuKien()
+                    || it.itemOptions.stream().anyMatch(op -> op.optionTemplate != null && op.optionTemplate.id == 86)
+                    || it.itemOptions.stream().anyMatch(op -> op.optionTemplate != null && op.optionTemplate.id == 87)
                     || it.template.type == 14
                     || it.template.type == 15
                     || it.template.type == 6
-                    || it.template.id >= 14 && it.template.id <= 20) {
+                    || (it.template.id >= 14 && it.template.id <= 20)) {
                 return true;
             }
         }
@@ -362,7 +373,7 @@ public class ConsignShopService {
             return 0;
         } else if ((it.template.type >= 3 && it.template.type <= 4)) {
             return 1;
-        } else if (it.template.type == 29) {
+        } else if (it.template.type == 29 || it.isPhuKien()) {
             return 2;
         } else {
             return 3;
@@ -371,29 +382,38 @@ public class ConsignShopService {
 
     public void KiGui(Player pl, int id, int money, byte moneyType, int quantity) {
         try {
-            if (!SubThoiVang(pl, 1)) {
-                Service.gI().sendThongBao(pl, "Bạn cần có ít nhất 1 thỏi vàng để làm phí đăng bán");
-                return;
-            }
-
-            Item it = ItemService.gI().copyItem(pl.inventory.itemsBag.get(id));
-            if (!it.isSKH()) {
-                for (Item.ItemOption daubuoi : it.itemOptions) {
-                    if (daubuoi.optionTemplate.id == 30) {
-                        Service.gI().sendThongBao(pl, "Vật phẩm không thể kí gửi");
-                        openShopKyGui(pl);
-                        return;
-                    }
-                }
-            }
-            if (money <= 0 || quantity > it.quantity) {
+            if (id < 0 || id >= pl.inventory.itemsBag.size()) {
                 openShopKyGui(pl);
                 return;
             }
-
-            if (quantity > 99 && quantity < 0) {
+            Item bagItem = pl.inventory.itemsBag.get(id);
+            if (bagItem == null || !bagItem.isNotNullItem() || !itemCanConsign(bagItem)) {
+                Service.gI().sendThongBao(pl, "Vật phẩm này không thể ký gửi");
+                openShopKyGui(pl);
+                return;
+            }
+            Item it = ItemService.gI().copyItem(bagItem);
+            if (money <= 0 || quantity <= 0 || quantity > it.quantity) {
+                openShopKyGui(pl);
+                return;
+            }
+            if (quantity > 99) {
                 Service.gI().sendThongBao(pl, "Ký gửi tối đa x99");
                 openShopKyGui(pl);
+                return;
+            }
+            if (moneyType == 0 && money > 100000) {
+                Service.gI().sendThongBao(pl, "Không thể ký gửi quá 100000 thỏi vàng");
+                openShopKyGui(pl);
+                return;
+            }
+            if (moneyType == 1 && money > 1000000) {
+                Service.gI().sendThongBao(pl, "Không thể ký gửi quá 1000000 ngọc");
+                openShopKyGui(pl);
+                return;
+            }
+            if (!SubThoiVang(pl, 1)) {
+                Service.gI().sendThongBao(pl, "Bạn cần có ít nhất 1 thỏi vàng để làm phí đăng bán");
                 return;
             }
             switch (moneyType) {

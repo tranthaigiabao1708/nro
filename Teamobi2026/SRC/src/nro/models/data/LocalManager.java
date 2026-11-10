@@ -3,6 +3,8 @@ package nro.models.data;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.sql.SQLException;
 import java.sql.Connection;
@@ -57,8 +59,8 @@ public class LocalManager {
 
     private static void loadProperties() {
         Properties properties = new Properties();
-        try {
-            properties.load(new FileInputStream("Config.properties"));
+        try (InputStreamReader reader = new InputStreamReader(new FileInputStream("Config.properties"), StandardCharsets.UTF_8)) {
+            properties.load(reader);
             Object value;
             if ((value = properties.get("database.driver")) != null) {
                 LocalManager.DRIVER = String.valueOf(value);

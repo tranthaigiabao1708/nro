@@ -197,6 +197,15 @@ public class PlayerService {
                 if (player.isFly && player.getMount() == -1) {
                     int mp = player.nPoint.mpg / (100 * (player.effectSkill.isMonkey ? 2 : 1));
                     hoiPhuc(player, 0, -mp);
+                } else if (player.isFly && player.getMount() != -1 && player.nPoint != null && player.nPoint.hasMountFlyRegen) {
+                    if (!player.isDie() && Util.canDoWithTime(player.nPoint.lastTimeMountRegen, 2000)) {
+                        player.nPoint.lastTimeMountRegen = System.currentTimeMillis();
+                        long hpRegen = (player.nPoint.hp < player.nPoint.hpMax) ? Math.max(1L, player.nPoint.hpMax / 50L) : 0L;
+                        long mpRegen = (player.nPoint.mp < player.nPoint.mpMax) ? Math.max(1L, player.nPoint.mpMax / 50L) : 0L;
+                        if (hpRegen > 0 || mpRegen > 0) {
+                            hoiPhuc(player, hpRegen, mpRegen);
+                        }
+                    }
                 }
             }
             MapService.gI().sendPlayerMove(player);

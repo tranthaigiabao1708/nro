@@ -21,9 +21,9 @@ public class CustomConfig {
     public static class GlobalDropEntry {
         public final int itemId;
         public final int quantity;
-        public final int chancePer1000;
+        public final double chancePer1000;
 
-        public GlobalDropEntry(int itemId, int quantity, int chancePer1000) {
+        public GlobalDropEntry(int itemId, int quantity, double chancePer1000) {
             this.itemId = itemId;
             this.quantity = quantity;
             this.chancePer1000 = chancePer1000;
@@ -47,10 +47,14 @@ public class CustomConfig {
     public static boolean STARTER_CAPSULE_VIP = true;
 
     // Cấu hình Tỉ lệ rơi đồ & Vàng/Ngọc khi đánh quái
-    public static int DROP_RATE_MULT = 3;
+    public static int DROP_RATE_MULT = 1;
     public static int DROP_GOLD_MULT = 3;
-    public static int DROP_GEM_PERCENT = 8;
-    public static int DROP_GEM_AMOUNT = 5;
+    public static int DROP_GEM_PERCENT = 4;
+    public static int DROP_GEM_AMOUNT = 2;
+    // Tỉ lệ rơi đồ SKH trên thang 10.000 (25 = 0.25% gốc, +15 Khu SKH, +15 Cỏ 4 lá)
+    public static int SKH_BASE_RATE = 25;
+    public static int SKH_ZONE_BONUS = 15;
+    public static int SKH_CLOVER_BONUS = 15;
     public static volatile List<GlobalDropEntry> CUSTOM_GLOBAL_DROPS = new ArrayList<>();
 
     static {
@@ -80,10 +84,13 @@ public class CustomConfig {
             STARTER_GOLD_BAR = parseInt(prop.getProperty("custom.starter.goldbar"), 20);
             STARTER_CAPSULE_VIP = Boolean.parseBoolean(prop.getProperty("custom.starter.capsule_vip", "true").trim());
 
-            DROP_RATE_MULT = Math.max(1, parseInt(prop.getProperty("custom.drop.rate_mult"), 3));
+            DROP_RATE_MULT = Math.max(1, parseInt(prop.getProperty("custom.drop.rate_mult"), 1));
             DROP_GOLD_MULT = Math.max(1, parseInt(prop.getProperty("custom.drop.gold_mult"), 3));
-            DROP_GEM_PERCENT = Math.max(0, Math.min(100, parseInt(prop.getProperty("custom.drop.gem_percent"), 8)));
-            DROP_GEM_AMOUNT = Math.max(1, parseInt(prop.getProperty("custom.drop.gem_amount"), 5));
+            DROP_GEM_PERCENT = Math.max(0, Math.min(100, parseInt(prop.getProperty("custom.drop.gem_percent"), 4)));
+            DROP_GEM_AMOUNT = Math.max(1, parseInt(prop.getProperty("custom.drop.gem_amount"), 2));
+            SKH_BASE_RATE = Math.max(0, Math.min(10000, parseInt(prop.getProperty("custom.skh.base_rate"), 25)));
+            SKH_ZONE_BONUS = Math.max(0, Math.min(10000, parseInt(prop.getProperty("custom.skh.zone_bonus"), 15)));
+            SKH_CLOVER_BONUS = Math.max(0, Math.min(10000, parseInt(prop.getProperty("custom.skh.clover_bonus"), 15)));
 
             List<GlobalDropEntry> parsedDrops = new ArrayList<>();
             String rawDrops = prop.getProperty("custom.drop.global_items", "").trim();
@@ -93,7 +100,7 @@ public class CustomConfig {
                     if (parts.length >= 3) {
                         int itemId = parseInt(parts[0], -1);
                         int qty = Math.max(1, parseInt(parts[1], 1));
-                        int chance = Math.max(1, Math.min(1000, parseInt(parts[2], 10)));
+                        double chance = Math.max(0.01, Math.min(1000.0, parseDouble(parts[2], 10.0)));
                         if (itemId >= 0) {
                             parsedDrops.add(new GlobalDropEntry(itemId, qty, chance));
                         }
@@ -102,7 +109,8 @@ public class CustomConfig {
             }
             CUSTOM_GLOBAL_DROPS = parsedDrops;
             Logger.success("[CustomConfig] Đã nạp cấu hình mở rộng: AutoReg=" + AUTO_REGISTER
-                    + ", DropMult=x" + DROP_RATE_MULT + ", StarterGold=" + STARTER_GOLD + "\n");
+                    + ", DropMult=x" + DROP_RATE_MULT + ", SkhRate=(" + SKH_BASE_RATE + "+" + SKH_ZONE_BONUS + "+" + SKH_CLOVER_BONUS + ")/10000"
+                    + ", StarterGold=" + STARTER_GOLD + "\n");
         } catch (Exception e) {
             Logger.error("[CustomConfig] Không đọc được cấu hình mở rộng, dùng mặc định: " + e.getMessage() + "\n");
         }
@@ -153,6 +161,15 @@ public class CustomConfig {
         if (val == null || val.trim().isEmpty()) return def;
         try {
             return Long.parseLong(val.trim());
+        } catch (NumberFormatException e) {
+            return def;
+        }
+    }
+
+    private static double parseDouble(String val, double def) {
+        if (val == null || val.trim().isEmpty()) return def;
+        try {
+            return Double.parseDouble(val.trim());
         } catch (NumberFormatException e) {
             return def;
         }

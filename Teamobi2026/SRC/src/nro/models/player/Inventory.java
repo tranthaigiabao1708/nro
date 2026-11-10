@@ -17,7 +17,8 @@ import nro.models.task.BadgesTaskService;
  */
 public class Inventory {
 
-    public static final long LIMIT_GOLD = 200_000_000_000L;
+    public static final long LIMIT_GOLD = 500_000_000_000L;
+    public static final long GOLD_BAR_SELL_PRICE = 500_000_000L;
     public static final int MAX_ITEMS_BAG = 80;
     public static final int MAX_ITEMS_BOX = 100;
     public Item trainArmor;
@@ -70,14 +71,21 @@ public class Inventory {
         this.gem -= num;
     }
 
-    public void subGold(int num) {
+    public void subGold(long num) {
         this.gold -= num;
+        if (this.gold < 0) {
+            this.gold = 0;
+        }
     }
 
-    public void addGold(int gold) {
-        this.gold += gold;
-        if (this.gold > LIMIT_GOLD) {
+    public void addGold(long gold) {
+        if (gold <= 0) {
+            return;
+        }
+        if (LIMIT_GOLD - this.gold < gold) {
             this.gold = LIMIT_GOLD;
+        } else {
+            this.gold += gold;
         }
     }
 

@@ -49,7 +49,7 @@ public class GiftCodeService {
 
                 switch (idItem) {
                     case -1 -> {
-                        player.inventory.gold = Math.min(player.inventory.gold + (long) quantity, 2000000000L);
+                        player.inventory.addGold(quantity);
                         textGift += "|2|" + quantity + " vàng\b";
                     }
                     case -2 -> {

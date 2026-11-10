@@ -8,7 +8,7 @@ echo   ĐANG XUẤT BẢN CLIENT 2 TAB (PRJ_2Tab_550K -^> Client_ChoNguoiChoiTai
 echo   Lưu ý: Hãy đảm bảo bạn đã Đăng nhập tài khoản Unity Hub và kích hoạt
 echo          Personal License miễn phí trước khi chạy!
 echo ====================================================================
-"C:\Program Files\Unity\Hub\Editor\6000.4.3f1\Editor\Unity.exe" -quit -projectPath "C:\mro\PRJ_2Tab_550K" -buildTarget Win64 -executeMethod AutoBuilder.BuildWindows -logFile "C:\mro\unity_build.log"
+"C:\Program Files\Unity\Hub\Editor\6000.4.3f1\Editor\Unity.com" -batchmode -nographics -accept-apiupdate -quit -projectPath "C:\mro\PRJ_2Tab_550K" -buildTarget Win64 -executeMethod AutoBuilder.BuildWindows -logFile "C:\mro\unity_build.log"
 
 if exist "C:\mro\Client_ChoNguoiChoiTaiVe\NgocRong2Tab.exe" (
     color 0A

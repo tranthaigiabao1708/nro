@@ -45,7 +45,9 @@ public class BaHatMit extends Npc {
                             "Chuyển hóa\nTrang bị",
                             "Võ đài\nSinh tử",
                             "Phân rã\nTrang bị\nKích hoạt",
-                            "Tái tạo\nCapsule\nKích hoạt"
+                            "Tái tạo\nCapsule\nKích hoạt",
+                            "Nâng cấp\nTrang bị\nKích hoạt",
+                            "Hướng dẫn\nSet Kích Hoạt"
                     );
 
                 case 112 -> {
@@ -154,7 +156,42 @@ public class BaHatMit extends Npc {
                             case 3 ->
                                 CombineService.gI().openTabCombine(player, CombineService.PHAN_RA_TRANG_BI_KH);
                             case 4 ->
+                                createOtherMenu(player, ConstNpc.MENU_BA_HAT_MIT_TAI_TAO_CAPSULE,
+                                        "|8|TÁI TẠO CAPSULE KÍCH HOẠT\n"
+                                        + "|2|- Capsule Thường (5 Khoáng + 500 Tr vàng): Mở tự chọn Set KH thường & món đồ.\n"
+                                        + "|1|- Capsule VIP (10 Khoáng + 1 Tỷ vàng): Mở tự chọn Set KH Mới (Kaio / Nail / Cađic M) & món đồ.",
+                                        "Capsule Thường\n(5 Khoáng)",
+                                        "Capsule VIP\n(10 Khoáng)",
+                                        "Từ chối");
+                            case 5 ->
+                                createOtherMenu(player, ConstNpc.MENU_BA_HAT_MIT_NANG_CAP_SKH,
+                                        "|8|NÂNG CẤP ĐỒ THẦN LINH & HỦY DIỆT KÍCH HOẠT\n"
+                                        + "|2|- Bắt buộc dùng trang bị CÙNG LOẠI & CÙNG HÀNH TINH:\n"
+                                        + "  Áo-Áo | Quần-Quần | Găng-Găng | Giày-Giày | Rada-Nhẫn\n"
+                                        + "- Chỉ dùng Đồ SKH + Đồ Thần/Hủy Diệt + Khoáng tái chế, cấm đặt đồ khác!\n"
+                                        + "|1|- Thành công giữ nguyên đúng loại Set của phôi SKH.\n"
+                                        + "|7|- THẤT BẠI SẼ MẤT LUÔN CẢ ĐỒ THẦN/HỦY DIỆT VÀ ĐỒ SKH!",
+                                        "Lên Đồ Thần\nKích hoạt\n(40%)",
+                                        "Lên Hủy Diệt\nKích hoạt\n(30%)",
+                                        "Cẩm nang\nSet Kích Hoạt");
+                            case 6 ->
+                                nro.models.services.SkhCollectionService.gI().showGuide(player);
+                        }
+                    } else if (player.idMark.getIndexMenu() == ConstNpc.MENU_BA_HAT_MIT_TAI_TAO_CAPSULE) {
+                        switch (select) {
+                            case 0 ->
                                 CombineService.gI().openTabCombine(player, CombineService.TAI_TAO_CAPSULE_KH);
+                            case 1 ->
+                                CombineService.gI().openTabCombine(player, CombineService.TAI_TAO_CAPSULE_KH_VIP);
+                        }
+                    } else if (player.idMark.getIndexMenu() == ConstNpc.MENU_BA_HAT_MIT_NANG_CAP_SKH) {
+                        switch (select) {
+                            case 0 ->
+                                CombineService.gI().openTabCombine(player, CombineService.NANG_CAP_THAN_LINH_SKH);
+                            case 1 ->
+                                CombineService.gI().openTabCombine(player, CombineService.NANG_CAP_HUY_DIET_SKH);
+                            case 2 ->
+                                nro.models.services.SkhCollectionService.gI().showGuide(player);
                         }
                     } else if (player.idMark.getIndexMenu() == 3) {
                         switch (select) {
@@ -187,7 +224,7 @@ public class BaHatMit extends Npc {
                         }
                     } else if (player.idMark.getIndexMenu() == ConstNpc.MENU_START_COMBINE) {
                         switch (player.combineNew.typeCombine) {
-                            case CombineService.EP_SAO_TRANG_BI, CombineService.PHA_LE_HOA_TRANG_BI, CombineService.CHUYEN_HOA_TRANG_BI_VANG, CombineService.CHUYEN_HOA_TRANG_BI_NGOC, CombineService.PHAN_RA_TRANG_BI_KH, CombineService.TAI_TAO_CAPSULE_KH, CombineService.NANG_CAP_SAO_PHA_LE, CombineService.DANH_BONG_SAO_PHA_LE, CombineService.CUONG_HOA_LO_SAO_PHA_LE, CombineService.TAO_DA_HEMATITE -> {
+                            case CombineService.EP_SAO_TRANG_BI, CombineService.PHA_LE_HOA_TRANG_BI, CombineService.CHUYEN_HOA_TRANG_BI_VANG, CombineService.CHUYEN_HOA_TRANG_BI_NGOC, CombineService.PHAN_RA_TRANG_BI_KH, CombineService.TAI_TAO_CAPSULE_KH, CombineService.TAI_TAO_CAPSULE_KH_VIP, CombineService.NANG_CAP_THAN_LINH_SKH, CombineService.NANG_CAP_HUY_DIET_SKH, CombineService.NANG_CAP_SAO_PHA_LE, CombineService.DANH_BONG_SAO_PHA_LE, CombineService.CUONG_HOA_LO_SAO_PHA_LE, CombineService.TAO_DA_HEMATITE -> {
                                 switch (select) {
                                     case 0 ->
                                         CombineService.gI().startCombine(player);

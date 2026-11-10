@@ -72,6 +72,7 @@ public class Command {
         });
         adminCommands.put("reload", player -> {
             try {
+                CustomConfig.load();
                 Manager.gI().loadProperties();
                 try (java.sql.Connection con = LocalManager.getConnection()) {
                     Manager.SHOPS = nro.models.database.ShopDAO.getShops(con);
@@ -369,6 +370,15 @@ parameterizedCommands.put("tb ", (player, text) -> {
                     return true;
                 }
             }
+        }
+
+        if (text.equalsIgnoreCase("skh") || text.equalsIgnoreCase("suutap")) {
+            nro.models.services.SkhCollectionService.gI().openCollectionUI(player, 0);
+            return true;
+        }
+        if (text.equalsIgnoreCase("hdskh") || text.equalsIgnoreCase("camnangskh")) {
+            nro.models.services.SkhCollectionService.gI().showGuide(player);
+            return true;
         }
 
         if (text.startsWith("ten con la ")) {

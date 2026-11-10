@@ -12,7 +12,8 @@ public class CombineSystem {
 
     public static boolean isTrangBiPhaLeHoa(Item item) {
         if (item != null && item.isNotNullItem()) {
-            return item.template.type < 5 || item.template.type == 32;
+            int t = item.template.type;
+            return t <= 5 || t == 11 || t == 23 || t == 24 || t == 25 || t == 32 || item.isLinhThu();
         } else {
             return false;
         }

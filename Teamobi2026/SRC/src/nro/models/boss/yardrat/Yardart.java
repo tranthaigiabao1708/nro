@@ -83,8 +83,15 @@ public abstract class Yardart extends Boss {
 
     @Override
     public void reward(Player plKill) {
-        if (Util.isTrue(1, rewardRatio)) {
-            ItemMap it = new ItemMap(zone, 590, 1, plKill.location.x + (Util.nextInt(-10, 10)), plKill.location.y, plKill.id);
+        if (plKill == null) {
+            return;
+        }
+        Player owner = (plKill.isPet && ((nro.models.player.Pet) plKill).master != null)
+                ? ((nro.models.player.Pet) plKill).master : plKill;
+        double matMult = nro.models.mob.Mob.getMountUpgradeMatMult(owner);
+        long chancePerMillion = Math.min(1_000_000L, Math.round((1_000_000.0 / Math.max(1, rewardRatio)) * matMult));
+        if (Util.isTrue(chancePerMillion, 1_000_000L)) {
+            ItemMap it = new ItemMap(zone, 590, 1, plKill.location.x + (Util.nextInt(-10, 10)), plKill.location.y, owner.id);
             it.options.clear();
             it.options.add(new Item.ItemOption(31, 1));
             Service.gI().dropItemMap(this.zone, it);

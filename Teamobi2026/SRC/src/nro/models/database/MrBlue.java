@@ -605,6 +605,8 @@ public class MrBlue {
             long timeNuocMia1 = 0;
             long timeNuocMia2 = 0;
             long timeNuocMia3 = 0;
+            long timeLuckDragon = 0;
+            long timeVeKhuSkh = 0;
             int timeBoHuyet = Integer.parseInt(String.valueOf(dataArray.get(0)));
             int timeBoHuyet2 = Integer.parseInt(String.valueOf(dataArray.get(1)));
             int timeBoKhi = Integer.parseInt(String.valueOf(dataArray.get(2)));
@@ -672,6 +674,12 @@ public class MrBlue {
             if (dataArray.size() > 29) {
                 timeKilis = Long.parseLong(String.valueOf(dataArray.get(29)));
             }
+            if (dataArray.size() > 30) {
+                timeLuckDragon = Long.parseLong(String.valueOf(dataArray.get(30)));
+            }
+            if (dataArray.size() > 31) {
+                timeVeKhuSkh = Long.parseLong(String.valueOf(dataArray.get(31)));
+            }
 
             player.itemTime.lastTimeBoHuyet = System.currentTimeMillis() - (ItemTime.TIME_ITEM - timeBoHuyet);
             player.itemTime.lastTimeBoKhi = System.currentTimeMillis() - (ItemTime.TIME_ITEM - timeBoKhi);
@@ -686,6 +694,8 @@ public class MrBlue {
             player.itemTime.lastTimeOpenPower = System.currentTimeMillis() - (ItemTime.TIME_OPEN_POWER - timeOpenPower);
             player.itemTime.lastTimeUseMayDo = System.currentTimeMillis() - (ItemTime.TIME_MAY_DO - timeMayDo);
             player.itemTime.lastTimeUseCoBonLa = System.currentTimeMillis() - (ItemTime.TIME_CO_BON_LA - timeCoBonLa);
+            player.itemTime.lastTimeUseLuckDragon = System.currentTimeMillis() - (ItemTime.TIME_LUCK_DRAGON - timeLuckDragon);
+            player.itemTime.lastTimeUseVeKhuSkh = System.currentTimeMillis() - (ItemTime.TIME_VE_KHU_SKH - timeVeKhuSkh);
             player.itemTime.lastTimeUseKhoBauX2 = System.currentTimeMillis() - (ItemTime.TIME_MAY_DO2 - timeKhoBauX2);
             player.itemTime.lastTimeBuaSanta = System.currentTimeMillis() - (ItemTime.TIME_BUA_SANTA - timeBuaSanta);
             player.itemTime.lastTimeEatMeal = System.currentTimeMillis() - (ItemTime.TIME_EAT_MEAL - timeMeal);
@@ -728,6 +738,9 @@ public class MrBlue {
             player.itemTime.isUseNuocMia1 = timeNuocMia1 != 0;
             player.itemTime.isUseNuocMia2 = timeNuocMia2 != 0;
             player.itemTime.isUseNuocMia3 = timeNuocMia3 != 0;
+            player.itemTime.isUseLuckDragon = timeLuckDragon > 0;
+            player.nPoint.luckDragon = player.itemTime.isUseLuckDragon ? 20 : 0;
+            player.itemTime.isUseVeKhuSkh = timeVeKhuSkh > 0;
             dataArray.clear();
 
             //data nhiệm vụ
@@ -1239,6 +1252,14 @@ public class MrBlue {
                 }
                 dataArray.clear();
             } catch (Exception e) {
+            }
+
+            // Bảng Sưu Tập Set Kích Hoạt tại Nhà
+            try {
+                nro.models.services.SkhCollectionService.loadFromJson(player, rs.getString("data_skh_collection"));
+                nro.models.services.SkhCollectionService.syncAchievements(player);
+            } catch (Exception e) {
+                nro.models.services.SkhCollectionService.ensureInitialized(player);
             }
 
             //Giftcode

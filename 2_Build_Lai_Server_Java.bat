@@ -1,6 +1,6 @@
 @ECHO OFF
 chcp 65001 >nul
-title BIÊN DỊCH LẠI MÃ NGUỒN SERVER JAVA (TEAMOBI 2026)
+title BIÊN DỊCH LẠI MÃ NGUỒN SERVER JAVA (NGỌC RỒNG NEWGEN)
 color 0B
 set "ROOT_DIR=%~dp0"
 set "JDK_BIN=C:\Users\giaba\.antigravity-ide\extensions\redhat.java-1.58.0-win32-x64\jre\25.0.4.1-win32-x86_64\bin"

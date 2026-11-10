@@ -33,6 +33,8 @@ public class BoMong extends Npc {
                 if (this.mapId == 47 || this.mapId == 84) {
                     this.createOtherMenu(player, ConstNpc.BASE_MENU,
                             "Ngươi muốn có thêm ngọc thì chịu khó làm vài nhiệm vụ sẽ được ngọc thưởng", "Nhiệm vụ\nhàng ngày", "Nhiệm vụ\nthành tích", "Nạp Ngọc", "Điểm danh", "Từ chối");
+                } else {
+                    Service.gI().hideWaitDialog(player);
                 }
             }
         }
@@ -79,13 +81,13 @@ public class BoMong extends Npc {
                             player.lastCheckIn = LocalDateTime.now();
                             player.inventory.gem += 10000;
                             Item item457 = ItemService.gI().createNewItem((short) 457);
-                            item457.quantity = 100;
+                            item457.quantity = 20;
                             item457.itemOptions.add(new Item.ItemOption(30, 0));
                             InventoryService.gI().addItemBag(player, item457);
                             PlayerService.gI().sendInfoHpMpMoney(player);
                             InventoryService.gI().sendItemBags(player);
 
-                            Service.gI().sendThongBao(player, "Điểm danh thành công! Bạn nhận được 10.000 ngọc và 100 thỏi vàng.");
+                            Service.gI().sendThongBao(player, "Điểm danh thành công! Bạn nhận được 10.000 ngọc xanh và 20 thỏi vàng khóa.");
                         }
 
                     }
@@ -102,6 +104,8 @@ public class BoMong extends Npc {
                             TaskService.gI().removeSideTask(player);
                     }
                 }
+            } else {
+                Service.gI().hideWaitDialog(player);
             }
         }
     }

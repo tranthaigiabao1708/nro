@@ -21,4 +21,9 @@ public class ConstAchievement {
     public static final int TUYET_KY_THANH_THAO = 17;
     public static final int CHAM_SOC_DAC_BIET = 18;
     public static final int TRUM_KET_LIEU_BOSS = 19;
+    public static final int SUU_TAP_SKH_1 = 20;
+    public static final int SUU_TAP_SKH_2 = 21;
+    public static final int SUU_TAP_SKH_3 = 22;
+    public static final int SUU_TAP_SKH_4 = 23;
+    public static final int SUU_TAP_SKH_5 = 24;
 }

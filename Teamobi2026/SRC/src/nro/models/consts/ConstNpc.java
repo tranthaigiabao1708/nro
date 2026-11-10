@@ -332,6 +332,12 @@ public class ConstNpc {
     public static final int DOI_SACH_TUYET_KY = 28777;
     public static final int CHE_TAO_TRANG_BI_THIEN_SU = 188877;
     public static final int CAPSULE_KICH_HOAT = 1655;
+    public static final int CAPSULE_KH_THUONG_CHON_SET = 16551;
+    public static final int CAPSULE_KH_VIP_CHON_SET = 19901;
+    public static final int CAPSULE_KH_CHON_MON = 16552;
+    public static final int MENU_BA_HAT_MIT_TAI_TAO_CAPSULE = 16553;
+    public static final int MENU_BA_HAT_MIT_NANG_CAP_SKH = 16554;
+    public static final int MENU_BULK_BUY_SHOP = 16560;
     public static final int VE_TANG_NGOC = 718;
     public static final int DANG_SINH_LE = 197882;
     public static final int DANG_SINH_LE_VIP = 197827;

@@ -637,13 +637,48 @@ public class Boss extends Player implements IBoss {
         }
     }
 
+    public boolean isHighTierBoss() {
+        return switch ((int) this.id) {
+            case BossID.BLACK_GOKU,
+                 BossID.COOLER,
+                 BossID.CUMBER,
+                 BossID.SIEU_BO_HUNG,
+                 BossID.BABY,
+                 BossID.GOLDEN_FRIEZA,
+                 BossID.MABU_12H -> true;
+            case BossID.XEN_BO_HUNG -> this.currentLevel >= 1; // Chỉ áp dụng cho Xên hoàn thiện (dạng 2 & 3), không tính Xên bọ hung cấp 1
+            default -> false;
+        };
+    }
+
+    public int getGodDropChancePercent(Player plKill, int basePercent) {
+        if (plKill == null || !isHighTierBoss()) {
+            return basePercent;
+        }
+        Player owner = (plKill.isPet && ((Pet) plKill).master != null) ? ((Pet) plKill).master : plKill;
+        int bonus = (owner != null && !owner.isPet && owner.nPoint != null) ? owner.nPoint.tlRoiDoThanBoss : 0;
+        return Math.min(100, basePercent + Math.max(0, bonus));
+    }
+
     protected void dropThoiVangBoss(Player plKill) {
         try {
             if (plKill != null && this.zone != null) {
+                Player owner = (plKill.isPet && ((Pet) plKill).master != null) ? ((Pet) plKill).master : plKill;
                 int yGround = this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24);
-                nro.models.map.ItemMap thoiVangThuong = new nro.models.map.ItemMap(this.zone, 457, 1, this.location.x, yGround, plKill.id);
+                nro.models.map.ItemMap thoiVangThuong = new nro.models.map.ItemMap(this.zone, 457, 1, this.location.x, yGround, owner.id);
                 thoiVangThuong.options.add(new nro.models.item.Item.ItemOption(73, 0));
                 Service.gI().dropItemMap(this.zone, thoiVangThuong);
+
+                if (isHighTierBoss() && owner != null && !owner.isPet && owner.nPoint != null
+                        && owner.nPoint.tlJackpotThoiVangBoss > 0
+                        && Util.isTrue(Math.min(100, owner.nPoint.tlJackpotThoiVangBoss), 100)) {
+                    int xJackpot = Math.max(24, Math.min(this.zone.map.mapWidth - 24, this.location.x + 15));
+                    int yJackpot = this.zone.map.yPhysicInTop(xJackpot, this.location.y - 24);
+                    nro.models.map.ItemMap jackpotTV = new nro.models.map.ItemMap(this.zone, 457, 100, xJackpot, yJackpot, owner.id);
+                    jackpotTV.options.add(new nro.models.item.Item.ItemOption(73, 0));
+                    Service.gI().dropItemMap(this.zone, jackpotTV);
+                    Service.gI().sendThongBao(owner, "Nội tại Cánh kích hoạt: Rơi thêm 100 Thỏi vàng từ Boss!");
+                }
             }
         } catch (Exception e) {
             Logger.logException(Boss.class, e);

@@ -11,6 +11,7 @@ import nro.models.services.RadarService;
 import nro.models.radar.RadarCard;
 import nro.models.consts.ConstMap;
 import nro.models.item.Item;
+import nro.models.item.ItemTime;
 import nro.models.consts.ConstNpc;
 import nro.models.consts.ConstPlayer;
 import nro.models.services.shenron.Shenron_Service;
@@ -279,16 +280,24 @@ public class UseItem {
                     case 23: //thú cưỡi mới
                     case 24: //thú cưỡi cũ
                         InventoryService.gI().itemBagToBody(pl, indexBag);
+                        if (pl.zone != null) {
+                            pl.zone.load_Me_To_Another(pl);
+                        }
                         break;
                     case 11: //item bag
                         InventoryService.gI().itemBagToBody(pl, indexBag);
                         Service.gI().sendFlagBag(pl);
                         break;
-                    case 25: {
+                    case 25:
+                    case 35: {
                         InventoryService.gI().itemBagToBody(pl, indexBag);
+                        break;
                     }
                     default:
                         switch (item.template.id) {
+                            case 457: // Thỏi vàng -> mở form bán SLL (500 Tr vàng / thỏi)
+                                Input.gI().createFormBanSLL(pl);
+                                break;
                             case 992: // Nhan thoi khong
                                 pl.type = 2;
                                 pl.maxTime = 5;
@@ -645,8 +654,21 @@ public class UseItem {
                                 PetService.Pet2(pl, 1680, 1681, 1682);
                                 Service.gI().point(pl);
                                 break;
-                            case 1655: // capule kich hoat
+                            case 2003:
+                                InventoryService.gI().itemBagToBody(pl, indexBag);
+                                PetService.Pet2(pl, 2099, 2100, 2101);
+                                Service.gI().point(pl);
+                                break;
+                            case 2004:
+                                InventoryService.gI().itemBagToBody(pl, indexBag);
+                                PetService.Pet2(pl, 2102, 2103, 2104);
+                                Service.gI().point(pl);
+                                break;
+                            case 1655: // Capsule Kích Hoạt Thường
                                 UseItem.gI().CapsuleKichHoat(pl, item);
+                                break;
+                            case 1990: // Capsule Kích Hoạt VIP
+                                UseItem.gI().CapsuleKichHoatVip(pl, item);
                                 break;
                             case 1787: // capule kich hoat
                                 UseItem.gI().MapRiengTu(pl, item);
@@ -2688,16 +2710,46 @@ public class UseItem {
     }
 
     private void CapsuleKichHoat(Player pl, Item item) {
-        NpcService.gI().createMenuConMeo(pl, item.template.id, -1, "Hãy chọn một món quà", "Áo", "Quần", "Găng", "Giày", "Rada");
+        String[] setBtns = switch (pl.gender) {
+            case 0 -> new String[]{"Set\nSôngôku", "Set\nKirin", "Set Thên\nXin Hăng", "Set\nGohan"};
+            case 1 -> new String[]{"Set\nPicolo", "Set\nỐc Tiêu", "Set Pikkoro\nDaimao", "Set\nGohan"};
+            default -> new String[]{"Set\nKakarot", "Set\nCa Đíc", "Set\nNappa", "Set\nGohan"};
+        };
+        NpcService.gI().createMenuConMeo(pl, ConstNpc.CAPSULE_KH_THUONG_CHON_SET, -1,
+                "|8|CAPSULE KÍCH HOẠT THƯỜNG\n|2|Bước 1: Hãy chọn loại Set Kích Hoạt thường bạn muốn nhận:", setBtns);
+    }
+
+    private void CapsuleKichHoatVip(Player pl, Item item) {
+        String planetHint = switch (pl.gender) {
+            case 0 -> "Hành tinh hiện tại của bạn: Trái Đất (khuyên chọn Set Kaio)";
+            case 1 -> "Hành tinh hiện tại của bạn: Namek (khuyên chọn Set Nail)";
+            default -> "Hành tinh hiện tại của bạn: Xayda (khuyên chọn Set Cađic M)";
+        };
+        NpcService.gI().createMenuConMeo(pl, ConstNpc.CAPSULE_KH_VIP_CHON_SET, -1,
+                "|8|CAPSULE KÍCH HOẠT VIP\n|1|" + planetHint + "\n|2|Bước 1: Hãy chọn loại Set Kích Hoạt Mới bạn muốn nhận:",
+                "Set Kaio\n(Trái Đất)", "Set Nail\n(Namek)", "Set Cađic M\n(Xayda)");
     }
 
     private void MapRiengTu(Player pl, Item item) {
-        if (pl.zone != null && pl.zone.map.mapId == 164) {
-            ChangeMapService.gI().changeMapBySpaceShip(pl, pl.gender + 21, -1, 250);
+        if (pl.itemTime != null && pl.itemTime.isUseVeKhuSkh) {
+            if (pl.zone != null && pl.zone.map.mapId == 164) {
+                ChangeMapService.gI().changeMapBySpaceShip(pl, pl.gender + 21, -1, 250);
+                return;
+            }
+            int minsLeft = (int) Math.max(1L, (ItemTime.TIME_VE_KHU_SKH - (System.currentTimeMillis() - pl.itemTime.lastTimeUseVeKhuSkh)) / 60000L);
+            ChangeMapService.gI().changeMapBySpaceShip(pl, 164, -1, 870);
+            Service.gI().sendThongBao(pl, "Bạn đã vào lại Khu up SKH (còn khoảng " + minsLeft + " phút hiệu lực)");
             return;
         }
-        ChangeMapService.gI().changeMapBySpaceShip(pl, 164, -1, 870);
-        Service.gI().sendThongBao(pl, "Bạn đã vào Khu up Sét Kích Hoạt (+20% tỉ lệ rơi SKH)");
+        InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+        InventoryService.gI().sendItemBags(pl);
+        pl.itemTime.isUseVeKhuSkh = true;
+        pl.itemTime.lastTimeUseVeKhuSkh = System.currentTimeMillis();
+        ItemTimeService.gI().sendItemTime(pl, ItemTime.ICON_VE_KHU_SKH, (int) (ItemTime.TIME_VE_KHU_SKH / 1000));
+        if (pl.zone == null || pl.zone.map.mapId != 164) {
+            ChangeMapService.gI().changeMapBySpaceShip(pl, 164, -1, 870);
+        }
+        Service.gI().sendThongBao(pl, "Đã kích hoạt Vé khu up SKH (30 phút)! Bạn có thể vào lại qua vé hoặc NPC Santa.");
     }
 
     private void VeTangNgoc(Player pl, Item item) {

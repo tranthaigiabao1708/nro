@@ -92,6 +92,9 @@ namespace Game2
 				Controller2.readMessage(msg);
 				switch (msg.command)
 				{
+				case 118:
+					SkhCollectionUI.GI().ReadMessage(msg);
+					break;
 				case -112:
 				{
 					sbyte num71 = msg.reader().readByte();

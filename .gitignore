@@ -4,7 +4,7 @@
 /unity_build.log
 
 # Môi trường chạy cục bộ (JDK 21, MariaDB binaries & live InnoDB data files >100MB)
-# Database đã được xuất đầy đủ ra Teamobi2026/database_team2026_full_ready.sql
+# Database đã được xuất đầy đủ ra Database_NgocRongNewGen/nro_newgen.sql
 /runtime/
 
 # Bộ nhớ đệm tự sinh của Unity (tự động tạo lại khi mở PRJ_2Tab_550K bằng Unity)

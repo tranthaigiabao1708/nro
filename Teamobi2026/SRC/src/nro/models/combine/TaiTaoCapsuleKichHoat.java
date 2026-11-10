@@ -1,9 +1,10 @@
 package nro.models.combine;
 
-import nro.models.consts.ConstNpc;
-import nro.models.item.Item;
 import java.util.ArrayList;
 import java.util.List;
+import nro.models.consts.ConstNpc;
+import nro.models.item.Item;
+import nro.models.item.Item.ItemOption;
 import nro.models.player.Player;
 import nro.models.services.InventoryService;
 import nro.models.services.ItemService;
@@ -11,109 +12,124 @@ import nro.models.services.Service;
 import nro.models.utils.Util;
 
 /**
- *
- * @author MrBlue
+ * Tái tạo Capsule Kích Hoạt 2 bậc tại Bà Hạt Mít (Đảo Kame):
+ * - Capsule Kích Hoạt Thường (ID 1655): 5 Khoáng tái chế + 500M vàng -> mở tự chọn Set KH thường & món đồ.
+ * - Capsule Kích Hoạt VIP (ID 1990): 10 Khoáng tái chế + 1B vàng -> mở tự chọn Set KH Mới & món đồ.
  */
 public class TaiTaoCapsuleKichHoat {
 
-    private static final int GOLD_TAI_TAO = 2_000_000_000;
+    private static final int KHOANG_TAI_CHE_ID = 1656;
+
+    public static final int CAPSULE_THUONG_ID = 1655;
+    public static final int KHOANG_THUONG = 5;
+    public static final int GOLD_THUONG = 500_000_000;
+
+    public static final int CAPSULE_VIP_ID = 1990;
+    public static final int KHOANG_VIP = 10;
+    public static final int GOLD_VIP = 1_000_000_000;
+
     private static final int RATIO_TAI_TAO = 100;
 
-    private static final int KHOANG_TAI_CHE_ID = 1656;
-    private static final int CAPSULE_ID = 1634;
-
-    private static final int REQUIRED_KHOANG = 3;
-    private static final int REQUIRED_CAPSULE = 1;
-
     public static void showInfoCombine(Player player) {
+        boolean isVip = (player.combineNew.typeCombine == CombineService.TAI_TAO_CAPSULE_KH_VIP);
+        int reqKhoang = isVip ? KHOANG_VIP : KHOANG_THUONG;
+        int reqGold = isVip ? GOLD_VIP : GOLD_THUONG;
+        String capsuleName = isVip ? "Capsule Kích Hoạt VIP" : "Capsule Kích Hoạt Thường";
+        String setDesc = isVip ? "Tự chọn Set Kích Hoạt Mới (Kaio / Nail / Cađic M)" : "Tự chọn Set Kích Hoạt thường & Set Gohan";
+
         if (player.combineNew.itemsCombine.isEmpty()) {
-            CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU, "Cần đặt đủ vật phẩm!", "Đóng");
+            CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
+                    "Hãy đặt đủ " + reqKhoang + " Khoáng tái chế để tái tạo " + capsuleName + "!", "Đóng");
             return;
         }
 
         int countKhoang = 0;
-        int countVatLieu2 = 0;
-
         for (Item item : player.combineNew.itemsCombine) {
-            if (item.template.id == KHOANG_TAI_CHE_ID) {
-                countKhoang += item.quantity;
-            } else if (item.template.id == CAPSULE_ID) {
-                countVatLieu2 += item.quantity;
+            if (item == null || !item.isNotNullItem()) {
+                continue;
             }
+            if (item.template.id != KHOANG_TAI_CHE_ID) {
+                CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
+                        "|7|Chỉ được phép đặt Khoáng tái chế, không được đặt vật phẩm khác!", "Đóng");
+                return;
+            }
+            countKhoang += item.quantity;
         }
 
-        if (countKhoang < REQUIRED_KHOANG || countVatLieu2 < REQUIRED_CAPSULE) {
+        if (countKhoang < reqKhoang) {
             CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
-                    "Thiếu vật phẩm cần thiết!\n"
-                    + "- Cần: " + REQUIRED_KHOANG + " Khoáng tái chế\n"
-                    + "- Cần: " + REQUIRED_CAPSULE + " Capsule Vỡ", "Đóng");
+                    "|7|Không đủ Khoáng tái chế!\n"
+                    + "|2|Cần " + reqKhoang + " Khoáng tái chế để tạo " + capsuleName + " (hiện đặt " + countKhoang + ").", "Đóng");
             return;
         }
 
-        player.combineNew.goldCombine = GOLD_TAI_TAO;
+        player.combineNew.goldCombine = reqGold;
         player.combineNew.ratioCombine = RATIO_TAI_TAO;
 
-        String npcSay = "|2|Tỉ lệ thành công: " + RATIO_TAI_TAO + "%\n"
-                + "|2|Cần: " + REQUIRED_KHOANG + " Khoáng tái chế\n"
-                + "|2|Cần: " + REQUIRED_CAPSULE + " Capsule Vỡ\n"
-                + "|2|Cần: " + Util.numberToMoney(GOLD_TAI_TAO) + " vàng\n";
+        String npcSay = "|8|" + capsuleName.toUpperCase() + "\n"
+                + "|1|Công dụng: " + setDesc + "\n"
+                + "|2|Tỉ lệ thành công: " + RATIO_TAI_TAO + "%\n"
+                + "|2|Cần: " + reqKhoang + " Khoáng tái chế + " + Util.numberToMoney(reqGold) + " vàng";
 
-        if (player.inventory.gold < GOLD_TAI_TAO) {
-            npcSay += "|7|Còn thiếu " + Util.powerToString(GOLD_TAI_TAO - player.inventory.gold) + " vàng\n";
+        if (player.inventory.gold < reqGold) {
+            npcSay += "\n|7|Còn thiếu " + Util.numberToMoney(reqGold - player.inventory.gold) + " vàng";
             CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU, npcSay, "Đóng");
         } else {
             CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE, npcSay,
-                    "Tái tạo\n" + Util.numberToMoney(GOLD_TAI_TAO) + " vàng", "Từ chối");
+                    "Tái tạo\n" + Util.numberToMoney(reqGold) + " vàng", "Từ chối");
         }
     }
 
     public static void thucHienTaiTao(Player player) {
+        boolean isVip = (player.combineNew.typeCombine == CombineService.TAI_TAO_CAPSULE_KH_VIP);
+        int reqKhoang = isVip ? KHOANG_VIP : KHOANG_THUONG;
+        int reqGold = isVip ? GOLD_VIP : GOLD_THUONG;
+        int outCapsuleId = isVip ? CAPSULE_VIP_ID : CAPSULE_THUONG_ID;
+
         if (player.combineNew.itemsCombine.isEmpty()) {
-            Service.gI().sendThongBao(player, "Cần đặt đủ vật phẩm!");
+            Service.gI().sendThongBao(player, "Hãy đặt đủ Khoáng tái chế!");
             return;
         }
 
         int countKhoang = 0;
-        int countCapsule = 0;
-
         for (Item item : player.combineNew.itemsCombine) {
-            if (item.template.id == KHOANG_TAI_CHE_ID) {
-                countKhoang += item.quantity;
-            } else if (item.template.id == CAPSULE_ID) {
-                countCapsule += item.quantity;
+            if (item == null || !item.isNotNullItem()) {
+                continue;
             }
+            if (item.template.id != KHOANG_TAI_CHE_ID) {
+                Service.gI().sendThongBao(player, "Chỉ được đặt Khoáng tái chế!");
+                return;
+            }
+            countKhoang += item.quantity;
         }
 
-        if (countKhoang < REQUIRED_KHOANG || countCapsule < REQUIRED_CAPSULE) {
-            Service.gI().sendThongBao(player, "Không đủ vật phẩm cần thiết để tái tạo!");
+        if (countKhoang < reqKhoang) {
+            Service.gI().sendThongBao(player, "Cần đủ " + reqKhoang + " Khoáng tái chế!");
             return;
         }
-
-        if (player.inventory.gold < GOLD_TAI_TAO) {
+        if (player.inventory.gold < reqGold) {
             Service.gI().sendThongBao(player, "Không đủ vàng để thực hiện!");
             return;
         }
-
-        player.inventory.gold -= GOLD_TAI_TAO;
-        removeItem(player, KHOANG_TAI_CHE_ID, REQUIRED_KHOANG);
-        removeItem(player, CAPSULE_ID, REQUIRED_CAPSULE);
-
-        if (Util.isTrue(RATIO_TAI_TAO, 100)) {
-            int itemId = 1655;
-            Item newItem = new Item();
-            newItem.template = ItemService.gI().getTemplate(itemId);
-            newItem.quantity = 1;
-            InventoryService.gI().addItemBag(player, newItem);
-
-            CombineService.gI().sendEffectSuccessCombine(player);
-            Service.gI().sendThongBao(player, "Tái tạo thành công!");
-        } else {
-            CombineService.gI().sendEffectFailCombine(player);
-            Service.gI().sendThongBao(player, "Tái tạo thất bại!");
+        if (InventoryService.gI().findItemBag(player, outCapsuleId) == null
+                && InventoryService.gI().getCountEmptyBag(player) <= 0) {
+            Service.gI().sendThongBao(player, "Cần ít nhất 1 ô trống trong hành trang!");
+            return;
         }
+
+        player.inventory.gold -= reqGold;
+        removeItem(player, KHOANG_TAI_CHE_ID, reqKhoang);
+
+        Item newCapsule = ItemService.gI().createNewItem((short) outCapsuleId, 1);
+        newCapsule.itemOptions.add(new ItemOption(73, 0));
+        InventoryService.gI().addItemBag(player, newCapsule);
+
+        CombineService.gI().sendEffectSuccessCombine(player);
+        Service.gI().sendThongBao(player, "Tái tạo thành công 1 " + newCapsule.template.name + "!");
 
         InventoryService.gI().sendItemBags(player);
         Service.gI().sendMoney(player);
+        player.combineNew.clearItemCombine();
         CombineService.gI().reOpenItemCombine(player);
     }
 
@@ -129,5 +145,4 @@ public class TaiTaoCapsuleKichHoat {
             }
         }
     }
-
 }

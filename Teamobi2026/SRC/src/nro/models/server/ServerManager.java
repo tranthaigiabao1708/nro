@@ -55,10 +55,10 @@ public class ServerManager {
 
     public static String timeStart;
     public static final Map<Object, Object> CLIENTS = new HashMap<>();
-    public static String NAME_SERVER = "Ngọc Rồng Onlime";
-    public static String DOMAIN = "Server 1";
-    public static String NAME = "Ngọc Rồng Online";
-    public static String IP = "36.50.135.149";
+    public static String NAME_SERVER = "Ngọc Rồng NewGen";
+    public static String DOMAIN = "Ngọc Rồng NewGen";
+    public static String NAME = "Ngọc Rồng NewGen";
+    public static String IP = "127.0.0.1";
     public static int PORT = 14445;
     public static int EVENT_SEVER = 0;
     private static ServerManager instance;
@@ -286,6 +286,20 @@ public class ServerManager {
             switch (line) {
                 case "bt":
                     Maintenance.gI().startSeconds(5);
+                    break;
+                case "stop":
+                    isRunning = false;
+                    try {
+                        ClanService.gI().close();
+                    } catch (Exception ignored) {
+                    }
+                    try {
+                        ConsignShopManager.gI().save();
+                    } catch (Exception ignored) {
+                    }
+                    Client.gI().close();
+                    Logger.success("SERVER SAVED & STOPPED CLEANLY!\n");
+                    System.exit(0);
                     break;
                 case "reload":
                     try {

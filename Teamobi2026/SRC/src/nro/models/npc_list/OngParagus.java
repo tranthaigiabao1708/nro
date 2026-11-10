@@ -1,8 +1,7 @@
 package nro.models.npc_list;
 
-import nro.models.map.service.NpcService;
+import nro.models.consts.ConstNpc;
 import nro.models.player.Player;
-import nro.models.services.Service;
 import nro.models.services.TaskService;
 
 public class OngParagus extends OngGohan {
@@ -15,21 +14,13 @@ public class OngParagus extends OngGohan {
     public void openBaseMenu(Player player) {
         if (canOpenNpc(player)) {
             if (!TaskService.gI().checkDoneTaskTalkNpc(player, this)) {
-                NpcService.gI().createTutorial(player, tempId, this.avartar,
-                        "Con cố gắng theo Vua Vegeta học thành tài, đừng lo lắng cho ta.");
-            }
-        }
-    }
-
-    @Override
-    public void confirmMenu(Player player, int select) {
-        if (canOpenNpc(player)) {
-            if (player.idMark.isBaseMenu()) {
-                switch (select) {
-                    case 0 -> {
-
-                    }
-                }
+                this.createOtherMenu(player, ConstNpc.BASE_MENU,
+                        "Con cố gắng theo Vua Vegeta học thành tài, đừng lo lắng cho ta.\n"
+                        + "Ta có dựng sẵn Bảng Sưu Tập Set Kích Hoạt trong nhà cho con đây!",
+                        "Bảng Sưu Tập\nSet Kích Hoạt",
+                        "Nhận Hào Quang\n(Đủ 5 Set)",
+                        "Hướng dẫn\nSet Kích Hoạt",
+                        "Đóng");
             }
         }
     }

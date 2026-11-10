@@ -81,10 +81,22 @@ public class SetClothes {
     private void setupSKT() {
         for (int i = 0; i < 5; i++) {
             Item item = this.player.inventory.itemsBody.get(i);
-
-            // Loại bỏ điều kiện kiểm tra isNotNullItem
+            if (item == null || !item.isNotNullItem() || item.itemOptions == null) {
+                continue;
+            }
             boolean isActSet = false;
+            boolean countedDHD = false;
             for (Item.ItemOption io : item.itemOptions) {
+                if (io == null || io.optionTemplate == null) {
+                    continue;
+                }
+                if (!countedDHD && io.optionTemplate.id == 21 && io.param == 80) {
+                    setDHD++;
+                    countedDHD = true;
+                }
+                if (isActSet) {
+                    continue;
+                }
                 switch (io.optionTemplate.id) {
                     case 129:
                     case 141:
@@ -144,12 +156,6 @@ public class SetClothes {
                         isActSet = true;
                         giamSatThuong++;
                         break;
-
-                    case 21:
-                        if (io.param == 80) {
-                            setDHD++;
-                        }
-                        break;
                     case 245:
                     case 246:
                     case 247:
@@ -176,10 +182,6 @@ public class SetClothes {
                         isActSet = true;
                         gohan++;
                         break;
-                }
-
-                if (isActSet) {
-                    break;
                 }
             }
         }

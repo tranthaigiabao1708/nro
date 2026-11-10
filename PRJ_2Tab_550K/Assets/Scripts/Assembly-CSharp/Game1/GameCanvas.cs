@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Game1.Assets.src.g;
 using Game1.Mod;
 using UnityEngine;
@@ -604,6 +604,10 @@ namespace Game1
 						menu.updateMenu();
 						menu.updateMenuKey();
 					}
+					else if (SkhCollectionUI.GI().isShow)
+					{
+						SkhCollectionUI.GI().UpdateKey();
+					}
 					else if (panel.isShow)
 					{
 						panel.update();
@@ -659,7 +663,7 @@ namespace Game1
 					{
 						currentScreen.update();
 					}
-					if (!panel.isShow && ChatPopup.serverChatPopUp == null)
+					if (!panel.isShow && !SkhCollectionUI.GI().isShow && ChatPopup.serverChatPopUp == null)
 					{
 						currentScreen.updateKey();
 					}
@@ -2328,6 +2332,10 @@ namespace Game1
 					{
 						panel2.chatTField.paint(g);
 					}
+				}
+				if (SkhCollectionUI.GI().isShow)
+				{
+					SkhCollectionUI.GI().Paint(g);
 				}
 				Res.paintOnScreenDebug(g);
 				InfoDlg.paint(g);

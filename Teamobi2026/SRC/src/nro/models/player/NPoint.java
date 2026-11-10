@@ -14,6 +14,7 @@ import nro.models.services.ItemService;
 import nro.models.map.service.MapService;
 import nro.models.services.PlayerService;
 import nro.models.services.Service;
+import nro.models.services.SkhCollectionService;
 import nro.models.services.TaskService;
 import nro.models.utils.Logger;
 import nro.models.utils.SkillUtil;
@@ -210,6 +211,12 @@ public class NPoint {
     public int levelBT;
 
     public int tlNeDonBuffXinbato = 0;
+
+    public int tlKhangKhongChe;
+    public int tlJackpotThoiVangBoss;
+    public int tlRoiDoThanBoss;
+    public boolean hasMountFlyRegen;
+    public long lastTimeMountRegen;
 
     /*-------------------------------------------------------------------------*/
     /**
@@ -449,9 +456,25 @@ public class NPoint {
                     });
         }
 
+        boolean isFused = (this.player.fusion != null && this.player.fusion.typeFusion != ConstPlayer.NON_FUSION)
+                || (this.player.isPet && ((Pet) this.player).master != null
+                && ((Pet) this.player).master.fusion != null
+                && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION);
         this.player.setClothes.worldcup = 0;
         for (Item item : this.player.inventory.itemsBody) {
             if (item.isNotNullItem()) {
+                boolean hasOption38 = false;
+                if (item.itemOptions != null) {
+                    for (ItemOption io : item.itemOptions) {
+                        if (io.optionTemplate != null && io.optionTemplate.id == 38) {
+                            hasOption38 = true;
+                            break;
+                        }
+                    }
+                }
+                if (hasOption38 && !isFused) {
+                    continue;
+                }
                 switch (item.template.id) {
                     case 966:
                     case 982:
@@ -651,6 +674,32 @@ public class NPoint {
             case 153: //% phát nổ sau khi chết
                 this.tlBom += io.param;
                 break;
+            case 89: //Bay để phục hồi KI và HP
+                if (!this.player.isPet) {
+                    this.hasMountFlyRegen = true;
+                }
+                break;
+            case 236: //+#% May mắn (Đệ tử mặc không có tác dụng)
+            case 232: //Tăng nhẹ tỉ lệ rơi Thỏi vàng (chỉ cho sư phụ)
+            case 235: //Tăng mạnh tỉ lệ rơi Bí kíp, nguyên liệu (chỉ cho sư phụ)
+            case 253: //Tăng mạnh tỉ lệ rơi Ngọc Rồng (chỉ cho sư phụ)
+            case 254: //Tăng mạnh tỉ lệ rơi Thỏi vàng (chỉ cho sư phụ)
+                break;
+            case 251: //#% cơ hội rơi 20 Thỏi vàng khi hạ Boss thượng cấp
+                if (!this.player.isPet) {
+                    this.tlJackpotThoiVangBoss += io.param;
+                }
+                break;
+            case 252: //+#% tỉ lệ rơi Đồ Thần Linh từ Boss
+                if (!this.player.isPet) {
+                    this.tlRoiDoThanBoss += io.param;
+                }
+                break;
+            case 227: //+#% Kháng khống chế (Choáng, Ru ngủ, Trói)
+                if (!this.player.isPet) {
+                    this.tlKhangKhongChe = Math.min(80, this.tlKhangKhongChe + io.param);
+                }
+                break;
         }
     }
 
@@ -720,7 +769,7 @@ public class NPoint {
         setLtdb();
         setThoBulma();
         setTinhNhatNguyetAn();
-        if (this.player.setClothes != null && this.player.setClothes.gohan == 5) {
+        if (!this.player.isPet && this.player.setClothes != null && this.player.setClothes.gohan == 5) {
             this.tlGold += 30;
         }
     }
@@ -921,6 +970,13 @@ public class NPoint {
             }
         }
 
+        if (this.player != null && !this.player.isPet) {
+            int skhSets = SkhCollectionService.getCompletedSetCount(this.player);
+            if (skhSets > 0) {
+                hpMax += (hpMax * (skhSets * 3L) / 100L);
+            }
+        }
+
         if (hpMax > 2_147_483_647) {
             hpMax = 2_147_483_647;
         }
@@ -1023,6 +1079,13 @@ public class NPoint {
         for (Item.ItemOption opt : options) {
             if (opt.optionTemplate.id == 103) {
                 mpMax += (mpMax * opt.param / 100L);
+            }
+        }
+
+        if (this.player != null && !this.player.isPet) {
+            int skhSets = SkhCollectionService.getCompletedSetCount(this.player);
+            if (skhSets > 0) {
+                mpMax += (mpMax * (skhSets * 3L) / 100L);
             }
         }
 
@@ -1180,6 +1243,13 @@ public class NPoint {
             }
         }
 
+        if (this.player != null && !this.player.isPet) {
+            int skhSets = SkhCollectionService.getCompletedSetCount(this.player);
+            if (skhSets > 0) {
+                dame += (dame * (skhSets * 3L) / 100L);
+            }
+        }
+
         // Xử lý khỉ
         if (this.player.effectSkill.isMonkey) {
             if (!this.player.isPet || (this.player.isPet && ((Pet) this.player).status != Pet.FUSION)) {
@@ -1303,6 +1373,10 @@ public class NPoint {
         this.isLamCham = false;
         this.isDoSPL = false;
         this.isThoBulma = false;
+        this.tlKhangKhongChe = 0;
+        this.tlJackpotThoiVangBoss = 0;
+        this.tlRoiDoThanBoss = 0;
+        this.hasMountFlyRegen = false;
     }
 
     public void addHp(long hp) {
@@ -1590,6 +1664,13 @@ public class NPoint {
                     }
                 }
             }
+            Player skhOwner = this.player.isPet ? ((Pet) this.player).master : this.player;
+            if (skhOwner != null) {
+                int skhSets = SkhCollectionService.getCompletedSetCount(skhOwner);
+                if (skhSets > 0) {
+                    tiemNang += (tiemNang * (skhSets * 15L) / 100L);
+                }
+            }
             long tn = tiemNang;
             if (this.player.charms.tdTriTue > System.currentTimeMillis()) {
                 tiemNang += tn;
@@ -1635,7 +1716,7 @@ public class NPoint {
                     tiemNang += tn * 2;
                 }
                 if (((Pet) this.player).master.nPoint != null && ((Pet) this.player).master.nPoint.tlTNSMPet > 0) {
-                    tiemNang += tn / 100 * (((Pet) this.player).master.nPoint.tlTNSMPet + 100);
+                    tiemNang += (tn * ((Pet) this.player).master.nPoint.tlTNSMPet) / 100L;
                 }
             }
             if (MapService.gI().isMapNguHanhSon(this.player.zone.map.mapId)) {
@@ -2011,6 +2092,16 @@ public class NPoint {
                 }
                 if (++player.effectSkill.countCharging >= 10) {
                     EffectSkillService.gI().stopCharge(player);
+                }
+            }
+
+            if (player.isPl() && player.isFly && player.getMount() != -1 && this.hasMountFlyRegen
+                    && !player.isDie() && Util.canDoWithTime(this.lastTimeMountRegen, 2000)) {
+                this.lastTimeMountRegen = System.currentTimeMillis();
+                long hpRegen = (this.hp < this.hpMax) ? Math.max(1L, this.hpMax / 50L) : 0L;
+                long mpRegen = (this.mp < this.mpMax) ? Math.max(1L, this.mpMax / 50L) : 0L;
+                if (hpRegen > 0 || mpRegen > 0) {
+                    PlayerService.gI().hoiPhuc(this.player, hpRegen, mpRegen);
                 }
             }
 
