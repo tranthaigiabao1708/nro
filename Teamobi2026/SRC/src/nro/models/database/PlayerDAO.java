@@ -31,9 +31,29 @@ import com.google.gson.Gson;
 
 public class PlayerDAO {
 
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
 
-    ; 
+    public static void savePlayerAsync(Player player) {
+        if (player == null || !player.isPl() || player.beforeDispose || player.isDisposed
+                || player.idMark == null || !player.idMark.isLoadedAllDataPlayer()) {
+            return;
+        }
+        player.pendingAsyncSave = true;
+        if (player.savingAsync.compareAndSet(false, true)) {
+            scheduler.execute(() -> {
+                try {
+                    while (player.pendingAsyncSave && !player.beforeDispose && !player.isDisposed) {
+                        player.pendingAsyncSave = false;
+                        updatePlayer(player, true);
+                    }
+                } catch (Exception e) {
+                    Logger.logException(PlayerDAO.class, e, "Lỗi savePlayerAsync");
+                } finally {
+                    player.savingAsync.set(false);
+                }
+            });
+        }
+    }
 
     public static boolean createNewPlayer(int userId, String name, byte gender, int hair) {
         try {
@@ -364,11 +384,66 @@ public class PlayerDAO {
         }
     }
 
-    public static void updatePlayer(Player player) {
-        if (player != null && player.idMark.isLoadedAllDataPlayer()) {
-            long st = System.currentTimeMillis();
+    private static String serializeItemList(java.util.List<Item> list) {
+        JSONArray result = new JSONArray();
+        if (list == null) {
+            return result.toJSONString();
+        }
+        JSONArray dataItem = new JSONArray();
+        for (int i = 0; i < list.size(); i++) {
+            Item item;
             try {
-                JSONArray dataArray = new JSONArray();
+                item = list.get(i);
+            } catch (IndexOutOfBoundsException ex) {
+                break;
+            }
+            JSONArray opt = new JSONArray();
+            if (item != null && item.isNotNullItem()) {
+                dataItem.add(item.template.id);
+                dataItem.add(item.quantity);
+                JSONArray options = new JSONArray();
+                if (item.itemOptions != null) {
+                    for (int j = 0; j < item.itemOptions.size(); j++) {
+                        try {
+                            Item.ItemOption io = item.itemOptions.get(j);
+                            if (io != null && io.optionTemplate != null) {
+                                opt.add(io.optionTemplate.id);
+                                opt.add(io.param);
+                                options.add(opt.toJSONString());
+                                opt.clear();
+                            }
+                        } catch (IndexOutOfBoundsException ex) {
+                            break;
+                        }
+                    }
+                }
+                dataItem.add(options.toJSONString());
+            } else {
+                dataItem.add(-1);
+                dataItem.add(0);
+                dataItem.add(opt.toJSONString());
+            }
+            dataItem.add(item != null ? item.createTime : 0L);
+            result.add(dataItem.toJSONString());
+            dataItem.clear();
+        }
+        return result.toJSONString();
+    }
+
+    public static void updatePlayer(Player player) {
+        updatePlayer(player, false);
+    }
+
+    public static void updatePlayer(Player player, boolean silent) {
+        if (player == null) {
+            return;
+        }
+        synchronized (player.saveLock) {
+            if (!player.isDisposed && player.idMark != null && player.idMark.isLoadedAllDataPlayer()
+                    && player.inventory != null && player.nPoint != null && player.playerTask != null) {
+                long st = System.currentTimeMillis();
+                try {
+                    JSONArray dataArray = new JSONArray();
 
                 //data kim lượng
                 dataArray.add(player.inventory.gold > Inventory.LIMIT_GOLD
@@ -380,7 +455,8 @@ public class PlayerDAO {
                 String inventory = dataArray.toJSONString();
                 dataArray.clear();
 
-                int mapId = player.mapIdBeforeLogout;
+                int mapId = (player.zone != null && player.zone.map != null)
+                        ? player.zone.map.mapId : player.mapIdBeforeLogout;
                 int x = player.location.x;
                 int y = player.location.y;
                 long hp = player.nPoint.hp;
@@ -432,140 +508,20 @@ public class PlayerDAO {
                 String magicTree = dataArray.toJSONString();
                 dataArray.clear();
 
-                //data body
-                JSONArray dataItem = new JSONArray();
-                for (Item item : player.inventory.itemsBody) {
-                    JSONArray opt = new JSONArray();
-                    if (item.isNotNullItem()) {
-                        dataItem.add(item.template.id);
-                        dataItem.add(item.quantity);
-                        JSONArray options = new JSONArray();
-                        for (Item.ItemOption io : item.itemOptions) {
-                            opt.add(io.optionTemplate.id);
-                            opt.add(io.param);
-                            options.add(opt.toJSONString());
-                            opt.clear();
-                        }
-                        dataItem.add(options.toJSONString());
-                    } else {
-                        dataItem.add(-1);
-                        dataItem.add(0);
-                        dataItem.add(opt.toJSONString());
-                    }
-                    dataItem.add(item.createTime);
-                    dataArray.add(dataItem.toJSONString());
-                    dataItem.clear();
-                }
-                String itemsBody = dataArray.toJSONString();
-                dataArray.clear();
-
-                //data bag
-                for (Item item : player.inventory.itemsBag) {
-                    JSONArray opt = new JSONArray();
-                    if (item.isNotNullItem()) {
-                        dataItem.add(item.template.id);
-                        dataItem.add(item.quantity);
-                        JSONArray options = new JSONArray();
-                        for (Item.ItemOption io : item.itemOptions) {
-                            opt.add(io.optionTemplate.id);
-                            opt.add(io.param);
-                            options.add(opt.toJSONString());
-                            opt.clear();
-                        }
-                        dataItem.add(options.toJSONString());
-                    } else {
-                        dataItem.add(-1);
-                        dataItem.add(0);
-                        dataItem.add(opt.toJSONString());
-                    }
-                    dataItem.add(item.createTime);
-                    dataArray.add(dataItem.toJSONString());
-                    dataItem.clear();
-                }
-                String itemsBag = dataArray.toJSONString();
-                dataArray.clear();
-
-                //data box
-                for (Item item : player.inventory.itemsBox) {
-                    JSONArray opt = new JSONArray();
-                    if (item.isNotNullItem()) {
-                        dataItem.add(item.template.id);
-                        dataItem.add(item.quantity);
-                        JSONArray options = new JSONArray();
-                        for (Item.ItemOption io : item.itemOptions) {
-                            opt.add(io.optionTemplate.id);
-                            opt.add(io.param);
-                            options.add(opt.toJSONString());
-                            opt.clear();
-                        }
-                        dataItem.add(options.toJSONString());
-                    } else {
-                        dataItem.add(-1);
-                        dataItem.add(0);
-                        dataItem.add(opt.toJSONString());
-                    }
-                    dataItem.add(item.createTime);
-                    dataArray.add(dataItem.toJSONString());
-                    dataItem.clear();
-                }
-                String itemsBox = dataArray.toJSONString();
-                dataArray.clear();
-
-                //data box crack ball
-                for (Item item : player.inventory.itemsBoxCrackBall) {
-                    JSONArray opt = new JSONArray();
-                    if (item.isNotNullItem()) {
-                        dataItem.add(item.template.id);
-                        dataItem.add(item.quantity);
-                        JSONArray options = new JSONArray();
-                        for (Item.ItemOption io : item.itemOptions) {
-                            opt.add(io.optionTemplate.id);
-                            opt.add(io.param);
-                            options.add(opt.toJSONString());
-                            opt.clear();
-                        }
-                        dataItem.add(options.toJSONString());
-                    } else {
-                        dataItem.add(-1);
-                        dataItem.add(0);
-                        dataItem.add(opt.toJSONString());
-                    }
-                    dataItem.add(item.createTime);
-                    dataArray.add(dataItem.toJSONString());
-                    dataItem.clear();
-                }
-                String itemsBoxLuckyRound = dataArray.toJSONString();
-                dataArray.clear();
-
-                //data item da ban
-                for (Item item : player.inventory.itemsDaBan) {
-                    JSONArray opt = new JSONArray();
-                    if (item.isNotNullItem()) {
-                        dataItem.add(item.template.id);
-                        dataItem.add(item.quantity);
-                        JSONArray options = new JSONArray();
-                        for (Item.ItemOption io : item.itemOptions) {
-                            opt.add(io.optionTemplate.id);
-                            opt.add(io.param);
-                            options.add(opt.toJSONString());
-                            opt.clear();
-                        }
-                        dataItem.add(options.toJSONString());
-                    } else {
-                        dataItem.add(-1);
-                        dataItem.add(0);
-                        dataItem.add(opt.toJSONString());
-                    }
-                    dataItem.add(item.createTime);
-                    dataArray.add(dataItem.toJSONString());
-                    dataItem.clear();
-                }
-                String itemsDaBan = dataArray.toJSONString();
-                dataArray.clear();
+                //data body, bag, box, crack ball, da ban (safe indexed iteration for async thread)
+                String itemsBody = serializeItemList(player.inventory.itemsBody);
+                String itemsBag = serializeItemList(player.inventory.itemsBag);
+                String itemsBox = serializeItemList(player.inventory.itemsBox);
+                String itemsBoxLuckyRound = serializeItemList(player.inventory.itemsBoxCrackBall);
+                String itemsDaBan = serializeItemList(player.inventory.itemsDaBan);
 
                 //data bạn bè
                 JSONArray dataFE = new JSONArray();
-                for (Friend f : player.friends) {
+                for (int i = 0; player.friends != null && i < player.friends.size(); i++) {
+                    Friend f = player.friends.get(i);
+                    if (f == null) {
+                        continue;
+                    }
                     dataFE.add(f.id);
                     dataFE.add(f.name);
                     dataFE.add(f.head);
@@ -580,7 +536,11 @@ public class PlayerDAO {
                 dataArray.clear();
 
                 //data kẻ thù
-                for (Friend e : player.enemies) {
+                for (int i = 0; player.enemies != null && i < player.enemies.size(); i++) {
+                    Friend e = player.enemies.get(i);
+                    if (e == null) {
+                        continue;
+                    }
                     dataFE.add(e.id);
                     dataFE.add(e.name);
                     dataFE.add(e.head);
@@ -695,7 +655,11 @@ public class PlayerDAO {
 
                 //data skill
                 JSONArray dataSkill = new JSONArray();
-                for (Skill skill : player.playerSkill.skills) {
+                for (int i = 0; player.playerSkill.skills != null && i < player.playerSkill.skills.size(); i++) {
+                    Skill skill = player.playerSkill.skills.get(i);
+                    if (skill == null || skill.template == null) {
+                        continue;
+                    }
                     dataSkill.add(skill.template.id);
                     dataSkill.add(skill.point);
                     dataSkill.add(skill.lastTimeUseThisSkill);
@@ -747,38 +711,13 @@ public class PlayerDAO {
                     petPoint = dataArray.toJSONString();
                     dataArray.clear();
 
-                    JSONArray items = new JSONArray();
-                    JSONArray options = new JSONArray();
-                    JSONArray opt = new JSONArray();
-                    for (Item item : player.pet.inventory.itemsBody) {
-                        if (item.isNotNullItem()) {
-                            dataItem.add(item.template.id);
-                            dataItem.add(item.quantity);
-                            for (Item.ItemOption io : item.itemOptions) {
-                                opt.add(io.optionTemplate.id);
-                                opt.add(io.param);
-                                options.add(opt.toJSONString());
-                                opt.clear();
-                            }
-                            dataItem.add(options.toJSONString());
-                        } else {
-                            dataItem.add(-1);
-                            dataItem.add(0);
-                            dataItem.add(options.toJSONString());
-                        }
-
-                        dataItem.add(item.createTime);
-
-                        items.add(dataItem.toJSONString());
-                        dataItem.clear();
-                        options.clear();
-                    }
-                    petBody = items.toJSONString();
+                    petBody = serializeItemList(player.pet.inventory.itemsBody);
 
                     JSONArray petSkills = new JSONArray();
-                    for (Skill s : player.pet.playerSkill.skills) {
+                    for (int i = 0; player.pet.playerSkill.skills != null && i < player.pet.playerSkill.skills.size(); i++) {
+                        Skill s = player.pet.playerSkill.skills.get(i);
                         JSONArray pskill = new JSONArray();
-                        if (s.skillId != -1) {
+                        if (s != null && s.skillId != -1 && s.template != null) {
                             pskill.add(s.template.id);
                             pskill.add(s.point);
                             pskill.add(s.lastTimeUseThisSkill);
@@ -940,8 +879,13 @@ public class PlayerDAO {
                 String LearnSkill = dataArray.toJSONString();
                 dataArray.clear();
                 //data achievement
-                if (player.achievement != null) {
-                    for (Template.AchievementQuest aq : player.achievement.getAchievementList()) {
+                if (player.achievement != null && player.achievement.getAchievementList() != null) {
+                    java.util.List<Template.AchievementQuest> aqList = player.achievement.getAchievementList();
+                    for (int i = 0; i < aqList.size(); i++) {
+                        Template.AchievementQuest aq = aqList.get(i);
+                        if (aq == null) {
+                            continue;
+                        }
                         JSONArray a = new JSONArray();
                         a.add(aq.completed);
                         a.add(aq.isRecieve);
@@ -953,14 +897,14 @@ public class PlayerDAO {
                 dataArray.clear();
 
                 //gift code
-                for (String code : player.giftCode.rewards) {
-                    dataArray.add(code);
+                for (int i = 0; player.giftCode != null && player.giftCode.rewards != null && i < player.giftCode.rewards.size(); i++) {
+                    dataArray.add(player.giftCode.rewards.get(i));
                 }
                 String giftCode = dataArray.toJSONString();
                 dataArray.clear();
 
-                for (int idSkill : player.BoughtSkill) {
-                    dataArray.add(idSkill);
+                for (int i = 0; player.BoughtSkill != null && i < player.BoughtSkill.size(); i++) {
+                    dataArray.add(player.BoughtSkill.get(i));
                 }
                 String BoughtSkill = dataArray.toJSONString();
                 dataArray.clear();
@@ -1060,15 +1004,18 @@ public class PlayerDAO {
                         player.id);
                 SuperRankDAO.updateData(player);
                 if (player.isOffline) {
-                    Logger.log(Logger.PURPLE, TimeUtil.getCurrHour() + "h" + TimeUtil.getCurrMin() + "m: Player " + player.name + " updated successfully! " + (System.currentTimeMillis() - st) + "ms\n");
+                    if (!silent) {
+                        Logger.log(Logger.PURPLE, TimeUtil.getCurrHour() + "h" + TimeUtil.getCurrMin() + "m: Player " + player.name + " updated successfully! " + (System.currentTimeMillis() - st) + "ms\n");
+                    }
                     player.dispose();
-                } else {
+                } else if (!silent) {
                     Logger.success(Logger.PURPLE + TimeUtil.getCurrHour() + "h" + TimeUtil.getCurrMin() + "m: Player " + player.name + " save successfully! " + (System.currentTimeMillis() - st) + "ms\n");
                 }
             } catch (Exception e) {
                 Logger.logException(PlayerDAO.class, e, "Lỗi save player " + player.name);
             }
 
+            }
         }
 
     }

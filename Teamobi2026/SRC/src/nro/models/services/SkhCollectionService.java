@@ -14,8 +14,8 @@ import org.json.simple.JSONValue;
 /**
  * Hệ thống Bảng Sưu Tập Set Kích Hoạt tại Nhà & Hướng dẫn tìm SKH (Ngọc Rồng NewGen).
  * - Mỗi hành tinh có 5 Set Kích Hoạt (3 Set cơ bản + Set Gohan + Set Kích Hoạt Mới).
- * - Mỗi Set treo đủ 5/5 món (Áo, Quần, Găng, Giày, Rada) cộng vĩnh viễn:
- *   +3% Sức đánh, +3% HP, +3% KI, +15% TNSM nhận được từ cả Sư phụ & Đệ tử.
+ * - Chỉ khi thu thập đủ cả 5/5 Set (5x5 = 25 món) mới kích hoạt Buff vĩnh viễn:
+ *   +5% Sức đánh và +15% TNSM nhận được cho cả Sư phụ & Đệ tử (không cộng lẻ từng Set).
  */
 public class SkhCollectionService {
 
@@ -409,13 +409,18 @@ public class SkhCollectionService {
 
         int newCompleted = getCompletedSetCount(player);
         if (newCompleted > prevCompleted) {
-            Service.gI().sendThongBao(player, "Hoàn thành " + setName + " (5/5)! Nhận +3% SĐ/HP/KI & +15% TNSM Sư phụ & Đệ tử!");
-            if (newCompleted >= NUM_SETS && !player.claimedSkhAura) {
-                claimFiveSetAuraReward(player, true);
+            if (newCompleted >= NUM_SETS) {
+                Service.gI().sendThongBao(player, "Chúc mừng thu thập đủ 5/5 Set Kích Hoạt (25/25 món)! Kích hoạt: +5% Sức đánh & +15% TNSM cho cả Sư phụ & Đệ tử!");
+                if (!player.claimedSkhAura) {
+                    claimFiveSetAuraReward(player, true);
+                }
+            } else {
+                Service.gI().sendThongBao(player, "Hoàn thành " + setName + " (5/5)! Tiến độ: " + newCompleted + "/5 Bộ (Thu thập đủ 5/5 Bộ để nhận +5% SĐ & +15% TNSM)!");
             }
         } else {
             Service.gI().sendThongBao(player, "Đã gắn " + mountedNow + " món vào " + setName + " (" + getMountedCountInSet(player, tabIndex) + "/5)!");
         }
+        nro.models.database.PlayerDAO.savePlayerAsync(player);
     }
 
     public void claimFiveSetAuraReward(Player player, boolean autoTrigger) {
@@ -447,6 +452,7 @@ public class SkhCollectionService {
             player.claimedSkhAura = true;
             InventoryService.gI().sendItemBags(player);
             Service.gI().sendThongBao(player, "Chúc mừng hoàn thành đủ 5 Set SKH! Bạn nhận được [Hào quang Vô Cực] (tăng tỉ lệ rơi Đồ Thần tại Cold)!");
+            nro.models.database.PlayerDAO.savePlayerAsync(player);
         }
     }
 
@@ -482,6 +488,7 @@ public class SkhCollectionService {
         }
         openCollectionUI(player, tabIndex);
         Service.gI().sendThongBao(player, "Đã tháo [" + returned.template.name + "] về Hành trang!");
+        nro.models.database.PlayerDAO.savePlayerAsync(player);
     }
 
     public void showGuide(Player player) {
@@ -506,7 +513,7 @@ public class SkhCollectionService {
                 + "- CẢNH BÁO: Không được bỏ thêm bất kỳ vật phẩm nào khác. Nếu nâng cấp THẤT BẠI sẽ mất luôn cả 2 trang bị!\n\n"
                 + "4. BẢNG SƯU TẬP SET KÍCH HOẠT TẠI NHÀ:\n"
                 + "- Gặp Ông Gôhan / Ông Moori / Ông Paragus trong Nhà (hoặc gõ chat 'skh') để mở Bảng Sưu Tập 5 Set.\n"
-                + "- Mỗi Set treo đủ 5/5 món kích hoạt vĩnh viễn: +3% Sức đánh, +3% HP, +3% KI và +15% TNSM cho cả Sư phụ & Đệ tử (tối đa 5 Set = +15% chỉ số & +75% TNSM)!\n"
+                + "- Chỉ khi thu thập đủ trọn bộ 5/5 Set (5x5 = 25 món) mới kích hoạt Buff vĩnh viễn: +5% Sức đánh và +15% TNSM cho cả Sư phụ & Đệ tử (không cộng lẻ từng Set)!\n"
                 + "- Đặc biệt: Hoàn thành đủ 5/5 Set nhận thưởng 1 lần trang bị [Hào quang Vô Cực] (Aura #11 - tăng nhẹ tỉ lệ rơi Đồ Thần Linh khi farm tại Cold)!";
         NpcService.gI().createTutorial(player, -1, guide);
     }

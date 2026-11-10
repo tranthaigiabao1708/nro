@@ -134,6 +134,7 @@ public class UseItem {
             Service.gI().sendFlagBag(player);
             Service.gI().point(player);
             Service.gI().sendSpeedPlayer(player, -1);
+            nro.models.database.PlayerDAO.savePlayerAsync(player);
         } catch (Exception e) {
             Logger.logException(UseItem.class, e);
 
@@ -239,6 +240,7 @@ public class UseItem {
                     InventoryService.gI().throwItem(player, where, index);
                     Service.gI().point(player);
                     InventoryService.gI().sendItemBags(player);
+                    nro.models.database.PlayerDAO.savePlayerAsync(player);
                 }
                 case ACCEPT_USE_ITEM ->
                     UseItem.gI().useItem(player, player.inventory.itemsBag.get(index), index);
@@ -955,6 +957,7 @@ public class UseItem {
                 }
                 TaskService.gI().checkDoneTaskUseItem(pl, item);
                 InventoryService.gI().sendItemBags(pl);
+                nro.models.database.PlayerDAO.savePlayerAsync(pl);
             } else {
                 Service.gI().sendThongBaoOK(pl, "Sức mạnh không đủ yêu cầu");
             }

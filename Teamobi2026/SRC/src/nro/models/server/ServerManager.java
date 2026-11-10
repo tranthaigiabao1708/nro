@@ -105,6 +105,20 @@ public class ServerManager {
     public void run() {
         try {
             isRunning = true;
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    Client.gI().saveAllPlayers();
+                } catch (Exception ignored) {
+                }
+                try {
+                    ClanService.gI().close();
+                } catch (Exception ignored) {
+                }
+                try {
+                    ConsignShopManager.gI().save();
+                } catch (Exception ignored) {
+                }
+            }, "ServerShutdownSaveHook"));
             activeServerSocket();
 
             // Gửi các nhiệm vụ cập nhật theo từng dịch vụ
@@ -300,6 +314,18 @@ public class ServerManager {
                     Client.gI().close();
                     Logger.success("SERVER SAVED & STOPPED CLEANLY!\n");
                     System.exit(0);
+                    break;
+                case "save":
+                    Client.gI().saveAllPlayers();
+                    try {
+                        ClanService.gI().close();
+                    } catch (Exception ignored) {
+                    }
+                    try {
+                        ConsignShopManager.gI().save();
+                    } catch (Exception ignored) {
+                    }
+                    Logger.success("Đã lưu toàn bộ dữ liệu người chơi, Clan & Ký gửi!\n");
                     break;
                 case "reload":
                     try {

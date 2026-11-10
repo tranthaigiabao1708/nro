@@ -396,6 +396,8 @@ public class Trade {
                     HistoryTransactionDAO.insert(player1, player2, goldTrade1, goldTrade2, itemsTrade1, itemsTrade2,
                             bag1Before, bag2Before, this.player1.inventory.itemsBag, this.player2.inventory.itemsBag,
                             gold1Before, gold2Before, this.player1.inventory.gold, this.player2.inventory.gold);
+                    nro.models.database.PlayerDAO.savePlayerAsync(player1);
+                    nro.models.database.PlayerDAO.savePlayerAsync(player2);
                 }
                 sendNotifyTrade(tradeStatus);
             }

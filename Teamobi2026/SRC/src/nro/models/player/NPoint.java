@@ -970,13 +970,6 @@ public class NPoint {
             }
         }
 
-        if (this.player != null && !this.player.isPet) {
-            int skhSets = SkhCollectionService.getCompletedSetCount(this.player);
-            if (skhSets > 0) {
-                hpMax += (hpMax * (skhSets * 3L) / 100L);
-            }
-        }
-
         if (hpMax > 2_147_483_647) {
             hpMax = 2_147_483_647;
         }
@@ -1079,13 +1072,6 @@ public class NPoint {
         for (Item.ItemOption opt : options) {
             if (opt.optionTemplate.id == 103) {
                 mpMax += (mpMax * opt.param / 100L);
-            }
-        }
-
-        if (this.player != null && !this.player.isPet) {
-            int skhSets = SkhCollectionService.getCompletedSetCount(this.player);
-            if (skhSets > 0) {
-                mpMax += (mpMax * (skhSets * 3L) / 100L);
             }
         }
 
@@ -1243,10 +1229,10 @@ public class NPoint {
             }
         }
 
-        if (this.player != null && !this.player.isPet) {
-            int skhSets = SkhCollectionService.getCompletedSetCount(this.player);
-            if (skhSets > 0) {
-                dame += (dame * (skhSets * 3L) / 100L);
+        if (this.player != null) {
+            Player skhOwner = this.player.isPet ? ((Pet) this.player).master : this.player;
+            if (skhOwner != null && SkhCollectionService.getCompletedSetCount(skhOwner) >= SkhCollectionService.NUM_SETS) {
+                dame += (dame * 5L / 100L);
             }
         }
 
@@ -1665,11 +1651,8 @@ public class NPoint {
                 }
             }
             Player skhOwner = this.player.isPet ? ((Pet) this.player).master : this.player;
-            if (skhOwner != null) {
-                int skhSets = SkhCollectionService.getCompletedSetCount(skhOwner);
-                if (skhSets > 0) {
-                    tiemNang += (tiemNang * (skhSets * 15L) / 100L);
-                }
+            if (skhOwner != null && SkhCollectionService.getCompletedSetCount(skhOwner) >= SkhCollectionService.NUM_SETS) {
+                tiemNang += (tiemNang * 15L / 100L);
             }
             long tn = tiemNang;
             if (this.player.charms.tdTriTue > System.currentTimeMillis()) {

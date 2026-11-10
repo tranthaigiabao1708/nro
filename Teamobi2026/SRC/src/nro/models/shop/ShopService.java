@@ -506,6 +506,7 @@ public class ShopService {
             buyItem(player, tempId);
         }
         Service.gI().sendMoney(player);
+        nro.models.database.PlayerDAO.savePlayerAsync(player);
     }
 
     private boolean subMoneyByItemShop(Player player, ItemShop is) {
@@ -1201,6 +1202,7 @@ public class ShopService {
                         || "APPULE".equals(pl.idMark.getTagNameShop())) {
                     AchievementService.gI().checkDoneTask(pl, ConstAchievement.TRUM_NHAT_VE_CHAI);
                 }
+                nro.models.database.PlayerDAO.savePlayerAsync(pl);
                 return;
             }
             long cost = item.template.gold;
@@ -1241,6 +1243,7 @@ public class ShopService {
                     || "APPULE".equals(pl.idMark.getTagNameShop())) {
                 AchievementService.gI().checkDoneTask(pl, ConstAchievement.TRUM_NHAT_VE_CHAI);
             }
+            nro.models.database.PlayerDAO.savePlayerAsync(pl);
         } else {
             Service.gI().sendThongBao(pl, "Không thể thực hiện");
         }
@@ -1691,6 +1694,7 @@ public class ShopService {
         Service.gI().sendMoney(player);
         Service.gI().sendThongBao(player, "Đã mua x" + Util.numberToMoney(quantity) + " " + is.temp.name
                 + " (-" + Util.numberToMoney(totalCost) + " " + currencyName + ")");
+        nro.models.database.PlayerDAO.savePlayerAsync(player);
     }
 
 }

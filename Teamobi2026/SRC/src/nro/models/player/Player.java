@@ -438,9 +438,20 @@ public class Player implements Runnable {
         Executors.newSingleThreadExecutor().submit(this, "Update player " + this.name);
     }
 
+    public long lastTimeAutoSave = System.currentTimeMillis();
+    public final Object saveLock = new Object();
+    public final java.util.concurrent.atomic.AtomicBoolean savingAsync = new java.util.concurrent.atomic.AtomicBoolean(false);
+    public volatile boolean pendingAsyncSave = false;
+    public volatile boolean isDisposed = false;
+
     public void update() {
         if (!this.beforeDispose) {
             try {
+                if (this.isPl() && this.idMark != null && this.idMark.isLoadedAllDataPlayer()
+                        && Util.canDoWithTime(this.lastTimeAutoSave, 5000)) {
+                    this.lastTimeAutoSave = System.currentTimeMillis();
+                    nro.models.database.PlayerDAO.savePlayerAsync(this);
+                }
                 if (this.zone != null || (!this.isPl() && this.zone == null)) {
                     if (itemTime != null) {
                         itemTime.update();
@@ -1709,7 +1720,9 @@ public class Player implements Runnable {
     }
 
     public void dispose() {
-        if (itemsTradeWVP != null) {
+        synchronized (this.saveLock) {
+            this.isDisposed = true;
+            if (itemsTradeWVP != null) {
             if (!itemsTradeWVP.isEmpty()) {
                 for (Item item : itemsTradeWVP) {
                     InventoryService.gI().addItemBag(this, item);
@@ -1878,6 +1891,7 @@ public class Player implements Runnable {
         textThongBaoChangeMap = null;
         textThongBaoThua = null;
         pendingBulkItemShop = null;
+        }
     }
 
     public String getLastChatMessage() {

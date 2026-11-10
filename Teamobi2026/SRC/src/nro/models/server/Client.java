@@ -156,6 +156,19 @@ public class Client implements Runnable {
         Logger.success("SUCCESSFUL\n");
     }
 
+    public synchronized void saveAllPlayers() {
+        List<Player> snapshot = new ArrayList<>(this.players);
+        for (Player pl : snapshot) {
+            if (pl != null) {
+                try {
+                    PlayerDAO.updatePlayer(pl, false);
+                } catch (Exception e) {
+                    Logger.logException(Client.class, e);
+                }
+            }
+        }
+    }
+
     private void update() {
         for (int i = SessionManager.gI().getSessions().size() - 1; i >= 0; i--) {
             ISession s = SessionManager.gI().getSessions().get(i);

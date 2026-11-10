@@ -268,7 +268,7 @@ public class CombineService {
         player.idMark.setIndexMenu(ConstNpc.IGNORE_MENU);
         player.combineNew.clearParamCombine();
         player.combineNew.lastTimeCombine = System.currentTimeMillis();
-        
+        nro.models.database.PlayerDAO.savePlayerAsync(player);
     }
     
     public void startCombineVip(Player player, int n) {
@@ -281,7 +281,7 @@ public class CombineService {
         player.idMark.setIndexMenu(ConstNpc.IGNORE_MENU);
         player.combineNew.clearParamCombine();
         player.combineNew.lastTimeCombine = System.currentTimeMillis();
-        
+        nro.models.database.PlayerDAO.savePlayerAsync(player);
     }
 
     /**

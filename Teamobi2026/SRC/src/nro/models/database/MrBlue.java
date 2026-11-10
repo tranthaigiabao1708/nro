@@ -137,6 +137,10 @@ public class MrBlue {
                     if (secondsPass < Manager.SECOND_WAIT_LOGIN) {
                         Service.gI().sendWaitToLogin(session, Manager.SECOND_WAIT_LOGIN - secondsPass);
                     } else {
+                        plInGame = Client.gI().getPlayerByUser(session.userId);
+                        if (plInGame != null) {
+                            Client.gI().kickSession(plInGame.getSession());
+                        }
                         rs = LocalManager.executeQuery("select * from player where account_id = ? limit 1", session.userId);
                         if (!rs.first()) {
                             //-28 -4 version data game
@@ -145,10 +149,6 @@ public class MrBlue {
                             DataGame.sendDataItemBG(session);
                             Service.gI().switchToCreateChar(session);
                         } else {
-                            plInGame = Client.gI().getPlayerByUser(session.userId);
-                            if (plInGame != null) {
-                                Client.gI().kickSession(plInGame.getSession());
-                            }
                             if ((player = loadPlayer(rs, false)) != null) {
                                 player.isPlayer = true;
                                 player.deltaTime = deltaTime;

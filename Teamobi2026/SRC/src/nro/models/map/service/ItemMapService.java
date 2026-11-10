@@ -23,6 +23,7 @@ public class ItemMapService {
             if (isThuHut || player.isBot || Util.canDoWithTime(player.idMark.getLastTimePickItem(), 1000)) {
                 player.zone.pickItem(player, itemMapId);
                 player.idMark.setLastTimePickItem(System.currentTimeMillis());
+                nro.models.database.PlayerDAO.savePlayerAsync(player);
             }
         }
     }

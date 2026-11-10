@@ -1126,6 +1126,7 @@ public class TaskService {
             } else {
                 this.sendNextSubTask(player);
             }
+            nro.models.database.PlayerDAO.savePlayerAsync(player);
         } else {
             this.sendUpdateCountSubTask(player);
         }
@@ -1337,6 +1338,7 @@ public class TaskService {
                     Service.gI().sendThongBao(player, "Bạn nhận được "
                             + Util.numberToMoney(goldReward) + " vàng");
                     player.playerTask.sideTask.reset();
+                    nro.models.database.PlayerDAO.updatePlayer(player, true);
                 } else {
                     Service.gI().sendThongBao(player, "Hành trang không đủ chỗ trống.");
                 }

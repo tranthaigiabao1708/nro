@@ -49,8 +49,12 @@ if %ERRORLEVEL% EQU 0 (
     echo Nếu muốn tắt Server chạy ngầm để bật lại tại cửa sổ này, hãy gõ R rồi nhấn Enter.
     set /p RESTART_CHOICE="Nhấn Enter để đóng thông báo (hoặc gõ R + Enter để khởi động lại Server): "
     if /I not "%RESTART_CHOICE%"=="R" exit /b 0
-    for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":14445 " ^| findstr "LISTENING"') do taskkill /F /PID %%a >nul 2>&1
-    timeout /t 2 /nobreak >nul
+    for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":14445 " ^| findstr "LISTENING"') do (
+        taskkill /PID %%a >nul 2>&1
+        timeout /t 2 /nobreak >nul
+        taskkill /F /PID %%a >nul 2>&1
+    )
+    timeout /t 1 /nobreak >nul
 )
 
 echo   - Gõ "reload" + Enter tại cửa sổ này để nạp nóng Config ^& Shop

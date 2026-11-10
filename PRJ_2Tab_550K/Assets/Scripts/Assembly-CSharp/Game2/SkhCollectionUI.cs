@@ -786,43 +786,48 @@ namespace Game2
 			}
 			mFont.tahoma_7b_white.drawString(g, curCount + "/5", scCenterX, barY + 1, mFont.CENTER);
 
-			// Các dòng chỉ số thưởng của mỗi Set
+			// Các dòng chỉ số thưởng khi thu thập đủ trọn bộ 5/5 Set (25 món)
+			bool isAllSetsFull = (completedSetCount >= NUM_SETS);
 			int statX = scrollX + 8;
-			int statY = scrollY + 55;
-			mFont.tahoma_7b_dark.drawString(g, "+3% Sức đánh", statX + 1, statY + 1, mFont.LEFT);
-			mFont.tahoma_7b_yellow.drawString(g, "+3% Sức đánh", statX, statY, mFont.LEFT);
+			int statY = scrollY + 54;
+			mFont.tahoma_7b_dark.drawString(g, "ĐỦ 5/5 BỘ NHẬN:", statX, statY, mFont.LEFT);
 
-			mFont.tahoma_7b_dark.drawString(g, "+3% HP", statX + 1, statY + 14, mFont.LEFT);
-			mFont.tahoma_7b_green.drawString(g, "+3% HP", statX, statY + 13, mFont.LEFT);
+			mFont.tahoma_7b_dark.drawString(g, "+5% Sức đánh", statX + 1, statY + 14, mFont.LEFT);
+			mFont.tahoma_7b_yellow.drawString(g, "+5% Sức đánh", statX, statY + 13, mFont.LEFT);
 
-			mFont.tahoma_7b_dark.drawString(g, "+3% KI", statX + 1, statY + 27, mFont.LEFT);
-			mFont.tahoma_7b_blue.drawString(g, "+3% KI", statX, statY + 26, mFont.LEFT);
+			mFont.tahoma_7b_dark.drawString(g, "+15% TNSM", statX + 1, statY + 27, mFont.LEFT);
+			mFont.tahoma_7b_green.drawString(g, "+15% TNSM", statX, statY + 26, mFont.LEFT);
 
-			mFont.tahoma_7b_dark.drawString(g, "+15% TNSM từ", statX, statY + 41, mFont.LEFT);
-			mFont.tahoma_7b_dark.drawString(g, "Sư phụ & Đệ tử", statX, statY + 52, mFont.LEFT);
+			mFont.tahoma_7b_dark.drawString(g, "(Sư phụ & Đệ tử)", statX, statY + 39, mFont.LEFT);
+			mFont.tahoma_7b_blue.drawString(g, "+ Hào quang Vô Cực", statX, statY + 51, mFont.LEFT);
 
-			// Vẽ Cúp Vàng bên phải dòng HP/KI giống ảnh mẫu
-			PaintGoldenTrophy(g, scrollX + scrollW - 30, statY + 10, isTabFull);
+			// Vẽ Cúp Vàng bên phải (sáng vàng khi đủ cả 5/5 Bộ)
+			PaintGoldenTrophy(g, scrollX + scrollW - 30, statY + 12, isAllSetsFull);
 
-			// Tổng cộng dồn cả 5 Set ở chân cuộn giấy
+			// Tổng tiến độ 5 Set ở chân cuộn giấy
 			g.setColor(0x8D6E43, 0.55f);
 			g.fillRect(scrollX + 8, scrollY + scrollH - 35, scrollW - 16, 1);
-			int totalStatPct = completedSetCount * 3;
-			int totalTnsmPct = completedSetCount * 15;
 			mFont.tahoma_7b_dark.drawString(g, "Tổng đủ: " + completedSetCount + "/5 Bộ", scCenterX, scrollY + scrollH - 32, mFont.CENTER);
-			mFont.tahoma_7_blue1.drawString(g, "+" + totalStatPct + "% CS | +" + totalTnsmPct + "% TNSM", scCenterX, scrollY + scrollH - 21, mFont.CENTER);
-
-			// Dòng trạng thái kích hoạt bên dưới cuộn giấy (như ảnh mẫu)
-			int statusY = scrollY + scrollH + 3;
-			if (isTabFull)
+			if (isAllSetsFull)
 			{
-				mFont.tahoma_7_white.drawString(g, "(Kích hoạt 100%)", scCenterX, statusY, mFont.CENTER);
-				mFont.tahoma_7b_green2.drawString(g, "ĐÃ KÍCH HOẠT", scCenterX, statusY + 11, mFont.CENTER);
+				mFont.tahoma_7_blue1.drawString(g, "+5% SĐ | +15% TNSM", scCenterX, scrollY + scrollH - 21, mFont.CENTER);
 			}
 			else
 			{
-				mFont.tahoma_7_yellow.drawString(g, "(Tiến độ: " + curCount + "/5 món)", scCenterX, statusY, mFont.CENTER);
-				mFont.tahoma_7_grey.drawString(g, "CHƯA ĐỦ BỘ", scCenterX, statusY + 11, mFont.CENTER);
+				mFont.tahoma_7_red.drawString(g, "Đủ 5/5 Bộ mở Buff", scCenterX, scrollY + scrollH - 21, mFont.CENTER);
+			}
+
+			// Dòng trạng thái kích hoạt bên dưới cuộn giấy
+			int statusY = scrollY + scrollH + 3;
+			if (isAllSetsFull)
+			{
+				mFont.tahoma_7_white.drawString(g, "(Đủ 5/5 Bộ - 25 món)", scCenterX, statusY, mFont.CENTER);
+				mFont.tahoma_7b_green2.drawString(g, "ĐÃ KÍCH HOẠT BUFF", scCenterX, statusY + 11, mFont.CENTER);
+			}
+			else
+			{
+				mFont.tahoma_7_yellow.drawString(g, "(Bộ này: " + curCount + "/5 món)", scCenterX, statusY, mFont.CENTER);
+				mFont.tahoma_7_grey.drawString(g, "CHƯA ĐỦ 5/5 BỘ", scCenterX, statusY + 11, mFont.CENTER);
 			}
 
 			// 7. Vẽ 4 Nút bấm phía dưới: GẮN ĐỒ | THÁO ĐỒ | CẨM NANG | THOÁT

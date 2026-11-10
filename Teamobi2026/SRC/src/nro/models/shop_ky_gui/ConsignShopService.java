@@ -150,6 +150,7 @@ public class ConsignShopService {
                 InventoryService.gI().sendItemBags(pl);
                 Service.gI().sendThongBao(pl, "Bạn đã nhận được " + item.template.name);
                 ConsignShopManager.gI().save();
+                nro.models.database.PlayerDAO.savePlayerAsync(pl);
                 openShopKyGui(pl);
             }
         }
@@ -257,6 +258,7 @@ public class ConsignShopService {
         ConsignShopManager.gI().listItem.sort(Comparator.comparingInt((ConsignItem it) -> it.isUpTop).reversed());
 
         ConsignShopManager.gI().save();
+        nro.models.database.PlayerDAO.savePlayerAsync(pl);
         openShopKyGui(pl);
     }
 
@@ -281,6 +283,7 @@ public class ConsignShopService {
                     InventoryService.gI().sendItemBags(pl);
                     Service.gI().sendMoney(pl);
                     ConsignShopManager.gI().save();
+                    nro.models.database.PlayerDAO.savePlayerAsync(pl);
                     Service.gI().sendThongBao(pl, "Hủy bán vật phẩm thành công");
                     openShopKyGui(pl);
                 }
@@ -305,6 +308,7 @@ public class ConsignShopService {
                 if (ConsignShopManager.gI().listItem.remove(it)) {
                     Service.gI().sendMoney(pl);
                     ConsignShopManager.gI().save();
+                    nro.models.database.PlayerDAO.savePlayerAsync(pl);
                     Service.gI().sendThongBao(pl, "Bạn đã bán vật phẩm thành công");
                     openShopKyGui(pl);
 
@@ -428,6 +432,7 @@ public class ConsignShopService {
                         Service.gI().sendMoney(pl);
                         Service.gI().sendThongBao(pl, "Đăng bán thành công");
                         ConsignShopManager.gI().save();
+                        nro.models.database.PlayerDAO.savePlayerAsync(pl);
                     }
                     break;
                 case 1:// Ngọc Xanh
@@ -441,6 +446,7 @@ public class ConsignShopService {
                         Service.gI().sendMoney(pl);
                         Service.gI().sendThongBao(pl, "Đăng bán thành công");
                         ConsignShopManager.gI().save();
+                        nro.models.database.PlayerDAO.savePlayerAsync(pl);
                     }
 
                     break;

@@ -28,8 +28,12 @@ if exist "%MYSQL_EXE%" (
 netstat -ano | findstr ":14445 " | findstr "LISTENING" >nul
 if %ERRORLEVEL% EQU 0 (
     echo [INFO] Phát hiện cổng 14445 đang có Server chạy ngầm, đang chuyển sang cửa sổ hiện tại...
-    for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":14445 " ^| findstr "LISTENING"') do taskkill /F /PID %%a >nul 2>&1
-    timeout /t 2 /nobreak >nul
+    for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":14445 " ^| findstr "LISTENING"') do (
+        taskkill /PID %%a >nul 2>&1
+        timeout /t 2 /nobreak >nul
+        taskkill /F /PID %%a >nul 2>&1
+    )
+    timeout /t 1 /nobreak >nul
 )
 
 "%JAVA_EXE%" -server -Xms512M -Xmx2048M -Dfile.encoding=UTF-8 -cp "lib/*;dist/NgocRongOnline.jar" nro.models.server.ServerManager

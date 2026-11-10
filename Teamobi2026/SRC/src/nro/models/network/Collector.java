@@ -30,6 +30,7 @@ public final class Collector
 
     @Override
     public void run() {
+        ISession currentSession = this.session;
         try {
             while (this.session != null && this.session.isConnected()) {
                 Message msg = this.collect.readMessage(this.session, this.dis);
@@ -43,7 +44,9 @@ public final class Collector
         } catch (Exception exception) {
         }
         try {
-            Network.gI().getAcceptHandler().sessionDisconnect(this.session);
+            if (currentSession != null) {
+                Network.gI().getAcceptHandler().sessionDisconnect(currentSession);
+            }
         } catch (Exception exception) {
         }
         if (this.session != null) {
