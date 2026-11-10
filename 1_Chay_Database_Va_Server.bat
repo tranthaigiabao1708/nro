@@ -40,10 +40,10 @@ netstat -ano | findstr ":14445 " | findstr "LISTENING" >nul
 if %ERRORLEVEL% EQU 0 (
     echo [OK] Game Server Ngọc Rồng NewGen ĐANG CHẠY SẴN trên cổng 14445!
     echo      Đang mở luôn Client Game để bạn vào kiểm tra...
-    if exist "%ROOT_DIR%Client_ChoNguoiChoiTaiVe\NgocRong2Tab.exe" (
-        start "" "%ROOT_DIR%Client_ChoNguoiChoiTaiVe\NgocRong2Tab.exe"
-    ) else if exist "%ROOT_DIR%Client_ChoNguoiChoiTaiVe\Ngoc Rong.exe" (
-        start "" "%ROOT_DIR%Client_ChoNguoiChoiTaiVe\Ngoc Rong.exe"
+    if exist "%ROOT_DIR%NgocRongNewGen_Client\NgocRongNewGen.exe" (
+        start "" "%ROOT_DIR%NgocRongNewGen_Client\NgocRongNewGen.exe"
+    ) else if exist "%ROOT_DIR%NgocRongNewGen_Client\Ngoc Rong.exe" (
+        start "" "%ROOT_DIR%NgocRongNewGen_Client\Ngoc Rong.exe"
     )
     echo.
     echo Nếu muốn tắt Server chạy ngầm để bật lại tại cửa sổ này, hãy gõ R rồi nhấn Enter.
@@ -60,6 +60,6 @@ if %ERRORLEVEL% EQU 0 (
 echo   - Gõ "reload" + Enter tại cửa sổ này để nạp nóng Config ^& Shop
 echo   - Gõ "bt" + Enter để bảo trì an toàn (lưu Clan ^& Ký gửi)
 echo ====================================================================
-cd /d "%ROOT_DIR%Teamobi2026\SRC"
-"%JAVA_EXE%" -server -Xms512M -Xmx2048M -Dfile.encoding=UTF-8 -cp "lib/*;dist/NgocRongOnline.jar" nro.models.server.ServerManager
+cd /d "%ROOT_DIR%NgocRongNewGen_Server"
+"%JAVA_EXE%" -server -Xms512M -Xmx2048M -Dfile.encoding=UTF-8 -cp "lib/*;dist/NgocRongNewGen.jar" nro.models.server.ServerManager
 PAUSE

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Panel - Ngọc Rồng NewGen</title>
+<style>
+  :root {
+    --bg: #0f1420; --panel: #171e2e; --panel2: #1f2840; --line: #2b3654;
+    --text: #e6ebf5; --muted: #8d99b8; --accent: #ffb020; --accent2: #ff7a18;
+    --ok: #2ecc71; --bad: #ff5468; --info: #4aa3ff;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Segoe UI", Roboto, Arial, sans-serif; background: var(--bg); color: var(--text); }
+  a { color: var(--info); }
+  header { display: flex; align-items: center; gap: 14px; padding: 14px 24px; background: linear-gradient(90deg, #1b2236, #24183a); border-bottom: 1px solid var(--line); }
+  header .logo { width: 38px; height: 38px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #ffe08a, #ff9800 60%, #c25e00); box-shadow: 0 0 14px #ff980088; position: relative; }
+  header .logo::after { content: "★"; position: absolute; inset: 0; display: grid; place-items: center; color: #c0392b; font-size: 18px; }
+  header h1 { font-size: 19px; margin: 0; letter-spacing: .3px; }
+  header h1 span { color: var(--accent); }
+  header .right { margin-left: auto; display: flex; gap: 10px; align-items: center; color: var(--muted); font-size: 13px; }
+  nav { display: flex; gap: 4px; padding: 0 24px; background: var(--panel); border-bottom: 1px solid var(--line); overflow-x: auto; }
+  nav button { background: none; border: none; color: var(--muted); padding: 13px 16px; font-size: 14px; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
+  nav button.active { color: var(--accent); border-bottom-color: var(--accent); }
+  main { padding: 22px 24px; max-width: 1400px; margin: 0 auto; }
+  .tab { display: none; } .tab.active { display: block; }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+  .card h3 { margin: 0 0 14px; font-size: 15px; color: var(--accent); }
+  .stat .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .6px; }
+  .stat .value { font-size: 28px; font-weight: 700; margin-top: 6px; }
+  .stat .sub { color: var(--muted); font-size: 12px; margin-top: 4px; }
+  .two { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); margin-top: 16px; }
+  label { display: block; font-size: 12px; color: var(--muted); margin: 10px 0 5px; }
+  input, select, textarea { width: 100%; padding: 9px 11px; background: var(--panel2); border: 1px solid var(--line); color: var(--text); border-radius: 8px; font-size: 14px; font-family: inherit; }
+  textarea { min-height: 90px; resize: vertical; font-family: Consolas, monospace; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  .row { display: flex; gap: 10px; } .row > * { flex: 1; }
+  .btn { display: inline-block; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 14px; background: linear-gradient(90deg, var(--accent), var(--accent2)); color: #1a1205; margin-top: 12px; }
+  .btn.sec { background: var(--panel2); color: var(--text); border: 1px solid var(--line); }
+  .btn.danger { background: var(--bad); color: #fff; }
+  .btn.sm { padding: 5px 10px; font-size: 12px; margin: 0 3px 0 0; }
+  .btn:disabled { opacity: .5; cursor: default; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 9px 10px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; }
+  tr:hover td { background: #ffffff06; }
+  .table-wrap { overflow-x: auto; }
+  .badge { padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .badge.ok { background: #2ecc7122; color: var(--ok); } .badge.bad { background: #ff546822; color: var(--bad); }
+  .muted { color: var(--muted); font-size: 12px; }
+  .toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; }
+  .toolbar input { max-width: 320px; }
+  #toast { position: fixed; right: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 99; }
+  .toast { padding: 11px 16px; border-radius: 8px; background: var(--panel2); border-left: 4px solid var(--ok); box-shadow: 0 6px 20px #0008; max-width: 420px; font-size: 14px; }
+  .toast.bad { border-left-color: var(--bad); }
+  #login { position: fixed; inset: 0; display: grid; place-items: center; background: radial-gradient(circle at 50% 20%, #2a1f45, var(--bg)); z-index: 50; }
+  #login .card { width: 340px; text-align: center; }
+  #login .logo { width: 64px; height: 64px; margin: 0 auto 10px; }
+  .suggest { max-height: 220px; overflow-y: auto; border: 1px solid var(--line); border-radius: 8px; margin-top: 6px; display: none; }
+  .suggest div { padding: 7px 10px; cursor: pointer; font-size: 13px; border-bottom: 1px solid var(--line); }
+  .suggest div:hover { background: var(--panel2); }
+  code { background: var(--panel2); padding: 1px 6px; border-radius: 4px; color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="card">
+    <header style="background:none;border:none;justify-content:center;padding:0 0 6px"><div class="logo"></div></header>
+    <h2 style="margin:4px 0 2px">Ngọc Rồng <span style="color:var(--accent)">NewGen</span></h2>
+    <div class="muted">Trang quản trị máy chủ</div>
+    <label style="text-align:left">Mật khẩu Admin Panel</label>
+    <input id="pw" type="password" placeholder="admin.panel.password" autofocus>
+    <button class="btn" style="width:100%" onclick="doLogin()">Đăng nhập</button>
+    <div id="loginErr" style="color:var(--bad);margin-top:10px;font-size:13px"></div>
+  </div>
+</div>
+
+<header>
+  <div class="logo"></div>
+  <h1>Ngọc Rồng <span>NewGen</span> · Admin Panel</h1>
+  <div class="right"><span id="hdrStatus">...</span><button class="btn sec sm" style="margin:0" onclick="doLogout()">Đăng xuất</button></div>
+</header>
+<nav>
+  <button data-tab="dash" class="active">📊 Tổng quan</button>
+  <button data-tab="players">👥 Người chơi online</button>
+  <button data-tab="gift">🎁 Gửi quà</button>
+  <button data-tab="codes">🎫 Giftcode</button>
+  <button data-tab="server">⚙️ Máy chủ</button>
+</nav>
+
+<main>
+  <!-- TỔNG QUAN -->
+  <section class="tab active" id="tab-dash">
+    <div class="grid">
+      <div class="card stat"><div class="label">Người chơi online</div><div class="value" id="sOnline">-</div><div class="sub" id="sMax"></div></div>
+      <div class="card stat"><div class="label">Thời gian chạy</div><div class="value" id="sUptime">-</div><div class="sub" id="sPort"></div></div>
+      <div class="card stat"><div class="label">Bộ nhớ (RAM)</div><div class="value" id="sMem">-</div><div class="sub" id="sThreads"></div></div>
+      <div class="card stat"><div class="label">Database</div><div class="value" id="sDb">-</div><div class="sub" id="sMaint"></div></div>
+    </div>
+    <div class="two">
+      <div class="card">
+        <h3>📢 Thông báo toàn máy chủ</h3>
+        <textarea id="bcMsg" placeholder="Ví dụ: Sự kiện x2 kinh nghiệm bắt đầu lúc 20h tối nay!"></textarea>
+        <button class="btn" onclick="broadcast()">Gửi thông báo</button>
+      </div>
+      <div class="card">
+        <h3>💡 Lưu ý an toàn dữ liệu</h3>
+        <div class="muted" style="font-size:13px;line-height:1.7">
+          • Mọi thao tác gửi quà / tiền chỉ áp dụng cho người chơi <b>đang online</b> để không bị ghi đè dữ liệu.<br>
+          • <b>Không tắt server bằng nút ✕ của cửa sổ console</b>, hãy dùng nút <b>Lưu &amp; Tắt server</b> ở tab Máy chủ.<br>
+          • Mọi thao tác admin được ghi lại tại <code>NgocRongNewGen_Server/log/admin_panel.log</code>.<br>
+          • Đổi mật khẩu panel tại <code>admin.panel.password</code> trong <code>Config.properties</code>.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NGƯỜI CHƠI -->
+  <section class="tab" id="tab-players">
+    <div class="card">
+      <div class="toolbar">
+        <input id="plFilter" placeholder="Lọc theo tên / IP..." oninput="renderPlayers()">
+        <button class="btn sec sm" style="margin:0" onclick="loadPlayers()">↻ Làm mới</button>
+        <span class="muted" id="plCount"></span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tên</th><th>Hành tinh</th><th>Sức mạnh</th><th>Vàng</th><th>Ngọc</th><th>Hồng ngọc</th><th>Thỏi vàng</th><th>Vị trí</th><th>IP</th><th>Thao tác</th></tr></thead>
+          <tbody id="plBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>🔒 Khóa / mở khóa tài khoản (cả khi offline)</h3>
+      <div class="row">
+        <div><label>Tên nhân vật</label><input id="banName" placeholder="tên nhân vật"></div>
+        <div style="flex:0 0 auto;display:flex;align-items:flex-end;gap:8px">
+          <button class="btn danger" onclick="banAcc(1)">Khóa (Ban)</button>
+          <button class="btn sec" onclick="banAcc(0)">Mở khóa</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GỬI QUÀ -->
+  <section class="tab" id="tab-gift">
+    <div class="two" style="margin-top:0">
+      <div class="card">
+        <h3>🎒 Gửi vật phẩm</h3>
+        <label>Tên nhân vật (đang online)</label><input id="giName" list="plList" placeholder="tên nhân vật">
+        <label>Tìm vật phẩm (gõ tên hoặc ID)</label><input id="giSearch" placeholder="ví dụ: ngọc rồng, cải trang, 457..." oninput="searchItems()">
+        <div class="suggest" id="giSuggest"></div>
+        <div class="row">
+          <div><label>ID vật phẩm</label><input id="giId" type="number" placeholder="ID"></div>
+          <div><label>Số lượng</label><input id="giQty" type="number" value="1" min="1"></div>
+        </div>
+        <label>Chỉ số / option (tùy chọn) — dạng <code>optId:param</code>, cách nhau dấu cách</label>
+        <input id="giOpt" placeholder="ví dụ: 50:20 77:20 103:20 30:0">
+        <div class="muted" style="margin-top:6px">Để trống: dùng chỉ số mặc định của shop. <code>30:0</code> = không thể giao dịch.</div>
+        <button class="btn" onclick="giveItem()">Gửi vật phẩm</button>
+        <div class="muted" id="giSelected" style="margin-top:8px"></div>
+      </div>
+      <div>
+        <div class="card">
+          <h3>💰 Cộng / trừ tiền</h3>
+          <label>Tên nhân vật (đang online)</label><input id="moName" list="plList" placeholder="tên nhân vật">
+          <div class="row">
+            <div><label>Loại</label>
+              <select id="moType"><option value="gold">Vàng</option><option value="gem">Ngọc xanh</option><option value="ruby">Hồng ngọc</option></select></div>
+            <div><label>Số lượng (số âm để trừ)</label><input id="moAmt" type="number" placeholder="1000000"></div>
+          </div>
+          <button class="btn" onclick="giveMoney()">Thực hiện</button>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <h3>🟨 Gửi Thỏi vàng</h3>
+          <label>Tên nhân vật (đang online)</label><input id="tvName" list="plList" placeholder="tên nhân vật">
+          <div class="row">
+            <div><label>Số lượng</label><input id="tvQty" type="number" value="10" min="1"></div>
+            <div><label>Loại</label>
+              <select id="tvLock"><option value="1">Thỏi vàng KHÓA (không giao dịch)</option><option value="0">Thỏi vàng THƯỜNG (giao dịch được)</option></select></div>
+          </div>
+          <button class="btn" onclick="giveTV()">Gửi Thỏi vàng</button>
+        </div>
+      </div>
+    </div>
+    <datalist id="plList"></datalist>
+  </section>
+
+  <!-- GIFTCODE -->
+  <section class="tab" id="tab-codes">
+    <div class="two" style="margin-top:0">
+      <div class="card">
+        <h3>➕ Tạo giftcode mới</h3>
+        <div class="row">
+          <div><label>Mã code</label><input id="gcCode" placeholder="VD: NEWGEN2026"></div>
+          <div><label>Số lượt (-1 = không giới hạn)</label><input id="gcCount" type="number" value="-1"></div>
+        </div>
+        <label>Ngày hết hạn (để trống = vĩnh viễn)</label><input id="gcExp" type="date">
+        <label>Vật phẩm — mỗi dòng: <code>itemId:soLuong[:optId-param,optId-param]</code></label>
+        <textarea id="gcItems" placeholder="457:50:30-0&#10;381:10:30-0&#10;16:5"></textarea>
+        <div class="muted" style="margin-top:6px">Ví dụ <code>457:50:30-0</code> = 50 Thỏi vàng khóa.</div>
+        <button class="btn" onclick="createCode()">Tạo giftcode</button>
+      </div>
+      <div class="card">
+        <h3>🎫 Danh sách giftcode</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Mã</th><th>Lượt còn</th><th>Hết hạn</th><th>Phần quà</th><th></th></tr></thead>
+          <tbody id="gcBody"></tbody>
+        </table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MÁY CHỦ -->
+  <section class="tab" id="tab-server">
+    <div class="grid">
+      <div class="card">
+        <h3>💾 Lưu dữ liệu</h3>
+        <div class="muted">Lưu ngay toàn bộ người chơi online, bang hội và shop ký gửi xuống database.</div>
+        <button class="btn" onclick="act('/api/server/save', {}, 'Lưu toàn bộ dữ liệu ngay?')">Lưu toàn bộ</button>
+      </div>
+      <div class="card">
+        <h3>🛠️ Bảo trì có đếm ngược</h3>
+        <div class="muted">Thông báo đếm ngược tới người chơi, sau đó lưu dữ liệu và tự khởi động lại (sau 5 phút).</div>
+        <label>Số giây đếm ngược</label><input id="mtSec" type="number" value="60" min="10">
+        <button class="btn sec" onclick="act('/api/server/maintenance', {seconds: v('mtSec')}, 'Bắt đầu bảo trì?')">Bắt đầu bảo trì</button>
+      </div>
+      <div class="card">
+        <h3>⏻ Lưu &amp; Tắt server</h3>
+        <div class="muted">Lưu toàn bộ dữ liệu rồi tắt server an toàn (không tự khởi động lại).</div>
+        <button class="btn danger" onclick="act('/api/server/stop', {}, 'TẮT SERVER ngay bây giờ? Người chơi sẽ bị ngắt kết nối.')">Lưu &amp; Tắt server</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const v = id => $(id).value.trim();
+let players = [];
+
+function toast(msg, ok = true) {
+  const d = document.createElement('div');
+  d.className = 'toast' + (ok ? '' : ' bad');
+  d.textContent = msg;
+  $('toast').appendChild(d);
+  setTimeout(() => d.remove(), 4500);
+}
+const fmt = n => Number(n || 0).toLocaleString('vi-VN');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+async function api(path, data) {
+  const opt = { headers: { 'X-NRO-Admin': '1' }, credentials: 'same-origin' };
+  if (data !== undefined) {
+    opt.method = 'POST';
+    opt.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+    opt.body = new URLSearchParams(data).toString();
+  }
+  const r = await fetch(path, opt);
+  if (r.status === 401 && path !== '/api/login') { showLogin(); throw new Error('Cần đăng nhập'); }
+  return r.json();
+}
+async function act(path, data, confirmMsg) {
+  if (confirmMsg && !confirm(confirmMsg)) return null;
+  try {
+    const r = await api(path, data);
+    toast(r.message || (r.ok ? 'Thành công' : 'Thất bại'), r.ok);
+    return r;
+  } catch (e) { toast(e.message, false); return null; }
+}
+
+function showLogin() { $('login').style.display = 'grid'; }
+async function doLogin() {
+  $('loginErr').textContent = '';
+  const r = await api('/api/login', { password: $('pw').value });
+  if (r.ok) { $('login').style.display = 'none'; $('pw').value = ''; refreshAll(); }
+  else $('loginErr').textContent = r.message;
+}
+$('pw').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+async function doLogout() { await api('/api/logout', {}); showLogin(); }
+
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('nav button').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  $('tab-' + b.dataset.tab).classList.add('active');
+  if (b.dataset.tab === 'players') loadPlayers();
+  if (b.dataset.tab === 'codes') loadCodes();
+});
+
+function uptime(s) {
+  const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60);
+  return (d ? d + 'n ' : '') + h + 'g ' + m + 'p';
+}
+async function loadStatus() {
+  try {
+    const s = await api('/api/status');
+    if (!s.ok) return;
+    $('login').style.display = 'none';
+    $('sOnline').textContent = fmt(s.online);
+    $('sMax').textContent = 'Tối đa ' + fmt(s.maxPlayer);
+    $('sUptime').textContent = uptime(s.uptimeSec);
+    $('sPort').textContent = 'Cổng game ' + s.gamePort;
+    $('sMem').textContent = fmt(s.memUsedMB) + ' MB';
+    $('sThreads').textContent = '/ ' + fmt(s.memMaxMB) + ' MB · ' + s.threads + ' luồng';
+    $('sDb').innerHTML = s.dbOk ? '<span class="badge ok">KẾT NỐI</span>' : '<span class="badge bad">LỖI</span>';
+    $('sMaint').textContent = s.maintenance ? '⚠️ Đang bảo trì' : 'Hoạt động bình thường';
+    $('hdrStatus').textContent = s.serverName + ' · ' + s.online + ' online';
+  } catch (e) {}
+}
+async function loadPlayers() {
+  const r = await api('/api/players');
+  if (!r.ok) return;
+  players = r.players;
+  $('plList').innerHTML = players.map(p => `<option value="${esc(p.name)}">`).join('');
+  renderPlayers();
+}
+const planet = g => ['Trái Đất', 'Namếc', 'Xayda'][g] || '?';
+function renderPlayers() {
+  const f = v('plFilter').toLowerCase();
+  const list = players.filter(p => !f || p.name.toLowerCase().includes(f) || String(p.ip).includes(f));
+  $('plCount').textContent = list.length + ' / ' + players.length + ' người chơi';
+  $('plBody').innerHTML = list.map(p => `<tr>
+    <td><b>${esc(p.name)}</b>${p.isAdmin ? ' <span class="badge ok">ADMIN</span>' : ''}</td>
+    <td>${planet(p.gender)}</td><td>${fmt(p.power)}</td><td>${fmt(p.gold)}</td><td>${fmt(p.gem)}</td>
+    <td>${fmt(p.ruby)}</td><td>${fmt(p.thoiVang)}</td><td>${esc(p.map)}</td><td>${esc(p.ip)}</td>
+    <td><button class="btn sec sm" onclick="pickPlayer('${esc(p.name)}')">Gửi quà</button>
+        <button class="btn danger sm" onclick="kick('${esc(p.name)}')">Kick</button></td></tr>`).join('')
+    || '<tr><td colspan="10" class="muted">Chưa có người chơi online</td></tr>';
+}
+function pickPlayer(n) {
+  ['giName', 'moName', 'tvName'].forEach(id => $(id).value = n);
+  document.querySelector('nav button[data-tab=gift]').click();
+}
+async function kick(n) { if (await act('/api/player/kick', { name: n }, 'Kick ' + n + '?')) loadPlayers(); }
+function banAcc(b) { const n = v('banName'); if (n) act('/api/account/ban', { name: n, ban: b }, (b ? 'KHÓA' : 'MỞ KHÓA') + ' tài khoản của ' + n + '?'); }
+function broadcast() { const m = v('bcMsg'); if (m) act('/api/broadcast', { message: m }).then(r => r && r.ok && ($('bcMsg').value = '')); }
+
+let searchTimer;
+function searchItems() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(async () => {
+    const q = v('giSearch');
+    const box = $('giSuggest');
+    if (!q) { box.style.display = 'none'; return; }
+    const r = await api('/api/items?q=' + encodeURIComponent(q));
+    box.innerHTML = r.items.map(i => `<div onclick="pickItem(${i.id}, '${esc(i.name).replace(/'/g, '')}')"><b>[${i.id}]</b> ${esc(i.name)} <span class="muted">· type ${i.type}</span></div>`).join('')
+      || '<div class="muted">Không tìm thấy</div>';
+    box.style.display = 'block';
+  }, 250);
+}
+function pickItem(id, name) { $('giId').value = id; $('giSelected').textContent = 'Đã chọn: [' + id + '] ' + name; $('giSuggest').style.display = 'none'; }
+function giveItem() { act('/api/player/item', { name: v('giName'), itemId: v('giId'), quantity: v('giQty'), options: v('giOpt') }); }
+function giveMoney() { act('/api/player/money', { name: v('moName'), type: v('moType'), amount: v('moAmt') }); }
+function giveTV() { act('/api/player/thoivang', { name: v('tvName'), quantity: v('tvQty'), locked: v('tvLock') }); }
+
+async function loadCodes() {
+  const r = await api('/api/giftcodes');
+  if (!r.ok) return;
+  $('gcBody').innerHTML = r.giftcodes.map(g => `<tr><td><b>${esc(g.code)}</b></td>
+    <td>${g.countLeft < 0 ? '∞' : fmt(g.countLeft)}</td><td>${esc(String(g.expired).slice(0, 10))}</td>
+    <td style="white-space:normal;font-size:12px">${g.items.map(esc).join('<br>')}</td>
+    <td><button class="btn danger sm" onclick="delCode(${g.id}, '${esc(g.code)}')">Xóa</button></td></tr>`).join('')
+    || '<tr><td colspan="5" class="muted">Chưa có giftcode</td></tr>';
+}
+async function createCode() {
+  const r = await act('/api/giftcode/create', { code: v('gcCode'), count: v('gcCount'), expired: v('gcExp'), items: $('gcItems').value });
+  if (r && r.ok) { $('gcCode').value = ''; loadCodes(); }
+}
+async function delCode(id, code) { if (await act('/api/giftcode/delete', { id }, 'Xóa giftcode ' + code + '?')) loadCodes(); }
+
+function refreshAll() { loadStatus(); loadPlayers(); }
+loadStatus();
+setInterval(loadStatus, 5000);
+setInterval(() => { if ($('tab-players').classList.contains('active')) loadPlayers(); }, 10000);
+</script>
+</body>
+</html>
+
