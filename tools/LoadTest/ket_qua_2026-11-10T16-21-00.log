@@ -1,0 +1,60 @@
+[16:14:31] ===== KIỂM THỬ TẢI NGỌC RỒNG NEWGEN: 100 bot, 300 giây =====
+[16:14:32] Trạng thái ban đầu: {"uptimeSec":42,"maxPlayer":1000,"memMaxMB":2048,"dbOk":true,"memUsedMB":206,"gamePort":14445,"serverName":"Ngọc Rồng NewGen","online":0,"threads":109,"ok":true,"maintenance":false}
+[16:14:32] A. Tạo nhân vật: đã có 16, cần tạo 94
+[16:14:40] A. Đã tạo/đăng nhập 94/94 nhân vật. Chờ lưu khi thoát...
+[16:14:47] Đã đặt vị trí 110 nhân vật bot vào làng có quái (map 0 / 7 / 14)
+[16:15:02] Đã khởi chạy 100 bot sau 15s
+[16:15:12] t= 25s online=119 ram=109MB threads=414 panel=6ms | in=32192 msg out=5401 msg kill=120 pick=0/6 relog=7 mấtKN=0 lỗiGT=0
+[16:15:22] t= 35s online=120 ram=195MB threads=418 panel=4ms | in=46205 msg out=7838 msg kill=201 pick=0/20 relog=10 mấtKN=0 lỗiGT=0
+[16:15:32] t= 45s online=121 ram=289MB threads=421 panel=2ms | in=60466 msg out=10291 msg kill=268 pick=0/51 relog=14 mấtKN=0 lỗiGT=0
+[16:15:42] t= 55s online=120 ram=64MB threads=417 panel=2ms | in=74997 msg out=12793 msg kill=340 pick=0/92 relog=16 mấtKN=0 lỗiGT=0
+[16:15:52] t= 65s online=120 ram=144MB threads=419 panel=2ms | in=89554 msg out=15256 msg kill=435 pick=0/134 relog=19 mấtKN=0 lỗiGT=0
+[16:16:02] t= 75s online=121 ram=211MB threads=421 panel=2ms | in=104433 msg out=17762 msg kill=528 pick=0/202 relog=19 mấtKN=0 lỗiGT=0
+[16:16:12] t= 85s online=120 ram=280MB threads=420 panel=3ms | in=118338 msg out=20247 msg kill=586 pick=0/263 relog=21 mấtKN=0 lỗiGT=0
+[16:16:22] t= 95s online=120 ram=57MB threads=417 panel=3ms | in=132486 msg out=22733 msg kill=672 pick=0/318 relog=23 mấtKN=0 lỗiGT=0
+[16:16:32] t=105s online=121 ram=132MB threads=422 panel=3ms | in=148274 msg out=25267 msg kill=757 pick=0/385 relog=24 mấtKN=0 lỗiGT=0
+[16:16:42] t=115s online=120 ram=199MB threads=417 panel=3ms | in=162231 msg out=27815 msg kill=842 pick=0/497 relog=26 mấtKN=0 lỗiGT=0
+[16:16:52] t=125s online=121 ram=281MB threads=421 panel=2ms | in=176399 msg out=30355 msg kill=926 pick=0/582 relog=28 mấtKN=0 lỗiGT=0
+[16:17:02] t=135s online=120 ram=46MB threads=417 panel=2ms | in=191392 msg out=32917 msg kill=993 pick=0/727 relog=29 mấtKN=0 lỗiGT=0
+[16:17:12] t=145s online=117 ram=129MB threads=410 panel=3ms | in=206092 msg out=35440 msg kill=1085 pick=0/866 relog=35 mấtKN=0 lỗiGT=0
+[16:17:22] t=155s online=120 ram=218MB threads=418 panel=2ms | in=219897 msg out=37962 msg kill=1152 pick=0/1012 relog=36 mấtKN=0 lỗiGT=0
+[16:17:22] C. Kiểm thử đăng nhập 2 phiên cùng lúc cho 10 tài khoản ltdup00..09
+[16:17:29] C. Kết quả: 10 tài khoản online, 10 tài khoản có 2 bản trong server, 10 cặp cả 2 phiên đều vào game & còn kết nối
+[16:17:32] t=165s online=119 ram=144MB threads=435 panel=3ms | in=235934 msg out=40588 msg kill=1250 pick=0/1183 relog=39 mấtKN=0 lỗiGT=0
+[16:17:42] t=175s online=120 ram=226MB threads=438 panel=2ms | in=249514 msg out=43200 msg kill=1309 pick=0/1323 relog=41 mấtKN=0 lỗiGT=0
+[16:17:52] t=185s online=121 ram=316MB threads=441 panel=2ms | in=262490 msg out=45755 msg kill=1367 pick=0/1449 relog=44 mấtKN=0 lỗiGT=0
+[16:18:02] t=195s online=121 ram=106MB threads=420 panel=2ms | in=275264 msg out=48325 msg kill=1420 pick=0/1574 relog=48 mấtKN=0 lỗiGT=0
+[16:18:12] t=205s online=121 ram=173MB threads=421 panel=2ms | in=286763 msg out=50916 msg kill=1428 pick=0/1691 relog=49 mấtKN=0 lỗiGT=0
+[16:18:22] t=215s online=121 ram=250MB threads=423 panel=3ms | in=298030 msg out=53594 msg kill=1437 pick=0/1911 relog=51 mấtKN=0 lỗiGT=0
+[16:18:32] t=225s online=119 ram=322MB threads=420 panel=2ms | in=310151 msg out=56340 msg kill=1452 pick=0/2173 relog=54 mấtKN=0 lỗiGT=0
+[16:18:42] t=235s online=121 ram=99MB threads=420 panel=2ms | in=321175 msg out=59080 msg kill=1456 pick=0/2470 relog=54 mấtKN=0 lỗiGT=0
+[16:18:52] t=245s online=121 ram=162MB threads=420 panel=2ms | in=332019 msg out=61794 msg kill=1456 pick=0/2746 relog=54 mấtKN=0 lỗiGT=0
+[16:19:02] t=255s online=119 ram=224MB threads=414 panel=2ms | in=343589 msg out=64535 msg kill=1463 pick=0/3028 relog=56 mấtKN=0 lỗiGT=0
+[16:19:12] t=265s online=120 ram=308MB threads=418 panel=2ms | in=354357 msg out=67437 msg kill=1465 pick=0/3428 relog=58 mấtKN=0 lỗiGT=0
+[16:19:22] t=275s online=121 ram=98MB threads=421 panel=2ms | in=365305 msg out=70216 msg kill=1465 pick=0/3711 relog=61 mấtKN=0 lỗiGT=0
+[16:19:32] t=285s online=119 ram=163MB threads=414 panel=2ms | in=375922 msg out=73039 msg kill=1465 pick=0/4092 relog=63 mấtKN=0 lỗiGT=0
+[16:19:42] t=295s online=121 ram=250MB threads=420 panel=2ms | in=386192 msg out=75912 msg kill=1468 pick=0/4558 relog=64 mấtKN=0 lỗiGT=0
+[16:19:52] t=305s online=121 ram=43MB threads=421 panel=2ms | in=396652 msg out=78712 msg kill=1468 pick=0/4937 relog=68 mấtKN=0 lỗiGT=0
+[16:19:52] Dừng mọi hành động, chờ 4s cho dữ liệu ổn định...
+[16:19:57] Chụp dữ liệu RAM của 100 nhân vật, ngắt kết nối đồng loạt 100 bot...
+[16:20:57] Tất cả đã thoát sau 60s (online=21)
+[16:21] D. Đối chiếu RAM vs DB: kiểm tra 100 nhân vật, lệch 0, không tìm thấy 0
+[16:21] 
+[16:21] ================= KẾT QUẢ =================
+[16:21] Đăng nhập thành công: 262 | thất bại: 0 | lỗi kết nối: 0
+[16:21] Mất kết nối ngoài ý muốn: 0 | thoát-vào lại chủ động: 68
+[16:21] Tin nhắn nhận: 397840 (17 MB) | gửi: 78712 | lỗi giải mã: 0
+[16:21] Quái bị hạ: 1468 | nhặt đồ thành công: 0/4937 yêu cầu | lời mời giao dịch: 74
+[16:21] Thông báo server thường gặp:
+[16:21]    282 x  Hôm nay bạn sẽ nhận được từ 1 đến 2 viên ngọc khi tiêu diệt 1 con quái
+[16:21]    88 x  Giao dịch thành công
+[16:21]    44 x  Xin chờ đối phương đồng ý
+[16:21]    3 x  Thử lại sau 3 giây
+[16:21]    1 x  Thử lại sau 1 giây
+[16:21]    1 x  Thử lại sau 6 giây
+[16:21]    1 x  Thử lại sau 4 giây
+[16:21]    1 x  Thử lại sau 9 giây
+[16:21]    1 x  Thử lại sau 2 giây
+[16:21] 
+[16:21] PHÁT HIỆN (1):
+[16:21]    - ĐĂNG NHẬP 2 PHIÊN: 10/10 tài khoản có 2 nhân vật cùng online, 10/10 cặp cả 2 phiên đều trong game

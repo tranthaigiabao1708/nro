@@ -116,7 +116,7 @@ public class Mob {
         }
     }
 
-    public void injured(Player plAtt, long damage, boolean dieWhenHpFull) {
+    public synchronized void injured(Player plAtt, long damage, boolean dieWhenHpFull) {
         if (!this.isDie()) {
             if (damage >= this.point.hp) {
                 damage = this.point.hp;
@@ -187,8 +187,9 @@ public class Mob {
                 }
                 Service.gI().addSMTN(plAtt, (byte) 2, getTiemNangForPlayer(plAtt, damage), true);
                 TrainingService.gI().tangTnsmLuyenTap(plAtt, getTiemNangForPlayer(plAtt, damage));
-                plAtt.total_damage_maydam += damage;
-                Service.gI().updatePlayerTotalDamage(plAtt);
+                if (plAtt.isPl()) {
+                    plAtt.total_damage_maydam += damage;
+                }
                 long realDamage = this.point.hp / 100 > 0 ? this.point.hp / 100 : 1;
 
                 damage = this.point.hp / 100 > 0 ? this.point.hp / 100 : 1;

@@ -41,6 +41,7 @@ public class Session implements ISession {
         this.connected = true;
 
         try {
+            this.socket.setTcpNoDelay(true);
             this.socket.setSendBufferSize(0x100000);
             this.socket.setReceiveBufferSize(0x100000);
         } catch (SocketException ignored) {

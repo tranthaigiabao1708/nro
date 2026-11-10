@@ -663,19 +663,19 @@ public class Controller implements IMessageHandler {
                     if (player != null) {
                         int _id = _msg.reader().readInt();
                         int menuType = player.idMark.getMenuType();
+                        if (player.isAdmin() && (menuType >= 3 || _id < 0)) {
+                            Boss boss = BossManager.gI().getBoss(_id);
+                            if (boss != null && boss.zone != null) {
+                                ChangeMapService.gI().changeMapYardrat(player, boss.zone, boss.location.x, boss.location.y);
+                            }
+                            break;
+                        }
                         switch (menuType) {
                             case 0, 1, 2 -> {
                                 SuperRankService.gI().competing(player, _id);
                             }
                             default -> {
-                                if (player.isAdmin()) {
-                                    Boss boss = BossManager.gI().getBoss(_id);
-                                    if (boss != null) {
-                                        ChangeMapService.gI().changeMapYardrat(player, boss.zone, boss.location.x, boss.location.y);
-                                    }
-                                } else {
-                                    Service.gI().sendThongBao(player, "Không thể thực hiện");
-                                }
+                                Service.gI().sendThongBao(player, "Không thể thực hiện");
                             }
                         }
                     }

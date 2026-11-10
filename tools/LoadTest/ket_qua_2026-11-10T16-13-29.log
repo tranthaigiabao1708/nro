@@ -1,0 +1,27 @@
+[16:11:32] ===== KIỂM THỬ TẢI NGỌC RỒNG NEWGEN: 6 bot, 40 giây =====
+[16:11:33] Trạng thái ban đầu: {"uptimeSec":646,"maxPlayer":1000,"memMaxMB":2048,"dbOk":true,"memUsedMB":48,"gamePort":14445,"serverName":"Ngọc Rồng NewGen","online":9,"threads":118,"ok":true,"maintenance":false}
+[16:11:33] A. Tạo nhân vật: đã có 15, cần tạo 1
+[16:11:35] A. Đã tạo/đăng nhập 1/1 nhân vật. Chờ lưu khi thoát...
+[16:11:41] Đã đặt vị trí 16 nhân vật bot vào làng có quái (map 0 / 7 / 14)
+[16:11:42] Đã khởi chạy 6 bot sau 0s
+[16:11:52] t= 10s online=15 ram=129MB threads=137 panel=2ms | in=604 msg out=193 msg kill=0 pick=0/0 relog=0 mấtKN=0 lỗiGT=0
+[16:12:02] t= 20s online=15 ram=144MB threads=137 panel=3ms | in=886 msg out=332 msg kill=0 pick=0/0 relog=0 mấtKN=0 lỗiGT=0
+[16:12:02] C. Kiểm thử đăng nhập 2 phiên cùng lúc cho 10 tài khoản ltdup00..09
+[16:12:08] C. Kết quả: 10 tài khoản online, 10 tài khoản có 2 bản trong server, 10 cặp cả 2 phiên đều vào game & còn kết nối
+[16:12:12] t= 30s online=15 ram=26MB threads=137 panel=3ms | in=2002 msg out=524 msg kill=0 pick=0/0 relog=0 mấtKN=0 lỗiGT=0
+[16:12:22] t= 40s online=15 ram=50MB threads=136 panel=2ms | in=2336 msg out=679 msg kill=2 pick=0/0 relog=1 mấtKN=0 lỗiGT=0
+[16:12:22] Dừng mọi hành động, chờ 4s cho dữ liệu ổn định...
+[16:12:26] Chụp dữ liệu RAM của 6 nhân vật, ngắt kết nối đồng loạt 6 bot...
+[16:13:26] Tất cả đã thoát sau 60s (online=9)
+[16:13:29] D. Đối chiếu RAM vs DB: kiểm tra 6 nhân vật, lệch 0, không tìm thấy 0
+[16:13:29] 
+[16:13:29] ================= KẾT QUẢ =================
+[16:13:29] Đăng nhập thành công: 8 | thất bại: 0 | lỗi kết nối: 0
+[16:13:29] Mất kết nối ngoài ý muốn: 0 | thoát-vào lại chủ động: 1
+[16:13:29] Tin nhắn nhận: 2389 (1 MB) | gửi: 679 | lỗi giải mã: 0
+[16:13:29] Quái bị hạ: 2 | nhặt đồ thành công: 0/0 yêu cầu | lời mời giao dịch: 1
+[16:13:29] Thông báo server thường gặp:
+[16:13:29]    28 x  Hôm nay bạn sẽ nhận được từ 1 đến 2 viên ngọc khi tiêu diệt 1 con quái
+[16:13:29] 
+[16:13:29] PHÁT HIỆN (1):
+[16:13:29]    - ĐĂNG NHẬP 2 PHIÊN: 10/10 tài khoản có 2 nhân vật cùng online, 10/10 cặp cả 2 phiên đều trong game

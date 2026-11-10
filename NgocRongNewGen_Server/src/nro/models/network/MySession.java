@@ -19,10 +19,12 @@ import nro.models.utils.TimeUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MySession extends Session {
 
-    private static final Map<String, AntiLogin> ANTILOGIN = new HashMap<>();
+    private static final Map<String, AntiLogin> ANTILOGIN = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Object> LOGIN_LOCKS = new ConcurrentHashMap<>();
     public Player player;
 
     public byte timeWait = 100;
@@ -116,44 +118,74 @@ public class MySession extends Session {
             return;
         }
         if (this.player == null) {
-            Player pl = null;
-            try {
-                long st = System.currentTimeMillis();
-                this.uu = username;
-                this.pp = password;
-                pl = MrBlue.login(this, al);
-                if (pl != null) {
-                    DataGame.sendSmallVersion(this);
-                    DataGame.sendBgItemVersion(this);
-
-                    this.timeWait = 0;
-                    this.joinedGame = true;
-                    pl.nPoint.calPoint();
-                    pl.nPoint.setHp(pl.nPoint.hp);
-                    pl.nPoint.setMp(pl.nPoint.mp);
-                    pl.zone.addPlayer(pl);
-                    if (pl.pet != null) {
-                        pl.pet.nPoint.calPoint();
-                        pl.pet.nPoint.setHp(pl.pet.nPoint.hp);
-                        pl.pet.nPoint.setMp(pl.pet.nPoint.mp);
-                    }
-
-                    pl.setSession(this);
-                    Client.gI().put(pl);
-                    this.player = pl;
-                    DataGame.sendVersionGame(this);
-                    DataGame.sendDataItemBG(this);
-                    Controller.gI().sendInfo(this);
-                    Logger.warning("[" + TimeUtil.getCurrHour() + ":" + TimeUtil.getCurrMin() + "] - Player Login: " + this.player.name + ": " + (System.currentTimeMillis() - st) + " ms\n");
-                    if (this.player.notify != null && !this.player.notify.equals("null") && !this.player.notify.isEmpty() && this.player.notify.length() > 0) {
-                        Service.gI().sendThongBao(this.player, this.player.notify);
-                        this.player.notify = null;
-                    }
+            String lockKey = (username == null ? "" : username.trim().toLowerCase());
+            Object accountLock = LOGIN_LOCKS.computeIfAbsent(lockKey, k -> new Object());
+            synchronized (accountLock) {
+                if (!this.isConnected() || this.player != null) {
+                    return;
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (pl != null) {
-                    pl.dispose();
+                Player pl = null;
+                try {
+                    long st = System.currentTimeMillis();
+                    this.uu = username;
+                    this.pp = password;
+                    pl = MrBlue.login(this, al);
+                    if (pl != null) {
+                        if (!this.isConnected()) {
+                            pl.dispose();
+                            return;
+                        }
+                        Player existing = Client.gI().getPlayerByUser(this.userId);
+                        if (existing != null && existing != pl) {
+                            Client.gI().kickSession(existing.getSession());
+                        }
+                        Player existingById = Client.gI().getPlayer(pl.id);
+                        if (existingById != null && existingById != pl) {
+                            Client.gI().kickSession(existingById.getSession());
+                        }
+
+                        DataGame.sendSmallVersion(this);
+                        DataGame.sendBgItemVersion(this);
+
+                        this.timeWait = 0;
+                        this.joinedGame = true;
+                        pl.nPoint.calPoint();
+                        pl.nPoint.setHp(pl.nPoint.hp);
+                        pl.nPoint.setMp(pl.nPoint.mp);
+                        if (pl.pet != null) {
+                            pl.pet.nPoint.calPoint();
+                            pl.pet.nPoint.setHp(pl.pet.nPoint.hp);
+                            pl.pet.nPoint.setMp(pl.pet.nPoint.mp);
+                        }
+
+                        pl.setSession(this);
+                        synchronized (this) {
+                            if (!this.isConnected()) {
+                                pl.dispose();
+                                return;
+                            }
+                            this.player = pl;
+                            pl.zone.addPlayer(pl);
+                            Client.gI().put(pl);
+                        }
+                        if (!this.isConnected()) {
+                            Client.gI().kickSession(this);
+                            return;
+                        }
+                        DataGame.sendVersionGame(this);
+                        DataGame.sendDataItemBG(this);
+                        Controller.gI().sendInfo(this);
+                        Logger.warning("[" + TimeUtil.getCurrHour() + ":" + TimeUtil.getCurrMin() + "] - Player Login: " + pl.name + ": " + (System.currentTimeMillis() - st) + " ms\n");
+                        if (pl.notify != null && !pl.notify.equals("null") && !pl.notify.isEmpty() && pl.notify.length() > 0) {
+                            Service.gI().sendThongBao(pl, pl.notify);
+                            pl.notify = null;
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (pl != null) {
+                        pl.dispose();
+                    }
                 }
             }
         }

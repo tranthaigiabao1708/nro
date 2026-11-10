@@ -45,6 +45,11 @@ public class Trade {
     private int goldTrade2;
 
     public byte accept;
+    private boolean lock1;
+    private boolean lock2;
+    private boolean accept1;
+    private boolean accept2;
+    private boolean finished;
 
     private long lastTimeStart;
     private boolean start;
@@ -88,7 +93,13 @@ public class Trade {
         }
     }
 
-    public void addItemTrade(Player pl, byte index, int quantity) {
+    public synchronized void addItemTrade(Player pl, byte index, int quantity) {
+        if (this.finished || this.player1 == null || this.player2 == null || pl == null) {
+            return;
+        }
+        if ((pl.equals(this.player1) && this.lock1) || (pl.equals(this.player2) && this.lock2)) {
+            return;
+        }
         if (pl.getSession().actived) {
             if (index == -1) { // Cấm giao dịch vàng trực tiếp
                 if (pl.equals(this.player1)) {
@@ -102,14 +113,25 @@ public class Trade {
             } else { // Giao dịch vật phẩm
                 Item item = null;
                 if (pl.equals(this.player1)) {
+                    if (index < 0 || index >= itemsBag1.size()) {
+                        return;
+                    }
                     item = itemsBag1.get(index);
                 } else {
+                    if (index < 0 || index >= itemsBag2.size()) {
+                        return;
+                    }
                     item = itemsBag2.get(index);
+                }
+                if (item == null || !item.isNotNullItem()) {
+                    return;
                 }
                 if (item.template.id == 570) {
                     Service.gI().sendThongBao(pl, "Không thể giao dịch Rương Gỗ");
+                    removeItemTrade(pl, index);
+                    return;
                 }
-                if (quantity > item.quantity || quantity < 0) {
+                if (quantity > item.quantity || quantity <= 0) {
                     return;
                 }
                 if (isItemCannotTran(item)) {
@@ -254,10 +276,18 @@ public class Trade {
         }
     }
 
-    public void cancelTrade() {
+    public synchronized void cancelTrade() {
+        if (this.finished) {
+            return;
+        }
+        this.finished = true;
         String notifiText = "Giao dịch bị hủy bỏ";
-        Service.gI().sendThongBao(player1, notifiText);
-        Service.gI().sendThongBao(player2, notifiText);
+        if (player1 != null) {
+            Service.gI().sendThongBao(player1, notifiText);
+        }
+        if (player2 != null) {
+            Service.gI().sendThongBao(player2, notifiText);
+        }
         closeTab();
         dispose();
     }
@@ -267,8 +297,12 @@ public class Trade {
         try {
             msg = new Message(-86);
             msg.writer().writeByte(7);
-            player1.sendMessage(msg);
-            player2.sendMessage(msg);
+            if (player1 != null) {
+                player1.sendMessage(msg);
+            }
+            if (player2 != null) {
+                player2.sendMessage(msg);
+            }
         } catch (Exception e) {
         } finally {
             if (msg != null) {
@@ -277,11 +311,19 @@ public class Trade {
         }
     }
 
-    public void dispose() {
-        player1.idMark.setPlayerTradeId(-1);
-        player2.idMark.setPlayerTradeId(-1);
-        TransactionService.PLAYER_TRADE.remove(player1);
-        TransactionService.PLAYER_TRADE.remove(player2);
+    public synchronized void dispose() {
+        if (player1 != null) {
+            if (player1.idMark != null) {
+                player1.idMark.setPlayerTradeId(-1);
+            }
+            TransactionService.PLAYER_TRADE.remove(player1);
+        }
+        if (player2 != null) {
+            if (player2.idMark != null) {
+                player2.idMark.setPlayerTradeId(-1);
+            }
+            TransactionService.PLAYER_TRADE.remove(player2);
+        }
         this.player1 = null;
         this.player2 = null;
         this.itemsBag1 = null;
@@ -290,12 +332,16 @@ public class Trade {
         this.itemsTrade2 = null;
     }
 
-    public void lockTran(Player pl) {
+    public synchronized void lockTran(Player pl) {
+        if (this.finished || this.player1 == null || this.player2 == null || pl == null) {
+            return;
+        }
         Message msg = null;
         try {
             msg = new Message(-86);
             msg.writer().writeByte(6);
             if (pl.equals(player1)) {
+                this.lock1 = true;
                 msg.writer().writeInt(goldTrade1);
                 msg.writer().writeByte(itemsTrade1.size());
                 for (Item item : itemsTrade1) {
@@ -312,7 +358,8 @@ public class Trade {
                     }
                 }
                 player2.sendMessage(msg);
-            } else {
+            } else if (pl.equals(player2)) {
+                this.lock2 = true;
                 msg.writer().writeInt(goldTrade2);
                 msg.writer().writeByte(itemsTrade2.size());
                 for (Item item : itemsTrade2) {
@@ -336,22 +383,49 @@ public class Trade {
             if (msg != null) {
                 msg.cleanup();
             }
-            if (player2.isBot) {
+            if (player2 != null && player2.isBot) {
                 if (pl.equals(player1)) {
+                    this.lock2 = true;
+                    this.accept2 = true;
                     ((Bot) player2).shop.CheckTraDe(itemsTrade1);
                 }
             }
         }
     }
 
-    public void acceptTrade() {
-        this.accept++;
-        if (this.accept == 2) {
+    public synchronized void acceptTrade(Player pl) {
+        if (this.finished || this.player1 == null || this.player2 == null || pl == null) {
+            return;
+        }
+        if (!this.lock1 || !this.lock2) {
+            Service.gI().sendThongBao(pl, "Cả hai bên cần khóa giao dịch trước khi đồng ý!");
+            return;
+        }
+        if (pl.equals(this.player1)) {
+            if (this.accept1) {
+                return;
+            }
+            this.accept1 = true;
+        } else if (pl.equals(this.player2)) {
+            if (this.accept2) {
+                return;
+            }
+            this.accept2 = true;
+        } else {
+            return;
+        }
+        this.accept = (byte) ((this.accept1 ? 1 : 0) + (this.accept2 ? 1 : 0));
+        if (this.accept1 && this.accept2 && !this.finished) {
+            this.finished = true;
             this.startTrade();
         }
     }
 
     private void startTrade() {
+        if (player1 == null || player2 == null || player1.beforeDispose || player2.beforeDispose
+                || player1.isDisposed || player2.isDisposed || player1.zone == null || player1.zone != player2.zone) {
+            return;
+        }
         byte tradeStatus = SUCCESS;
         if (player1.inventory.gold + goldTrade2 > Inventory.LIMIT_GOLD) {
             tradeStatus = FAIL_MAX_GOLD_PLAYER1;

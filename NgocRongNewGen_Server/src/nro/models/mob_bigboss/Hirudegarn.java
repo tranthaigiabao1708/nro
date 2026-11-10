@@ -19,7 +19,7 @@ public class Hirudegarn extends BigBoss {
     }
 
     @Override
-    public void injured(Player plAtt, long damage, boolean dieWhenHpFull) {
+    public synchronized void injured(Player plAtt, long damage, boolean dieWhenHpFull) {
         damage = this.point.hp / 100 > 0 ? this.point.hp / 100 : 1;
         super.injured(plAtt, damage, false);
     }

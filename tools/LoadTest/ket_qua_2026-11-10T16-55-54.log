@@ -1,0 +1,57 @@
+[16:52:31] ===== KIỂM THỬ TẢI TOÀN DIỆN NGỌC RỒNG NEWGEN: 100 bot, 180 giây =====
+[16:52:31] Trạng thái ban đầu: {"uptimeSec":18,"maxPlayer":1000,"memMaxMB":4096,"dbOk":true,"memUsedMB":86,"gamePort":14445,"serverName":"Ngọc Rồng NewGen","online":0,"threads":108,"ok":true,"maintenance":false}
+[16:52:32] A. Tạo nhân vật: đã có 0, cần tạo 110
+[16:52:40] A. Đã tạo/đăng nhập 110/110 nhân vật. Chờ lưu khi thoát...
+[16:52:44] Đã cấu hình 4 nhóm kiểm thử cho 110 nhân vật (60 Farm/Nhặt đồ, 20 Nhiệm vụ/NPC, 10 Săn Boss, 10 Giao dịch/Ký gửi).
+[16:52:56] Đã khởi chạy 100 bot sau 12s
+[16:53:06] t= 22s on=100 ram=562MB thr=423 api=5ms | kill=831 pick=387/599 bossHit=19 bossKill=0 nvUp=3739 gd2Chieu=1 chanGD1Phia=2 relog=4 matKN=0
+[16:53:16] t= 32s on=99 ram=124MB thr=420 api=2ms | kill=1339 pick=550/923 bossHit=19 bossKill=0 nvUp=5860 gd2Chieu=1 chanGD1Phia=5 relog=6 matKN=0
+[16:53:26] t= 42s on=100 ram=234MB thr=422 api=3ms | kill=1834 pick=680/1205 bossHit=19 bossKill=0 nvUp=7955 gd2Chieu=1 chanGD1Phia=7 relog=6 matKN=0
+[16:53:36] t= 52s on=99 ram=370MB thr=422 api=3ms | kill=2341 pick=782/1465 bossHit=19 bossKill=0 nvUp=10003 gd2Chieu=1 chanGD1Phia=9 relog=11 matKN=0
+[16:53:46] t= 62s on=98 ram=476MB thr=420 api=3ms | kill=2826 pick=850/1690 bossHit=19 bossKill=0 nvUp=12043 gd2Chieu=1 chanGD1Phia=11 relog=13 matKN=0
+[16:53:56] t= 72s on=99 ram=591MB thr=425 api=3ms | kill=3338 pick=889/1830 bossHit=19 bossKill=0 nvUp=14015 gd2Chieu=1 chanGD1Phia=13 relog=17 matKN=0
+[16:54:06] t= 82s on=99 ram=99MB thr=420 api=3ms | kill=3855 pick=928/1953 bossHit=19 bossKill=0 nvUp=16017 gd2Chieu=1 chanGD1Phia=15 relog=18 matKN=0
+[16:54:16] t= 92s on=100 ram=192MB thr=424 api=2ms | kill=4388 pick=957/2053 bossHit=19 bossKill=0 nvUp=17992 gd2Chieu=1 chanGD1Phia=17 relog=20 matKN=0
+[16:54:16] C. Kiểm thử đăng nhập 2 phiên cùng lúc cho 10 tài khoản ltdup00..09
+[16:54:22] C. Kết quả: 0 tài khoản online, 0 tài khoản có 2 bản trong server, 0 cặp cả 2 phiên đều vào game & còn kết nối
+[16:54:26] t=102s on=99 ram=340MB thr=430 api=2ms | kill=4868 pick=991/2159 bossHit=19 bossKill=0 nvUp=19969 gd2Chieu=1 chanGD1Phia=19 relog=22 matKN=7
+[16:54:36] t=112s on=100 ram=424MB thr=435 api=3ms | kill=5393 pick=1026/2266 bossHit=19 bossKill=0 nvUp=21960 gd2Chieu=1 chanGD1Phia=21 relog=23 matKN=7
+[16:54:46] t=122s on=99 ram=490MB thr=430 api=2ms | kill=5921 pick=1054/2368 bossHit=19 bossKill=0 nvUp=23949 gd2Chieu=1 chanGD1Phia=23 relog=24 matKN=7
+[16:54:56] t=132s on=100 ram=588MB thr=436 api=2ms | kill=6420 pick=1098/2499 bossHit=19 bossKill=0 nvUp=25931 gd2Chieu=1 chanGD1Phia=25 relog=26 matKN=7
+[16:55:06] t=142s on=100 ram=73MB thr=422 api=2ms | kill=6911 pick=1129/2598 bossHit=19 bossKill=0 nvUp=27917 gd2Chieu=1 chanGD1Phia=27 relog=26 matKN=7
+[16:55:16] t=152s on=100 ram=152MB thr=423 api=2ms | kill=7434 pick=1165/2719 bossHit=19 bossKill=0 nvUp=29900 gd2Chieu=1 chanGD1Phia=29 relog=27 matKN=7
+[16:55:26] t=162s on=98 ram=221MB thr=416 api=2ms | kill=7941 pick=1196/2829 bossHit=19 bossKill=0 nvUp=31878 gd2Chieu=1 chanGD1Phia=31 relog=29 matKN=7
+[16:55:36] t=172s on=99 ram=311MB thr=419 api=3ms | kill=8475 pick=1238/2949 bossHit=19 bossKill=0 nvUp=33851 gd2Chieu=1 chanGD1Phia=33 relog=31 matKN=7
+[16:55:46] t=182s on=100 ram=391MB thr=424 api=3ms | kill=9004 pick=1270/3047 bossHit=19 bossKill=0 nvUp=35837 gd2Chieu=1 chanGD1Phia=35 relog=32 matKN=7
+[16:55:46] Dừng mọi hành động, chờ 4s cho dữ liệu ổn định...
+[16:55:50] Chụp dữ liệu RAM của 100 nhân vật, ngắt kết nối đồng loạt 100 bot...
+[16:55:52] Tất cả đã thoát sau 1s (online=0)
+[16:55:54] D. Đối chiếu RAM vs DB: kiểm tra 100 nhân vật, lệch 0, không tìm thấy 0
+[16:55:54] 
+[16:55:54] ================= KẾT QUẢ KIỂM THỬ TOÀN DIỆN =================
+[16:55:54] Đăng nhập thành công: 242 | thất bại: 0 | lỗi kết nối: 0
+[16:55:54] Mất kết nối ngoài ý muốn: 7 | thoát-vào lại chủ động: 32
+[16:55:54] Tin nhắn nhận: 262094 (14 MB) | gửi: 71899 | lỗi giải mã: 0
+[16:55:54] Farm & Nhặt đồ: Quái bị hạ = 9004 | Nhặt đồ thành công = 1270/3047
+[16:55:54] Săn Boss: Đòn đánh Boss = 19 | Boss bị tiêu diệt = 0
+[16:55:54] Nhiệm vụ & NPC: Tiến độ nhiệm vụ tăng = 36637 | Tương tác NPC = 1634
+[16:55:54] Giao dịch: Lời mời = 19 | GD 2 chiều thành công = 1 | Chặn exploit GD 1 chiều = 35 | Lọt exploit GD 1 chiều = 0
+[16:55:54] Thông báo server thường gặp:
+[16:55:54]    526 x  Không thể thực hiện
+[16:55:54]    488 x  Bạn không đủ tiềm năng
+[16:55:54]    405 x  Không thể nhặt vật phẩm của người khác
+[16:55:54]    361 x  Sức mạnh không đủ yêu cầu
+[16:55:54]    217 x  Hôm nay bạn sẽ nhận được từ 1 đến 2 viên ngọc khi tiêu diệt 1 con quái
+[16:55:54]    45 x  Thử lại sau 6 giây
+[16:55:54]    43 x  Thử lại sau 3 giây
+[16:55:54]    43 x  Thử lại sau 5 giây
+[16:55:54]    43 x  Thử lại sau 2 giây
+[16:55:54]    43 x  Thử lại sau 4 giây
+[16:55:54]    42 x  Thử lại sau 7 giây
+[16:55:54]    40 x  Thử lại sau 1 giây
+[16:55:54]    36 x  Thử lại sau 8 giây
+[16:55:54]    35 x  Cả hai bên cần khóa giao dịch trước khi đồng ý!
+[16:55:54]    34 x  Giao dịch bị hủy bỏ
+[16:55:54] 
+[16:55:54] PHÁT HIỆN LỖI (0):
+[16:55:54]    0 LỖI — Toàn bộ kiểm thử đều vượt qua an toàn!

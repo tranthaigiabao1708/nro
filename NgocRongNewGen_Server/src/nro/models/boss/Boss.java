@@ -95,7 +95,7 @@ public class Boss extends Player implements IBoss {
 
     public int error;
 
-    public boolean prepareBom;
+    public volatile boolean prepareBom;
 
     public boolean isNotifyDisabled;
     public boolean isZone01SpawnDisabled;
@@ -869,29 +869,35 @@ public class Boss extends Player implements IBoss {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                while (prepareBom) {
-                    if (Util.canDoWithTime(lastTime, 2500)) {
-                        setDie(this);
-                        die(plAtt);
-                        long dame = Boss.this.nPoint.hpMax;
-                        for (Mob mob : Boss.this.zone.mobs) {
-                            mob.injured(Boss.this, dame, true);
-                        }
-                        List<Player> playersMap = Boss.this.zone.getNotBosses();
-                        if (!MapService.gI().isMapOffline(Boss.this.zone.map.mapId)) {
-                            //Sử dụng vòng for lặp ngược để hạn chế lỗi đồng bộ
-                            for (int i = playersMap.size() - 1; i >= 0; i--) {
-                                Player pl = playersMap.get(i);
-                                if (!Boss.this.equals(pl)) {
-                                    pl.injured(Boss.this, dame, false, false);
-                                    PlayerService.gI().sendInfoHpMpMoney(pl);
-                                    Service.gI().Send_Info_NV(pl);
+                Thread.startVirtualThread(() -> {
+                    try {
+                        Thread.sleep(2500);
+                        if (prepareBom && Boss.this.zone != null) {
+                            setDie(Boss.this);
+                            die(plAtt);
+                            long dame = Boss.this.nPoint.hpMax;
+                            for (Mob mob : Boss.this.zone.mobs) {
+                                mob.injured(Boss.this, dame, true);
+                            }
+                            List<Player> playersMap = Boss.this.zone.getNotBosses();
+                            if (!MapService.gI().isMapOffline(Boss.this.zone.map.mapId)) {
+                                for (int i = playersMap.size() - 1; i >= 0; i--) {
+                                    Player pl = playersMap.get(i);
+                                    if (!Boss.this.equals(pl)) {
+                                        pl.injured(Boss.this, dame, false, false);
+                                        PlayerService.gI().sendInfoHpMpMoney(pl);
+                                        Service.gI().Send_Info_NV(pl);
+                                    }
                                 }
                             }
                         }
+                    } catch (Exception e) {
+                        setDie(Boss.this);
+                        die(plAtt);
+                    } finally {
                         prepareBom = false;
                     }
-                }
+                });
             }
         } catch (Exception e) {
             if (prepareBom) {

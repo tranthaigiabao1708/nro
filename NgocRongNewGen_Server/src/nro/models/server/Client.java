@@ -17,10 +17,13 @@ import nro.models.utils.Functions;
 import nro.models.utils.Logger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
+import nro.models.item.Item;
+import nro.models.services.InventoryService;
 import nro.models.services.shenron.SummonDragonNamek;
 
 /**
@@ -33,11 +36,11 @@ public class Client implements Runnable {
 
     private static Client instance;
 
-    private final Map<Long, Player> players_id = new HashMap<>();
-    private final Map<Integer, Player> players_userId = new HashMap<>();
-    private final Map<String, Player> players_name = new HashMap<>();
+    private final Map<Long, Player> players_id = new ConcurrentHashMap<>();
+    private final Map<Integer, Player> players_userId = new ConcurrentHashMap<>();
+    private final Map<String, Player> players_name = new ConcurrentHashMap<>();
     @Getter
-    private final List<Player> players = new ArrayList<>();
+    private final List<Player> players = new CopyOnWriteArrayList<>();
 
     private Client() {
         Executors.newSingleThreadExecutor().submit(this, "Update Client");
@@ -50,26 +53,44 @@ public class Client implements Runnable {
         return instance;
     }
 
-    public void put(Player player) {
-        if (!players_id.containsKey(player.id)) {
-            this.players_id.put(player.id, player);
+    public synchronized void put(Player player) {
+        if (player == null) {
+            return;
         }
-        if (!players_name.containsValue(player)) {
-            this.players_name.put(player.name, player);
+        Player oldById = this.players_id.put(player.id, player);
+        if (oldById != null && oldById != player) {
+            this.players.remove(oldById);
         }
-        if (!players_userId.containsValue(player)) {
-            this.players_userId.put(player.getSession().userId, player);
+        if (player.name != null) {
+            Player oldByName = this.players_name.put(player.name, player);
+            if (oldByName != null && oldByName != player) {
+                this.players.remove(oldByName);
+            }
         }
-        if (!players.contains(player)) {
+        if (player.getSession() != null) {
+            Player oldByUser = this.players_userId.put(player.getSession().userId, player);
+            if (oldByUser != null && oldByUser != player) {
+                this.players.remove(oldByUser);
+            }
+        }
+        this.players.removeIf(p -> p != null && p != player && p.id == player.id);
+        if (!this.players.contains(player)) {
             this.players.add(player);
         }
-
     }
 
     private void remove(MySession session) {
-        if (session.player != null) {
-            this.remove(session.player);
-            session.player.dispose();
+        if (session == null) {
+            return;
+        }
+        Player pl;
+        synchronized (session) {
+            pl = session.player;
+            session.player = null;
+        }
+        if (pl != null) {
+            this.remove(pl);
+            pl.dispose();
         }
         if (session.joinedGame) {
             session.joinedGame = false;
@@ -83,47 +104,67 @@ public class Client implements Runnable {
     }
 
     private void remove(Player player) {
-        this.players_id.remove(player.id);
-        this.players_name.remove(player.name);
-        this.players_userId.remove(player.getSession().userId);
-        this.players.remove(player);
-        if (!player.beforeDispose) {
-            player.beforeDispose = true;
-            player.mapIdBeforeLogout = player.zone.map.mapId;
-            if (player.idNRNM != -1) {
-                ItemMap itemMap = new ItemMap(player.zone, player.idNRNM, 1, player.location.x, player.location.y, -1);
-                Service.gI().dropItemMap(player.zone, itemMap);
-                NgocRongNamecService.gI().pNrNamec[player.idNRNM - 353] = "";
-                NgocRongNamecService.gI().idpNrNamec[player.idNRNM - 353] = -1;
-                player.idNRNM = -1;
-            }
-            ChangeMapService.gI().exitMap(player);
-            TransactionService.gI().cancelTrade(player);
-            if (player.clan != null) {
-                player.clan.removeMemberOnline(null, player);
-            }
-            if (SummonDragon.gI().playerSummonShenron != null
-                    && SummonDragon.gI().playerSummonShenron.id == player.id) {
-                SummonDragon.gI().isPlayerDisconnect = true;
-            }
-            if (SummonDragonNamek.gI().playerSummonShenron != null
-                    && SummonDragonNamek.gI().playerSummonShenron.id == player.id) {
-                SummonDragonNamek.gI().isPlayerDisconnect = true;
-            }
-            if (player.shenronEvent != null) {
-                player.shenronEvent.isPlayerDisconnect = true;
-            }
-            if (player.mobMe != null) {
-                player.mobMe.mobMeDie();
-            }
-            if (player.pet != null) {
-                if (player.pet.mobMe != null) {
-                    player.pet.mobMe.mobMeDie();
+        if (player == null) {
+            return;
+        }
+        try {
+            if (!player.beforeDispose) {
+                player.beforeDispose = true;
+                if (player.itemsTradeWVP != null && !player.itemsTradeWVP.isEmpty()) {
+                    for (Item item : player.itemsTradeWVP) {
+                        InventoryService.gI().addItemBag(player, item);
+                    }
+                    player.itemsTradeWVP.clear();
                 }
-                ChangeMapService.gI().exitMap(player.pet);
+                if (player.zone != null && player.zone.map != null) {
+                    player.mapIdBeforeLogout = player.zone.map.mapId;
+                }
+                if (player.idNRNM != -1 && player.zone != null) {
+                    ItemMap itemMap = new ItemMap(player.zone, player.idNRNM, 1, player.location.x, player.location.y, -1);
+                    Service.gI().dropItemMap(player.zone, itemMap);
+                    NgocRongNamecService.gI().pNrNamec[player.idNRNM - 353] = "";
+                    NgocRongNamecService.gI().idpNrNamec[player.idNRNM - 353] = -1;
+                    player.idNRNM = -1;
+                }
+                ChangeMapService.gI().exitMap(player);
+                TransactionService.gI().cancelTrade(player);
+                if (player.clan != null) {
+                    player.clan.removeMemberOnline(null, player);
+                }
+                if (SummonDragon.gI().playerSummonShenron != null
+                        && SummonDragon.gI().playerSummonShenron.id == player.id) {
+                    SummonDragon.gI().isPlayerDisconnect = true;
+                }
+                if (SummonDragonNamek.gI().playerSummonShenron != null
+                        && SummonDragonNamek.gI().playerSummonShenron.id == player.id) {
+                    SummonDragonNamek.gI().isPlayerDisconnect = true;
+                }
+                if (player.shenronEvent != null) {
+                    player.shenronEvent.isPlayerDisconnect = true;
+                }
+                if (player.mobMe != null) {
+                    player.mobMe.mobMeDie();
+                }
+                if (player.pet != null) {
+                    if (player.pet.mobMe != null) {
+                        player.pet.mobMe.mobMeDie();
+                    }
+                    ChangeMapService.gI().exitMap(player.pet);
+                }
+                PlayerDAO.updatePlayer(player);
+            }
+        } finally {
+            synchronized (this) {
+                this.players_id.remove(player.id, player);
+                if (player.name != null) {
+                    this.players_name.remove(player.name, player);
+                }
+                if (player.getSession() != null) {
+                    this.players_userId.remove(player.getSession().userId, player);
+                }
+                this.players.remove(player);
             }
         }
-        PlayerDAO.updatePlayer(player);
     }
 
     public void kickSession(MySession session) {

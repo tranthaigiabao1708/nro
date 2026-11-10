@@ -95,7 +95,7 @@ public class GauTuongCuop extends Mob {
     }
 
     @Override
-    public void injured(Player plAtt, long damage, boolean dieWhenHpFull) {
+    public synchronized void injured(Player plAtt, long damage, boolean dieWhenHpFull) {
         damage = Math.max((long) (damage * 0.05), 1);
 
         if (plAtt != null) {

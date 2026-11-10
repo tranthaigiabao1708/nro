@@ -11,9 +11,9 @@ import nro.models.utils.Logger;
 import nro.models.utils.TimeUtil;
 import nro.models.utils.Util;
 import java.sql.Connection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import nro.models.Bot.Bot;
 import nro.models.server.ServerManager;
@@ -28,7 +28,7 @@ public class TransactionService implements Runnable {
 
     private static final int TIME_DELAY_TRADE = 10000;
 
-    static final Map<Player, Trade> PLAYER_TRADE = new HashMap<>();
+    static final Map<Player, Trade> PLAYER_TRADE = new ConcurrentHashMap<>();
 
     private static final byte SEND_INVITE_TRADE = 0;
     private static final byte ACCEPT_TRADE = 1;
@@ -156,11 +156,13 @@ public class TransactionService implements Runnable {
                     break;
                 case ACCEPT:
                     if (Maintenance.isRunning) {
-                        trade.cancelTrade();
+                        if (trade != null) {
+                            trade.cancelTrade();
+                        }
                         break;
                     }
                     if (trade != null) {
-                        trade.acceptTrade();
+                        trade.acceptTrade(pl);
                         if (trade.accept == 1) {
                             Service.gI().sendThongBao(pl, "Xin chờ đối phương đồng ý");
                         } else if (trade.accept == 2) {

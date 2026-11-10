@@ -1,0 +1,43 @@
+[17:20:37] ===== KIỂM THỬ TẢI TOÀN DIỆN NGỌC RỒNG NEWGEN: 100 bot, 90 giây =====
+[17:20:37] Trạng thái ban đầu: {"uptimeSec":579,"maxPlayer":1000,"memMaxMB":4096,"dbOk":true,"memUsedMB":581,"gamePort":14445,"serverName":"Ngọc Rồng NewGen","online":0,"threads":119,"ok":true,"maintenance":false}
+[17:20:38] A. Tạo nhân vật: đã có 110, cần tạo 0
+[17:20:38] A. Đã tạo/đăng nhập 0/0 nhân vật. Chờ lưu khi thoát...
+[17:20:42] Đã cấu hình 4 nhóm kiểm thử cho 110 nhân vật (60 Farm/Nhặt đồ, 20 Nhiệm vụ/NPC, 10 Săn Boss, 10 Giao dịch/Ký gửi).
+[17:20:54] Đã khởi chạy 100 bot sau 12s
+[17:21:04] t= 22s on=98 ram=366MB thr=409 api=3ms | kill=849 pick=387/650 bossHit=171 bossKill=0 nvUp=3486 gd2Chieu=0 chanGD1Phia=0 relog=4 matKN=0
+[17:21:14] t= 32s on=99 ram=497MB thr=413 api=3ms | kill=1313 pick=547/968 bossHit=278 bossKill=0 nvUp=5607 gd2Chieu=0 chanGD1Phia=0 relog=5 matKN=0
+[17:21:24] t= 42s on=100 ram=56MB thr=416 api=3ms | kill=1814 pick=675/1289 bossHit=354 bossKill=0 nvUp=7717 gd2Chieu=0 chanGD1Phia=0 relog=5 matKN=0
+[17:21:34] t= 52s on=98 ram=161MB thr=408 api=2ms | kill=2310 pick=763/1522 bossHit=361 bossKill=0 nvUp=9759 gd2Chieu=0 chanGD1Phia=0 relog=8 matKN=0
+[17:21:34] C. Kiểm thử đăng nhập 2 phiên cùng lúc cho 10 tài khoản ltdup00..09
+[17:21:40] C. Kết quả: 0 tài khoản online, 0 tài khoản có 2 bản trong server, 0 cặp cả 2 phiên đều vào game & còn kết nối
+[17:21:44] t= 62s on=100 ram=351MB thr=425 api=2ms | kill=2817 pick=823/1709 bossHit=361 bossKill=0 nvUp=11771 gd2Chieu=0 chanGD1Phia=0 relog=9 matKN=0
+[17:21:54] t= 72s on=99 ram=444MB thr=421 api=2ms | kill=3322 pick=874/1869 bossHit=361 bossKill=0 nvUp=13780 gd2Chieu=0 chanGD1Phia=0 relog=11 matKN=0
+[17:22:04] t= 82s on=99 ram=532MB thr=423 api=2ms | kill=3855 pick=910/2001 bossHit=361 bossKill=0 nvUp=15764 gd2Chieu=0 chanGD1Phia=0 relog=12 matKN=0
+[17:22:14] t= 92s on=99 ram=55MB thr=411 api=3ms | kill=4362 pick=950/2140 bossHit=417 bossKill=0 nvUp=17735 gd2Chieu=0 chanGD1Phia=0 relog=15 matKN=0
+[17:22:14] Dừng mọi hành động, chờ 4s cho dữ liệu ổn định...
+[17:22:18] Chụp dữ liệu RAM của 100 nhân vật, ngắt kết nối đồng loạt 100 bot...
+[17:22:19] Tất cả đã thoát sau 1s (online=0)
+[17:22:22] D. Đối chiếu RAM vs DB: kiểm tra 100 nhân vật, lệch 0, không tìm thấy 0
+[17:22:22] 
+[17:22:22] ================= KẾT QUẢ KIỂM THỬ TOÀN DIỆN =================
+[17:22:22] Đăng nhập thành công: 115 | thất bại: 0 | lỗi kết nối: 0
+[17:22:22] Mất kết nối ngoài ý muốn: 0 | thoát-vào lại chủ động: 15
+[17:22:22] Tin nhắn nhận: 135792 (7 MB) | gửi: 35891 | lỗi giải mã: 0
+[17:22:22] Farm & Nhặt đồ: Quái bị hạ = 4362 | Nhặt đồ thành công = 950/2140
+[17:22:22] Săn Boss: Đòn đánh Boss = 417 | Boss bị tiêu diệt = 0
+[17:22:22] Nhiệm vụ & NPC: Tiến độ nhiệm vụ tăng = 18524 | Tương tác NPC = 769
+[17:22:22] Giao dịch: Lời mời = 0 | GD 2 chiều thành công = 0 | Chặn exploit GD 1 chiều = 0 | Lọt exploit GD 1 chiều = 0
+[17:22:22] Thông báo server thường gặp:
+[17:22:22]    308 x  Sức mạnh không đủ yêu cầu
+[17:22:22]    259 x  Không thể nhặt vật phẩm của người khác
+[17:22:22]    47 x  Hôm nay bạn sẽ nhận được từ 1 đến 2 viên ngọc khi tiêu diệt 1 con quái
+[17:22:22]    20 x  Bạn đánh được 3/5 mộc nhân
+[17:22:22]    20 x  Bạn đánh được 1/5 mộc nhân
+[17:22:22]    20 x  Bạn đánh được 2/5 mộc nhân
+[17:22:22]    18 x  Bạn đánh được 4/5 mộc nhân
+[17:22:22]    10 x  Tài khoản đang được đăng nhập ở nơi khác, vui lòng thử lại!
+[17:22:22]    7 x  Bạn không đủ tiềm năng
+[17:22:22]    6 x  Không thể chuyển map quá nhanh khi đeo Ngọc Rồng Namếc
+[17:22:22] 
+[17:22:22] PHÁT HIỆN LỖI (0):
+[17:22:22]    0 LỖI — Toàn bộ kiểm thử đều vượt qua an toàn!

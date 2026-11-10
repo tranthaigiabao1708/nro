@@ -2084,13 +2084,18 @@ public class Service {
     }
 
     public void sendEffAllPlayerMapToMe(Player pl) {
+        if (pl == null || pl.zone == null || pl.beforeDispose || pl.isDisposed) {
+            return;
+        }
         try {
             for (Player plM : pl.zone.getPlayers()) {
-                if (plM.isPl() && plM.inventory.itemsBody.size() >= 10) {
+                if (plM != null && plM.isPl() && !plM.beforeDispose && !plM.isDisposed
+                        && plM.inventory != null && plM.inventory.itemsBody != null
+                        && plM.inventory.itemsBody.size() >= 10) {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.logException(Service.class, e);
         }
     }
 
@@ -2707,28 +2712,14 @@ public class Service {
     }
 
     public void updatePlayerTotalDamage(Player pl) {
-        java.sql.PreparedStatement ps = null;
-        try (java.sql.Connection con = LocalManager.getConnection();) {
-            ps = con.prepareStatement("update player SET total_damage_maydam = ? WHERE id = ?");
-            ps.setLong(1, pl.total_damage_maydam);
-            ps.setLong(2, pl.id);
-
-            ps.executeUpdate();
-
-        } catch (Exception e) {
-            Logger.logException(PlayerDAO.class, e, "Lỗi update Total dame");
+        if (pl != null && pl.isPl()) {
+            PlayerDAO.savePlayerAsync(pl);
         }
     }
 
     public void updatePlayerPointMayDam(Player pl) {
-        java.sql.PreparedStatement ps = null;
-        try (java.sql.Connection con = LocalManager.getConnection()) {
-            ps = con.prepareStatement("UPDATE player SET point_maydam = ? WHERE id = ?");
-            ps.setInt(1, pl.point_maydam);
-            ps.setLong(2, pl.id);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            Logger.logException(PlayerDAO.class, e, "Lỗi update point_maydam");
+        if (pl != null && pl.isPl()) {
+            PlayerDAO.savePlayerAsync(pl);
         }
     }
 

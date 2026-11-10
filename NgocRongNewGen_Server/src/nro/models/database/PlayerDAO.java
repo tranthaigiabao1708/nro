@@ -31,7 +31,7 @@ import com.google.gson.Gson;
 
 public class PlayerDAO {
 
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(8);
 
     public static void savePlayerAsync(Player player) {
         if (player == null || !player.isPl() || player.beforeDispose || player.isDisposed

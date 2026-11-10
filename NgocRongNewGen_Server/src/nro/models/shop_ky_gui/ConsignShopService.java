@@ -107,45 +107,50 @@ public class ConsignShopService {
     }
 
     public void buyItem(Player pl, int id) {
-        if (pl.nPoint.power < 17000000000L) {
-            Service.gI().sendThongBao(pl, "Yêu cầu sức mạnh lớn hơn 17 tỷ");
-            openShopKyGui(pl);
-            return;
-        }
-        ConsignItem it = getItemBuy(id);
-        if (it == null || it.isBuy) {
-            Service.gI().sendThongBao(pl, "Vật phẩm không tồn tại hoặc đã được bán");
-            return;
-        }
-        if (it.player_sell == pl.id) {
-            Service.gI().sendThongBao(pl, "Không thể mua vật phẩm bản thân đăng bán");
-            openShopKyGui(pl);
-            return;
-        }
-        boolean isBuy = false;
-        if (it.goldSell > 0) {
-            if (SubThoiVang(pl, it.goldSell)) {
-                isBuy = true;
-            } else {
-                Service.gI().sendThongBao(pl, "Bạn không đủ Thỏi vàng thường để mua vật phẩm");
-                isBuy = false;
+        synchronized (ConsignShopManager.gI()) {
+            if (pl.nPoint.power < 17000000000L) {
+                Service.gI().sendThongBao(pl, "Yêu cầu sức mạnh lớn hơn 17 tỷ");
+                openShopKyGui(pl);
+                return;
             }
-        } else if (it.gemSell > 0) {
-            if (pl.inventory.gem >= it.gemSell) {
-                pl.inventory.gem -= it.gemSell;
-                isBuy = true;
-            } else {
-                Service.gI().sendThongBao(pl, "Bạn không đủ Ngọc Xanh để mua vật phẩm này!");
-                isBuy = false;
+            if (InventoryService.gI().getCountEmptyBag(pl) <= 0) {
+                Service.gI().sendThongBao(pl, "Hành trang không còn chỗ trống");
+                openShopKyGui(pl);
+                return;
             }
-        }
-        Service.gI().sendMoney(pl);
-        if (isBuy) {
-            Item item = ItemService.gI().createNewItem(it.itemId);
-            item.quantity = it.quantity;
-            item.itemOptions.addAll(it.options);
-            it.isBuy = true;
-            if (it.isBuy) {
+            ConsignItem it = getItemBuy(id);
+            if (it == null || it.isBuy) {
+                Service.gI().sendThongBao(pl, "Vật phẩm không tồn tại hoặc đã được bán");
+                return;
+            }
+            if (it.player_sell == pl.id) {
+                Service.gI().sendThongBao(pl, "Không thể mua vật phẩm bản thân đăng bán");
+                openShopKyGui(pl);
+                return;
+            }
+            boolean isBuy = false;
+            if (it.goldSell > 0) {
+                if (SubThoiVang(pl, it.goldSell)) {
+                    isBuy = true;
+                } else {
+                    Service.gI().sendThongBao(pl, "Bạn không đủ Thỏi vàng thường để mua vật phẩm");
+                    isBuy = false;
+                }
+            } else if (it.gemSell > 0) {
+                if (pl.inventory.gem >= it.gemSell) {
+                    pl.inventory.gem -= it.gemSell;
+                    isBuy = true;
+                } else {
+                    Service.gI().sendThongBao(pl, "Bạn không đủ Ngọc Xanh để mua vật phẩm này!");
+                    isBuy = false;
+                }
+            }
+            Service.gI().sendMoney(pl);
+            if (isBuy) {
+                Item item = ItemService.gI().createNewItem(it.itemId);
+                item.quantity = it.quantity;
+                item.itemOptions.addAll(it.options);
+                it.isBuy = true;
                 InventoryService.gI().addItemBag(pl, item);
                 InventoryService.gI().sendItemBags(pl);
                 Service.gI().sendThongBao(pl, "Bạn đã nhận được " + item.template.name);
@@ -263,57 +268,67 @@ public class ConsignShopService {
     }
 
     public void claimOrDel(Player pl, byte action, int id) {
-        ConsignItem it = getItemBuy(pl, id);
-        switch (action) {
-            case 1: // hủy vật phẩm
-                if (it == null || it.isBuy) {
-                    Service.gI().sendThongBao(pl, "Vật phẩm không tồn tại hoặc đã được bán");
-                    return;
-                }
-                if (it.player_sell != pl.id) {
-                    Service.gI().sendThongBao(pl, "Vật phẩm không thuộc quyền sở hữu");
-                    openShopKyGui(pl);
-                    return;
-                }
-                Item item = ItemService.gI().createNewItem(it.itemId);
-                item.quantity = it.quantity;
-                item.itemOptions.addAll(it.options);
-                if (ConsignShopManager.gI().listItem.remove(it)) {
-                    InventoryService.gI().addItemBag(pl, item);
-                    InventoryService.gI().sendItemBags(pl);
-                    Service.gI().sendMoney(pl);
-                    ConsignShopManager.gI().save();
-                    nro.models.database.PlayerDAO.savePlayerAsync(pl);
-                    Service.gI().sendThongBao(pl, "Hủy bán vật phẩm thành công");
-                    openShopKyGui(pl);
-                }
-                break;
-            case 2: // nhận tiền
-                if (it == null || !it.isBuy) {
-                    Service.gI().sendThongBao(pl, "Vật phẩm không tồn tại hoặc chưa được bán");
-                    return;
-                }
-                if (it.player_sell != pl.id) {
-                    Service.gI().sendThongBao(pl, "Vật phẩm không thuộc quyền sở hữu");
-                    openShopKyGui(pl);
-                    return;
-                }
-                if (it.goldSell > 0) {
-                    Item tvAdd = ItemService.gI().createNewItem((short) 457);
-                    tvAdd.quantity = it.goldSell - it.goldSell * 10 / 100;
-                    InventoryService.gI().addItemBag(pl, tvAdd);
-                } else if (it.gemSell > 0) {
-                    pl.inventory.gem += it.gemSell - it.gemSell * 10 / 100;
-                }
-                if (ConsignShopManager.gI().listItem.remove(it)) {
-                    Service.gI().sendMoney(pl);
-                    ConsignShopManager.gI().save();
-                    nro.models.database.PlayerDAO.savePlayerAsync(pl);
-                    Service.gI().sendThongBao(pl, "Bạn đã bán vật phẩm thành công");
-                    openShopKyGui(pl);
-
-                }
-                break;
+        synchronized (ConsignShopManager.gI()) {
+            ConsignItem it = getItemBuy(pl, id);
+            switch (action) {
+                case 1: // hủy vật phẩm
+                    if (it == null || it.isBuy) {
+                        Service.gI().sendThongBao(pl, "Vật phẩm không tồn tại hoặc đã được bán");
+                        return;
+                    }
+                    if (it.player_sell != pl.id) {
+                        Service.gI().sendThongBao(pl, "Vật phẩm không thuộc quyền sở hữu");
+                        openShopKyGui(pl);
+                        return;
+                    }
+                    if (InventoryService.gI().getCountEmptyBag(pl) <= 0) {
+                        Service.gI().sendThongBao(pl, "Hành trang không còn chỗ trống");
+                        return;
+                    }
+                    Item item = ItemService.gI().createNewItem(it.itemId);
+                    item.quantity = it.quantity;
+                    item.itemOptions.addAll(it.options);
+                    if (ConsignShopManager.gI().listItem.remove(it)) {
+                        InventoryService.gI().addItemBag(pl, item);
+                        InventoryService.gI().sendItemBags(pl);
+                        Service.gI().sendMoney(pl);
+                        ConsignShopManager.gI().save();
+                        nro.models.database.PlayerDAO.savePlayerAsync(pl);
+                        Service.gI().sendThongBao(pl, "Hủy bán vật phẩm thành công");
+                        openShopKyGui(pl);
+                    }
+                    break;
+                case 2: // nhận tiền
+                    if (it == null || !it.isBuy) {
+                        Service.gI().sendThongBao(pl, "Vật phẩm không tồn tại hoặc chưa được bán");
+                        return;
+                    }
+                    if (it.player_sell != pl.id) {
+                        Service.gI().sendThongBao(pl, "Vật phẩm không thuộc quyền sở hữu");
+                        openShopKyGui(pl);
+                        return;
+                    }
+                    if (it.goldSell > 0 && InventoryService.gI().getCountEmptyBag(pl) <= 0) {
+                        Service.gI().sendThongBao(pl, "Hành trang không còn chỗ trống để nhận Thỏi vàng");
+                        return;
+                    }
+                    if (ConsignShopManager.gI().listItem.remove(it)) {
+                        if (it.goldSell > 0) {
+                            Item tvAdd = ItemService.gI().createNewItem((short) 457);
+                            tvAdd.quantity = Math.max(1, it.goldSell - it.goldSell * 10 / 100);
+                            InventoryService.gI().addItemBag(pl, tvAdd);
+                            InventoryService.gI().sendItemBags(pl);
+                        } else if (it.gemSell > 0) {
+                            pl.inventory.gem += Math.max(1, it.gemSell - it.gemSell * 10 / 100);
+                        }
+                        Service.gI().sendMoney(pl);
+                        ConsignShopManager.gI().save();
+                        nro.models.database.PlayerDAO.savePlayerAsync(pl);
+                        Service.gI().sendThongBao(pl, "Bạn đã bán vật phẩm thành công");
+                        openShopKyGui(pl);
+                    }
+                    break;
+            }
         }
     }
 

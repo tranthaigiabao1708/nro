@@ -109,7 +109,7 @@ public class BossManager implements Runnable {
     }
 
     public BossManager() {
-        this.bosses = new ArrayList<>();
+        this.bosses = new java.util.concurrent.CopyOnWriteArrayList<>();
     }
 
     protected final List<Boss> bosses;
@@ -334,9 +334,11 @@ public class BossManager implements Runnable {
 
     public Boss getBoss(int id) {
         try {
-            Boss boss = this.bosses.get(id);
-            if (boss != null) {
-                return boss;
+            if (id >= 0 && id < this.bosses.size()) {
+                return this.bosses.get(id);
+            }
+            if (id < 0) {
+                return getBossById(id);
             }
         } catch (Exception e) {
         }
@@ -383,7 +385,7 @@ public class BossManager implements Runnable {
     }
 
     public Boss getBossById(int bossId) {
-        return this.bosses.stream().filter(boss -> boss.id == bossId && !boss.isDie()).findFirst().orElse(null);
+        return this.bosses.stream().filter(boss -> boss.id == bossId && boss.zone != null && !boss.isDie()).findFirst().orElse(null);
     }
 
     public boolean checkBosses(Zone zone, int BossID) {

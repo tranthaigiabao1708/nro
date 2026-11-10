@@ -23,6 +23,7 @@ import nro.models.utils.Logger;
 import nro.models.utils.Util;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import lombok.Getter;
 import lombok.Setter;
 import nro.models.Bot.BotAttackplayer;
@@ -190,14 +191,14 @@ public class Zone {
         this.map = map;
         this.zoneId = zoneId;
         this.maxPlayer = maxPlayer;
-        this.nonInteractiveNPCs = new ArrayList<>();
-        this.humanoids = new ArrayList<>();
-        this.notBosses = new ArrayList<>();
-        this.players = new ArrayList<>();
-        this.bosses = new ArrayList<>();
-        this.pets = new ArrayList<>();
+        this.nonInteractiveNPCs = new CopyOnWriteArrayList<>();
+        this.humanoids = new CopyOnWriteArrayList<>();
+        this.notBosses = new CopyOnWriteArrayList<>();
+        this.players = new CopyOnWriteArrayList<>();
+        this.bosses = new CopyOnWriteArrayList<>();
+        this.pets = new CopyOnWriteArrayList<>();
         this.mobs = new ArrayList<>();
-        this.items = new ArrayList<>();
+        this.items = new CopyOnWriteArrayList<>();
         this.trapMaps = new ArrayList<>();
         this.maBuHolds = new ArrayList<>();
     }
@@ -220,12 +221,12 @@ public class Zone {
     }
 
     public void addPlayer(Player player) {
-        if (player != null) {
+        if (player != null && !player.beforeDispose && !player.isDisposed) {
             if (!this.humanoids.contains(player)) {
                 this.humanoids.add(player);
             }
 
-            if (player instanceof NonInteractiveNPC) {
+            if (player instanceof NonInteractiveNPC && !this.nonInteractiveNPCs.contains(player)) {
                 this.nonInteractiveNPCs.add(player);
             }
 
@@ -237,10 +238,10 @@ public class Zone {
                 this.players.add(player);
             }
 
-            if (player.isBoss) {
+            if (player.isBoss && !this.bosses.contains(player)) {
                 this.bosses.add(player);
             }
-            if (player.isPet || player.isNewPet) {
+            if ((player.isPet || player.isNewPet) && !this.pets.contains(player)) {
                 this.pets.add(player);
             }
 
@@ -248,10 +249,13 @@ public class Zone {
     }
 
     private void udPlayer() {
-        for (int i = this.notBosses.size() - 1; i >= 0; i--) {
-            Player pl = this.notBosses.get(i);
-            if (!pl.isPet && !pl.isBot && !pl.isNewPet) {
-                this.notBosses.get(i).update();
+        for (Player pl : this.notBosses) {
+            try {
+                if (pl != null && !pl.isPet && !pl.isBot && !pl.isNewPet && !pl.beforeDispose && !pl.isDisposed) {
+                    pl.update();
+                }
+            } catch (Exception e) {
+                Logger.logException(Zone.class, e, "Lỗi update player trong khu");
             }
         }
     }
@@ -380,10 +384,9 @@ public class Zone {
                                     Service.gI().sendToAntherMePickItem(player, itemMapId);
 
                                     // Mark item as picked up unless the item ID is 74
-                                    if (picked) {
-                                        if (itemMap.itemTemplate.id != 74) {
-                                            itemMap.isPickedUp = true;
-                                        }
+                                    picked = true;
+                                    if (itemMap.itemTemplate.id != 74) {
+                                        itemMap.isPickedUp = true;
                                     }
 
                                     if (!(this.map.mapId >= 21 && this.map.mapId <= 23
@@ -392,6 +395,7 @@ public class Zone {
                                             && itemMap.itemTemplate != null && itemMap.itemTemplate.id == 78)) {
                                         removeItemMap(itemMap);
                                     }
+                                    nro.models.database.PlayerDAO.savePlayerAsync(player);
                                 } catch (Exception e) {
                                     Logger.logException(Zone.class, e);
                                 }

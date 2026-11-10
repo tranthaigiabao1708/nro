@@ -121,6 +121,11 @@ public class MrBlue {
 
                 if (rs.getBoolean("ban")) {
                     Service.gI().sendThongBaoOK(session, "Tài khoản này đang bị khóa. Liên hệ Admin để biết thêm thông tin");
+                } else if ((plInGame = Client.gI().getPlayerByUser(session.userId)) != null) {
+                    Client.gI().kickSession(plInGame.getSession());
+                    Service.gI().sendThongBaoOK(session, "Tài khoản đang được đăng nhập ở nơi khác, vui lòng thử lại!");
+                    Service.gI().sendLoginFail(session, false);
+                    return null;
                 } else if (secondsPass1 < Manager.SECOND_WAIT_LOGIN) {
                     if (secondsPass < secondsPass1) {
                         Service.gI().sendWaitToLogin(session, Manager.SECOND_WAIT_LOGIN - secondsPass);
@@ -128,19 +133,10 @@ public class MrBlue {
                     }
                     Service.gI().sendWaitToLogin(session, Manager.SECOND_WAIT_LOGIN - secondsPass1);
                     return null;
-                } else if (rs.getTimestamp("last_time_login").getTime() > session.lastTimeLogout
-                        && (plInGame = Client.gI().getPlayerByUser(session.userId)) != null) {
-                    if (plInGame != null) {
-                        Client.gI().kickSession(plInGame.getSession());
-                    }
                 } else {
                     if (secondsPass < Manager.SECOND_WAIT_LOGIN) {
                         Service.gI().sendWaitToLogin(session, Manager.SECOND_WAIT_LOGIN - secondsPass);
                     } else {
-                        plInGame = Client.gI().getPlayerByUser(session.userId);
-                        if (plInGame != null) {
-                            Client.gI().kickSession(plInGame.getSession());
-                        }
                         rs = LocalManager.executeQuery("select * from player where account_id = ? limit 1", session.userId);
                         if (!rs.first()) {
                             //-28 -4 version data game

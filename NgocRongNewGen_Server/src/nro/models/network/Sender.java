@@ -48,16 +48,13 @@ public final class Sender implements Runnable {
     @Override
     public void run() {
         try {
-            while (this.session.isConnected()) {
-                while (!this.messages.isEmpty()) {
-                    Message message = this.messages.poll(5L, TimeUnit.SECONDS);
-                    if (message == null) {
-                        continue;
-                    }
-                    this.doSendMessage(message);
-                    message.cleanup();
+            while (this.session != null && this.session.isConnected()) {
+                Message message = this.messages.poll(1L, TimeUnit.SECONDS);
+                if (message == null) {
+                    continue;
                 }
-                TimeUnit.MILLISECONDS.sleep(10L);
+                this.doSendMessage(message);
+                message.cleanup();
             }
         } catch (Exception exception) {
         }

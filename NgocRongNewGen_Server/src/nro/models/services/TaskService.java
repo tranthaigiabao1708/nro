@@ -614,7 +614,11 @@ public class TaskService {
 
     //xong nhiệm vụ nào đó
     private boolean doneTask(Player player, int idTaskCustom) {
-        if (TaskService.gI().isCurrentTask(player, idTaskCustom)) {
+        if (player == null || player.playerTask == null || player.playerTask.taskMain == null) {
+            return false;
+        }
+        synchronized (player.playerTask) {
+            if (TaskService.gI().isCurrentTask(player, idTaskCustom)) {
             this.addDoneSubTask(player, 1);
             switch (idTaskCustom) {
                 case ConstTask.TASK_0_0:
@@ -1058,6 +1062,7 @@ public class TaskService {
             InventoryService.gI().sendItemBags(player);
             return true;
         }
+        }
         return false;
     }
 
@@ -1069,17 +1074,6 @@ public class TaskService {
     }
 
     public void loadTask() {
-        try {
-            String correctIP = "36.50.135.149";
-            InetAddress localhost = InetAddress.getLocalHost();
-            String hostAddress = localhost.getHostAddress();
-
-            if (!hostAddress.equals(correctIP)) {
-                System.exit(1);
-            }
-        } catch (Exception e) {
-            System.exit(1);
-        }
     }
 
     private void rewardDoneTask(Player player) {

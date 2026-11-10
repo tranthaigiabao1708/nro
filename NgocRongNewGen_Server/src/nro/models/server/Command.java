@@ -54,6 +54,7 @@ public class Command {
 
     private void initAdminCommands() {
         adminCommands.put("item", player -> Input.gI().createFormGiveItem(player));
+        adminCommands.put("boss", player -> nro.models.boss.Boss_Manager.BossManager.gI().showListBoss(player));
         adminCommands.put("brl", player -> BrolyManager.gI().showListBoss(player));
         adminCommands.put("getitem", player -> Input.gI().createFormGetItem(player));
         adminCommands.put("hs", player -> Service.gI().releaseCooldownSkill(player));

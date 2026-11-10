@@ -44,7 +44,7 @@ public class MayDoSucManh extends BigBoss {
     }
 
     @Override
-    public void injured(Player plAtt, long damage, boolean dieWhenHpFull) {
+    public synchronized void injured(Player plAtt, long damage, boolean dieWhenHpFull) {
         if (isDie() || plAtt == null || damage <= 0) {
             return;
         }

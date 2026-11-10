@@ -62,7 +62,7 @@ public class Odo extends Boss {
     }
 
     @Override
-    public int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
             damage = 50000;
             this.nPoint.subHP(damage);

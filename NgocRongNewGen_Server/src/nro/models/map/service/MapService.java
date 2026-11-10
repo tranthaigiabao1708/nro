@@ -294,17 +294,24 @@ public class MapService {
 
     public Zone getZone(int mapId) {
         Map map = getMapById(mapId);
-        if (map == null) {
+        if (map == null || map.zones.isEmpty()) {
             return null;
         }
 
-        int z = Util.nextInt(0, map.zones.size() - 1);
-        //  int z = 0;
-        while (map.zones.get(z).getNumOfPlayers() >= map.zones.get(z).maxPlayer) {
-            z = Util.nextInt(0, map.zones.size() - 1);
-            //    z++;
+        List<Zone> available = new ArrayList<>();
+        Zone leastPopulated = map.zones.get(0);
+        for (Zone zone : map.zones) {
+            if (zone.getNumOfPlayers() < zone.maxPlayer) {
+                available.add(zone);
+            }
+            if (zone.getNumOfPlayers() < leastPopulated.getNumOfPlayers()) {
+                leastPopulated = zone;
+            }
         }
-        return map.zones.get(z);
+        if (!available.isEmpty()) {
+            return available.get(Util.nextInt(0, available.size() - 1));
+        }
+        return leastPopulated;
     }
 
     public Zone getZoneByMapIDAndZoneID(int mapId, int zoneId) {
