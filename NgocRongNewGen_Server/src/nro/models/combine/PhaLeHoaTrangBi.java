@@ -47,7 +47,7 @@ public class PhaLeHoaTrangBi {
         String npcSay = item.template.name + "\n|2|";
         for (Item.ItemOption io : item.itemOptions) {
             if (io.optionTemplate.id != 102) {
-                npcSay += io.getOptionString() + "\n";
+                npcSay += io.getOptionString().replace("$", "") + "\n";
             }
         }
         npcSay += "|7|Tỉ lệ thành công: " + player.combineNew.ratioCombine + "%" + "\n";

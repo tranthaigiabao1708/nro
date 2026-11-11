@@ -1207,7 +1207,7 @@ public class Player implements Runnable {
             damage -= ((damage / 100) * tlGiap);
 
             if (!piercing) {
-                damage = this.nPoint.subDameInjureWithDeff(damage);
+                damage = this.nPoint.subDameInjureWithDeff(damage, plAtt);
             }
 
             boolean isUseGX = false;
@@ -1619,12 +1619,20 @@ public class Player implements Runnable {
                         PetService.Pet2(this, 1572, 1573, 1574);
                         Service.gI().point(this);
                     }
+                    case 1714 -> {
+                        PetService.Pet2(this, 1600, 1601, 1602);
+                        Service.gI().point(this);
+                    }
+                    case 1748 -> {
+                        PetService.Pet2(this, 1650, 1651, 1652);
+                        Service.gI().point(this);
+                    }
                     case 1750 -> {
                         PetService.Pet2(this, 1464, 1465, 1466);
                         Service.gI().point(this);
                     }
                     case 1765 -> {
-                        PetService.Pet2(this, 1662, 1663, 1764);
+                        PetService.Pet2(this, 1662, 1663, 1664);
                         Service.gI().point(this);
                     }
                     case 1729 -> {
@@ -1670,6 +1678,12 @@ public class Player implements Runnable {
                     case 2004 -> {
                         PetService.Pet2(this, 2102, 2103, 2104);
                         Service.gI().point(this);
+                    }
+                    default -> {
+                        if (it.template.type == 27 && it.template.head > 0 && it.template.body > 0 && it.template.leg > 0) {
+                            PetService.Pet2(this, it.template.head, it.template.body, it.template.leg);
+                            Service.gI().point(this);
+                        }
                     }
                 }
             }
@@ -1960,7 +1974,7 @@ public class Player implements Runnable {
     }
 
     public boolean isMabuPet(Player player) {
-        return player.pet != null && player.pet.typePet == 1;
+        return player.pet != null && (player.pet.typePet == 1 || player.pet.typePet == 6);
     }
 
 }

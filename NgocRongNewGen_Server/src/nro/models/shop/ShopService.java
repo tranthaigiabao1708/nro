@@ -62,7 +62,6 @@ public class ShopService {
             openShopType4(player, tagName, player.inventory.itemsBoxCrackBall);
             return;
         } else if (tagName.equals("ITEMS_DABAN")) {
-            openShopType8(player, tagName, player.inventory.itemsDaBan);
             return;
         }
         try {
@@ -483,7 +482,6 @@ public class ShopService {
         } else if (tagName.equals("ITEMS_REWARD")) {
             return;
         } else if (tagName.equals("ITEMS_DABAN")) {
-            buyItemDaBan(player, player.inventory.itemsDaBan, type, tempId);
             return;
         } else if (tagName.equals("BILL")) {
             buyItemHD(player, tempId);

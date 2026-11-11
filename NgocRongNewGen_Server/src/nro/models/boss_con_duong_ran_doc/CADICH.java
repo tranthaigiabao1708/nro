@@ -63,9 +63,6 @@ public class CADICH extends Boss {
             it.options.add(new Item.ItemOption(93, 90));
             it.options.add(new Item.ItemOption(20, Util.nextInt(10000)));
             Service.gI().dropItemMap(this.zone, it);
-            ItemMap it2 = new ItemMap(this.zone, 706, 1, this.location.x, this.zone.map.yPhysicInTop(this.location.x,
-                    this.location.y - 24), plKill.id);
-            Service.gI().dropItemMap(this.zone, it2);
         }
     }
 

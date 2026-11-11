@@ -94,8 +94,6 @@ public abstract class DeathOrAliveArena extends Boss {
     public void joinMap() {
         if (playerAtt.zone != null) {
             this.zone = playerAtt.zone;
-            this.nPoint.hpMax = playerAtt.nPoint.hpMax / 100 * (100 + ((int) Math.abs(this.id) - 82));
-            this.nPoint.hp = this.nPoint.hpMax;
             ChangeMapService.gI().changeMap(this, this.zone, 523, 336);
         }
     }
@@ -142,7 +140,11 @@ public abstract class DeathOrAliveArena extends Boss {
     @Override
     public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
-            if (!piercing && Util.isTrue(100, 1000)) {
+            int neDon = 100;
+            if (plAtt != null && plAtt.nPoint != null) {
+                neDon = Math.max(0, neDon - plAtt.nPoint.tlchinhxac * 10);
+            }
+            if (!piercing && Util.isTrue(neDon, 1000)) {
                 this.chat("Xí hụt");
                 return 0;
             }
@@ -150,8 +152,8 @@ public abstract class DeathOrAliveArena extends Boss {
             if (plAtt != null && plAtt.idNRNM != -1) {
                 return 1;
             }
-            if (damage > this.nPoint.hpMax / 10) {
-                damage = this.nPoint.hpMax / 10;
+            if (!piercing) {
+                damage = this.nPoint.subDameInjureWithDeff(damage, plAtt);
             }
 
             this.nPoint.subHP(damage);

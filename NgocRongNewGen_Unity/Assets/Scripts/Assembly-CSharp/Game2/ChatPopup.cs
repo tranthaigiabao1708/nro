@@ -56,6 +56,8 @@ namespace Game2
 
 		public sbyte maxStarSlot;
 
+		public sbyte cuongHoaSlot;
+
 		public static Scroll scr;
 
 		public static bool isHavePetNpc;
@@ -467,6 +469,16 @@ namespace Game2
 						}
 					}
 				}
+				for (int k2 = 0; k2 < nMaxslot_duoi; k2++)
+				{
+					int slotIdx = nMaxslot_tren + k2 + 1;
+					if (slotIdx >= 8 && slotIdx > cuongHoaSlot && slotIdx > starSlot)
+					{
+						int sx = num + num3 / 2 - nMaxslot_duoi * 20 / 2 + k2 * 20 + mGraphics.getImageWidth(Panel.imgMaxStar);
+						int sy = num2 + num4 - 8;
+						paintLockedStarChain(g, sx, sy);
+					}
+				}
 			}
 			else
 			{
@@ -483,6 +495,39 @@ namespace Game2
 				}
 			}
 			paintCmd(g);
+		}
+
+		private void paintLockedStarChain(mGraphics g, int sx, int sy)
+		{
+			g.setColor(0x1E2229);
+			g.drawRect(sx - 7, sy - 6, 13, 11);
+			int chainColor1 = ((GameCanvas.gameTick / 6) % 2 == 0) ? 0xC8D2DE : 0x9AA6B4;
+			int chainColor2 = ((GameCanvas.gameTick / 6) % 2 == 0) ? 0x8C98A6 : 0xD8E2EE;
+			g.setColor(chainColor1);
+			g.fillRect(sx - 7, sy - 6, 3, 2);
+			g.fillRect(sx + 5, sy - 6, 3, 2);
+			g.fillRect(sx - 7, sy + 5, 3, 2);
+			g.fillRect(sx + 5, sy + 5, 3, 2);
+			g.fillRect(sx - 1, sy - 7, 3, 2);
+			g.fillRect(sx - 1, sy + 5, 3, 2);
+			g.fillRect(sx - 8, sy - 1, 2, 3);
+			g.fillRect(sx + 6, sy - 1, 2, 3);
+			g.setColor(0x232730);
+			g.drawLine(sx - 6, sy - 5, sx + 6, sy + 5);
+			g.drawLine(sx - 6, sy + 5, sx + 6, sy - 5);
+			g.setColor(chainColor2);
+			g.fillRect(sx - 5, sy - 4, 2, 2);
+			g.fillRect(sx - 3, sy - 2, 2, 2);
+			g.fillRect(sx + 2, sy + 1, 2, 2);
+			g.fillRect(sx + 4, sy + 3, 2, 2);
+			g.fillRect(sx - 5, sy + 3, 2, 2);
+			g.fillRect(sx - 3, sy + 1, 2, 2);
+			g.fillRect(sx + 2, sy - 2, 2, 2);
+			g.fillRect(sx + 4, sy - 4, 2, 2);
+			g.setColor(0x4A2E00);
+			g.fillRect(sx - 2, sy - 2, 5, 5);
+			g.setColor(0xF5B82E);
+			g.fillRect(sx - 1, sy - 1, 3, 3);
 		}
 
 		public void paintRada(mGraphics g, int cmyText)

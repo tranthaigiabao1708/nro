@@ -48,6 +48,7 @@ public class NinjaAoTim extends Boss {
 
     @Override
     public void reward(Player plKill) {
+        long ownerId = plKill.isPet ? ((nro.models.player.Pet) plKill).master.id : plKill.id;
         // Xác suất rơi item 17 (50%)
         if (Util.isTrue(50, 100)) {
             ItemMap it = new ItemMap(
@@ -56,21 +57,23 @@ public class NinjaAoTim extends Boss {
                     1,
                     this.location.x,
                     this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24),
-                    plKill.id
+                    ownerId
             );
+            it.options.add(new nro.models.item.Item.ItemOption(73, 0));
             Service.gI().dropItemMap(this.zone, it);
         }
 
-        // Xác suất rơi item 611 (30%)
-        if (Util.isTrue(30, 100)) {
+        // Xác suất rơi Bản đồ kho báu 611 (20%: 1-2 tấm)
+        if (Util.isTrue(20, 100)) {
             ItemMap it = new ItemMap(
                     this.zone,
                     611,
                     Util.nextInt(1, 2),
-                    this.location.x,
+                    this.location.x + 15,
                     this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24),
-                    plKill.id
+                    ownerId
             );
+            it.options.add(new nro.models.item.Item.ItemOption(73, 0));
             Service.gI().dropItemMap(this.zone, it);
         }
     }
@@ -137,6 +140,7 @@ public class NinjaAoTim extends Boss {
     public void die(Player plKill) {
         if (plKill != null) {
             reward(plKill);
+            dropMaterialBoss(plKill);
         }
         this.changeStatus(BossStatus.DIE);
     }

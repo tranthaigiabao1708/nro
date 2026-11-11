@@ -135,7 +135,20 @@ public class ItemTimeService {
             sendItemTime(player, 4387, player.itemTime.timeTDLT / 1000);
         }
         if (player.itemTime.isUseRX) {
-            sendItemTime(player, 8579, player.itemTime.timeRX / 1000);
+            int remainRX = Math.max(0, (int) ((player.itemTime.timeRX - (System.currentTimeMillis() - player.itemTime.lastTimeUseRX)) / 1000));
+            if (remainRX > 0) {
+                sendItemTime(player, 6581, remainRX);
+            } else {
+                player.itemTime.isUseRX = false;
+            }
+        }
+        if (player.itemTime.isUseLuckRX) {
+            int remainLuckRX = Math.max(0, (int) ((player.itemTime.timeLuckRX - (System.currentTimeMillis() - player.itemTime.lastTimeUseLuckRX)) / 1000));
+            if (remainLuckRX > 0) {
+                sendItemTime(player, 6579, remainLuckRX);
+            } else {
+                player.itemTime.isUseLuckRX = false;
+            }
         }
     }
 

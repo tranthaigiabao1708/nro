@@ -163,7 +163,8 @@ public class NangCapTrangBiKichHoat {
 
         String npcSay = "|8|NÂNG CẤP ĐỒ THẦN LINH KÍCH HOẠT\n"
                 + "|2|Trang bị nhận dòng: " + itemTL.template.name + "\n"
-                + "|1|Truyền nguyên vẹn: " + setName + "\n"
+                + "|1|Thuộc tính nhận: " + setName + "\n"
+                + "|2|(Chỉ thêm thuộc tính Kích Hoạt, không chuyển cấp [+] và sao pha lê)\n"
                 + "|2|Tỉ lệ thành công: " + RATIO_THAN_LINH_SKH + "%\n"
                 + "|2|Cần: " + KHOANG_THAN_LINH_SKH + " Khoáng tái chế + " + Util.numberToMoney(GOLD_THAN_LINH_SKH) + " vàng\n"
                 + "|7|LƯU Ý: Nếu THẤT BẠI sẽ MẤT LUÔN cả [" + itemTL.template.name + "] và [" + itemSKH.template.name + "]!";
@@ -327,7 +328,8 @@ public class NangCapTrangBiKichHoat {
 
         String npcSay = "|8|NÂNG CẤP ĐỒ HỦY DIỆT KÍCH HOẠT\n"
                 + "|2|Trang bị nhận dòng: " + itemHD.template.name + "\n"
-                + "|1|Truyền nguyên vẹn: " + setName + "\n"
+                + "|1|Thuộc tính nhận: " + setName + "\n"
+                + "|2|(Chỉ thêm thuộc tính Kích Hoạt, không chuyển cấp [+] và sao pha lê)\n"
                 + "|2|Tỉ lệ thành công: " + RATIO_HUY_DIET_SKH + "%\n"
                 + "|2|Cần: " + KHOANG_HUY_DIET_SKH + " Khoáng tái chế + " + Util.numberToMoney(GOLD_HUY_DIET_SKH) + " vàng\n"
                 + "|7|LƯU Ý: Nếu THẤT BẠI sẽ MẤT LUÔN cả [" + itemHD.template.name + "] và [" + itemTLSKH.template.name + "]!";
@@ -409,12 +411,19 @@ public class NangCapTrangBiKichHoat {
         CombineService.gI().reOpenItemCombine(player);
     }
 
+    private static boolean isStarOrUpgradeOption(int id) {
+        return id == 72 || id == 209 || id == 102 || id == 107 || id == 218 || id == 228
+                || (id >= 95 && id <= 101)
+                || id == 50 || id == 77 || id == 80 || id == 81 || id == 103 || id == 153 || id == 160;
+    }
+
     private static void transferSkhOptions(int skhId, Item targetItem) {
         if (targetItem.itemOptions == null) {
             targetItem.itemOptions = new ArrayList<>();
         }
         targetItem.itemOptions.removeIf(io -> io != null && io.optionTemplate != null
-                && SkhCollectionService.isAnySkhOptionId(io.optionTemplate.id));
+                && (SkhCollectionService.isAnySkhOptionId(io.optionTemplate.id)
+                || isStarOrUpgradeOption(io.optionTemplate.id)));
         targetItem.itemOptions.add(new ItemOption(skhId, 0));
         for (int subId : ItemService.gI().getOptionIdsBySKH(skhId)) {
             targetItem.itemOptions.add(new ItemOption(subId, 0));

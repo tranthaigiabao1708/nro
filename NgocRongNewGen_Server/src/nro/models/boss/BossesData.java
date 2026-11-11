@@ -2093,10 +2093,13 @@ public class BossesData {
             "Đracula", //name
             ConstPlayer.XAYDA, //gender
             new short[]{353, 354, 355, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
-            1000, //dame
-            new int[]{5000}, //hp
+            1500, //dame
+            new int[]{50000}, //hp
             new int[]{112}, //map join
             new int[][]{
+                {Skill.DRAGON, 7, 1000},
+                {Skill.GALICK, 7, 1000},
+                {Skill.ANTOMIC, 7, 3000},
                 {Skill.TAI_TAO_NANG_LUONG, 1, 60000},},
             new String[]{}, //text chat 1
             new String[]{"|-1|He he he",
@@ -2110,10 +2113,13 @@ public class BossesData {
             "Người vô hình", //name
             ConstPlayer.XAYDA, //gender
             new short[]{377, 378, 379, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
-            1000, //dame
-            new int[]{10000}, //hp
+            3000, //dame
+            new int[]{100000}, //hp
             new int[]{112}, //map join
             new int[][]{
+                {Skill.DRAGON, 7, 1000},
+                {Skill.GALICK, 7, 1000},
+                {Skill.ANTOMIC, 7, 3000},
                 {Skill.TAI_TAO_NANG_LUONG, 1, 60000},},
             new String[]{}, //text chat 1
             new String[]{"|-1|He he he",
@@ -2127,10 +2133,13 @@ public class BossesData {
             "Bông băng", //name
             ConstPlayer.XAYDA, //gender
             new short[]{350, 351, 352, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
-            2000, //dame
-            new int[]{15000}, //hp
+            5000, //dame
+            new int[]{250000}, //hp
             new int[]{112}, //map join
             new int[][]{
+                {Skill.DRAGON, 7, 1000},
+                {Skill.GALICK, 7, 1000},
+                {Skill.ANTOMIC, 7, 3000},
                 {Skill.TAI_TAO_NANG_LUONG, 1, 60000},},
             new String[]{}, //text chat 1
             new String[]{"|-1|He he he",
@@ -2144,10 +2153,13 @@ public class BossesData {
             "Vua Quỷ Sa tăng", //name
             ConstPlayer.XAYDA, //gender
             new short[]{344, 345, 346, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
-            2000, //dame
-            new int[]{20000}, //hp
+            8000, //dame
+            new int[]{500000}, //hp
             new int[]{112}, //map join
             new int[][]{
+                {Skill.DRAGON, 7, 1000},
+                {Skill.GALICK, 7, 1000},
+                {Skill.ANTOMIC, 7, 3000},
                 {Skill.TAI_TAO_NANG_LUONG, 1, 60000},},
             new String[]{}, //text chat 1
             new String[]{"|-1|He he he",
@@ -2161,10 +2173,13 @@ public class BossesData {
             "Thỏ Đầu Bạc", //name
             ConstPlayer.XAYDA, //gender
             new short[]{347, 348, 349, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
-            3000, //dame
-            new int[]{30000}, //hp
+            12000, //dame
+            new int[]{1000000}, //hp
             new int[]{112}, //map join
             new int[][]{
+                {Skill.DRAGON, 7, 1000},
+                {Skill.GALICK, 7, 1000},
+                {Skill.ANTOMIC, 7, 3000},
                 {Skill.TAI_TAO_NANG_LUONG, 1, 60000},},
             new String[]{}, //text chat 1
             new String[]{"|-1|He he he",

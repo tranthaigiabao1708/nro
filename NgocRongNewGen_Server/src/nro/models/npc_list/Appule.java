@@ -26,12 +26,9 @@ public class Appule extends Npc {
             if (!TaskService.gI().checkDoneTaskTalkNpc(player, this)) {
                 if (player.gender != 2) {
                     NpcService.gI().createTutorial(player, tempId, this.avartar, "Về hành tinh hạ đẳng của ngươi mà mua đồ cùi nhé. Tại đây ta chỉ bán đồ cho người Xayda thôi");
-                } else if (!player.inventory.itemsDaBan.isEmpty()) {
-                    this.createOtherMenu(player, ConstNpc.BASE_MENU,
-                            "Ngươi cần trang bị gì cứ đến chỗ ta nhé", "Cửa\nhàng", "Mua lại vật phẩm đã bán");
                 } else {
                     this.createOtherMenu(player, ConstNpc.BASE_MENU,
-                            "Ngươi cần trang bị gì cứ đến chỗ ta nhé", "Cửa\nhàng");
+                            "Ngươi cần trang bị gì cứ đến chỗ ta nhé", "Cửa\nhàng", "Đổi ngọc xanh\n1 TV = 1k ngọc");
                 }
             }
         }
@@ -51,9 +48,7 @@ public class Appule extends Npc {
                         }
                     }
                     case 1 -> {
-                        if (!player.inventory.itemsDaBan.isEmpty()) {
-                            ShopService.gI().opendShop(player, "ITEMS_DABAN", true);
-                        }
+                        nro.models.services_func.Input.gI().createFormDoiThoiVangRaNgoc(player);
                     }
                 }
             }

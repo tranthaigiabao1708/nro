@@ -2363,6 +2363,13 @@ namespace Game1
 							break;
 						}
 					}
+					if (!Char.myCharz().checkHaveMount())
+					{
+						Char.myCharz().isMount = false;
+						Char.myCharz().isStartMount = false;
+						Char.myCharz().isEndMount = false;
+						Char.myCharz().idMount = -1;
+					}
 					break;
 				}
 				case -36:
@@ -6063,6 +6070,10 @@ namespace Game1
 				string text = msg.reader().readUTF();
 				sbyte nFrame = msg.reader().readByte();
 				sbyte[] array = NinjaUtil.readByteArray(msg);
+				if (nFrame <= 0 || array == null || array.Length == 0)
+				{
+					return;
+				}
 				Image img = createImage(array);
 				ImgByName.SetImage(text, img, nFrame);
 				if (array != null)

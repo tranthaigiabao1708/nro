@@ -127,7 +127,7 @@
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Tên</th><th>Hành tinh</th><th>Sức mạnh</th><th>Vàng</th><th>Ngọc</th><th>Hồng ngọc</th><th>Thỏi vàng</th><th>Vị trí</th><th>IP</th><th>Thao tác</th></tr></thead>
+          <thead><tr><th>Tên</th><th>Hành tinh</th><th>Sức mạnh</th><th>Vàng</th><th>Ngọc</th><th>Hồng ngọc</th><th>Thỏi vàng</th><th>Nhiệm vụ</th><th>Vị trí</th><th>IP</th><th>Thao tác</th></tr></thead>
           <tbody id="plBody"></tbody>
         </table>
       </div>
@@ -182,6 +182,18 @@
               <select id="tvLock"><option value="1">Thỏi vàng KHÓA (không giao dịch)</option><option value="0">Thỏi vàng THƯỜNG (giao dịch được)</option></select></div>
           </div>
           <button class="btn" onclick="giveTV()">Gửi Thỏi vàng</button>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <h3>📜 Hoàn thành nhiệm vụ hiện tại</h3>
+          <label>Tên nhân vật (đang online)</label><input id="tkName" list="plList" placeholder="tên nhân vật">
+          <div>
+            <label>Chế độ hoàn thành</label>
+            <select id="tkMode">
+              <option value="sub">Hoàn thành bước nhiệm vụ hiện tại (Sub-task)</option>
+              <option value="main">Hoàn thành cả nhiệm vụ chính hiện tại (Sang NV kế tiếp)</option>
+            </select>
+          </div>
+          <button class="btn" onclick="completeTask()">Hoàn thành nhiệm vụ</button>
         </div>
       </div>
     </div>
@@ -327,14 +339,18 @@ function renderPlayers() {
   $('plBody').innerHTML = list.map(p => `<tr>
     <td><b>${esc(p.name)}</b>${p.isAdmin ? ' <span class="badge ok">ADMIN</span>' : ''}</td>
     <td>${planet(p.gender)}</td><td>${fmt(p.power)}</td><td>${fmt(p.gold)}</td><td>${fmt(p.gem)}</td>
-    <td>${fmt(p.ruby)}</td><td>${fmt(p.thoiVang)}</td><td>${esc(p.map)}</td><td>${esc(p.ip)}</td>
+    <td>${fmt(p.ruby)}</td><td>${fmt(p.thoiVang)}</td><td>${esc(p.task || '-')}</td><td>${esc(p.map)}</td><td>${esc(p.ip)}</td>
     <td><button class="btn sec sm" onclick="pickPlayer('${esc(p.name)}')">Gửi quà</button>
+        <button class="btn sec sm" onclick="quickTask('${esc(p.name)}')">Xong NV</button>
         <button class="btn danger sm" onclick="kick('${esc(p.name)}')">Kick</button></td></tr>`).join('')
-    || '<tr><td colspan="10" class="muted">Chưa có người chơi online</td></tr>';
+    || '<tr><td colspan="11" class="muted">Chưa có người chơi online</td></tr>';
 }
 function pickPlayer(n) {
-  ['giName', 'moName', 'tvName'].forEach(id => $(id).value = n);
+  ['giName', 'moName', 'tvName', 'tkName'].forEach(id => $(id).value = n);
   document.querySelector('nav button[data-tab=gift]').click();
+}
+async function quickTask(n) {
+  if (await act('/api/player/task', { name: n, mode: 'sub' }, 'Hoàn thành bước nhiệm vụ hiện tại cho ' + n + '?')) loadPlayers();
 }
 async function kick(n) { if (await act('/api/player/kick', { name: n }, 'Kick ' + n + '?')) loadPlayers(); }
 function banAcc(b) { const n = v('banName'); if (n) act('/api/account/ban', { name: n, ban: b }, (b ? 'KHÓA' : 'MỞ KHÓA') + ' tài khoản của ' + n + '?'); }
@@ -357,6 +373,7 @@ function pickItem(id, name) { $('giId').value = id; $('giSelected').textContent 
 function giveItem() { act('/api/player/item', { name: v('giName'), itemId: v('giId'), quantity: v('giQty'), options: v('giOpt') }); }
 function giveMoney() { act('/api/player/money', { name: v('moName'), type: v('moType'), amount: v('moAmt') }); }
 function giveTV() { act('/api/player/thoivang', { name: v('tvName'), quantity: v('tvQty'), locked: v('tvLock') }); }
+function completeTask() { act('/api/player/task', { name: v('tkName'), mode: v('tkMode') }); }
 
 async function loadCodes() {
   const r = await api('/api/giftcodes');

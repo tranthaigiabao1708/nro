@@ -28,6 +28,7 @@ public class Santa extends Npc {
                 "Mở rộng\nHành trang\nRương đồ",
                 "Nhập mã\nquà tặng",
                 "Shop\nThỏi Vàng",
+                "Đổi ngọc xanh\n1 TV = 1k ngọc",
                 "Tiệm\nHớt tóc",
                 "Danh\nhiệu",
                 "Hướng dẫn\nSet Kích Hoạt"));
@@ -73,6 +74,9 @@ public class Santa extends Npc {
                             break;
                         case "Shop\nThỏi Vàng":
                             ShopService.gI().opendShop(player, "SANTA_HAN_SU_DUNG", false);
+                            break;
+                        case "Đổi ngọc xanh\n1 TV = 1k ngọc":
+                            Input.gI().createFormDoiThoiVangRaNgoc(player);
                             break;
                         case "Tiệm\nHớt tóc":
                             ShopService.gI().opendShop(player, "SANTA_HEAD", false);

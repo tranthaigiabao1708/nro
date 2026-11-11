@@ -31,10 +31,10 @@ import nro.models.player_system.Template.BgItem;
 
 public class DataGame {
 
-    public static byte vsData = 10;
+    public static byte vsData = 11;
     public static byte vsMap = 2;
     public static byte vsSkill = 1;
-    public static byte vsItem = 22;
+    public static byte vsItem = 29;
     public static int vsRes = 1;
     public static short maxSmallVersion = 32767;
 
@@ -400,19 +400,16 @@ public class DataGame {
     public static void sendImageByName(MySession session, String imgName) {
         Message msg;
         try {
+            byte nFrame = Manager.getNFrameImageByName(imgName);
+            final byte[] data = FileIO.readFile("data/img_by_name/x" + session.zoomLevel + "/" + imgName + ".png");
+            if (data == null || data.length == 0 || nFrame <= 0) {
+                return;
+            }
             msg = new Message(66);
             msg.writer().writeUTF(imgName);
-            msg.writer().writeByte(Manager.getNFrameImageByName(imgName));
-
-            final byte[] data = FileIO.readFile("data/img_by_name/x" + session.zoomLevel + "/" + imgName + ".png");
-
-            if (data == null) {
-                msg.writer().writeInt(0);
-            } else {
-                msg.writer().writeInt(data.length);
-                msg.writer().write(data);
-            }
-
+            msg.writer().writeByte(nFrame);
+            msg.writer().writeInt(data.length);
+            msg.writer().write(data);
             session.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {

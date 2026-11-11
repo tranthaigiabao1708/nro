@@ -17,6 +17,8 @@ public class OngMoori extends OngGohan {
                 this.createOtherMenu(player, ConstNpc.BASE_MENU,
                         "Con cố gắng theo Trưởng Lão Guru học thành tài, đừng lo lắng cho ta.\n"
                         + "Ta có dựng sẵn Bảng Sưu Tập Set Kích Hoạt trong nhà cho con đây!",
+                        "Đổi ngọc xanh\n1 TV = 1k ngọc",
+                        "Nhận đệ tử\n(hợp thể 40%\nchỉ số)",
                         "Bảng Sưu Tập\nSet Kích Hoạt",
                         "Nhận Hào Quang\n(Đủ 5 Set)",
                         "Hướng dẫn\nSet Kích Hoạt",

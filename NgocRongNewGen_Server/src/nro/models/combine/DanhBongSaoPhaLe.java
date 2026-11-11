@@ -86,15 +86,19 @@ public class DanhBongSaoPhaLe {
                 player.inventory.gem -= gem;
 
                 if (Util.isTrue(player.combineNew.ratioCombine, 100)) {
+                    ItemService.gI().ensureDefaultOptions(saoPhaLe);
                     int saoPhaLeLapLanhId = 1426 + (saoPhaLe.template.id - 1416);
                     Template.ItemTemplate newTemplate = ItemService.gI().getTemplate(saoPhaLeLapLanhId);
                     Item newItem = new Item();
                     newItem.template = newTemplate;
                     newItem.quantity = 1;
                     for (Item.ItemOption option : saoPhaLe.itemOptions) {
-                        Item.ItemOption newOption = new Item.ItemOption(option.optionTemplate.id, option.param + 1);
-                        newItem.itemOptions.add(newOption);
+                        if (option != null && option.optionTemplate != null && option.optionTemplate.id != 73) {
+                            Item.ItemOption newOption = new Item.ItemOption(option.optionTemplate.id, option.param * 2);
+                            newItem.itemOptions.add(newOption);
+                        }
                     }
+                    ItemService.gI().ensureDefaultOptions(newItem);
                     InventoryService.gI().addItemBag(player, newItem);
                     InventoryService.gI().subQuantityItemsBag(player, saoPhaLe, 2);
                     CombineService.gI().sendEffectSuccessCombine(player);

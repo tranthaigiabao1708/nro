@@ -600,6 +600,7 @@ public class PlayerDAO {
                 dataArray.add((player.itemTime.isUseKilis ? (ItemTime.TIME_KILIS - (System.currentTimeMillis() - player.itemTime.lastTimeUseKilis)) : 0));
                 dataArray.add((player.itemTime.isUseLuckDragon ? Math.max(0L, ItemTime.TIME_LUCK_DRAGON - (System.currentTimeMillis() - player.itemTime.lastTimeUseLuckDragon)) : 0));
                 dataArray.add((player.itemTime.isUseVeKhuSkh ? Math.max(0L, ItemTime.TIME_VE_KHU_SKH - (System.currentTimeMillis() - player.itemTime.lastTimeUseVeKhuSkh)) : 0));
+                dataArray.add((player.itemTime.isUseLuckRX ? Math.max(0, (int) ((player.itemTime.timeLuckRX - (System.currentTimeMillis() - player.itemTime.lastTimeUseLuckRX)) / 60 / 1000)) : 0));
                 String itemTime = dataArray.toJSONString();
                 dataArray.clear();
 
@@ -633,6 +634,7 @@ public class PlayerDAO {
                 if (player.mabuEgg != null) {
                     dataArray.add(player.mabuEgg.lastTimeCreate);
                     dataArray.add(player.mabuEgg.timeDone);
+                    dataArray.add(player.mabuEgg.eggType);
                 }
                 String mabuEgg = dataArray.toJSONString();
                 dataArray.clear();

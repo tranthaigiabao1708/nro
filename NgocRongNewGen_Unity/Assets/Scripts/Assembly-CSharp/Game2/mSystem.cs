@@ -325,7 +325,7 @@ namespace Game2
 			{
 				mainImage = ImgByName.getImagePath(nameImg, ImgByName.hashImagePath);
 			}
-			if (mainImage.img != null)
+			if (mainImage != null && mainImage.img != null && mainImage.nFrame > 0)
 			{
 				int num = mainImage.img.getHeight() / mainImage.nFrame;
 				if (num < 1)

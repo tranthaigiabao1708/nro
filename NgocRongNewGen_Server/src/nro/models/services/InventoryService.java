@@ -446,7 +446,7 @@ public class InventoryService {
                 index = 9;
                 break;
             case 11:
-                index = 8;
+                index = player.isPet ? 7 : 8;
                 break;
             case 27:
                 index = 7;
@@ -503,8 +503,12 @@ public class InventoryService {
             player.inventory.itemsBag.set(index, putItemBody(player, item));
             sendItemBags(player);
             sendItemBody(player);
-            Service.gI().point(player);
+            if (player.zone != null) {
+                player.zone.load_Me_To_Another(player);
+            }
             Service.gI().Send_Caitrang(player);
+            Service.gI().sendFlagBag(player);
+            Service.gI().point(player);
             RadarService.gI().sendAura(player, player.getAura(), player.getEffFront());
         }
     }
@@ -525,9 +529,9 @@ public class InventoryService {
             player.inventory.itemsBody.set(index, putItemBag(player, item));
             sendItemBags(player);
             sendItemBody(player);
-            Service.gI().player(player);
-            player.zone.load_Me_To_Another(player);
-            player.zone.load_Another_To_Me(player);
+            if (player.zone != null) {
+                player.zone.load_Me_To_Another(player);
+            }
             Service.gI().Send_Caitrang(player);
             Service.gI().sendFlagBag(player);
             Service.gI().point(player);
@@ -550,6 +554,7 @@ public class InventoryService {
                     }
                     Service.gI().Send_Caitrang(player.pet);
                     Service.gI().Send_Caitrang(player);
+                    Service.gI().sendFlagBag(player.pet);
                 }
             } else {
                 Service.gI().sendThongBao(player, "Đệ tử phải đạt 1tr5 sức mạnh mới có thể mặc");
@@ -568,6 +573,7 @@ public class InventoryService {
             Service.gI().point(player);
             Service.gI().Send_Caitrang(player.pet);
             Service.gI().Send_Caitrang(player);
+            Service.gI().sendFlagBag(player.pet);
             Service.gI().showInfoPet(player);
         }
     }
@@ -661,6 +667,24 @@ public class InventoryService {
     }
 
     public void sendItemBags(Player player) {
+        for (Item item : player.inventory.itemsBag) {
+            ItemService.gI().ensureDefaultOptions(item);
+        }
+        for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
+            Item it1 = player.inventory.itemsBag.get(i);
+            if (it1 == null || !it1.isNotNullItem() || !it1.template.isUpToUp) {
+                continue;
+            }
+            for (int j = i + 1; j < player.inventory.itemsBag.size(); j++) {
+                Item it2 = player.inventory.itemsBag.get(j);
+                if (it2 != null && it2.isNotNullItem() && it2.template.id == it1.template.id
+                        && checkListsEqual(it1.itemOptions, it2.itemOptions)
+                        && (long) it1.quantity + it2.quantity <= 99999) {
+                    it1.quantity += it2.quantity;
+                    player.inventory.itemsBag.set(j, ItemService.gI().createItemNull());
+                }
+            }
+        }
         sortItems(player.inventory.itemsBag);
         Message msg;
         try {
@@ -704,6 +728,9 @@ public class InventoryService {
     }
 
     public void sendItemBody(Player player) {
+        for (Item item : player.inventory.itemsBody) {
+            ItemService.gI().ensureDefaultOptions(item);
+        }
         Message msg;
         try {
             msg = new Message(-37);
@@ -748,6 +775,9 @@ public class InventoryService {
     }
 
     public void sendItemBox(Player player) {
+        for (Item item : player.inventory.itemsBox) {
+            ItemService.gI().ensureDefaultOptions(item);
+        }
         Message msg;
         try {
             msg = new Message(-35);
@@ -920,6 +950,7 @@ public class InventoryService {
     }
 
     public boolean addItemList(List<Item> items, Item itemAdd) {
+        ItemService.gI().ensureDefaultOptions(itemAdd);
         if (itemAdd.template != null && itemAdd.template.id == 457) {
             boolean locked = isLockedItem(itemAdd);
             itemAdd.itemOptions.clear();

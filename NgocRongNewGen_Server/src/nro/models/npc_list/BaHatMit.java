@@ -42,7 +42,6 @@ public class BaHatMit extends Npc {
                     this.createOtherMenu(player, ConstNpc.BASE_MENU,
                             "Ngươi tìm ta có việc gì?",
                             "Chức năng\npha lê",
-                            "Chuyển hóa\nTrang bị",
                             "Võ đài\nSinh tử",
                             "Phân rã\nTrang bị\nKích hoạt",
                             "Tái tạo\nCapsule\nKích hoạt",
@@ -144,18 +143,12 @@ public class BaHatMit extends Npc {
                                         "Pha lê\nhóa\ntrang bị",
                                         "Nâng cấp\nSao pha lê",
                                         "Đánh bóng\nSao pha lê",
-                                        "Cường hóa\nlỗ sao\npha lê",
-                                        "Tạo đá\nHematite");
+                                        "Cường hóa\nlỗ sao\npha lê");
                             case 1 ->
-                                createOtherMenu(player, 4,
-                                        "Ta có thể giúp gì cho ngươi ?",
-                                        "Chuyển hóa\nVàng",
-                                        "Chuyển hóa\nNgọc");
-                            case 2 ->
                                 ChangeMapService.gI().changeMapNonSpaceship(player, 112, 200 + Util.nextInt(-100, 100), 408);
-                            case 3 ->
+                            case 2 ->
                                 CombineService.gI().openTabCombine(player, CombineService.PHAN_RA_TRANG_BI_KH);
-                            case 4 ->
+                            case 3 ->
                                 createOtherMenu(player, ConstNpc.MENU_BA_HAT_MIT_TAI_TAO_CAPSULE,
                                         "|8|TÁI TẠO CAPSULE KÍCH HOẠT\n"
                                         + "|2|- Capsule Thường (5 Khoáng + 500 Tr vàng): Mở tự chọn Set KH thường & món đồ.\n"
@@ -163,18 +156,18 @@ public class BaHatMit extends Npc {
                                         "Capsule Thường\n(5 Khoáng)",
                                         "Capsule VIP\n(10 Khoáng)",
                                         "Từ chối");
-                            case 5 ->
+                            case 4 ->
                                 createOtherMenu(player, ConstNpc.MENU_BA_HAT_MIT_NANG_CAP_SKH,
                                         "|8|NÂNG CẤP ĐỒ THẦN LINH & HỦY DIỆT KÍCH HOẠT\n"
                                         + "|2|- Bắt buộc dùng trang bị CÙNG LOẠI & CÙNG HÀNH TINH:\n"
                                         + "  Áo-Áo | Quần-Quần | Găng-Găng | Giày-Giày | Rada-Nhẫn\n"
                                         + "- Chỉ dùng Đồ SKH + Đồ Thần/Hủy Diệt + Khoáng tái chế, cấm đặt đồ khác!\n"
-                                        + "|1|- Thành công giữ nguyên đúng loại Set của phôi SKH.\n"
+                                        + "|1|- Thành công: Chỉ thêm thuộc tính Kích Hoạt sang trang bị mới (không chuyển cấp [+] và sao pha lê đã ép).\n"
                                         + "|7|- THẤT BẠI SẼ MẤT LUÔN CẢ ĐỒ THẦN/HỦY DIỆT VÀ ĐỒ SKH!",
                                         "Lên Đồ Thần\nKích hoạt\n(40%)",
                                         "Lên Hủy Diệt\nKích hoạt\n(30%)",
                                         "Cẩm nang\nSet Kích Hoạt");
-                            case 6 ->
+                            case 5 ->
                                 nro.models.services.SkhCollectionService.gI().showGuide(player);
                         }
                     } else if (player.idMark.getIndexMenu() == ConstNpc.MENU_BA_HAT_MIT_TAI_TAO_CAPSULE) {
@@ -210,17 +203,6 @@ public class BaHatMit extends Npc {
                             case 4:
                                 CombineService.gI().openTabCombine(player, CombineService.CUONG_HOA_LO_SAO_PHA_LE);
                                 break;
-                            case 5:
-                                CombineService.gI().openTabCombine(player, CombineService.TAO_DA_HEMATITE);
-                                break;
-                        }
-                    } else if (player.idMark.getIndexMenu() == 4) {
-                        switch (select) {
-                            case 0:
-                                CombineService.gI().openTabCombine(player, CombineService.CHUYEN_HOA_TRANG_BI_VANG);
-                                break;
-                            case 1:
-                                CombineService.gI().openTabCombine(player, CombineService.CHUYEN_HOA_TRANG_BI_NGOC);
                         }
                     } else if (player.idMark.getIndexMenu() == ConstNpc.MENU_START_COMBINE) {
                         switch (player.combineNew.typeCombine) {

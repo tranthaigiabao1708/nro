@@ -208,6 +208,15 @@ public class TaskService {
                         || doneTask(player, ConstTask.TASK_21_4));
             }
             case ConstNpc.ONG_GOHAN, ConstNpc.ONG_MOORI, ConstNpc.ONG_PARAGUS -> {
+                if (isCurrentTask(player, ConstTask.TASK_11_3)) {
+                    doneTask(player, ConstTask.TASK_11_3);
+                    doneTask(player, ConstTask.TASK_12_0);
+                    return doneTask(player, ConstTask.TASK_12_1);
+                }
+                if (isCurrentTask(player, ConstTask.TASK_12_0)) {
+                    doneTask(player, ConstTask.TASK_12_0);
+                    return doneTask(player, ConstTask.TASK_12_1);
+                }
                 return (doneTask(player, ConstTask.TASK_0_2)
                         || doneTask(player, ConstTask.TASK_0_5)
                         || doneTask(player, ConstTask.TASK_1_1)
@@ -319,6 +328,9 @@ public class TaskService {
                 }
                 case 21, 22, 23 -> {
                     doneTask(player, ConstTask.TASK_0_1);
+                    if (isCurrentTask(player, ConstTask.TASK_11_3)) {
+                        doneTask(player, ConstTask.TASK_11_3);
+                    }
                     doneTask(player, ConstTask.TASK_12_0);
                 }
                 case 0, 7, 14 ->
@@ -1237,6 +1249,62 @@ public class TaskService {
         return (player.playerTask.taskMain.id << 10) + player.playerTask.taskMain.index << 1;
     }
 
+    public String completeCurrentTaskByAdmin(Player player, boolean fullMainTask) {
+        if (player == null || player.playerTask == null || player.playerTask.taskMain == null) {
+            throw new IllegalArgumentException("Nhân vật không có dữ liệu nhiệm vụ");
+        }
+        synchronized (player.playerTask) {
+            TaskMain tm = player.playerTask.taskMain;
+            if (tm.subTasks == null || tm.subTasks.isEmpty() || tm.index >= tm.subTasks.size()) {
+                throw new IllegalArgumentException("Nhân vật đã hoàn thành hết nhiệm vụ");
+            }
+            int startTaskId = tm.id;
+            int startSubIdx = tm.index;
+            String startTaskName = tm.name;
+            String startSubName = tm.subTasks.get(tm.index).name;
+
+            if (!fullMainTask) {
+                SubTaskMain sub = tm.subTasks.get(tm.index);
+                int need = Math.max(1, sub.maxCount - sub.count);
+                if (need > 1) {
+                    sub.count = (short) (sub.maxCount - 1);
+                }
+                int idCustom = getIdTask(player);
+                if (!doneTask(player, idCustom)) {
+                    addDoneSubTask(player, 1);
+                }
+            } else {
+                int safety = 0;
+                while (player.playerTask.taskMain != null
+                        && player.playerTask.taskMain.id == startTaskId
+                        && safety++ < 20) {
+                    TaskMain cur = player.playerTask.taskMain;
+                    if (cur.subTasks == null || cur.index >= cur.subTasks.size()) {
+                        sendNextTaskMain(player);
+                        break;
+                    }
+                    SubTaskMain sub = cur.subTasks.get(cur.index);
+                    int need = Math.max(1, sub.maxCount - sub.count);
+                    if (need > 1) {
+                        sub.count = (short) (sub.maxCount - 1);
+                    }
+                    int idCustom = getIdTask(player);
+                    if (!doneTask(player, idCustom)) {
+                        addDoneSubTask(player, 1);
+                    }
+                }
+            }
+            sendTaskMain(player);
+            nro.models.database.PlayerDAO.savePlayerAsync(player);
+            TaskMain after = player.playerTask.taskMain;
+            String nextInfo = (after != null && after.subTasks != null && after.index < after.subTasks.size())
+                    ? "[" + after.id + "." + after.index + "] " + after.name + " - " + after.subTasks.get(after.index).name
+                    : "Đã hoàn thành tối đa";
+            Service.gI().sendThongBao(player, "Admin đã hỗ trợ hoàn thành nhiệm vụ! Tiếp theo: " + nextInfo);
+            return "Đã hoàn thành [" + startTaskId + "." + startSubIdx + "] " + startTaskName + " (" + startSubName + ") -> Chuyển sang: " + nextInfo;
+        }
+    }
+
     //========================SIDE TASK========================
     public SideTaskTemplate getSideTaskTemplateById(int id) {
         if (id != -1) {
@@ -1271,33 +1339,33 @@ public class TaskService {
         if (player.playerTask.sideTask.template != null) {
             if (player.playerTask.sideTask.isDone()) {
                 int goldReward = 0;
-                int ngocBi = 708;
+                int gemReward = 5;
                 int cayThong = -1;
                 switch (player.playerTask.sideTask.level) {
                     case ConstTask.EASY:
                         BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.NONG_DAN_CHAM_CHI, 1);
                         goldReward = ConstTask.GOLD_EASY;
-                        ngocBi = 708;
+                        gemReward = 5;
                         break;
                     case ConstTask.NORMAL:
                         BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.NONG_DAN_CHAM_CHI, 1);
                         goldReward = ConstTask.GOLD_NORMAL;
-                        ngocBi = 707;
+                        gemReward = 10;
                         break;
                     case ConstTask.HARD:
                         BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.NONG_DAN_CHAM_CHI, 1);
                         goldReward = ConstTask.GOLD_HARD;
-                        ngocBi = 706;
+                        gemReward = 15;
                         break;
                     case ConstTask.VERY_HARD:
                         BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.NONG_DAN_CHAM_CHI, 1);
                         goldReward = ConstTask.GOLD_VERY_HARD;
-                        ngocBi = 705;
+                        gemReward = 20;
                         break;
                     case ConstTask.HELL:
                         BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.NONG_DAN_CHAM_CHI, 1);
                         goldReward = ConstTask.GOLD_HELL;
-                        ngocBi = 704;
+                        gemReward = 25;
                         if (player.playerTask.sideTask.leftTask < 15) {
                             cayThong = 822;
                         }
@@ -1319,11 +1387,9 @@ public class TaskService {
                         InventoryService.gI().addItemBag(player, cT);
                         Service.gI().sendThongBao(player, "Bạn nhận được " + cT.template.name);
                     } else {
-                        Item bi = ItemService.gI().createNewItem((short) ngocBi);
-                        bi.itemOptions.add(new Item.ItemOption(93, 30));
-                        InventoryService.gI().addItemBag(player, bi);
+                        player.inventory.gem += gemReward;
                         BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.NONG_DAN_CHAM_CHI, 1);
-                        Service.gI().sendThongBao(player, "Bạn nhận được " + bi.template.name);
+                        Service.gI().sendThongBao(player, "Bạn nhận được " + gemReward + " ngọc xanh");
                     }
                     InventoryService.gI().sendItemBags(player);
                     player.inventory.addGold(goldReward);

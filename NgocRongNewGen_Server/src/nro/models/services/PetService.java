@@ -39,14 +39,18 @@ public class PetService {
     }
 
     public void createNormalPet(Player player, byte... limitPower) {
+        synchronized (player) {
+            createNewPet(player, false, false, false, false);
+            if (limitPower != null && limitPower.length == 1) {
+                player.pet.nPoint.limitPower = limitPower[0];
+            }
+        }
         new Thread(() -> {
             try {
-                createNewPet(player, false, false, false, false);
-                if (limitPower != null && limitPower.length == 1) {
-                    player.pet.nPoint.limitPower = limitPower[0];
-                }
                 Thread.sleep(1000);
-                Service.gI().chatJustForMe(player, player.pet, "Xin hãy thu nhận tao làm đệ tử");
+                if (player.pet != null) {
+                    Service.gI().chatJustForMe(player, player.pet, "Xin hãy thu nhận tao làm đệ tử");
+                }
             } catch (Exception e) {
             }
         }).start();
@@ -56,6 +60,7 @@ public class PetService {
         new Thread(() -> {
             try {
                 createNewPet(player, true, false, false, false, (byte) gender);
+                player.pet.name = "$Mabư Vip";
                 if (limitPower != null && limitPower.length == 1) {
                     player.pet.nPoint.limitPower = limitPower[0];
                 }
@@ -66,10 +71,38 @@ public class PetService {
         }).start();
     }
 
+    public void createMabuNormalPet(Player player, int gender, byte... limitPower) {
+        new Thread(() -> {
+            try {
+                createNewPet(player, true, false, false, false, (byte) gender);
+                player.pet.typePet = 6; // Mabư thường: hợp thể 60% chỉ số
+                player.pet.name = "$Mabư thường";
+                if (limitPower != null && limitPower.length == 1) {
+                    player.pet.nPoint.limitPower = limitPower[0];
+                }
+                Thread.sleep(1000);
+                Service.gI().chatJustForMe(player, player.pet, "Oa oa oa...");
+            } catch (Exception e) {
+            }
+        }).start();
+    }
+
+    public void changeMabuNormalPet(Player player, int gender) {
+        byte limitPower = player.pet.nPoint.limitPower;
+        if (player.fusion.typeFusion != ConstPlayer.NON_FUSION) {
+            player.pet.unFusion();
+        }
+        ChangeMapService.gI().exitMap(player.pet);
+        player.pet.dispose();
+        player.pet = null;
+        createMabuNormalPet(player, gender, limitPower);
+    }
+
     public void createMabuPet(Player player, byte... limitPower) {
         new Thread(() -> {
             try {
                 createNewPet(player, true, false, false, false);
+                player.pet.name = "$Mabư Vip";
                 if (limitPower != null && limitPower.length == 1) {
                     player.pet.nPoint.limitPower = limitPower[0];
                 }
@@ -326,6 +359,9 @@ public class PetService {
 
         pet.nPoint.setFullHpMp();
         player.pet = pet;
+        if (player.isPl()) {
+            Service.gI().sendHavePet(player);
+        }
     }
 
     public static void Pet2(Player pl, int h, int b, int l) {

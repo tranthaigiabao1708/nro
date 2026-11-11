@@ -918,8 +918,14 @@ public class NPoint {
         }
 
         // Xử lý +hp đệ
-        if (this.player.fusion.typeFusion != ConstPlayer.NON_FUSION) {
-            hpMax += this.player.pet.nPoint.hpMax;
+        if (this.player.fusion.typeFusion != ConstPlayer.NON_FUSION && this.player.pet != null) {
+            if (this.player.pet.typePet == 0) {
+                hpMax += (this.player.pet.nPoint.hpMax * 40L / 100L);
+            } else if (this.player.pet.typePet == 6) {
+                hpMax += (this.player.pet.nPoint.hpMax * 60L / 100L);
+            } else {
+                hpMax += this.player.pet.nPoint.hpMax;
+            }
         }
 
         // Xử lý bổ huyết
@@ -1051,9 +1057,14 @@ public class NPoint {
         }
 
         // Xử lý hợp thể
-        if (this.player.fusion.typeFusion
-                != 0) {
-            mpMax += this.player.pet.nPoint.mpMax;
+        if (this.player.fusion.typeFusion != 0 && this.player.pet != null) {
+            if (this.player.pet.typePet == 0) {
+                mpMax += (this.player.pet.nPoint.mpMax * 40L / 100L);
+            } else if (this.player.pet.typePet == 6) {
+                mpMax += (this.player.pet.nPoint.mpMax * 60L / 100L);
+            } else {
+                mpMax += this.player.pet.nPoint.mpMax;
+            }
         }
 
         // Xử lý bổ khí
@@ -1216,8 +1227,14 @@ public class NPoint {
         }
 
         // Xử lý hợp thể
-        if (this.player.fusion.typeFusion != 0) {
-            dame += this.player.pet.nPoint.dame;
+        if (this.player.fusion.typeFusion != 0 && this.player.pet != null) {
+            if (this.player.pet.typePet == 0) {
+                dame += (this.player.pet.nPoint.dame * 40L / 100L);
+            } else if (this.player.pet.typePet == 6) {
+                dame += (this.player.pet.nPoint.dame * 60L / 100L);
+            } else {
+                dame += this.player.pet.nPoint.dame;
+            }
         }
 
         // Lấy tất cả option danh hiệu
@@ -1757,7 +1774,25 @@ public class NPoint {
     }
 
     public int subDameInjureWithDeff(long dame) {
+        return subDameInjureWithDeff(dame, null);
+    }
+
+    public int subDameInjureWithDeff(long dame, Player plAtt) {
         long def = this.def;
+        if (plAtt != null && plAtt.nPoint != null && plAtt.playerSkill != null
+                && plAtt.playerSkill.skillSelect != null && plAtt.playerSkill.skillSelect.template != null) {
+            int pen = 0;
+            switch (plAtt.playerSkill.skillSelect.template.id) {
+                case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC ->
+                    pen = plAtt.nPoint.tlxgc;
+                case Skill.DRAGON, Skill.DEMON, Skill.GALICK, Skill.LIEN_HOAN, Skill.KAIOKEN ->
+                    pen = plAtt.nPoint.tlxgcc;
+            }
+            if (pen > 0) {
+                pen = Math.min(100, pen);
+                def -= def * pen / 100;
+            }
+        }
         dame -= def;
         if (dame < 0) {
             dame = 1;

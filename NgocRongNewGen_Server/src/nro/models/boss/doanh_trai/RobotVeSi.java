@@ -43,10 +43,19 @@ public class RobotVeSi extends Boss {
 
     @Override
     public void reward(Player plKill) {
+        long ownerId = plKill.isPet ? ((nro.models.player.Pet) plKill).master.id : plKill.id;
         if (Util.isTrue(30, 100)) {
             ItemMap it = new ItemMap(this.zone, 17, 1, this.location.x, this.zone.map.yPhysicInTop(this.location.x,
-                    this.location.y - 24), plKill.id);
+                    this.location.y - 24), ownerId);
+            it.options.add(new nro.models.item.Item.ItemOption(73, 0));
             Service.gI().dropItemMap(this.zone, it);
+        }
+        // Xác suất rơi Bản đồ kho báu 611 (20% mỗi con, tổng 4 Robot Vệ Sĩ)
+        if (Util.isTrue(20, 100)) {
+            ItemMap itBdkb = new ItemMap(this.zone, 611, 1, this.location.x + 15, this.zone.map.yPhysicInTop(this.location.x,
+                    this.location.y - 24), ownerId);
+            itBdkb.options.add(new nro.models.item.Item.ItemOption(73, 0));
+            Service.gI().dropItemMap(this.zone, itBdkb);
         }
     }
 
@@ -106,6 +115,7 @@ public class RobotVeSi extends Boss {
     public void die(Player plKill) {
         if (plKill != null) {
             reward(plKill);
+            dropMaterialBoss(plKill);
         }
         this.changeStatus(BossStatus.DIE);
     }

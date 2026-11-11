@@ -38,9 +38,10 @@ public class EpSaoTrangBi {
                 }
 
                 if (starEmpty <= 9) {
-                    if (star >= 7 && starEmpty >= 8 && !CombineService.gI().CheckSlot(trangBi, starEmpty)) {
+                    int nextSlot = star + 1;
+                    if (nextSlot >= 8 && !CombineService.gI().CheckSlot(trangBi, nextSlot)) {
                         CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
-                                "Cần cường hóa lỗ sao pha lê này trước", "Đóng");
+                                "Cần cường hóa lỗ sao pha lê thứ " + nextSlot + " này trước", "Đóng");
                         return;
                     }
 
@@ -53,8 +54,11 @@ public class EpSaoTrangBi {
                     }
 
                     if (daPhaLe.template.type == 30) {
+                        ItemService.gI().ensureDefaultOptions(daPhaLe);
                         for (ItemOption io : daPhaLe.itemOptions) {
-                            npcSay += "|7|" + io.getOptionString() + "\n";
+                            if (io.optionTemplate.id != 73) {
+                                npcSay += "|7|" + io.getOptionString() + "\n";
+                            }
                         }
                     } else {
                         npcSay += "|7|" + ItemService.gI().getItemOptionTemplate(CombineSystem.getOptionDaPhaLe(daPhaLe)).name
@@ -118,8 +122,9 @@ public class EpSaoTrangBi {
                 return;
             }
 
-            if (star >= 7 && starEmpty >= 8 && !CombineService.gI().CheckSlot(trangBi, starEmpty)) {
-                Service.gI().sendThongBao(player, "Cần cường hóa lỗ sao pha lê này trước");
+            int nextSlot = star + 1;
+            if (nextSlot >= 8 && !CombineService.gI().CheckSlot(trangBi, nextSlot)) {
+                Service.gI().sendThongBao(player, "Cần cường hóa lỗ sao pha lê thứ " + nextSlot + " này trước");
                 return;
             }
 

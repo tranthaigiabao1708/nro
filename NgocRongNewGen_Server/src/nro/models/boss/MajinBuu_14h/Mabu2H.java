@@ -174,6 +174,7 @@ public class Mabu2H extends Boss {
             }
             players.clear();
             reward(plKill);
+            dropMaterialBoss(plKill);
             ServerNotify.gI().notify(plKill.name + ": Đã tiêu diệt được " + this.name + " mọi người đều ngưỡng mộ.");
         }
         this.changeStatus(BossStatus.DIE);

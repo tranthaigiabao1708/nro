@@ -87,6 +87,9 @@ public class Pet extends Player {
             this.location.y = master.location.y;
             if (MapService.gI().isMapOffline(this.master.zone.map.mapId) || this.master.zone.map.mapId == 113) {
                 ChangeMapService.gI().goToMap(this, MapService.gI().getMapCanJoin(this, master.gender + 21, -1));
+                if (this.zone != null) {
+                    this.zone.load_Me_To_Another(this);
+                }
                 return;
             }
             ChangeMapService.gI().goToMap(this, master.zone);
@@ -798,6 +801,7 @@ public class Pet extends Player {
     public short getAvatar() {
         switch (this.typePet) {
             case 1:
+            case 6:
                 return 297;
             case 2:
                 return 946;
@@ -825,7 +829,7 @@ public class Pet extends Player {
             return (short) ConstPlayer.HEADMONKEY[effectSkill.levelMonkey - 1];
         } else if (effectSkill != null && effectSkill.isSocola) {
             return 412;
-        } else if (this.typePet == 1) {
+        } else if (this.typePet == 1 || this.typePet == 6) {
             return 297;
         } else if (this.typePet == 2) {
             return 946;
@@ -861,7 +865,7 @@ public class Pet extends Player {
             return 193;
         } else if (effectSkill != null && effectSkill.isSocola) {
             return 413;
-        } else if (this.typePet == 1 && !this.isTransform) {
+        } else if ((this.typePet == 1 || this.typePet == 6) && !this.isTransform) {
             return 298;
         } else if (this.typePet == 2 && !this.isTransform) {
             return 947;
@@ -900,7 +904,7 @@ public class Pet extends Player {
             return 194;
         } else if (effectSkill != null && effectSkill.isSocola) {
             return 414;
-        } else if (this.typePet == 1 && !this.isTransform) {
+        } else if ((this.typePet == 1 || this.typePet == 6) && !this.isTransform) {
             return 299;
         } else if (this.typePet == 2 && !this.isTransform) {
             return 948;
@@ -1099,7 +1103,7 @@ public class Pet extends Player {
     }
 
     public void transform() {
-        if (this.typePet == 1) {
+        if (this.typePet == 1 || this.typePet == 6) {
             this.isTransform = !this.isTransform;
             Service.gI().Send_Caitrang(this);
             Service.gI().chat(this, "Bố Mày Là Bư Nè !! Bư..Bư..Bư..Ma..Nhân..Bư....");

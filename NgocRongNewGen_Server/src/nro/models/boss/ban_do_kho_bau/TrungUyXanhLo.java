@@ -42,12 +42,33 @@ public class TrungUyXanhLo extends Boss {
 
     @Override
     public void reward(Player plKill) {
-        int diem = 5;
-        if (Util.isTrue(100, 100)) {
-            ItemMap it = new ItemMap(this.zone, 705, 1, this.location.x, this.zone.map.yPhysicInTop(this.location.x,
-                    this.location.y - 24), plKill.id);
-            Service.gI().dropItemMap(this.zone, it);         
-    }    }
+        long ownerId = plKill.isPet ? ((nro.models.player.Pet) plKill).master.id : plKill.id;
+        int dropCount = Util.nextInt(1, 2);
+        for (int i = 0; i < dropCount; i++) {
+            int roll = Util.nextInt(100);
+            int biNgoId;
+            if (roll < 25) {
+                biNgoId = 708; // 25%: Bí ngô 7 sao
+            } else if (roll < 47) {
+                biNgoId = 707; // 22%: Bí ngô 6 sao
+            } else if (roll < 67) {
+                biNgoId = 706; // 20%: Bí ngô 5 sao
+            } else if (roll < 92) {
+                biNgoId = 705; // 25%: Bí ngô 4 sao
+            } else if (roll < 97) {
+                biNgoId = 704; // 5%: Bí ngô 3 sao
+            } else if (roll < 99) {
+                biNgoId = 703; // 2%: Bí ngô 2 sao
+            } else {
+                biNgoId = 702; // 1%: Bí ngô 1 sao
+            }
+            int dropX = this.location.x + (i * 20) - 10;
+            ItemMap it = new ItemMap(this.zone, biNgoId, 1, dropX, this.zone.map.yPhysicInTop(dropX,
+                    this.location.y - 24), ownerId);
+            it.options.add(new nro.models.item.Item.ItemOption(73, 0));
+            Service.gI().dropItemMap(this.zone, it);
+        }
+    }
 
     @Override
     public void joinMap() {
@@ -76,6 +97,7 @@ public class TrungUyXanhLo extends Boss {
     public void die(Player plKill) {
         if (plKill != null) {
             reward(plKill);
+            dropMaterialBoss(plKill);
         }
         this.changeStatus(BossStatus.DIE);
     }

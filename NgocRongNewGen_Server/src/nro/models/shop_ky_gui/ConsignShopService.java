@@ -81,12 +81,19 @@ public class ConsignShopService {
 
     private boolean isKyGui(Item item) {
         switch (item.template.type) {
+            case 12:
+                return item.template.id >= 702 && item.template.id <= 708;
             case 27:
                 switch (item.template.id) {
+                    case 611:
                     case 921:
                     case 1155:
                     case 1156:
                     case 568:
+                    case 2010:
+                    case 1423:
+                    case 1438:
+                    case 1439:
                         return true;
                 }
                 return false;

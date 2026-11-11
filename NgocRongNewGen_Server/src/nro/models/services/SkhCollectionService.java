@@ -509,7 +509,7 @@ public class SkhCollectionService {
                 + "3. NÂNG CẤP ĐỒ THẦN LINH SKH & HỦY DIỆT SKH (BÀ HẠT MÍT ĐẢO KAME):\n"
                 + "- Lên Đồ Thần Linh SKH (Tỉ lệ 40%): 1 Đồ SKH thường + 1 Đồ Thần Linh CÙNG LOẠI (Áo-Áo, Quần-Quần, Găng-Găng, Giày-Giày, Rada-Nhẫn) + 2 Khoáng tái chế + 500 Tr vàng.\n"
                 + "- Lên Đồ Hủy Diệt SKH (Tỉ lệ 30%): 1 Đồ Thần Linh SKH + 1 Đồ Hủy Diệt CÙNG LOẠI + 5 Khoáng tái chế + 2 Tỷ vàng.\n"
-                + "- Giữ nguyên đúng loại Set của món phôi SKH đưa vào.\n"
+                + "- Thành công: Chỉ thêm thuộc tính Set Kích Hoạt của phôi sang trang bị mới (KHÔNG chuyển cấp [+] và sao pha lê đã ép của trang bị cũ).\n"
                 + "- CẢNH BÁO: Không được bỏ thêm bất kỳ vật phẩm nào khác. Nếu nâng cấp THẤT BẠI sẽ mất luôn cả 2 trang bị!\n\n"
                 + "4. BẢNG SƯU TẬP SET KÍCH HOẠT TẠI NHÀ:\n"
                 + "- Gặp Ông Gôhan / Ông Moori / Ông Paragus trong Nhà (hoặc gõ chat 'skh') để mở Bảng Sưu Tập 5 Set.\n"

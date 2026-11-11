@@ -1757,8 +1757,13 @@ namespace Game1
                 }
                 if (item.itemOption != null)
                 {
+                    cp.cuongHoaSlot = 0;
                     for (int k = 0; k < item.itemOption.Length; k++)
                     {
+                        if (item.itemOption[k].optionTemplate.id == 228)
+                        {
+                            cp.cuongHoaSlot = (sbyte)item.itemOption[k].param;
+                        }
                         if (item.itemOption[k].optionTemplate.name.StartsWith("$"))
                         {
                             empty = item.itemOption[k].getOptiongColor();
@@ -6877,7 +6882,7 @@ paintScrollArrow(g);
             {
                 g.setColor(13524492);
                 g.fillRect(X + 1, 78, W - 2, 1);
-                mFont.tahoma_7b_dark.drawString(g, mResources.UPGRADE, xScroll + wScroll / 2, 59, mFont.CENTER);
+                mFont.tahoma_7b_dark.drawString(g, getCombineUpgradeText(), xScroll + wScroll / 2, 59, mFont.CENTER);
                 return;
             }
             if (type == 13 && Equals(GameCanvas.panel2))
@@ -7497,6 +7502,21 @@ paintScrollArrow(g);
             mFont.tahoma_7b_white.drawString(g, "MP: " + NinjaUtil.getMoneys(@char.cMP) + "/" + NinjaUtil.getMoneys(@char.cMPFull), X + 60, 16, mFont.LEFT, mFont.tahoma_7b_dark);
             mFont.tahoma_7_yellow.drawString(g, mResources.critical + ": " + NinjaUtil.getMoneys(@char.cCriticalFull) + "   " + mResources.armor + ": " + NinjaUtil.getMoneys(@char.cDefull), X + 60, 27, mFont.LEFT, mFont.tahoma_7_grey);
             mFont.tahoma_7_yellow.drawString(g, mResources.status + ": " + strStatus[@char.petStatus], X + 60, 38, mFont.LEFT, mFont.tahoma_7_grey);
+        }
+
+        private string getCombineUpgradeText()
+        {
+            if (combineTopInfo != null)
+            {
+                for (int i = 0; i < combineTopInfo.Length; i++)
+                {
+                    if (combineTopInfo[i] != null && combineTopInfo[i].IndexOf("trang bị pha lê") != -1)
+                    {
+                        return mResources.UPGRADE + " (Max 9)";
+                    }
+                }
+            }
+            return mResources.UPGRADE;
         }
 
         private void paintCombineInfo(mGraphics g)

@@ -50,10 +50,19 @@ public class TrungUyTrang extends Boss {
 
     @Override
     public void reward(Player plKill) {
+        long ownerId = plKill.isPet ? ((nro.models.player.Pet) plKill).master.id : plKill.id;
         if (Util.isTrue(50, 100)) {
             ItemMap it = new ItemMap(this.zone, 17, 1, this.location.x, this.zone.map.yPhysicInTop(this.location.x,
-                    this.location.y - 24), plKill.id);
+                    this.location.y - 24), ownerId);
+            it.options.add(new nro.models.item.Item.ItemOption(73, 0));
             Service.gI().dropItemMap(this.zone, it);
+        }
+        // Xác suất rơi Bản đồ kho báu 611 (30%)
+        if (Util.isTrue(30, 100)) {
+            ItemMap itBdkb = new ItemMap(this.zone, 611, 1, this.location.x + 15, this.zone.map.yPhysicInTop(this.location.x,
+                    this.location.y - 24), ownerId);
+            itBdkb.options.add(new nro.models.item.Item.ItemOption(73, 0));
+            Service.gI().dropItemMap(this.zone, itBdkb);
         }
         TaskService.gI().checkDoneTaskKillBoss(plKill, this);
     }
@@ -147,6 +156,7 @@ public class TrungUyTrang extends Boss {
     public void die(Player plKill) {
         if (plKill != null) {
             reward(plKill);
+            dropMaterialBoss(plKill);
         }
         this.changeStatus(BossStatus.DIE);
     }

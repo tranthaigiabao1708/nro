@@ -625,6 +625,7 @@ public class Boss extends Player implements IBoss {
             if (!plKill.isBot) {
                 reward(plKill);
                 dropThoiVangBoss(plKill);
+                dropMaterialBoss(plKill);
             }
             ServerNotify.gI().notify(plKill.name + ": Đã tiêu diệt được " + this.name + " mọi người đều ngưỡng mộ.");
             this.changeStatus(BossStatus.DIE);
@@ -632,8 +633,34 @@ public class Boss extends Player implements IBoss {
             if (plKill != null && !plKill.isBot) {
                 reward(plKill);
                 dropThoiVangBoss(plKill);
+                dropMaterialBoss(plKill);
             }
             this.changeStatus(BossStatus.DIE);
+        }
+    }
+
+    public void dropMaterialBoss(Player plKill) {
+        try {
+            if (plKill != null && !plKill.isBot && this.zone != null) {
+                Player owner = (plKill.isPet && ((Pet) plKill).master != null) ? ((Pet) plKill).master : plKill;
+                if (owner == null) {
+                    return;
+                }
+                int[] materialIds = {1423, 1438, 1439}; // Đá Hematite, Dùi đục, Đá mài
+                int offset = -12;
+                for (int matId : materialIds) {
+                    if (Util.isTrue(10, 100)) {
+                        int xDrop = Math.max(24, Math.min(this.zone.map.mapWidth - 24, this.location.x + offset));
+                        int yDrop = this.zone.map.yPhysicInTop(xDrop, this.location.y - 24);
+                        nro.models.map.ItemMap matItem = new nro.models.map.ItemMap(this.zone, matId, 5, xDrop, yDrop, owner.id);
+                        matItem.options.add(new nro.models.item.Item.ItemOption(73, 0));
+                        Service.gI().dropItemMap(this.zone, matItem);
+                        offset += 12;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Logger.logException(Boss.class, e);
         }
     }
 
@@ -734,13 +761,20 @@ public class Boss extends Player implements IBoss {
     @Override
     public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
-            if (!piercing && Util.isTrue(this.nPoint.tlNeDon, 1000)) {
+            int neDon = this.nPoint.tlNeDon;
+            if (plAtt != null && plAtt.nPoint != null) {
+                neDon = Math.max(0, neDon - plAtt.nPoint.tlchinhxac * 10);
+            }
+            if (!piercing && Util.isTrue(neDon, 1000)) {
                 this.chat("Xí hụt");
                 return 0;
             }
 
             if (plAtt != null && plAtt.idNRNM != -1) {
                 return 1;
+            }
+            if (!piercing) {
+                damage = this.nPoint.subDameInjureWithDeff(damage, plAtt);
             }
             this.nPoint.subHP(damage);
 

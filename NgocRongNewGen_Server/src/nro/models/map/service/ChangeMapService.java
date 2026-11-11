@@ -441,6 +441,9 @@ public class ChangeMapService {
             }
             checkJoinSpecialMap(pl);
             checkJoinMapMaBu(pl);
+            if (pl.isPl() && zoneJoin != null) {
+                TaskService.gI().checkDoneTaskGoToMap(pl, zoneJoin);
+            }
         } else {
             int plX = pl.location.x;
             if (pl.location.x >= pl.zone.map.mapWidth - 60) {

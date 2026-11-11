@@ -634,7 +634,7 @@ public class ItemService {
     }
 
     public Item randomRac2() {
-        short[] racs = {585, 704, 2048, 379, 384, 385, 381, 828, 829, 830, 831, 832, 833, 834, 835, 836, 837, 838, 839, 840, 841, 842, 934, 935};
+        short[] racs = {585, 2048, 379, 384, 385, 381, 828, 829, 830, 831, 832, 833, 834, 835, 836, 837, 838, 839, 840, 841, 842, 934, 935};
         int idItem = racs[Util.nextInt(racs.length - 1)];
         if (Util.isTrue(1, 100)) {
             idItem = 956;
@@ -696,13 +696,144 @@ public class ItemService {
         return lt;
     }
 
+    public List<Item.ItemOption> getDefaultIntrinsicOptions(short id) {
+        List<Item.ItemOption> list = new ArrayList<>();
+        switch (id) {
+            case 441, 1416 -> list.add(new Item.ItemOption(95, 5));
+            case 442, 1417 -> list.add(new Item.ItemOption(96, 5));
+            case 443, 1418 -> list.add(new Item.ItemOption(97, 5));
+            case 444, 1419 -> list.add(new Item.ItemOption(98, 3));
+            case 445, 1420 -> list.add(new Item.ItemOption(99, 3));
+            case 446, 1421 -> list.add(new Item.ItemOption(100, 5));
+            case 447, 1422 -> list.add(new Item.ItemOption(101, 5));
+            case 1426 -> list.add(new Item.ItemOption(95, 10));
+            case 1427 -> list.add(new Item.ItemOption(96, 10));
+            case 1428 -> list.add(new Item.ItemOption(97, 10));
+            case 1429 -> list.add(new Item.ItemOption(98, 6));
+            case 1430 -> list.add(new Item.ItemOption(99, 6));
+            case 1431 -> list.add(new Item.ItemOption(100, 10));
+            case 1432 -> list.add(new Item.ItemOption(101, 10));
+            case 1433 -> list.add(new Item.ItemOption(153, 10));
+            case 1434 -> list.add(new Item.ItemOption(160, 10));
+            case 220 -> list.add(new Item.ItemOption(71, 0));
+            case 221 -> list.add(new Item.ItemOption(70, 0));
+            case 222 -> list.add(new Item.ItemOption(69, 0));
+            case 223 -> list.add(new Item.ItemOption(68, 0));
+            case 224 -> list.add(new Item.ItemOption(67, 0));
+            case 568, 611, 702, 703, 704, 705, 706, 707, 708, 1423, 1438, 1439, 2010 -> list.add(new Item.ItemOption(73, 0));
+        }
+        return list;
+    }
+
+    public void ensureDefaultOptions(Item item) {
+        if (item == null || !item.isNotNullItem() || item.template == null) {
+            return;
+        }
+        if (item.itemOptions == null) {
+            item.itemOptions = new ArrayList<>();
+        }
+        if (item.template.id == 1423 || item.template.id == 1438 || item.template.id == 1439) {
+            item.itemOptions.removeIf(io -> io == null || io.optionTemplate == null || io.optionTemplate.id == 30);
+            if (item.itemOptions.isEmpty()) {
+                item.itemOptions.add(new Item.ItemOption(73, 0));
+            }
+            return;
+        }
+        List<Item.ItemOption> intrinsic = getDefaultIntrinsicOptions(item.template.id);
+        if (!intrinsic.isEmpty()) {
+            int expectedOptId = intrinsic.get(0).optionTemplate.id;
+            int expectedParam = intrinsic.get(0).param;
+            boolean hasValid = false;
+            for (Item.ItemOption io : item.itemOptions) {
+                if (io != null && io.optionTemplate != null && io.optionTemplate.id == expectedOptId
+                        && (expectedParam == 0 || io.param >= expectedParam)) {
+                    hasValid = true;
+                    break;
+                }
+            }
+            if (!hasValid) {
+                item.itemOptions.removeIf(io -> io == null || io.optionTemplate == null
+                        || io.optionTemplate.id == 73 || io.optionTemplate.id == expectedOptId);
+                for (int idx = 0; idx < intrinsic.size(); idx++) {
+                    item.itemOptions.add(idx, intrinsic.get(idx));
+                }
+            }
+            return;
+        }
+        // Sửa trang bị đã ép sao bằng SPL thiếu chỉ số (bị dính option 73 thay vì chỉ số SPL)
+        int socketedStars = 0;
+        boolean hasPhaLeStat = false;
+        boolean hasDummy73 = false;
+        for (Item.ItemOption io : item.itemOptions) {
+            if (io == null || io.optionTemplate == null) {
+                continue;
+            }
+            int opId = io.optionTemplate.id;
+            if (opId == 102) {
+                socketedStars = io.param;
+            } else if (opId == 73) {
+                hasDummy73 = true;
+            } else if ((opId >= 95 && opId <= 101) || opId == 50 || opId == 77 || opId == 80 || opId == 81 || opId == 103 || opId == 153 || opId == 160) {
+                hasPhaLeStat = true;
+            }
+        }
+        if (socketedStars > 0 && hasDummy73 && !hasPhaLeStat) {
+            item.itemOptions.removeIf(io -> io != null && io.optionTemplate != null && io.optionTemplate.id == 73);
+            item.itemOptions.add(new Item.ItemOption(101, socketedStars * 5));
+        }
+        // Bù lại ô cường hóa thứ 9 cho CT Goku Bản Năng Vô Cực [1870] đã bị báo thành công ảo trước đó
+        if (item.template.id == 1870) {
+            int maxSlot = 0;
+            Item.ItemOption opt228 = null;
+            for (Item.ItemOption io : item.itemOptions) {
+                if (io != null && io.optionTemplate != null) {
+                    if (io.optionTemplate.id == 107) {
+                        maxSlot = io.param;
+                    } else if (io.optionTemplate.id == 228) {
+                        opt228 = io;
+                    }
+                }
+            }
+            if (maxSlot == 9 && socketedStars == 8 && opt228 != null && opt228.param == 8) {
+                opt228.param = 9;
+            }
+        }
+    }
+
     public List<Item.ItemOption> getListOptionItemShop(short id) {
+        List<Item.ItemOption> intrinsic = getDefaultIntrinsicOptions(id);
+        if (!intrinsic.isEmpty()) {
+            return intrinsic;
+        }
         List<Item.ItemOption> list = new ArrayList<>();
         Manager.SHOPS.forEach(shop -> shop.tabShops.forEach(tabShop -> tabShop.itemShops.forEach(itemShop -> {
             if (itemShop.temp.id == id && list.isEmpty()) {
-                list.addAll(itemShop.options);
+                for (Item.ItemOption io : itemShop.options) {
+                    if (io != null && io.optionTemplate != null && io.optionTemplate.id != 73) {
+                        list.add(new Item.ItemOption(io));
+                    }
+                }
             }
         })));
+        if (list.isEmpty()) {
+            Template.ItemTemplate temp = getTemplate(id);
+            if (temp != null) {
+                if (id >= 1048 && id <= 1062) {
+                    Item dts = DoThienSu(id, temp.gender);
+                    if (dts != null && dts.itemOptions != null) {
+                        list.addAll(dts.itemOptions);
+                    }
+                } else if (temp.type >= 0 && temp.type <= 4) {
+                    Item tempItem = createNewItem(id);
+                    RewardService.gI().initChiSoItem(tempItem);
+                    if (tempItem.itemOptions != null && !tempItem.itemOptions.isEmpty()) {
+                        list.addAll(tempItem.itemOptions);
+                    }
+                } else if (temp.type == 24) {
+                    list.add(new Item.ItemOption(89, 1));
+                }
+            }
+        }
         return list;
     }
 

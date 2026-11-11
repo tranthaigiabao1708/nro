@@ -603,6 +603,7 @@ public class MrBlue {
             long timeNuocMia3 = 0;
             long timeLuckDragon = 0;
             long timeVeKhuSkh = 0;
+            int timeUseLuckRX = 0;
             int timeBoHuyet = Integer.parseInt(String.valueOf(dataArray.get(0)));
             int timeBoHuyet2 = Integer.parseInt(String.valueOf(dataArray.get(1)));
             int timeBoKhi = Integer.parseInt(String.valueOf(dataArray.get(2)));
@@ -676,6 +677,9 @@ public class MrBlue {
             if (dataArray.size() > 31) {
                 timeVeKhuSkh = Long.parseLong(String.valueOf(dataArray.get(31)));
             }
+            if (dataArray.size() > 32) {
+                timeUseLuckRX = Integer.parseInt(String.valueOf(dataArray.get(32)));
+            }
 
             player.itemTime.lastTimeBoHuyet = System.currentTimeMillis() - (ItemTime.TIME_ITEM - timeBoHuyet);
             player.itemTime.lastTimeBoKhi = System.currentTimeMillis() - (ItemTime.TIME_ITEM - timeBoKhi);
@@ -702,6 +706,8 @@ public class MrBlue {
             player.itemTime.lastTimeUseDK = System.currentTimeMillis() - (ItemTime.TIME_DK - timeUseDK);
             player.itemTime.timeRX = timeUseRX * 60 * 1000;
             player.itemTime.lastTimeUseRX = System.currentTimeMillis();
+            player.itemTime.timeLuckRX = timeUseLuckRX * 60 * 1000;
+            player.itemTime.lastTimeUseLuckRX = System.currentTimeMillis();
             player.itemTime.lastTimeEatMeal2 = System.currentTimeMillis() - (ItemTime.TIME_EAT_MEAL - timeMeal2);
             player.itemTime.lastTimeUseNCD = System.currentTimeMillis() - (ItemTime.TIME_NCD - timeUseNCD);
 
@@ -727,6 +733,7 @@ public class MrBlue {
             player.itemTime.isUseGTPT = timeUseGTPT != 0;
             player.itemTime.isUseDK = timeUseDK != 0;
             player.itemTime.isUseRX = timeUseRX != 0;
+            player.itemTime.isUseLuckRX = timeUseLuckRX != 0;
             player.itemTime.iconMeal2 = iconMeal2;
             player.itemTime.isEatMeal2 = timeMeal2 != 0;
             player.itemTime.isUseNCD = timeUseNCD != 0;
@@ -777,8 +784,9 @@ public class MrBlue {
             //data trứng bư
             dataArray = (JSONArray) JSONValue.parse(rs.getString("data_mabu_egg"));
             if (!dataArray.isEmpty()) {
+                int eggType = dataArray.size() > 2 ? Integer.parseInt(String.valueOf(dataArray.get(2))) : 0;
                 player.mabuEgg = new MabuEgg(player, Long.parseLong(String.valueOf(dataArray.get(0))),
-                        Long.parseLong(String.valueOf(dataArray.get(1))));
+                        Long.parseLong(String.valueOf(dataArray.get(1))), eggType);
             }
             dataArray.clear();
 

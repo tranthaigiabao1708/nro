@@ -284,6 +284,7 @@ public class Pocolo extends Boss {
     public void die(Player plKill) {
         if (plKill != null) {
             reward(plKill);
+            dropMaterialBoss(plKill);
         }
         this.changeStatus(BossStatus.DIE);
     }

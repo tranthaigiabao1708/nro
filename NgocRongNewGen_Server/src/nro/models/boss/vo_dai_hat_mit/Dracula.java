@@ -25,12 +25,13 @@ public class Dracula extends DeathOrAliveArena {
     public void hutMau() {
         try {
             if (Util.canDoWithTime(lastTimeHutMau, 15000) && this.nPoint.hp > this.nPoint.hpMax / 30) {
-                int hp = playerAtt.nPoint.hpMax / 10;
-                playerAtt.nPoint.subHP(hp);
-                this.nPoint.addHp(hp);
-                Service.gI().Send_Info_NV(this);
-                Service.gI().Send_Info_NV_do_Injure(playerAtt);
-                this.chat("Máu ngon quá hehe");
+                int hp = playerAtt.injured(this, Math.max(1000, this.nPoint.dame), false, false);
+                if (hp > 0) {
+                    this.nPoint.addHp(hp);
+                    Service.gI().Send_Info_NV(this);
+                    Service.gI().Send_Info_NV_do_Injure(playerAtt);
+                    this.chat("Máu ngon quá hehe");
+                }
                 lastTimeHutMau = System.currentTimeMillis();
             }
         } catch (Exception e) {
@@ -67,33 +68,5 @@ public class Dracula extends DeathOrAliveArena {
     protected void goToPlayer(Player pl, boolean isTeleport) {
         goToXY(pl.location.x, pl.location.y, isTeleport);
     }
-     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
-        if (!this.isDie()) {
-            if (!piercing && Util.isTrue(100, 1000)) {
-                this.chat("Xí hụt");
-                return 0;
-            }
-
-            if (plAtt != null && plAtt.idNRNM != -1) {
-                return 1;
-            }
-            if (damage > this.nPoint.hpMax / 10) {
-                damage = this.nPoint.hpMax / 10;
-            }
-
-            this.nPoint.subHP(damage);
-
-            if (isDie()) {
-                this.setDie(plAtt);
-                die(plAtt);
-            }
-
-            return (int) damage;
-        } else {
-            return 0;
-        }
-    }
-    
 }
 

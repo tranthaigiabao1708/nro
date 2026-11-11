@@ -4853,106 +4853,112 @@ namespace Game1
 
 		public virtual void paint(mGraphics g)
 		{
-			if (ModFunc.AnPlayer || isHide)
+			try
 			{
-				return;
-			}
-			if (isMafuba)
-			{
-				paintCharWithoutSkill(g);
-			}
-			else if (isMabuHold)
-			{
-				if (cmtoChar)
-				{
-					GameScr.cmtoX = cx - GameScr.gW2;
-					GameScr.cmtoY = cy - GameScr.gH23;
-					if (!GameCanvas.isTouchControl)
-					{
-						GameScr.cmtoX += GameScr.gW6 * cdir;
-					}
-				}
-			}
-			else
-			{
-				if (!isPaint() || (!me && GameScr.notPaint))
+				if (ModFunc.AnPlayer || isHide)
 				{
 					return;
 				}
-				if (petFollow != null)
+				if (isMafuba)
 				{
-					petFollow.paint(g);
+					paintCharWithoutSkill(g);
 				}
-				paintMount1(g);
-				if ((TileMap.isInAirMap() && cy >= TileMap.pxh - 48) || isTeleport)
+				else if (isMabuHold)
 				{
-					return;
-				}
-				if (holder && GameCanvas.gameTick % 2 == 0)
-				{
-					g.setColor(16185600);
-					if (charHold != null)
+					if (cmtoChar)
 					{
-						g.drawLine(cx, cy - ch / 2, charHold.cx, charHold.cy - charHold.ch / 2);
-					}
-					if (mobHold != null)
-					{
-						g.drawLine(cx, cy - ch / 2, mobHold.x, mobHold.y - mobHold.h / 2);
+						GameScr.cmtoX = cx - GameScr.gW2;
+						GameScr.cmtoY = cy - GameScr.gH23;
+						if (!GameCanvas.isTouchControl)
+						{
+							GameScr.cmtoX += GameScr.gW6 * cdir;
+						}
 					}
 				}
-				paintSuperEffBehind(g);
-				paintAuraBehind(g);
-				paintEffBehind(g);
-				paintEff_Lvup_behind(g);
-				paintEff_Pet(g);
-				if (shadowLife > 0)
+				else
 				{
-					if (GameCanvas.gameTick % 2 == 0)
+					if (!isPaint() || (!me && GameScr.notPaint))
 					{
-						paintCharBody(g, shadowX, shadowY, cdir, 25, isPaintBag: true);
+						return;
 					}
-					else if (shadowLife > 5)
+					if (petFollow != null)
 					{
-						paintCharBody(g, shadowX, shadowY, cdir, 7, isPaintBag: true);
+						petFollow.paint(g);
+					}
+					paintMount1(g);
+					if ((TileMap.isInAirMap() && cy >= TileMap.pxh - 48) || isTeleport)
+					{
+						return;
+					}
+					if (holder && GameCanvas.gameTick % 2 == 0)
+					{
+						g.setColor(16185600);
+						if (charHold != null)
+						{
+							g.drawLine(cx, cy - ch / 2, charHold.cx, charHold.cy - charHold.ch / 2);
+						}
+						if (mobHold != null)
+						{
+							g.drawLine(cx, cy - ch / 2, mobHold.x, mobHold.y - mobHold.h / 2);
+						}
+					}
+					paintSuperEffBehind(g);
+					paintAuraBehind(g);
+					paintEffBehind(g);
+					paintEff_Lvup_behind(g);
+					paintEff_Pet(g);
+					if (shadowLife > 0)
+					{
+						if (GameCanvas.gameTick % 2 == 0)
+						{
+							paintCharBody(g, shadowX, shadowY, cdir, 25, isPaintBag: true);
+						}
+						else if (shadowLife > 5)
+						{
+							paintCharBody(g, shadowX, shadowY, cdir, 7, isPaintBag: true);
+						}
+					}
+					if (!isPaint() && skillPaint != null && (skillPaint.id < 70 || skillPaint.id > 76) && (skillPaint.id < 77 || skillPaint.id > 83))
+					{
+						if (skillPaint != null)
+						{
+							indexSkill = skillInfoPaint().Length;
+							skillPaint = null;
+						}
+						effPaints = null;
+						eff = null;
+						effTask = null;
+						indexEff = -1;
+						indexEffTask = -1;
+					}
+					else if (statusMe != 15 && (moveFast == null || moveFast[0] <= 0))
+					{
+						PaintCharName_HP_MP_Overhead(g);
+						if (skillPaint == null || skillInfoPaint() == null || indexSkill >= skillInfoPaint().Length)
+						{
+							paintCharWithoutSkill(g);
+						}
+						if (arr != null)
+						{
+							arr.paint(g);
+						}
+						if (dart != null)
+						{
+							dart.paint(g);
+						}
+						paintEffect(g);
+						_ = mobMe;
+						paintMount2(g);
+						paintEff_Lvup_front(g);
+						paintSuperEffFront(g);
+						paintAuraFront(g);
+						paintEffFront(g);
+						paint_map_line(g);
 					}
 				}
-				if (!isPaint() && skillPaint != null && (skillPaint.id < 70 || skillPaint.id > 76) && (skillPaint.id < 77 || skillPaint.id > 83))
-				{
-					if (skillPaint != null)
-					{
-						indexSkill = skillInfoPaint().Length;
-						skillPaint = null;
-					}
-					effPaints = null;
-					eff = null;
-					effTask = null;
-					indexEff = -1;
-					indexEffTask = -1;
-				}
-				else if (statusMe != 15 && (moveFast == null || moveFast[0] <= 0))
-				{
-					PaintCharName_HP_MP_Overhead(g);
-					if (skillPaint == null || skillInfoPaint() == null || indexSkill >= skillInfoPaint().Length)
-					{
-						paintCharWithoutSkill(g);
-					}
-					if (arr != null)
-					{
-						arr.paint(g);
-					}
-					if (dart != null)
-					{
-						dart.paint(g);
-					}
-					paintEffect(g);
-					_ = mobMe;
-					paintMount2(g);
-					paintEff_Lvup_front(g);
-					paintSuperEffFront(g);
-					paintAuraFront(g);
-					paintEffFront(g);
-					paint_map_line(g);
-				}
+			}
+			catch (Exception)
+			{
 			}
 		}
 
@@ -5265,8 +5271,17 @@ namespace Game1
 
 		private void PaintCharName_HP_MP_Overhead(mGraphics g)
 		{
-			Part part = GameScr.parts[getFHead(head)];
-			int num = CharInfo[cf][0][2] - part.pi[CharInfo[cf][0][0]].dy + 5;
+			int fHead = getFHead(head);
+			int num = CharInfo[cf][0][2] + 5;
+			if (GameScr.parts != null && fHead >= 0 && fHead < GameScr.parts.Length)
+			{
+				Part part = GameScr.parts[fHead];
+				int idx = CharInfo[cf][0][0];
+				if (part != null && part.pi != null && idx >= 0 && idx < part.pi.Length && part.pi[idx] != null)
+				{
+					num = CharInfo[cf][0][2] - part.pi[idx].dy + 5;
+				}
+			}
 			if ((isInvisiblez && !me) || (!me && TileMap.mapID == 113 && cy >= 360))
 			{
 				return;

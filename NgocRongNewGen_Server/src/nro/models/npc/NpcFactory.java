@@ -377,6 +377,14 @@ public class NpcFactory {
                             player.pendingSkhItemUseId = -1;
                         }
                     }
+                    case ConstNpc.MENU_DOI_THOI_VANG -> {
+                        switch (select) {
+                            case 0 ->
+                                Input.gI().createFormBanSLL(player);
+                            case 1 ->
+                                Input.gI().createFormDoiThoiVangRaNgoc(player);
+                        }
+                    }
                     case ConstNpc.MENU_BULK_BUY_SHOP -> {
                         switch (select) {
                             case 0 ->

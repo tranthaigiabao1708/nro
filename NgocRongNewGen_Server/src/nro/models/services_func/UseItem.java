@@ -297,8 +297,12 @@ public class UseItem {
                     }
                     default:
                         switch (item.template.id) {
-                            case 457: // Thỏi vàng -> mở form bán SLL (500 Tr vàng / thỏi)
-                                Input.gI().createFormBanSLL(pl);
+                            case 457: // Thỏi vàng -> chọn bán ra Vàng (500 Tr/thỏi) hoặc đổi ra Ngọc xanh (1k ngọc/thỏi)
+                                NpcService.gI().createMenuConMeo(pl, ConstNpc.MENU_DOI_THOI_VANG, -1,
+                                        "Bạn muốn sử dụng Thỏi vàng để làm gì?\n"
+                                        + "• Bán lấy Vàng: 1 Thỏi vàng = 500 Triệu vàng\n"
+                                        + "• Đổi ngọc xanh: 1 Thỏi vàng = 1.000 Ngọc xanh",
+                                        "Đổi Vàng\n(500 Tr/Thỏi)", "Đổi ngọc xanh\n1 TV = 1k ngọc", "Đóng");
                                 break;
                             case 992: // Nhan thoi khong
                                 pl.type = 2;
@@ -656,6 +660,16 @@ public class UseItem {
                                 PetService.Pet2(pl, 1680, 1681, 1682);
                                 Service.gI().point(pl);
                                 break;
+                            case 1714:
+                                InventoryService.gI().itemBagToBody(pl, indexBag);
+                                PetService.Pet2(pl, 1600, 1601, 1602);
+                                Service.gI().point(pl);
+                                break;
+                            case 1748:
+                                InventoryService.gI().itemBagToBody(pl, indexBag);
+                                PetService.Pet2(pl, 1650, 1651, 1652);
+                                Service.gI().point(pl);
+                                break;
                             case 2003:
                                 InventoryService.gI().itemBagToBody(pl, indexBag);
                                 PetService.Pet2(pl, 2099, 2100, 2101);
@@ -885,17 +899,30 @@ public class UseItem {
                             case 987:
                                 Service.gI().sendThongBao(pl, "Bảo vệ trang bị không bị rớt cấp"); //đá bảo vệ
                                 break;
-                            case 568: //quả trứng
+                            case 568: // Trứng Mabư thường (hợp thể 60% chỉ số)
                                 if (pl.mabuEgg == null) {
-                                    MabuEgg.createMabuEgg(pl);
+                                    MabuEgg.createMabuEgg(pl, 0);
                                     InventoryService.gI().subQuantityItemsBag(pl, item, 1);
-                                    if (pl.zone.map.mapId == (21 + pl.gender)) {
-                                        if (pl.mabuEgg != null) {
-                                            pl.mabuEgg.sendMabuEgg();
-                                        }
+                                    InventoryService.gI().sendItemBags(pl);
+                                    Service.gI().sendThongBao(pl, "Đã đặt Trứng Mabư thường tại Nhà!");
+                                    if (pl.zone.map.mapId == (21 + pl.gender) && pl.mabuEgg != null) {
+                                        pl.mabuEgg.sendMabuEgg();
                                     }
                                 } else {
-                                    Service.gI().sendThongBao(pl, "Bạn đã có quả trứng nên không thể sử dụng");
+                                    Service.gI().sendThongBao(pl, "Bạn đã có quả trứng đang ấp ở Nhà rồi!");
+                                }
+                                break;
+                            case 2010: // Trứng Mabư Vip (săn Boss 12h)
+                                if (pl.mabuEgg == null) {
+                                    MabuEgg.createMabuEgg(pl, 1);
+                                    InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+                                    InventoryService.gI().sendItemBags(pl);
+                                    Service.gI().sendThongBao(pl, "Đã đặt Trứng Mabư Vip tại Nhà!");
+                                    if (pl.zone.map.mapId == (21 + pl.gender) && pl.mabuEgg != null) {
+                                        pl.mabuEgg.sendMabuEgg();
+                                    }
+                                } else {
+                                    Service.gI().sendThongBao(pl, "Bạn đã có quả trứng đang ấp ở Nhà rồi!");
                                 }
                                 break;
                             case 2006:
@@ -952,6 +979,13 @@ public class UseItem {
                                 }
                             }
                             break;
+                            default:
+                                if (item.template.type == 27 && item.template.head > 0 && item.template.body > 0 && item.template.leg > 0) {
+                                    InventoryService.gI().itemBagToBody(pl, indexBag);
+                                    PetService.Pet2(pl, item.template.head, item.template.body, item.template.leg);
+                                    Service.gI().point(pl);
+                                }
+                                break;
                         }
                         break;
                 }
@@ -1293,7 +1327,7 @@ public class UseItem {
             return;
         }
 
-        if (player.pet == null || player.pet.typePet != 1 || player.pet.nPoint.power < 40_000_000_000L) {
+        if (player.pet == null || (player.pet.typePet != 1 && player.pet.typePet != 6) || player.pet.nPoint.power < 40_000_000_000L) {
             Service.gI().sendThongBao(player, "Cần có đệ Mabư đạt 40 tỷ sức mạnh để thực hiện!");
             return;
         }
@@ -1743,6 +1777,8 @@ public class UseItem {
             }
         } else if (tempId >= Shenron_Service.NGOC_RONG_1_SAO && tempId <= Shenron_Service.NGOC_RONG_7_SAO) {
             Shenron_Service.gI().openMenuSummonShenron(pl, 0);
+        } else if (tempId >= Shenron_Service.NGOC_RONG_BI_NGO_1_SAO && tempId <= Shenron_Service.NGOC_RONG_BI_NGO_7_SAO) {
+            Shenron_Service.gI().openMenuSummonShenron(pl, 1);
         }
     }
 

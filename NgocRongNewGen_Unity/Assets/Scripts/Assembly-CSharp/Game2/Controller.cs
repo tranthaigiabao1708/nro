@@ -6052,6 +6052,10 @@ namespace Game2
 				string text = msg.reader().readUTF();
 				sbyte nFrame = msg.reader().readByte();
 				sbyte[] array = NinjaUtil.readByteArray(msg);
+				if (nFrame <= 0 || array == null || array.Length == 0)
+				{
+					return;
+				}
 				Image img = createImage(array);
 				ImgByName.SetImage(text, img, nFrame);
 				if (array != null)

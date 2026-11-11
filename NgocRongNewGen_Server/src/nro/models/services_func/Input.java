@@ -83,6 +83,7 @@ public class Input {
     public static final int FIND_PLAYER_GIFT_RUBY = 34;
     public static final int EDIT_LOGIN_NOTICE = 599;
     public static final int BULK_BUY_SHOP_INPUT = 601;
+    public static final int DOI_THOI_VANG_NGOC = 602;
 
     private static Input intance;
 
@@ -527,11 +528,49 @@ public class Input {
                                 player.inventory.addGold(cost);
                                 Service.gI().sendMoney(player);
                                 Service.gI().sendThongBao(player, "Đã bán " + sltv + " Thỏi vàng thu được " + Util.numberToMoney(cost) + " vàng");
+                                PlayerDAO.savePlayerAsync(player);
                             }
                         }
                     } else {
                         Service.gI().sendThongBao(player, "Bạn không có Thỏi vàng trong hành trang");
                     }
+                }
+                case DOI_THOI_VANG_NGOC -> {
+                    int sltv;
+                    try {
+                        sltv = Math.abs(Integer.parseInt(text[0].trim()));
+                    } catch (NumberFormatException e) {
+                        Service.gI().sendThongBao(player, "Số lượng nhập không hợp lệ!");
+                        return;
+                    }
+                    if (sltv <= 0) {
+                        return;
+                    }
+                    long unitGem = 1000L;
+                    long maxGem = 2_000_000_000L;
+                    int totalThoiVang = InventoryService.gI().getTotalQuantityBag(player, 457);
+                    if (totalThoiVang <= 0) {
+                        Service.gI().sendThongBao(player, "Bạn không có Thỏi vàng trong hành trang");
+                        return;
+                    }
+                    if (totalThoiVang < sltv) {
+                        Service.gI().sendThongBao(player, "Bạn chỉ có " + totalThoiVang + " Thỏi vàng");
+                        return;
+                    }
+                    long gemReceive = (long) sltv * unitGem;
+                    if ((long) player.inventory.gem + gemReceive > maxGem) {
+                        long maxCanExchange = Math.max(0L, (maxGem - player.inventory.gem) / unitGem);
+                        Service.gI().sendThongBao(player, maxCanExchange >= 1
+                                ? "Ngọc xanh vượt giới hạn! Tối đa có thể đổi " + maxCanExchange + " Thỏi vàng"
+                                : "Ngọc xanh của bạn đã đạt giới hạn tối đa!");
+                        return;
+                    }
+                    InventoryService.gI().subQuantityItemsBagPriorityLocked(player, 457, sltv);
+                    InventoryService.gI().sendItemBags(player);
+                    player.inventory.gem = (int) Math.min(maxGem, (long) player.inventory.gem + gemReceive);
+                    Service.gI().sendMoney(player);
+                    Service.gI().sendThongBao(player, "Đã đổi " + sltv + " Thỏi vàng nhận được " + Util.numberToMoney(gemReceive) + " Ngọc xanh");
+                    PlayerDAO.savePlayerAsync(player);
                 }
                 case BULK_BUY_SHOP_INPUT -> {
                     int qty;
@@ -740,6 +779,10 @@ public class Input {
 
     public void createFormBanSLL(Player pl) {
         createForm(pl, BANSLL, "Bạn muốn bán bao nhiêu [Thỏi vàng] ? (1 Thỏi = 500 Tr vàng)", new SubInput("Số lượng", NUMERIC));
+    }
+
+    public void createFormDoiThoiVangRaNgoc(Player pl) {
+        createForm(pl, DOI_THOI_VANG_NGOC, "Bạn muốn đổi bao nhiêu [Thỏi vàng] ra Ngọc xanh? (1 Thỏi = 1.000 Ngọc xanh)", new SubInput("Số lượng", NUMERIC));
     }
 
     public void createFormBulkBuyShop(Player pl, String itemName, String unitPriceDesc) {

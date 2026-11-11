@@ -302,32 +302,32 @@ public class Item {
             case 1418 ->
                 new ItemOption(97, 5);
             case 1419 ->
-                new ItemOption(98, 5);
+                new ItemOption(98, 3);
             case 1420 ->
-                new ItemOption(99, 5);
+                new ItemOption(99, 3);
             case 1421 ->
                 new ItemOption(100, 5);
             case 1422 ->
                 new ItemOption(101, 5);
 
             case 1426 ->
-                new ItemOption(95, 5);
+                new ItemOption(95, 10);
             case 1427 ->
-                new ItemOption(96, 5);
+                new ItemOption(96, 10);
             case 1428 ->
-                new ItemOption(97, 5);
+                new ItemOption(97, 10);
             case 1429 ->
-                new ItemOption(98, 5);
+                new ItemOption(98, 6);
             case 1430 ->
-                new ItemOption(99, 5);
+                new ItemOption(99, 6);
             case 1431 ->
-                new ItemOption(100, 5);
+                new ItemOption(100, 10);
             case 1432 ->
-                new ItemOption(101, 5);
+                new ItemOption(101, 10);
             case 1433 ->
-                new ItemOption(153, 5);
+                new ItemOption(153, 10);
             case 1434 ->
-                new ItemOption(160, 5);
+                new ItemOption(160, 10);
             default ->
                 itemOptions.get(0);
         };

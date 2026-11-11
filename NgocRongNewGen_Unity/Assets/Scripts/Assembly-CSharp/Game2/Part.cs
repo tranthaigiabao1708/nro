@@ -25,6 +25,10 @@ namespace Game2
 			{
 				pi = new PartImage[2];
 			}
+			if (pi == null)
+			{
+				pi = new PartImage[0];
+			}
 		}
 	}
 }

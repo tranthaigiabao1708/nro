@@ -458,8 +458,11 @@ public class Zone {
                 }
 
                 if (MapService.gI().isMapOffline(this.map.mapId)) {
-                    // Load boss
-                    if (player instanceof TrainingBoss || player instanceof NonInteractiveNPC) {
+                    // Load boss / pet của chính chủ nhà
+                    if (player.isPet && ((nro.models.player.Pet) player).master != null
+                            && ((nro.models.player.Pet) player).master.zone == this) {
+                        infoPlayer(((nro.models.player.Pet) player).master, player);
+                    } else if (player instanceof TrainingBoss || player instanceof NonInteractiveNPC) {
                         for (int i = players.size() - 1; i >= 0; i--) {
                             Player pl = players.get(i);
                             if (!player.equals(pl) && (player instanceof NonInteractiveNPC || ((TrainingBoss) player).playerAtt.equals(pl))) {
@@ -488,11 +491,12 @@ public class Zone {
             }
 
             if (MapService.gI().isMapOffline(this.map.mapId)) {
-                // Load boss
+                // Load boss / pet của chính chủ nhà
                 for (int i = this.humanoids.size() - 1; i >= 0; i--) {
                     Player pl = this.humanoids.get(i);
                     if (pl != null && (pl instanceof NonInteractiveNPC
-                            || pl instanceof TrainingBoss && ((TrainingBoss) pl).playerAtt.equals(player))) {
+                            || pl instanceof TrainingBoss && ((TrainingBoss) pl).playerAtt.equals(player)
+                            || (pl.isPet && ((nro.models.player.Pet) pl).master != null && ((nro.models.player.Pet) pl).master.equals(player)))) {
                         infoPlayer(player, pl);
                     }
                 }

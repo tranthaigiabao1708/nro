@@ -5275,8 +5275,17 @@ namespace Game2
 
 		private void PaintCharName_HP_MP_Overhead(mGraphics g)
 		{
-			Part part = GameScr.parts[getFHead(head)];
-			int num = CharInfo[cf][0][2] - part.pi[CharInfo[cf][0][0]].dy + 5;
+			int fHead = getFHead(head);
+			int num = CharInfo[cf][0][2] + 5;
+			if (GameScr.parts != null && fHead >= 0 && fHead < GameScr.parts.Length)
+			{
+				Part part = GameScr.parts[fHead];
+				int idx = CharInfo[cf][0][0];
+				if (part != null && part.pi != null && idx >= 0 && idx < part.pi.Length && part.pi[idx] != null)
+				{
+					num = CharInfo[cf][0][2] - part.pi[idx].dy + 5;
+				}
+			}
 			if ((isInvisiblez && !me) || (!me && TileMap.mapID == 113 && cy >= 360))
 			{
 				return;

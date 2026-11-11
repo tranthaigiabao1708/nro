@@ -47,13 +47,24 @@ public class Shenron_Event {
 
     public long lastTimeShenronWait;
     public static int timeResummonShenron = 60000;
-    public static int timeShenronWait = 60000;
+    public static int timeShenronWait = 300000;
 
     public static final String SHENRONEVENT_SAY
             = "Ta sẽ ban cho người 1 điều ước, ngươi có 5 phút, hãy chọn đi:\n1) Đổi skill 3, 4 đệ tử (có thể trùng skill trước đó).\n2) Thay đổi nội tại.\n3) Cải trang siêu thần HSD 90 ngày.\n4) Cải trang Black Gohan Rose HSD 90 ngày.";
 
     public static final String[] SHENRON_WISHES
             = new String[]{"Điều ước 1", "Điều ước 2", "Điều ước 3", "Điều ước 4"};
+
+    public static final String SHENRON_BI_NGO_SAY
+            = "Ta là Rồng Xương, ta sẽ ban cho ngươi 1 điều ước, ngươi có 5 phút, hãy chọn đi:\n"
+            + "1) 50% tỉ lệ có Trứng đệ tử Mabư thường (hợp thể 60% chỉ số) (Trứng Mabư Vip săn boss 12h).\n"
+            + "2) Thay đổi chiêu 4 đệ tử.\n"
+            + "3) Tăng 20% may mắn (30 phút).\n"
+            + "4) Tăng 10% HP, KI, Sức đánh (30 phút).\n"
+            + "5) 200 Thỏi vàng.";
+
+    public static final String[] SHENRON_BI_NGO_WISHES
+            = new String[]{"50% Trứng\nMabư thường\n(HT 60%)", "Đổi chiêu 4\nđệ tử", "Tăng 20%\nMay mắn", "Tăng 10%\nHP, KI, SĐ", "200\nThỏi vàng"};
 
     public boolean shenronLeave;
 
@@ -91,7 +102,11 @@ public class Shenron_Event {
     }
 
     public void sendBlackGokuhesShenron() {
-        NpcService.gI().createMenuRongThieng(player, ConstNpc.SHOW_SHENRON_EVENT_CONFIRM, SHENRONEVENT_SAY, SHENRON_WISHES);
+        if (player.idMark.getShenronType() == 1) {
+            NpcService.gI().createMenuRongThieng(player, ConstNpc.SHOW_SHENRON_EVENT_CONFIRM, SHENRON_BI_NGO_SAY, SHENRON_BI_NGO_WISHES);
+        } else {
+            NpcService.gI().createMenuRongThieng(player, ConstNpc.SHOW_SHENRON_EVENT_CONFIRM, SHENRONEVENT_SAY, SHENRON_WISHES);
+        }
     }
 
     public void showConfirmShenron(byte select) {
@@ -99,8 +114,18 @@ public class Shenron_Event {
         String wish = null;
         switch (player.idMark.getShenronType()) {
             case 0:
-                wish = SHENRON_WISHES[select];
+                if (select >= 0 && select < SHENRON_WISHES.length) {
+                    wish = SHENRON_WISHES[select];
+                }
                 break;
+            case 1:
+                if (select >= 0 && select < SHENRON_BI_NGO_WISHES.length) {
+                    wish = SHENRON_BI_NGO_WISHES[select];
+                }
+                break;
+        }
+        if (wish == null) {
+            return;
         }
         NpcService.gI().createMenuRongThieng(player, ConstNpc.SHENRON_EVENT_CONFIRM, "Ngươi có chắc muốn ước?", wish, "Từ chối");
     }
@@ -249,6 +274,91 @@ public class Shenron_Event {
                             sendBlackGokuhesShenron();
                             return;
                         }
+                }
+                break;
+            case 1: // Rồng Xương (Ngọc Rồng Bí Ngô 702 - 708)
+                switch (this.select) {
+                    case 0: // 50% tỉ lệ có Trứng đệ tử Mabư thường (hợp thể 60% chỉ số)
+                        if (InventoryService.gI().getCountEmptyBag(player) <= 0) {
+                            Service.gI().sendThongBao(player, "Hành trang đã đầy, vui lòng dọn trống ít nhất 1 ô!");
+                            sendBlackGokuhesShenron();
+                            return;
+                        }
+                        if (Util.isTrue(50, 100)) {
+                            Item trungMabu = ItemService.gI().createNewItem((short) 568, 1);
+                            InventoryService.gI().addItemBag(player, trungMabu);
+                            InventoryService.gI().sendItemBags(player);
+                            Service.gI().sendThongBao(player, "Chúc mừng! Ngươi đã may mắn nhận được Trứng Mabư thường (Hợp thể 60% chỉ số)!");
+                        } else {
+                            Service.gI().sendThongBao(player, "Rất tiếc! Ngươi chưa may mắn nhận được Trứng Mabư thường lần này (Tỉ lệ 50%).");
+                        }
+                        break;
+                    case 1: // Thay đổi chiêu 4 đệ tử
+                        if (player.pet != null) {
+                            if (player.pet.playerSkill.skills.size() > 3 && player.pet.playerSkill.skills.get(3).skillId != -1) {
+                                player.pet.openSkill4();
+                                Service.gI().sendThongBao(player, "Đã thay đổi chiêu 4 cho đệ tử!");
+                            } else {
+                                Service.gI().sendThongBao(player, "Đệ tử của ngươi chưa mở chiêu 4!");
+                                sendBlackGokuhesShenron();
+                                return;
+                            }
+                        } else {
+                            Service.gI().sendThongBao(player, "Ngươi làm gì có đệ tử?");
+                            sendBlackGokuhesShenron();
+                            return;
+                        }
+                        break;
+                    case 2: // Tăng 20% may mắn trong 30 phút
+                        int currentRemainLuckRX = 0;
+                        if (player.itemTime.isUseLuckRX) {
+                            currentRemainLuckRX = Math.max(0, (int) ((player.itemTime.timeLuckRX - (System.currentTimeMillis() - player.itemTime.lastTimeUseLuckRX)) / 1000));
+                        }
+                        int timeLuckRX = currentRemainLuckRX + 1800;
+                        if (timeLuckRX >= 32767) {
+                            Service.gI().sendThongBao(player, "Thời gian hiệu lực May mắn Rồng Xương đã đạt tối đa!");
+                            sendBlackGokuhesShenron();
+                            return;
+                        }
+                        player.itemTime.isUseLuckRX = true;
+                        player.itemTime.timeLuckRX = timeLuckRX * 1000;
+                        player.itemTime.lastTimeUseLuckRX = System.currentTimeMillis();
+                        ItemTimeService.gI().sendItemTime(player, 6579, timeLuckRX);
+                        Service.gI().sendThongBao(player, "Ngươi được Rồng Xương ban phúc tăng 20% May mắn trong 30 phút!");
+                        break;
+                    case 3: // Tăng 10% HP, KI, Sức đánh trong 30 phút
+                        int currentRemainRX = 0;
+                        if (player.itemTime.isUseRX) {
+                            currentRemainRX = Math.max(0, (int) ((player.itemTime.timeRX - (System.currentTimeMillis() - player.itemTime.lastTimeUseRX)) / 1000));
+                        }
+                        int timeRX = currentRemainRX + 1800;
+                        int maxTimeInSeconds = 32767;
+                        if (timeRX >= maxTimeInSeconds) {
+                            Service.gI().sendThongBao(player, "Thời gian hiệu lực Rồng Xương đã đạt tối đa!");
+                            sendBlackGokuhesShenron();
+                            return;
+                        }
+                        player.itemTime.isUseRX = true;
+                        player.itemTime.timeRX = timeRX * 1000;
+                        player.itemTime.lastTimeUseRX = System.currentTimeMillis();
+                        ItemTimeService.gI().sendItemTime(player, 6581, timeRX);
+                        player.nPoint.calPoint();
+                        player.nPoint.setHp(player.nPoint.hpMax);
+                        player.nPoint.setMp(player.nPoint.mpMax);
+                        Service.gI().point(player);
+                        Service.gI().Send_Info_NV(player);
+                        Service.gI().sendThongBao(player, "Ngươi được Rồng Xương ban phúc tăng 10% HP, KI, Sức đánh trong 30 phút!");
+                        break;
+                    case 4: // Nhận 200 Thỏi vàng
+                        Item thoiVang = ItemService.gI().createNewItem((short) 457, 200);
+                        if (!InventoryService.gI().addItemBag(player, thoiVang)) {
+                            Service.gI().sendThongBao(player, "Hành trang đã đầy, vui lòng dọn trống ít nhất 1 ô!");
+                            sendBlackGokuhesShenron();
+                            return;
+                        }
+                        InventoryService.gI().sendItemBags(player);
+                        Service.gI().sendThongBao(player, "Ngươi đã nhận được 200 Thỏi vàng từ Rồng Xương!");
+                        break;
                 }
                 break;
         }

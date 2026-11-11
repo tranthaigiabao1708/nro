@@ -116,7 +116,9 @@ public class ItemMap {
             if ((Util.canDoWithTime(createTime, 50000) && isNotNullItem() && itemTemplate.type != 22 || Util.canDoWithTime(createTime, 1800000)) && !this.isNamecBall) {
                 if (this.zone != null && this.zone.map.mapId != 21 && this.zone.map.mapId != 22
                         && this.zone.map.mapId != 23 && this.itemTemplate.id != 78
-                        && this.itemTemplate.id != 726 && !(MapService.gI().isMapDoanhTrai(this.zone.map.mapId) && this.itemTemplate.id >= 14 && this.itemTemplate.id <= 20)) {
+                        && this.itemTemplate.id != 726
+                        && !(MapService.gI().isMapDoanhTrai(this.zone.map.mapId) && ((this.itemTemplate.id >= 14 && this.itemTemplate.id <= 20) || this.itemTemplate.id == 611))
+                        && !(MapService.gI().isMapBanDoKhoBau(this.zone.map.mapId) && this.itemTemplate.id >= 702 && this.itemTemplate.id <= 708)) {
                     ItemMapService.gI().removeItemMapAndSendClient(this);
                 }
             }

@@ -35,12 +35,9 @@ public class Dende extends Npc {
                 } else {
                     if (player.gender != 1) {
                         NpcService.gI().createTutorial(player, tempId, this.avartar, "Xin lỗi anh, em chỉ bán đồ cho dân tộc Namếc");
-                    } else if (!player.inventory.itemsDaBan.isEmpty()) {
-                        this.createOtherMenu(player, ConstNpc.BASE_MENU,
-                                "Anh cần trang bị gì cứ đến chỗ em nhé", "Cửa\nhàng", "Mua lại vật phẩm đã bán");
                     } else {
                         this.createOtherMenu(player, ConstNpc.BASE_MENU,
-                                "Anh cần trang bị gì cứ đến chỗ em nhé", "Cửa\nhàng");
+                                "Anh cần trang bị gì cứ đến chỗ em nhé", "Cửa\nhàng", "Đổi ngọc xanh\n1 TV = 1k ngọc");
                     }
                 }
             }
@@ -61,9 +58,7 @@ public class Dende extends Npc {
                         }
                     }
                     case 1 -> {
-                        if (!player.inventory.itemsDaBan.isEmpty()) {
-                            ShopService.gI().opendShop(player, "ITEMS_DABAN", true);
-                        }
+                        nro.models.services_func.Input.gI().createFormDoiThoiVangRaNgoc(player);
                     }
                 }
             } else if (player.idMark.getIndexMenu() == 1) {

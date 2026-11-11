@@ -695,7 +695,7 @@ public class CombineService {
                 return "Chọn trang bị\n(Áo, quần, găng, giày hoặc rađa) có ô đặt sao pha lê\nChọn loại sao pha lê\n"
                         + "Sau đó chọn 'Nâng cấp'";
             case PHA_LE_HOA_TRANG_BI:
-                return "Chọn trang bị\n(Áo, quần, găng, giày hoặc rađa)\nSau đó chọn 'Nâng cấp'";
+                return "Chọn trang bị\n(Áo, quần, găng, giày hoặc rađa)\nSau đó chọn 'Nâng cấp' (Max 9 sao)";
             case PHAN_RA_TRANG_BI_KH:
                 return "Vào hành trang\nChọn 1 hoặc nhiều Trang bị kích hoạt thường\n(CHỈ ĐƯỢC ĐẶT ĐỒ KÍCH HOẠT)\nMỗi món: 200 Tr vàng -> 1 Khoáng tái chế\nĐặt bao nhiêu món nhận bấy nhiêu Khoáng!";
             case TAI_TAO_CAPSULE_KH:
@@ -703,9 +703,9 @@ public class CombineService {
             case TAI_TAO_CAPSULE_KH_VIP:
                 return "Vào hành trang\nChọn đúng 10 Khoáng tái chế\nPhí: 1 Tỷ vàng\nNhận 1 Capsule Kích Hoạt VIP\n(Mở chọn Set KH Mới & món đồ)";
             case NANG_CAP_THAN_LINH_SKH:
-                return "BẮT BUỘC đặt ĐÚNG 3 ô:\n- 1 Đồ SKH thường (phôi giữ nguyên Set)\n- 1 Đồ Thần Linh CÙNG LOẠI & HÀNH TINH\n  (Áo-Áo, Quần-Quần, Găng-Găng, Giày-Giày, Rada-Nhẫn)\n- 2 Khoáng tái chế (+ 500 Tr vàng, tỉ lệ 40%)\nCẤM đặt đồ khác! XỊT MẤT CẢ ĐỒ THẦN & ĐỒ SKH!";
+                return "BẮT BUỘC đặt ĐÚNG 3 ô:\n- 1 Đồ SKH thường (chỉ chuyển dòng Kích Hoạt, không chuyển cấp [+] & sao pha lê)\n- 1 Đồ Thần Linh CÙNG LOẠI & HÀNH TINH\n  (Áo-Áo, Quần-Quần, Găng-Găng, Giày-Giày, Rada-Nhẫn)\n- 2 Khoáng tái chế (+ 500 Tr vàng, tỉ lệ 40%)\nCẤM đặt đồ khác! XỊT MẤT CẢ ĐỒ THẦN & ĐỒ SKH!";
             case NANG_CAP_HUY_DIET_SKH:
-                return "BẮT BUỘC đặt ĐÚNG 3 ô:\n- 1 Đồ Thần Linh SKH (phôi giữ nguyên Set)\n- 1 Đồ Hủy Diệt CÙNG LOẠI & HÀNH TINH\n  (Áo-Áo, Quần-Quần, Găng-Găng, Giày-Giày, Nhẫn-Nhẫn)\n- 5 Khoáng tái chế (+ 2 Tỷ vàng, tỉ lệ 30%)\nCẤM đặt đồ khác! XỊT MẤT CẢ ĐỒ HỦY DIỆT & ĐỒ THẦN SKH!";
+                return "BẮT BUỘC đặt ĐÚNG 3 ô:\n- 1 Đồ Thần Linh SKH (chỉ chuyển dòng Kích Hoạt, không chuyển cấp [+] & sao pha lê)\n- 1 Đồ Hủy Diệt CÙNG LOẠI & HÀNH TINH\n  (Áo-Áo, Quần-Quần, Găng-Găng, Giày-Giày, Nhẫn-Nhẫn)\n- 5 Khoáng tái chế (+ 2 Tỷ vàng, tỉ lệ 30%)\nCẤM đặt đồ khác! XỊT MẤT CẢ ĐỒ HỦY DIỆT & ĐỒ THẦN SKH!";
             case CHUYEN_HOA_TRANG_BI_NGOC:
             case CHUYEN_HOA_TRANG_BI_VANG:
                 return "Vào hành trang\nChọn trang bị gốc\n(Áo,quần,găng,giày hoặc rada)\ntừ cấp[+4] trở lên\nChọn tiếp trang bị mới\nchưa nâng cấp cần nhập thể\nsau đó chọn 'Nâng cấp'";

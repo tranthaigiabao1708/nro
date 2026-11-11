@@ -26,12 +26,9 @@ public class Bulma extends Npc {
             if (!TaskService.gI().checkDoneTaskTalkNpc(player, this)) {
                 if (player.gender != 0) {
                     NpcService.gI().createTutorial(player, tempId, this.avartar, "Xin lỗi cưng, chị chỉ bán đồ cho người Trái Đất");
-                } else if (!player.inventory.itemsDaBan.isEmpty()) {
-                    this.createOtherMenu(player, ConstNpc.BASE_MENU,
-                            "Cậu cần trang bị gì cứ đến chỗ tôi nhé", "Cửa\nhàng", "Mua lại vật phẩm đã bán");
                 } else {
                     this.createOtherMenu(player, ConstNpc.BASE_MENU,
-                            "Cậu cần trang bị gì cứ đến chỗ tôi nhé", "Cửa\nhàng");
+                            "Cậu cần trang bị gì cứ đến chỗ tôi nhé", "Cửa\nhàng", "Đổi ngọc xanh\n1 TV = 1k ngọc");
                 }
             }
         }
@@ -51,9 +48,7 @@ public class Bulma extends Npc {
                         }
                     }
                     case 1 -> {
-                        if (!player.inventory.itemsDaBan.isEmpty()) {
-                            ShopService.gI().opendShop(player, "ITEMS_DABAN", true);
-                        }
+                        nro.models.services_func.Input.gI().createFormDoiThoiVangRaNgoc(player);
                     }
                 }
             }

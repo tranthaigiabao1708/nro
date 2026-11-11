@@ -338,6 +338,7 @@ public class ConstNpc {
     public static final int MENU_BA_HAT_MIT_TAI_TAO_CAPSULE = 16553;
     public static final int MENU_BA_HAT_MIT_NANG_CAP_SKH = 16554;
     public static final int MENU_BULK_BUY_SHOP = 16560;
+    public static final int MENU_DOI_THOI_VANG = 16561;
     public static final int VE_TANG_NGOC = 718;
     public static final int DANG_SINH_LE = 197882;
     public static final int DANG_SINH_LE_VIP = 197827;

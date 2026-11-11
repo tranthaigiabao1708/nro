@@ -15,17 +15,27 @@ public class MabuEgg {
     private Player player;
     public long lastTimeCreate;
     public long timeDone;
+    public int eggType; // 0: Mabư thường (hợp thể 60% chỉ số), 1: Mabư Vip
 
     private final short id = 50;
 
     public MabuEgg(Player player, long lastTimeCreate, long timeDone) {
+        this(player, lastTimeCreate, timeDone, 0);
+    }
+
+    public MabuEgg(Player player, long lastTimeCreate, long timeDone, int eggType) {
         this.player = player;
         this.lastTimeCreate = lastTimeCreate;
         this.timeDone = timeDone;
+        this.eggType = eggType;
     }
 
     public static void createMabuEgg(Player player) {
-        player.mabuEgg = new MabuEgg(player, System.currentTimeMillis(), DEFAULT_TIME_DONE);
+        createMabuEgg(player, 0);
+    }
+
+    public static void createMabuEgg(Player player, int eggType) {
+        player.mabuEgg = new MabuEgg(player, System.currentTimeMillis(), DEFAULT_TIME_DONE, eggType);
     }
 
     public void sendMabuEgg() {
@@ -53,12 +63,21 @@ public class MabuEgg {
     public void openEgg(int gender) {
         if (this.player.pet != null) {
             try {
+                int currentEggType = this.eggType;
                 destroyEgg();
                 Thread.sleep(4000);
-                if (this.player.pet == null) {
-                    PetService.gI().createMabuPet(this.player, gender);
+                if (currentEggType == 1) {
+                    if (this.player.pet == null) {
+                        PetService.gI().createMabuPet(this.player, gender);
+                    } else {
+                        PetService.gI().changeMabuPet(this.player, gender);
+                    }
                 } else {
-                    PetService.gI().changeMabuPet(this.player, gender);
+                    if (this.player.pet == null) {
+                        PetService.gI().createMabuNormalPet(this.player, gender);
+                    } else {
+                        PetService.gI().changeMabuNormalPet(this.player, gender);
+                    }
                 }
                 ChangeMapService.gI().changeMapInYard(this.player, this.player.gender * 7, -1, Util.nextInt(300, 500));
                 player.mabuEgg = null;

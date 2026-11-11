@@ -98,6 +98,10 @@ public class ItemTime {
     public long lastTimeUseRX;
     public int timeRX;
 
+    public boolean isUseLuckRX;
+    public long lastTimeUseLuckRX;
+    public int timeLuckRX;
+
     public boolean isUseCMS;
     public long lastTimeUseCMS;
 
@@ -301,6 +305,12 @@ public class ItemTime {
         if (isUseRX) {
             if (Util.canDoWithTime(lastTimeUseRX, timeRX)) {
                 isUseRX = false;
+                Service.gI().point(this.player);
+            }
+        }
+        if (isUseLuckRX) {
+            if (Util.canDoWithTime(lastTimeUseLuckRX, timeLuckRX)) {
+                isUseLuckRX = false;
             }
         }
     }

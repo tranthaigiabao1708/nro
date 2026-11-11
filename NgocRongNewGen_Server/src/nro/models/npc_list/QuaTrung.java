@@ -20,12 +20,15 @@ public class QuaTrung extends Npc {
         if (canOpenNpc(player)) {
             if (this.mapId == (21 + player.gender)) {
                 player.mabuEgg.sendMabuEgg();
+                String eggLabel = (player.mabuEgg.eggType == 1)
+                        ? "Bư bư bư... (Trứng Mabư Vip)"
+                        : "Bư bư bư... (Trứng Mabư thường - Hợp thể 60% chỉ số)";
                 if (player.mabuEgg.getSecondDone() != 0) {
-                    this.createOtherMenu(player, ConstNpc.CAN_NOT_OPEN_EGG, "Bư bư bư...",
+                    this.createOtherMenu(player, ConstNpc.CAN_NOT_OPEN_EGG, eggLabel,
                             "Hủy bỏ\ntrứng", "Ấp nhanh\n" + Util.numberToMoney(COST_AP_TRUNG_NHANH) + " vàng",
                             "Đóng");
                 } else {
-                    this.createOtherMenu(player, ConstNpc.CAN_OPEN_EGG, "Bư bư bư...", "Nở", "Hủy bỏ\ntrứng",
+                    this.createOtherMenu(player, ConstNpc.CAN_OPEN_EGG, eggLabel, "Nở", "Hủy bỏ\ntrứng",
                             "Đóng");
                 }
             } else {

@@ -295,7 +295,7 @@ public final class Manager {
         ResultSet rs = null;
         try (Connection ConnectionDatabase = LocalManager.getConnection()) {
             //load part
-            ps = ConnectionDatabase.prepareStatement("select * from part");
+            ps = ConnectionDatabase.prepareStatement("select * from part order by id asc");
             rs = ps.executeQuery();
             List<Part> parts = new ArrayList<>();
             while (rs.next()) {
@@ -309,6 +309,25 @@ public final class Manager {
                             Byte.parseByte(String.valueOf(pd.get(1))),
                             Byte.parseByte(String.valueOf(pd.get(2)))));
                     pd.clear();
+                }
+                int expectedSize = switch (part.type) {
+                    case 0 -> 3;
+                    case 1 -> 17;
+                    case 2 -> 14;
+                    case 3 -> 2;
+                    default -> 3;
+                };
+                if (part.type < 0 || part.type > 3) {
+                    part.type = 0;
+                }
+                while (part.partDetails.size() < expectedSize) {
+                    PartDetail fill = part.partDetails.isEmpty()
+                            ? new PartDetail((short) 0, (byte) 0, (byte) 0)
+                            : part.partDetails.get(0);
+                    part.partDetails.add(new PartDetail(fill.iconId, fill.dx, fill.dy));
+                }
+                while (part.partDetails.size() > expectedSize) {
+                    part.partDetails.remove(part.partDetails.size() - 1);
                 }
                 parts.add(part);
                 dataArray.clear();
@@ -324,6 +343,7 @@ public final class Manager {
                 }
             }
             dos.flush();
+            dos.close();
             Logger.success(Logger.PURPLE + "Successfully loaded part (" + parts.size() + ")\n");
 
             //load bg item template

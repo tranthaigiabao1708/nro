@@ -91,6 +91,13 @@ public class Mabu extends Boss {
             Item optionalItem = ItemService.gI().createNewItem((short) dropOptional);
             Service.gI().dropItemMap(zone, optionalItemMap);
         }
+        // Xác suất rơi Trứng Mabư Vip (2010) khi hạ Boss Mabư 12h
+        long ownerId = plKill.isPet ? ((nro.models.player.Pet) plKill).master.id : plKill.id;
+        if (Util.isTrue(10, 100)) {
+            ItemMap trungVip = new ItemMap(this.zone, 2010, 1, x + 15, y, ownerId);
+            trungVip.options.add(new Item.ItemOption(73, 0));
+            Service.gI().dropItemMap(zone, trungVip);
+        }
         plKill.fightMabu.changePoint((byte) 25);
         TaskService.gI().checkDoneTaskKillBoss(plKill, this);
     }

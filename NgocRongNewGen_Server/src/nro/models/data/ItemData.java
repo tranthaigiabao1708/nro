@@ -1,5 +1,6 @@
 package nro.models.data;
 
+import java.nio.charset.StandardCharsets;
 import nro.models.player_system.Template.ArrHead2Frames;
 import nro.models.player_system.Template.ItemOptionTemplate;
 import nro.models.server.Manager;
@@ -9,11 +10,35 @@ import nro.models.player_system.Template;
 
 public class ItemData {
 
+    private static int getEstimatedTemplateBytes(Template.ItemTemplate it) {
+        int nameBytes = it.name != null ? it.name.getBytes(StandardCharsets.UTF_8).length : 0;
+        int descBytes = it.description != null ? it.description.getBytes(StandardCharsets.UTF_8).length : 0;
+        return 16 + nameBytes + descBytes;
+    }
+
+    private static int getBalancedSplitIndex() {
+        int size = Manager.ITEM_TEMPLATES.size();
+        long totalBytes = 0;
+        for (int i = 0; i < size; i++) {
+            totalBytes += getEstimatedTemplateBytes(Manager.ITEM_TEMPLATES.get(i));
+        }
+        long targetHalf = totalBytes / 2;
+        long running = 0;
+        for (int i = 0; i < size; i++) {
+            running += getEstimatedTemplateBytes(Manager.ITEM_TEMPLATES.get(i));
+            if (running >= targetHalf) {
+                return Math.max(1, Math.min(i + 1, size - 1));
+            }
+        }
+        return Math.min(850, size);
+    }
+
     public static void updateItem(MySession session) {
+        int splitIndex = getBalancedSplitIndex();
         updateItemOptionItemplate(session);
         updateItemArrHead2FTemplate(session);
-        updateItemTemplate(session, 1000);
-        updateItemTemplate(session, 1000, Manager.ITEM_TEMPLATES.size());
+        updateItemTemplate(session, splitIndex);
+        updateItemTemplate(session, splitIndex, Manager.ITEM_TEMPLATES.size());
     }
 
     private static void updateItemOptionItemplate(MySession session) {

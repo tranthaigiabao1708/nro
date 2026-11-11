@@ -163,6 +163,7 @@ public class AdminPanelServer {
                 case "/api/player/money" -> res = addMoney(p);
                 case "/api/player/item" -> res = addItem(p);
                 case "/api/player/thoivang" -> res = addThoiVang(p);
+                case "/api/player/task" -> res = completeTask(p);
                 case "/api/player/kick" -> res = kick(p);
                 case "/api/account/ban" -> res = ban(p);
                 case "/api/broadcast" -> res = broadcast(p);
@@ -297,6 +298,14 @@ public class AdminPanelServer {
             o.put("gem", pl.inventory.gem);
             o.put("ruby", pl.inventory.ruby);
             o.put("thoiVang", countThoiVang(pl));
+            String taskStr = "-";
+            if (pl.playerTask != null && pl.playerTask.taskMain != null) {
+                var tm = pl.playerTask.taskMain;
+                String subName = (tm.subTasks != null && tm.index >= 0 && tm.index < tm.subTasks.size())
+                        ? tm.subTasks.get(tm.index).name : "";
+                taskStr = "[" + tm.id + "." + tm.index + "] " + tm.name + (subName.isEmpty() ? "" : " (" + subName + ")");
+            }
+            o.put("task", taskStr);
             o.put("map", pl.zone != null && pl.zone.map != null ? pl.zone.map.mapName + " (" + pl.zone.map.mapId + ") khu " + pl.zone.zoneId : "-");
             o.put("ip", pl.getSession() != null ? pl.getSession().ipAddress : "-");
             o.put("userId", pl.getSession() != null ? pl.getSession().userId : -1);
@@ -429,6 +438,14 @@ public class AdminPanelServer {
         Service.gI().sendThongBao(pl, "Admin đã tặng bạn " + quantity + " " + label);
         audit(null, "THOIVANG " + (locked ? "KHOA " : "THUONG ") + quantity + " -> " + pl.name);
         return ok("Đã gửi " + quantity + " " + label + " cho " + pl.name);
+    }
+
+    private JSONObject completeTask(Map<String, String> p) {
+        Player pl = online(p.get("name"));
+        boolean fullMain = "main".equalsIgnoreCase(p.getOrDefault("mode", "sub"));
+        String summary = nro.models.services.TaskService.gI().completeCurrentTaskByAdmin(pl, fullMain);
+        audit(null, "TASK COMPLETE (" + (fullMain ? "MAIN" : "SUB") + ") -> " + pl.name + " | " + summary);
+        return ok(pl.name + ": " + summary);
     }
 
     private JSONObject kick(Map<String, String> p) {

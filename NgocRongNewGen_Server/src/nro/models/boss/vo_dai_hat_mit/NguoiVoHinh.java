@@ -53,33 +53,7 @@ public class NguoiVoHinh extends DeathOrAliveArena {
     protected void goToPlayer(Player pl, boolean isTeleport) {
         goToXY(pl.location.x, pl.location.y, isTeleport);
     }
-     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
-        if (!this.isDie()) {
-            if (!piercing && Util.isTrue(100, 1000)) {
-                this.chat("Xí hụt");
-                return 0;
-            }
 
-            if (plAtt != null && plAtt.idNRNM != -1) {
-                return 1;
-            }
-            if (damage > this.nPoint.hpMax / 10) {
-                damage = this.nPoint.hpMax / 10;
-            }
-
-            this.nPoint.subHP(damage);
-
-            if (isDie()) {
-                this.setDie(plAtt);
-                die(plAtt);
-            }
-
-            return (int) damage;
-        } else {
-            return 0;
-        }
-    }
     @Override
     public void tanHinh() {
         if (Util.canDoWithTime(lastTimeTanHinh, 15000)) {

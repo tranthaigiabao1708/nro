@@ -30,6 +30,14 @@ public class Shenron_Service {
     public static final short NGOC_RONG_6_SAO = 930;
     public static final short NGOC_RONG_7_SAO = 931;
 
+    public static final short NGOC_RONG_BI_NGO_1_SAO = 702;
+    public static final short NGOC_RONG_BI_NGO_2_SAO = 703;
+    public static final short NGOC_RONG_BI_NGO_3_SAO = 704;
+    public static final short NGOC_RONG_BI_NGO_4_SAO = 705;
+    public static final short NGOC_RONG_BI_NGO_5_SAO = 706;
+    public static final short NGOC_RONG_BI_NGO_6_SAO = 707;
+    public static final short NGOC_RONG_BI_NGO_7_SAO = 708;
+
     public static Shenron_Service gI() {
         if (instance == null) {
             instance = new Shenron_Service();
@@ -39,20 +47,26 @@ public class Shenron_Service {
 
     public void openMenuSummonShenron(Player pl, int type) {
         pl.idMark.setShenronType(type);
-        NpcService.gI().createMenuConMeo(pl, ConstNpc.SUMMON_SHENRON_EVENT, -1, "Bạn có muốn gọi Rồng Băng không ?",
+        String dragonName = (type == 1) ? "Rồng Xương" : "Rồng Băng";
+        NpcService.gI().createMenuConMeo(pl, ConstNpc.SUMMON_SHENRON_EVENT, -1,
+                "Bạn có muốn gọi " + dragonName + " không ?",
                 "Đồng ý", "Từ chối");
     }
 
     public void summonShenron(Player player) {
-        if (player.zone.map.mapId != 0 && player.zone.map.mapId != 7 && player.zone.map.mapId != 14) {
-            if (checkShenronBall(player)) {
+        if (player.zone != null && player.zone.map.mapId != 0 && player.zone.map.mapId != 7 && player.zone.map.mapId != 14
+                && player.zone.map.mapId != 21 && player.zone.map.mapId != 22 && player.zone.map.mapId != 23) {
+            int type = player.idMark.getShenronType();
+            int startId = (type == 1) ? NGOC_RONG_BI_NGO_1_SAO : NGOC_RONG_1_SAO;
+            int endId = (type == 1) ? NGOC_RONG_BI_NGO_7_SAO : NGOC_RONG_7_SAO;
+            if (checkShenronBall(player, startId, endId)) {
                 if (player.isShenronAppear || player.shenronEvent != null) {
                     Service.gI().sendThongBao(player, "Không thể thực hiện");
                     return;
                 }
 
                 if (Util.canDoWithTime(player.lastTimeShenronAppeared, Shenron_Event.timeResummonShenron)) {
-                    for (int i = NGOC_RONG_1_SAO; i <= NGOC_RONG_7_SAO; i++) {
+                    for (int i = startId; i <= endId; i++) {
                         try {
                             InventoryService.gI().subQuantityItemsBag(player, InventoryService.gI().findItemBag(player, i), 1);
                         } catch (Exception ex) {
@@ -76,8 +90,8 @@ public class Shenron_Service {
         }
     }
 
-    private boolean checkShenronBall(Player pl) {
-        for (int i = NGOC_RONG_1_SAO; i <= NGOC_RONG_7_SAO; i++) {
+    private boolean checkShenronBall(Player pl, int startId, int endId) {
+        for (int i = startId; i <= endId; i++) {
             if (!InventoryService.gI().isExistItemBag(pl, i)) {
                 Item it = ItemService.gI().createNewItem((short) i);
                 Service.gI().sendThongBao(pl, "Bạn còn thiếu 1 viên " + it.template.name);

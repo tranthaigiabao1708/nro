@@ -738,8 +738,9 @@ public class Mob {
 
         double percentFromOption236 = Math.pow(armorOption236Param / 100.0, 1.5) * 20.0 + directOption236Percent;
         int luckDragon = isUsingLuckDragon(owner) ? 20 : 0; // Ước NR 1 Sao: +20% trong 60 phút
+        int luckRX = (owner.itemTime != null && owner.itemTime.isUseLuckRX) ? 20 : 0; // Ước Rồng Xương: +20% May mắn
         int gohanLuck = (owner.setClothes != null && owner.setClothes.gohan == 5) ? 150 : 0; // 5 món Set Gohan trên Sư Phụ: +150%
-        return percentFromOption236 + luckDragon + gohanLuck;
+        return percentFromOption236 + luckDragon + luckRX + gohanLuck;
     }
 
     private long scalePerMillion(double basePerMillion, double luckPercent) {
@@ -1028,6 +1029,34 @@ public class Mob {
             ItemMap it = new ItemMap(zone, 225, 1, x, yEnd, owner.id);
             it.options.add(new Item.ItemOption(74, 0));
             list.add(it);
+        }
+
+        //======================== Ngọc Rồng Bí Ngô (702 - 708) - Bản Đồ Kho Báu ========================
+        if (MapService.gI().isMapBanDoKhoBau(mapid)) {
+            double eliteMult = (this.lvMob > 0) ? 2.0 : 1.0;
+            double baseBiNgo = 80_000.0 * eliteMult * dropMult * getMountSubDragonBallMult(owner);
+            if (Util.isTrue(scalePerMillion(baseBiNgo, generalLuckWithClover), 1_000_000L)) {
+                int roll = Util.nextInt(100);
+                int biNgoId;
+                if (roll < 25) {
+                    biNgoId = 708; // 25%: Bí ngô 7 sao
+                } else if (roll < 47) {
+                    biNgoId = 707; // 22%: Bí ngô 6 sao
+                } else if (roll < 67) {
+                    biNgoId = 706; // 20%: Bí ngô 5 sao
+                } else if (roll < 92) {
+                    biNgoId = 705; // 25%: Bí ngô 4 sao
+                } else if (roll < 97) {
+                    biNgoId = 704; // 5%: Bí ngô 3 sao
+                } else if (roll < 99) {
+                    biNgoId = 703; // 2%: Bí ngô 2 sao
+                } else {
+                    biNgoId = 702; // 1%: Bí ngô 1 sao
+                }
+                ItemMap biNgoIt = new ItemMap(zone, biNgoId, 1, x, yEnd, owner.id);
+                biNgoIt.options.add(new Item.ItemOption(73, 0));
+                list.add(biNgoIt);
+            }
         }
 
         if (MapService.gI().isMap3Planets(mapid)

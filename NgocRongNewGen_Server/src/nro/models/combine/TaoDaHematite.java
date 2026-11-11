@@ -28,7 +28,7 @@ public class TaoDaHematite {
                 player.combineNew.ratioCombine = RATIO_TAO_DA;
 
                 String npcSay = "|2|Tạo đá Hematite từ sao pha lê\n";
-                npcSay += "|2|Cần 5 sao pha lê Cấp 2\n";
+                npcSay += "|2|Cần 5 sao pha lê Cấp 1\n";
                 npcSay += "|2|Tỉ lệ thành công: " + player.combineNew.ratioCombine + "%\n";
                 npcSay += "|2|Cần: " + Util.numberToMoney(player.combineNew.goldCombine) + " vàng\n";
                 npcSay += "|7|Thất bại -5 sao pha lê\n";
@@ -43,11 +43,11 @@ public class TaoDaHematite {
                 }
             } else {
                 CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
-                        "Cần 5 sao pha lê Cấp 2", "Đóng");
+                        "Cần 5 sao pha lê Cấp 1 cùng loại", "Đóng");
             }
         } else {
             CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
-                    "Cần 5 sao pha lê Cấp 2", "Đóng");
+                    "Cần 5 sao pha lê Cấp 1 cùng loại", "Đóng");
         }
     }
 
