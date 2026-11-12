@@ -202,9 +202,6 @@ public class Boss extends Player implements IBoss {
         this.nPoint.mpg = 31_07_2002;
         this.nPoint.dameg = data.getDame();
         long baseHp = data.getHp()[Util.nextInt(0, data.getHp().length - 1)];
-        if (isHighTierBoss()) {
-            baseHp *= 3L;
-        }
         if (baseHp > 2_147_483_647L) {
             this.nPoint.bossRealHpMax = baseHp;
             this.nPoint.bossRealHp = baseHp;
@@ -381,7 +378,11 @@ public class Boss extends Player implements IBoss {
                 this.afk();
             case ACTIVE -> {
                 this.chatM();
-                if (this.effectSkill.isCharging && !Util.isTrue(1, 20) || this.effectSkill.useTroi) {
+                if (!this.isDie() && this.typePk != ConstPlayer.NON_PK && Util.canDoWithTime(this.lastTimeSyncTypePk, 2500)) {
+                    this.lastTimeSyncTypePk = System.currentTimeMillis();
+                    PlayerService.gI().sendTypePk(this);
+                }
+                if (this.typePk != ConstPlayer.NON_PK && (this.effectSkill.isCharging && !Util.isTrue(1, 20) || this.effectSkill.useTroi)) {
                     return;
                 }
                 this.active();
@@ -589,6 +590,7 @@ public class Boss extends Player implements IBoss {
     }
 
     protected long lastTimeAttack;
+    protected long lastTimeSyncTypePk;
 
     @Override
     public void attack() {
@@ -1279,14 +1281,18 @@ public class Boss extends Player implements IBoss {
             this.chat(textChat);
         } else if (prefix == -2) {
             if (this.zone != null) {
-                Player plMap = this.zone.getRandomPlayerInMap();
-                if (plMap != null && !plMap.isDie() && Util.getDistance(this, plMap) <= 600) {
-                    Service.gI().chat(plMap, textChat);
-                } else {
-                    return false;
+                Player plNear = null;
+                List<Player> notBosses = this.zone.getNotBosses();
+                for (int i = notBosses.size() - 1; i >= 0; i--) {
+                    Player plCandidate = notBosses.get(i);
+                    if (plCandidate != null && !plCandidate.isDie() && Util.getDistance(this, plCandidate) <= 600) {
+                        plNear = plCandidate;
+                        break;
+                    }
                 }
-            } else {
-                return false;
+                if (plNear != null) {
+                    Service.gI().chat(plNear, textChat);
+                }
             }
         } else if (prefix == -3) {
             if (this.parentBoss != null && !this.parentBoss.isDie()) {

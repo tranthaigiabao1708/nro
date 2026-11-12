@@ -212,6 +212,25 @@ public class NonInteractiveNPC extends Player {
                         z.setNpc(pl);
                     }
                 }
+                case 145 -> {
+                    for (Zone z : m.zones) {
+                        NonInteractiveNPC pl = new NonInteractiveNPC();
+                        pl.name = "Trọng Tài Vũ Trụ";
+                        pl.gender = 0;
+                        pl.id = -159;
+                        pl.head = 533;
+                        pl.body = 534;
+                        pl.leg = 535;
+                        pl.nPoint.hpMax = 500;
+                        pl.nPoint.hpg = 500;
+                        pl.nPoint.hp = 500;
+                        pl.nPoint.setFullHpMp();
+                        pl.location.x = 768;
+                        pl.location.y = 360;
+                        joinMap(z, pl);
+                        z.setNpc(pl);
+                    }
+                }
                 case 103 -> {
                     for (Zone z : m.zones) {
                         NonInteractiveNPC pl = new NonInteractiveNPC();

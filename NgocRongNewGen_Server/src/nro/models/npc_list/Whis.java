@@ -260,8 +260,8 @@ public class Whis extends Npc {
 
         msg = new Message(-81);
         msg.writer().writeByte(1);
-        msg.writer().writeByte(1);
-        msg.writer().writeByte(InventoryService.gI().getIndexItemBag(player, InventoryService.gI().findItemBag(player, 1229)));
+        msg.writer().writeShort(1);
+        msg.writer().writeShort(InventoryService.gI().getIndexItemBag(player, InventoryService.gI().findItemBag(player, 1229)));
         player.sendMessage(msg);
         msg.cleanup();
 

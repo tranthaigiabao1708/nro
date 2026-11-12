@@ -63,6 +63,7 @@ namespace Game1.Mod.XMAP
 					}
 					Wait(500);
 					IndexItemPick++;
+					return;
 				}
 				ItemPicks.Clear();
 				IndexItemPick = 0;
@@ -259,6 +260,10 @@ namespace Game1.Mod.XMAP
 		private static TpyePickItem GetTypePickItem(ItemMap itemMap)
 		{
 			Char @char = Char.myCharz();
+			if (itemMap.template != null && itemMap.template.type == 9 && @char.xu >= 2000000000000L)
+			{
+				return TpyePickItem.CanNotPickItem;
+			}
 			if (itemMap.playerId != @char.charID && itemMap.playerId != -1 && !PickMob.IsPickItemsAll)
 			{
 				return TpyePickItem.CanNotPickItem;

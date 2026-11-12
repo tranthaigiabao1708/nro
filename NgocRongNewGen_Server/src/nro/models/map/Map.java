@@ -357,7 +357,9 @@ public class Map implements Runnable {
 
     public Npc getNpc(Player player, int tempId) {
         for (Npc npc : npcs) {
-            if (npc.tempId == tempId && (MapService.gI().isMapBlackBallWar(mapId) || Util.getDistance(player, npc) <= 60)) {
+            if (npc.tempId == tempId && (MapService.gI().isMapBlackBallWar(mapId)
+                    || (this.mapId == 145 && !player.isPKDHVT && Util.getDistance(player, npc) <= 500)
+                    || Util.getDistance(player, npc) <= 60)) {
                 return npc;
             }
         }

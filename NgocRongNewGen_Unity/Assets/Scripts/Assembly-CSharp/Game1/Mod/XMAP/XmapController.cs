@@ -266,7 +266,7 @@ namespace Game1.Mod.XMAP
 					}
 					else
 					{
-						Service.gI().useItem(0, 1, (sbyte)ModFunc.GI().FindItemIndex(992), -1);
+						Service.gI().useItem(0, 1, ModFunc.GI().FindItemIndex(992), -1);
 					}
 					return;
 				}
@@ -331,13 +331,13 @@ namespace Game1.Mod.XMAP
 		public static void UseCapsuleNormal()
 		{
 			AutoXmap.IsShowPanelMapTrans = false;
-			Service.gI().useItem(0, 1, (sbyte)ModFunc.GI().FindItemIndex(193), -1);
+			Service.gI().useItem(0, 1, ModFunc.GI().FindItemIndex(193), -1);
 		}
 
 		public static void UseCapsuleVip()
 		{
 			AutoXmap.IsShowPanelMapTrans = false;
-			Service.gI().useItem(0, 1, (sbyte)ModFunc.GI().FindItemIndex(194), -1);
+			Service.gI().useItem(0, 1, ModFunc.GI().FindItemIndex(194), -1);
 		}
 
 		public static void HideInfoDlg()

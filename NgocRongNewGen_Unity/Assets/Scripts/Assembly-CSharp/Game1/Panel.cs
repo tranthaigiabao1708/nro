@@ -1026,6 +1026,82 @@ namespace Game1
             }
         }
 
+        private void paintEffectItemSlot(mGraphics g, Item item, int x, int y, int w, int h)
+        {
+            try
+            {
+                if (!ModFunc.isEffectInven) return;
+                if (item == null || item.itemOption == null)
+                {
+                    return;
+                }
+                Image[] array = null;
+                Image[] array2 = null;
+                ItemOption[] itemOption = item.itemOption;
+                foreach (ItemOption itemOption2 in itemOption)
+                {
+                    if (itemOption2 != null && itemOption2.optionTemplate != null && itemOption2.param > 0 && (itemOption2.optionTemplate.id == 102 || itemOption2.optionTemplate.id == 72 || (itemOption2.optionTemplate.id >= 42 && itemOption2.optionTemplate.id <= 46)))
+                    {
+                        switch (itemOption2.param)
+                        {
+                            case 1:
+                                array2 = effxanhnhat;
+                                break;
+                            case 2:
+                                array = bgxanhnhat;
+                                array2 = effxanhnhat;
+                                break;
+                            case 3:
+                                array2 = effxanhla;
+                                break;
+                            case 4:
+                                array = bgxanhla;
+                                array2 = effxanhla;
+                                break;
+                            case 5:
+                                array2 = efftim;
+                                break;
+                            case 6:
+                                array = bgtim;
+                                array2 = efftim;
+                                break;
+                            case 7:
+                                array2 = effcam;
+                                break;
+                            case 8:
+                                array = bgcam;
+                                array2 = effcam;
+                                break;
+                            case 9:
+                                array2 = effdo;
+                                break;
+                            case 10:
+                                array = bgdo;
+                                array2 = effdo;
+                                break;
+                            default:
+                                array = bgdo;
+                                array2 = effdo;
+                                break;
+                        }
+                        int frame = GameCanvas.gameTick / 4 % 7;
+                        if (array2 != null && array2[frame] != null)
+                        {
+                            g.drawImageScaleClipped(array2[frame], x, y, w, h);
+                        }
+                        if (array != null && array[frame] != null)
+                        {
+                            g.drawImageScaleClipped(array[frame], x - 1, y - 1, w + 2, h + 2);
+                        }
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception);
+            }
+        }
+
         public void init()
         {
             pX = GameCanvas.pxLast + cmxMap;
@@ -1530,7 +1606,7 @@ namespace Game1
 
         private void setTabAuto()
         {
-            currentListLength = strAuto.Length;
+            currentListLength = 2;
             ITEM_HEIGHT = 24;
             selected = (GameCanvas.isTouch ? (-1) : 0);
             cmyLim = currentListLength * ITEM_HEIGHT - hScroll;
@@ -2254,6 +2330,7 @@ namespace Game1
 
         private void updateKeyAuto()
         {
+            updateKeyScrollView();
         }
 
         private void updateKeyPetStatus()
@@ -5050,6 +5127,28 @@ else
 
         private void paintAuto(mGraphics g)
         {
+            g.setClip(xScroll, yScroll, wScroll, hScroll);
+            g.translate(0, -cmy);
+            string[] autoItems = new string[2]
+            {
+                mResources.useGem + ": " + (ModFunc.GI().autoWakeUp ? "[Bật]" : "[Tắt]"),
+                "Tự động luyện tập: " + (GameScr.isAutoPlay ? "[Bật]" : "[Tắt]")
+            };
+            for (int i = 0; i < autoItems.Length; i++)
+            {
+                int x = xScroll;
+                int num = yScroll + i * ITEM_HEIGHT;
+                int num2 = wScroll - 1;
+                int h = ITEM_HEIGHT - 1;
+                if (num - cmy <= yScroll + hScroll && num - cmy >= yScroll - ITEM_HEIGHT)
+                {
+                    g.setColor((i != selected) ? 15196114 : 16383818);
+                    g.fillRect(x, num, num2, h);
+                    mFont mFontRow = ((i == 0 && ModFunc.GI().autoWakeUp) || (i == 1 && GameScr.isAutoPlay)) ? mFont.tahoma_7b_green2 : mFont.tahoma_7b_dark;
+                    mFontRow.drawString(g, autoItems[i], xScroll + 10, num + 6, mFont.LEFT);
+                }
+            }
+            paintScrollArrow(g);
         }
 
         private void paintPetStatus(mGraphics g)
@@ -6751,8 +6850,26 @@ for (int i = 0; i < arrItemBody.Length; i++)
     if (item != null)
     {
         SkhSlotEffect.PaintSlotBg(g, item, x, y, bodyCellW, bodyCellH - 1);
+        paintEffectItemSlot(g, item, x, y, bodyCellW, bodyCellH - 1);
         SmallImage.drawSmallImage(g, item.template.iconID, x + bodyCellW / 2, y + bodyCellH / 2, 0, 3);
         SkhSlotEffect.PaintSlotBorder(g, item, x, y, bodyCellW, bodyCellH - 1);
+        if (item.itemOption != null)
+        {
+            for (int k = 0; k < item.itemOption.Length; k++)
+            {
+                if (item.itemOption[k] != null && item.itemOption[k].optionTemplate != null)
+                {
+                    paintOptItem(g, item.itemOption[k].optionTemplate.id, item.itemOption[k].param, x, y, bodyCellW, bodyCellH - 1);
+                }
+            }
+            for (int k = 0; k < item.itemOption.Length; k++)
+            {
+                if (item.itemOption[k] != null && item.itemOption[k].optionTemplate != null)
+                {
+                    paintOptSlotItem(g, item.itemOption[k].optionTemplate.id, item.itemOption[k].param, x, y, bodyCellW, bodyCellH - 1);
+                }
+            }
+        }
     }
 }
 int bagCols = 5;
@@ -6777,8 +6894,26 @@ for (int i = 0; i < arrItemBag.Length; i++)
     if (item != null)
     {
         SkhSlotEffect.PaintSlotBg(g, item, x, y, bagCellW, bagCellH - 1);
+        paintEffectItemSlot(g, item, x, y, bagCellW, bagCellH - 1);
         SmallImage.drawSmallImage(g, item.template.iconID, x + bagCellW / 2, y + bagCellH / 2, 0, 3);
         SkhSlotEffect.PaintSlotBorder(g, item, x, y, bagCellW, bagCellH - 1);
+        if (item.itemOption != null)
+        {
+            for (int k = 0; k < item.itemOption.Length; k++)
+            {
+                if (item.itemOption[k] != null && item.itemOption[k].optionTemplate != null)
+                {
+                    paintOptItem(g, item.itemOption[k].optionTemplate.id, item.itemOption[k].param, x, y, bagCellW, bagCellH - 1);
+                }
+            }
+            for (int k = 0; k < item.itemOption.Length; k++)
+            {
+                if (item.itemOption[k] != null && item.itemOption[k].optionTemplate != null)
+                {
+                    paintOptSlotItem(g, item.itemOption[k].optionTemplate.id, item.itemOption[k].param, x, y, bagCellW, bagCellH - 1);
+                }
+            }
+        }
         if (item.quantity > 1)
         {
             mFont.tahoma_7_yellow.drawString(g, item.quantity.ToString(), x + bagCellW - 1, y + bagCellH - mFont.tahoma_7_yellow.getHeight(), 1, mFont.tahoma_7b_dark);
@@ -8259,6 +8394,20 @@ else
 
         private void doFireAuto()
         {
+            if (selected == 0)
+            {
+                ModFunc.GI().autoWakeUp = !ModFunc.GI().autoWakeUp;
+                Rms.saveRMSInt("autoWakeUp", ModFunc.GI().autoWakeUp ? 1 : 0);
+                GameScr.info1.addInfo("Tự động hồi sinh " + (ModFunc.GI().autoWakeUp ? "[Bật]" : "[Tắt]"), 0);
+            }
+            else if (selected == 1)
+            {
+                if (GameScr.canAutoPlay)
+                {
+                    GameScr.isAutoPlay = !GameScr.isAutoPlay;
+                    GameScr.info1.addInfo("Tự động luyện tập " + (GameScr.isAutoPlay ? "[Bật]" : "[Tắt]"), 0);
+                }
+            }
         }
 
         private void DoFirePet2Main()
@@ -10095,7 +10244,7 @@ else
                 Item[] arrItemBody = Char.myCharz().arrItemBody;
                 if (!GetInventorySelect_isbody(selected, newSelected, arrItemBody))
                 {
-                    sbyte b2 = (sbyte)GetInventorySelect_bag(selected, newSelected, arrItemBody);
+                    int b2 = GetInventorySelect_bag(selected, newSelected, arrItemBody);
                     Item item2 = Char.myCharz().arrItemBag[b2];
                     if (item2 != null)
                     {
@@ -10138,7 +10287,7 @@ else
             cmyLim = currentListLength * ITEM_HEIGHT - hScroll;
         }
 
-        public void itemRequest(sbyte itemAction, string info, sbyte where, sbyte index)
+        public void itemRequest(sbyte itemAction, string info, sbyte where, short index)
         {
             GameCanvas.endDlg();
             ItemObject itemObject = new ItemObject();
@@ -10321,7 +10470,7 @@ else
                 item4.itemOption = item3.itemOption;
                 item4.indexUI = item3.indexUI;
                 GameCanvas.panel.vMyGD.addElement(item4);
-                Service.gI().giaodich(2, -1, (sbyte)item4.indexUI, item4.quantity);
+                Service.gI().giaodich(2, -1, item4.indexUI, item4.quantity);
             }
             if (idAction == 7001)
             {
@@ -10332,7 +10481,7 @@ else
                 {
                     GameCanvas.panel.setTabGiaoDich(isMe: true);
                 }
-                Service.gI().giaodich(4, -1, (sbyte)item5.indexUI, -1);
+                Service.gI().giaodich(4, -1, item5.indexUI, -1);
             }
             if (idAction == 7002)
             {
@@ -10384,11 +10533,11 @@ else
             }
             if (idAction == 1000)
             {
-                Service.gI().getItem(BOX_BAG, (sbyte)GetInventorySelect_body(selected, newSelected));
+                Service.gI().getItem(BOX_BAG, GetInventorySelect_body(selected, newSelected));
             }
             if (idAction == 1001)
             {
-                sbyte id = (sbyte)GetInventorySelect_bag(selected, newSelected, Char.myCharz().arrItemBody);
+                int id = GetInventorySelect_bag(selected, newSelected, Char.myCharz().arrItemBody);
                 Service.gI().getItem(BAG_BOX, id);
             }
             if (idAction == 1003)
@@ -10397,15 +10546,15 @@ else
             }
             if (idAction == 1002)
             {
-                Service.gI().getItem(BODY_BOX, (sbyte)GetInventorySelect_body(selected, newSelected));
+                Service.gI().getItem(BODY_BOX, GetInventorySelect_body(selected, newSelected));
             }
             if (idAction == 2011)
             {
-                Service.gI().useItem(1, 2, (sbyte)GetInventorySelect_body(selected, newSelected), -1);
+                Service.gI().useItem(1, 2, GetInventorySelect_body(selected, newSelected), -1);
             }
             if (idAction == 2010)
             {
-                Service.gI().useItem(0, 2, (sbyte)GetInventorySelect_body(selected, newSelected), -1);
+                Service.gI().useItem(0, 2, GetInventorySelect_body(selected, newSelected), -1);
                 Item item6 = (Item)p;
                 if (item6 != null && (item6.template.id == 193 || item6.template.id == 194))
                 {
@@ -10415,10 +10564,10 @@ else
             if (idAction == 2000)
             {
                 Item[] arrItemBody = Char.myCharz().arrItemBody;
-                sbyte id2 = (sbyte)GetInventorySelect_bag(selected, newSelected, arrItemBody);
+                int id2 = GetInventorySelect_bag(selected, newSelected, arrItemBody);
                 if (isnewInventory)
                 {
-                    id2 = (sbyte)currItem.indexUI;
+                    id2 = currItem.indexUI;
                 }
                 Service.gI().getItem(BAG_BODY, id2);
             }
@@ -10427,10 +10576,10 @@ else
                 Res.outz("use item");
                 Item item7 = (Item)p;
                 bool inventorySelect_isbody = GetInventorySelect_isbody(selected, newSelected, Char.myCharz().arrItemBody);
-                sbyte index = (inventorySelect_isbody ? ((sbyte)GetInventorySelect_body(selected, newSelected)) : ((sbyte)GetInventorySelect_bag(selected, newSelected, Char.myCharz().arrItemBody)));
+                int index = (inventorySelect_isbody ? GetInventorySelect_body(selected, newSelected) : GetInventorySelect_bag(selected, newSelected, Char.myCharz().arrItemBody));
                 if (isnewInventory)
                 {
-                    index = (sbyte)currItem.indexUI;
+                    index = currItem.indexUI;
                     sbyte where = 0;
                     if (newSelected != 0)
                     {
@@ -10451,18 +10600,18 @@ else
             {
                 if (isnewInventory)
                 {
-                    Service.gI().getItem(BODY_BAG, (sbyte)sellectInventory);
+                    Service.gI().getItem(BODY_BAG, sellectInventory);
                 }
                 else
                 {
-                    Service.gI().getItem(BODY_BAG, (sbyte)GetInventorySelect_body(selected, newSelected));
+                    Service.gI().getItem(BODY_BAG, GetInventorySelect_body(selected, newSelected));
                 }
             }
             if (idAction == 2003)
             {
                 Res.outz("remove item");
                 bool inventorySelect_isbody2 = GetInventorySelect_isbody(selected, newSelected, Char.myCharz().arrItemBody);
-                sbyte index2 = (inventorySelect_isbody2 ? ((sbyte)GetInventorySelect_body(selected, newSelected)) : ((sbyte)GetInventorySelect_bag(selected, newSelected, Char.myCharz().arrItemBody)));
+                int index2 = (inventorySelect_isbody2 ? GetInventorySelect_body(selected, newSelected) : GetInventorySelect_bag(selected, newSelected, Char.myCharz().arrItemBody));
                 Service.gI().useItem(1, (!inventorySelect_isbody2) ? ((sbyte)1) : ((sbyte)0), index2, -1);
             }
             if (idAction == 2004)
@@ -10470,27 +10619,27 @@ else
                 GameCanvas.endDlg();
                 ItemObject itemObject = (ItemObject)p;
                 sbyte where2 = (sbyte)itemObject.where;
-                sbyte index3 = (sbyte)itemObject.id;
+                int index3 = itemObject.id;
                 Service.gI().useItem((sbyte)((itemObject.type != 0) ? 2 : 3), where2, index3, -1);
             }
             if (idAction == 2005)
             {
-                sbyte id3 = (sbyte)GetInventorySelect_bag(selected, newSelected, Char.myCharz().arrItemBody);
+                int id3 = GetInventorySelect_bag(selected, newSelected, Char.myCharz().arrItemBody);
                 Service.gI().getItem(BAG_PET, id3);
             }
             if (idAction == 2006)
             {
-                sbyte id4 = (sbyte)selected;
+                int id4 = selected;
                 Service.gI().getItem(PET_BAG, id4);
             }
             if (idAction == 2007)
             {
-                sbyte id5 = (sbyte)GetInventorySelect_bag(selected, newSelected, Char.myCharz().arrItemBody);
+                int id5 = GetInventorySelect_bag(selected, newSelected, Char.myCharz().arrItemBody);
                 Service.gI().getItem(BAG_PET2, id5);
             }
             if (idAction == 2008)
             {
-                sbyte id6 = (sbyte)selected;
+                int id6 = selected;
                 Service.gI().getItem(PET2_BAG, id6);
             }
             if (idAction == 30001)
@@ -10524,7 +10673,7 @@ else
             {
                 GameCanvas.endDlg();
                 bool inventorySelect_isbody3 = GetInventorySelect_isbody(selected, newSelected, Char.myCharz().arrItemBody);
-                sbyte id7 = (inventorySelect_isbody3 ? ((sbyte)GetInventorySelect_body(selected, newSelected)) : ((sbyte)GetInventorySelect_bag(selected, newSelected, Char.myCharz().arrItemBody)));
+                short id7 = (short)(inventorySelect_isbody3 ? GetInventorySelect_body(selected, newSelected) : GetInventorySelect_bag(selected, newSelected, Char.myCharz().arrItemBody));
                 Service.gI().saleItem(0, (!inventorySelect_isbody3) ? ((sbyte)1) : ((sbyte)0), id7);
             }
             if (idAction == 3003)
@@ -10973,7 +11122,7 @@ else
                         itemOption = currItem.itemOption
                     };
                     GameCanvas.panel.vMyGD.addElement(item);
-                    Service.gI().giaodich(2, -1, (sbyte)item.indexUI, item.quantity);
+                    Service.gI().giaodich(2, -1, item.indexUI, item.quantity);
                     chatTField.isShow = false;
                     chatTField.tfChat.setIputType(TField.INPUT_TYPE_ANY);
                 }
@@ -11716,6 +11865,7 @@ else
                             break;
                         case 2:
                             ModFunc.GI().autoWakeUp = !ModFunc.GI().autoWakeUp;
+                            Rms.saveRMSInt("autoWakeUp", ModFunc.GI().autoWakeUp ? 1 : 0);
                             GameScr.info1.addInfo("Đã " + (ModFunc.GI().autoWakeUp ? "bật" : "tắt") + " Auto Hồi Sinh", 0);
                             break;
                         case 3:

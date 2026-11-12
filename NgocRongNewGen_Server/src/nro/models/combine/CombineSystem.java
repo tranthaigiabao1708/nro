@@ -18,7 +18,7 @@ public class CombineSystem {
     public static boolean isTrangBiCotLoi(Item item) {
         if (item != null && item.isNotNullItem() && item.template != null) {
             int t = item.template.type;
-            return t >= 0 && t <= 5;
+            return (t >= 0 && t <= 5) || t == 32;
         }
         return false;
     }
@@ -26,7 +26,7 @@ public class CombineSystem {
     public static boolean isPhuKienMoRong(Item item) {
         if (item != null && item.isNotNullItem() && item.template != null) {
             int t = item.template.type;
-            return t == 11 || t == 23 || t == 24 || t == 25 || t == 32 || item.isLinhThu();
+            return t == 11 || t == 23 || t == 24 || t == 25 || item.isLinhThu();
         }
         return false;
     }
@@ -145,9 +145,9 @@ public class CombineSystem {
             case 16 ->
                 3;
             case 15 ->
-                6;
+                4;
             case 14 ->
-                9;
+                5;
             case 441, 1416 ->
                 5;
             case 442, 1417 ->

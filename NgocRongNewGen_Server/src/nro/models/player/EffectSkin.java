@@ -417,12 +417,16 @@ public class EffectSkin {
                         subHpLong += subHpLong * caster.nPoint.tlDameTuyetKy / 100L;
                     }
                     int subHp = (int) Math.min(2_147_483_647L, subHpLong);
-                    if (subHp >= this.player.nPoint.hp) {
-                        subHp = Math.abs(this.player.nPoint.hp - 100);
+                    long curActualHp = this.player.nPoint.getActualHp();
+                    if (subHp >= curActualHp) {
+                        subHp = (int) Math.max(0L, curActualHp - 1L);
+                    }
+                    if (subHp > 0) {
+                        this.player.injured(caster, subHp, true, false);
+                        Service.gI().reload_HP_NV(this.player);
                     }
                     PlayerService.gI().sendInfoHpMpMoney(this.player);
                     Service.gI().Send_Info_NV(this.player);
-                    this.player.injured(caster, subHp, true, false);
                     this.lastTimeMaPhongBa = System.currentTimeMillis();
                 }
             }

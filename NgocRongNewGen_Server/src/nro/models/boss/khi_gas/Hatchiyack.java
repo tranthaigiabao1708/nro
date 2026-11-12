@@ -57,15 +57,22 @@ public class Hatchiyack extends Boss {
                 return 1;
             }
 
-            damage = this.nPoint.subDameInjureWithDeff(damage + Util.nextInt(-200 * this.level, 0));
+            if (damage <= 0) {
+                return 0;
+            }
+            if (!piercing) {
+                long reduced = Math.max(1L, damage + Util.nextInt(-200 * this.level, 0));
+                damage = this.nPoint.subDameInjureWithDeff(reduced, plAtt);
+            }
 
-            damage -= damage / 100 * (this.level / 5);
+            damage = Math.max(1L, damage - damage / 100 * (this.level / 5));
 
             if (!piercing && effectSkill.isShielding) {
-                if (damage > nPoint.hpMax) {
+                if (damage > Math.max(1, nPoint.hpMax / 20)) {
                     EffectSkillService.gI().breakShield(this);
+                } else {
+                    damage = Math.max(1L, damage / 4L);
                 }
-                damage = 1;
             }
 
             this.nPoint.subHP(damage);

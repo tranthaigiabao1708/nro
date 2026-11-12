@@ -728,8 +728,18 @@ public class ShopService {
             return;
         }
 
-        // Hành trang đầy
-        if (InventoryService.gI().getCountEmptyBag(player) == 0) {
+        // Mở rộng hành trang / rương đồ: kiểm tra giới hạn tối đa trước khi trừ tiền (cho phép mua ngay cả khi hành trang đang đầy)
+        if (itemTempId == 517) {
+            if (player.inventory.itemsBag.size() >= Inventory.MAX_ITEMS_BAG) {
+                Service.gI().sendThongBao(player, "Hành trang của bạn đã đạt tối đa (" + Inventory.MAX_ITEMS_BAG + " ô)");
+                return;
+            }
+        } else if (itemTempId == 518) {
+            if (player.inventory.itemsBox.size() >= Inventory.MAX_ITEMS_BOX) {
+                Service.gI().sendThongBao(player, "Rương đồ của bạn đã đạt tối đa (" + Inventory.MAX_ITEMS_BOX + " ô)");
+                return;
+            }
+        } else if (InventoryService.gI().getCountEmptyBag(player) == 0) {
             Service.gI().sendThongBao(player, "Hành trang đã đầy");
             return;
         }
@@ -951,7 +961,9 @@ public class ShopService {
         }
         InventoryService.gI().addItemBag(player, item);
         InventoryService.gI().sendItemBags(player);
-        Service.gI().sendThongBao(player, "Mua thành công " + is.temp.name + specPaymentDetail);
+        if (itemTempId != 517 && itemTempId != 518) {
+            Service.gI().sendThongBao(player, "Mua thành công " + is.temp.name + specPaymentDetail);
+        }
 
         if (itemTempId == 1523 || itemTempId == 1524 || itemTempId == 521) {
             updateAutoTrainPurchase(player, itemTempId);
@@ -1132,6 +1144,7 @@ public class ShopService {
                 long cost = item.template.gold;
                 if (item.template.id == 457) {
                     if (quantity >= 1) {
+                        Service.gI().ClosePanel(pl);
                         Input.gI().createFormBanSLL(pl);
                         return;
                     }
@@ -1230,7 +1243,7 @@ public class ShopService {
             cost *= quantity;
 
             if (pl.inventory.gold > Inventory.LIMIT_GOLD - cost) {
-                Service.gI().sendThongBao(pl, "Vàng sau khi bán vượt quá giới hạn 500 Tỷ vàng");
+                Service.gI().sendThongBao(pl, "Vàng sau khi bán vượt quá giới hạn 2.000 Tỷ vàng");
                 return;
             }
             pl.inventory.addGold(cost);
@@ -1414,6 +1427,7 @@ public class ShopService {
         itemoptions.add(new ItemOption(30, (short) 0));
         item.itemOptions.clear();
         item.itemOptions.addAll(itemoptions);
+        ItemService.gI().ensureDefaultOptions(item);
         InventoryService.gI().addItemBag(player, item);
         InventoryService.gI().sendItemBags(player);
         Service.gI().sendThongBao(player, "Mua thành công " + is.temp.name);

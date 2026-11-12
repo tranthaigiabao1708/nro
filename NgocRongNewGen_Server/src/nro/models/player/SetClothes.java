@@ -38,54 +38,70 @@ public class SetClothes {
 
     public byte worldcup;
     public byte setDHD;
+    public byte setThienSu;
 
     public boolean godClothes;
     public int ctHaiTac = -1;
 
     public void setup() {
         setDefault();
+        if (this.player == null || this.player.inventory == null || this.player.inventory.itemsBody == null) {
+            return;
+        }
         setupSKT();
 
-        this.godClothes = true;
-        for (int i = 0; i < 5; i++) {
-            Item item = this.player.inventory.itemsBody.get(i);
-            if (item.isNotNullItem()) {
-                if (item.template.id > 567 || item.template.id < 555) {
+        if (this.player.inventory.itemsBody.size() >= 5) {
+            this.godClothes = true;
+            for (int i = 0; i < 5; i++) {
+                Item item = this.player.inventory.itemsBody.get(i);
+                if (item != null && item.isNotNullItem()) {
+                    if (item.template.id > 567 || item.template.id < 555) {
+                        this.godClothes = false;
+                        break;
+                    }
+                } else {
                     this.godClothes = false;
-                    break;
                 }
-            } else {
-                this.godClothes = false;
             }
         }
-        Item ct = this.player.inventory.itemsBody.get(5);
-        if (ct.isNotNullItem()) {
-            switch (ct.template.id) {
-                case 618:
-                case 619:
-                case 620:
-                case 621:
-                case 622:
-                case 623:
-                case 624:
-                case 626:
-                case 627:
-                    this.ctHaiTac = ct.template.id;
-                    break;
+        if (this.player.inventory.itemsBody.size() > 5) {
+            Item ct = this.player.inventory.itemsBody.get(5);
+            if (ct != null && ct.isNotNullItem()) {
+                switch (ct.template.id) {
+                    case 618:
+                    case 619:
+                    case 620:
+                    case 621:
+                    case 622:
+                    case 623:
+                    case 624:
+                    case 626:
+                    case 627:
+                        this.ctHaiTac = ct.template.id;
+                        break;
 
+                }
             }
         }
 
     }
 
     private void setupSKT() {
-        for (int i = 0; i < 5; i++) {
+        int limit = Math.min(5, this.player.inventory.itemsBody.size());
+        for (int i = 0; i < limit; i++) {
             Item item = this.player.inventory.itemsBody.get(i);
             if (item == null || !item.isNotNullItem() || item.itemOptions == null) {
                 continue;
             }
+            if (item.template != null && item.template.id >= 1048 && item.template.id <= 1062) {
+                this.setThienSu++;
+            }
             boolean isActSet = false;
             boolean countedDHD = false;
+            if (item.isDHD()) {
+                this.setDHD++;
+                countedDHD = true;
+            }
             for (Item.ItemOption io : item.itemOptions) {
                 if (io == null || io.optionTemplate == null) {
                     continue;
@@ -205,18 +221,20 @@ public class SetClothes {
         this.cadicM = 0;
         this.gohan = 0;
         this.setDHD = 0;
+        this.setThienSu = 0;
         this.worldcup = 0;
         this.godClothes = false;
         this.ctHaiTac = -1;
     }
 
     public boolean checkSetGod() {
-        if (this.player.isBot) {
+        if (this.player == null || this.player.isBot || this.player.inventory == null
+                || this.player.inventory.itemsBody == null || this.player.inventory.itemsBody.size() < 5) {
             return false;
         }
         for (int i = 0; i < 5; i++) {
             Item item = this.player.inventory.itemsBody.get(i);
-            if (item.isNotNullItem()) {
+            if (item != null && item.isNotNullItem() && item.template != null) {
                 if (item.template.id < 555 || item.template.id > 567) {
                     return false;
                 }
@@ -228,14 +246,32 @@ public class SetClothes {
     }
 
     public boolean checkSetDes() {
+        if (this.player == null || this.player.isBot || this.player.inventory == null
+                || this.player.inventory.itemsBody == null || this.player.inventory.itemsBody.size() < 5) {
+            return false;
+        }
         for (int i = 0; i < 5; i++) {
             Item item = this.player.inventory.itemsBody.get(i);
-            if (item.isNotNullItem()) {
+            if (item != null && item.isNotNullItem() && item.template != null) {
                 if (item.template.id < 650 || item.template.id > 662) {
-
                     return false;
                 }
             } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean checkSetThienSu() {
+        if (this.player == null || this.player.inventory == null || this.player.inventory.itemsBody == null
+                || this.player.inventory.itemsBody.size() < 5) {
+            return false;
+        }
+        for (int i = 0; i < 5; i++) {
+            Item item = this.player.inventory.itemsBody.get(i);
+            if (item == null || !item.isNotNullItem() || item.template == null
+                    || item.template.id < 1048 || item.template.id > 1062) {
                 return false;
             }
         }

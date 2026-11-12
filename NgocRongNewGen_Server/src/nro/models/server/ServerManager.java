@@ -125,6 +125,7 @@ public class ServerManager {
             new Thread(NgocRongNamecService.gI(), "Update NRNM").start();
             new Thread(SuperRankManager.gI(), "Update Super Rank").start();
             new Thread(The23rdMartialArtCongressManager.gI(), "Update DHVT23").start();
+            new Thread(nro.models.matches.giai_dau.VoDaiVuTru6Manager.gI(), "Update VoDai VT6").start();
             new Thread(DeathOrAliveArenaManager.gI(), "Update Võ Đài Sinh Tử").start();
             new Thread(WorldMartialArtsTournamentManager.gI(), "Update WMAT").start();
             AutoMaintenance.AutoMaintenance = false;

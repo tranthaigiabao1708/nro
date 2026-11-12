@@ -81,7 +81,7 @@ public class Shenron_Service {
                     shenron.activeShenron(true, Shenron_Event.DRAGON_EVENT);
                     shenron.sendBlackGokuhesShenron();
                 } else {
-                    int timeLeft = (int) ((Shenron_Event.timeResummonShenron - (System.currentTimeMillis() - player.lastTimeShenronAppeared)) / 1000);
+                    int timeLeft = Math.max(1, (int) ((Shenron_Event.timeResummonShenron - (System.currentTimeMillis() - player.lastTimeShenronAppeared)) / 1000));
                     Service.gI().sendThongBao(player, "Vui lòng đợi " + (timeLeft < 7200 ? timeLeft + " giây" : timeLeft / 60 + " phút") + " nữa");
                 }
             }

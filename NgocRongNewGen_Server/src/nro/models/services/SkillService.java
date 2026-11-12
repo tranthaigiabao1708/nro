@@ -989,6 +989,7 @@ public class SkillService {
                 isPiercing = true;
             }
         }
+        int hpDisplayBefore = plInjure.nPoint.hp;
         long hpBefore = plInjure.nPoint.getActualHp();
         int dameHit = plInjure.injured(plAtt, miss ? 0 : dameAttack, isPiercing, false);
         if (plAtt.playerSkill == null) {
@@ -1009,6 +1010,16 @@ public class SkillService {
         phanSatThuong(plAtt, plInjure, miss ? 0 : damePST);
         long actualDameDealt = miss ? 0L : Math.max(0L, Math.min((long) dameHit, Math.max(0L, hpBefore - plInjure.nPoint.getActualHp())));
         hutHPMP(plAtt, actualDameDealt, plInjure, null);
+        int dameShow = dameHit;
+        if (!plInjure.isDie() && dameShow > 0) {
+            if (dameShow == Integer.MAX_VALUE) {
+                dameShow = Integer.MAX_VALUE - 1;
+            }
+            if (dameShow >= hpDisplayBefore) {
+                int cushionHp = (int) Math.min((long) Integer.MAX_VALUE, (long) dameShow + Math.max(1, plInjure.nPoint.hp));
+                Service.gI().reload_HP_NV_Custom(plInjure, cushionHp, Math.max(cushionHp, plInjure.nPoint.hpMax));
+            }
+        }
         Message msg = null;
         try {
             msg = new Message(-60);
@@ -1018,7 +1029,7 @@ public class SkillService {
             msg.writer().writeInt((int) plInjure.id); //id ăn pem
             msg.writer().writeByte(1); //read continue
             msg.writer().writeByte(0); //type skill
-            msg.writer().writeInt(dameHit); //dame ăn
+            msg.writer().writeInt(dameShow); //dame ăn
             msg.writer().writeBoolean(plInjure.isDie()); //is die
             msg.writer().writeBoolean(plAtt.nPoint.isCrit); //crit
             Service.gI().sendMessAllPlayerInMap(plAtt, msg);
@@ -1067,7 +1078,10 @@ public class SkillService {
             }
         }
 
-        if (plAtt.charms != null && plAtt.charms.tdManhMe > System.currentTimeMillis()) {
+        boolean isBossMob = (mob instanceof nro.models.mob.BigBoss)
+                || (mob.isBigBoss() && mob.tempId != nro.models.consts.ConstMob.MAY_DO_SUC_MANH);
+
+        if (!isBossMob && plAtt.charms != null && plAtt.charms.tdManhMe > System.currentTimeMillis()) {
             dameHit += (dameHit * 150 / 100);
         }
 

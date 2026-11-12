@@ -34,19 +34,33 @@ public class Cumber extends Boss {
     @Override
     public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
-            if (!piercing && Util.isTrue(this.nPoint.tlNeDon, 1000)) {
+            if (damage <= 0) {
+                return 0;
+            }
+            int neDon = this.nPoint.tlNeDon;
+            if (plAtt != null && plAtt.nPoint != null) {
+                neDon = Math.max(0, neDon - plAtt.nPoint.tlchinhxac * 10);
+            }
+            if (!piercing && Util.isTrue(neDon, 1000)) {
                 this.chat("Xí hụt");
                 return 0;
             }
-            if (this.currentLevel != 0) {
-                damage /= 2;
+            if (plAtt != null && plAtt.idNRNM != -1) {
+                return 1;
             }
-            damage = this.nPoint.subDameInjureWithDeff(damage - Util.nextInt(100000));
+            if (this.currentLevel != 0) {
+                damage = Math.max(1L, damage / 2L);
+            }
+            if (!piercing) {
+                long reduced = damage > 100_000L ? (damage - Util.nextInt(100_000)) : damage;
+                damage = this.nPoint.subDameInjureWithDeff(Math.max(1L, reduced), plAtt);
+            }
             if (!piercing && effectSkill.isShielding) {
-                if (damage > nPoint.hpMax) {
+                if (damage > Math.max(1, nPoint.hpMax / 20)) {
                     EffectSkillService.gI().breakShield(this);
+                } else {
+                    damage = Math.max(1L, damage / 4L);
                 }
-                damage = 1;
             }
             this.nPoint.subHP(damage);
             if (isDie()) {

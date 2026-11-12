@@ -112,7 +112,8 @@ public class AutaMagetta extends Universe6Boss {
 
     public static void checkPlayerInsult(Player speaker, String text) {
         if (speaker == null || speaker.zone == null || speaker.zone.map == null
-                || speaker.zone.map.mapId != 174 || text == null || text.isEmpty()) {
+                || (speaker.zone.map.mapId != 174 && speaker.zone.map.mapId != 145)
+                || text == null || text.isEmpty()) {
             return;
         }
         String normalized = normalizeAscii(text);
@@ -136,6 +137,8 @@ public class AutaMagetta extends Universe6Boss {
                     notifyZonePlayers(speaker.zone,
                             "Auta Magetta bị tổn thương tâm lý: Giáp hợp kim sụt giảm mạnh trong 8 giây!");
                 }
+            } else if (bossPl instanceof VoDaiVt6Boss arenaBoss && !arenaBoss.isDie() && arenaBoss.isMagettaRound()) {
+                arenaBoss.triggerInsultVulnerability();
             }
         }
     }

@@ -503,8 +503,8 @@ public class Input {
                     if (sltv > Inventory.LIMIT_GOLD / unitGold) {
                         long maxSell = (Inventory.LIMIT_GOLD - player.inventory.gold) / unitGold;
                         Service.gI().sendThongBao(player, maxSell >= 1
-                                ? "Tối đa chỉ có thể bán " + maxSell + " Thỏi vàng (giới hạn 500 Tỷ vàng)"
-                                : "Vàng mang trên người đã đạt giới hạn 500 Tỷ!");
+                                ? "Tối đa chỉ có thể bán " + maxSell + " Thỏi vàng (giới hạn 2.000 Tỷ vàng)"
+                                : "Vàng mang trên người đã đạt giới hạn 2.000 Tỷ!");
                         return;
                     }
                     long cost = (long) sltv * unitGold;
@@ -516,7 +516,7 @@ public class Input {
                             if (player.inventory.gold > Inventory.LIMIT_GOLD - cost) {
                                 int slban = (int) ((Inventory.LIMIT_GOLD - player.inventory.gold) / unitGold);
                                 if (slban < 1) {
-                                    Service.gI().sendThongBao(player, "Vàng sau khi bán vượt quá giới hạn 500 Tỷ vàng");
+                                    Service.gI().sendThongBao(player, "Vàng sau khi bán vượt quá giới hạn 2.000 Tỷ vàng");
                                 } else if (slban < 2) {
                                     Service.gI().sendThongBao(player, "Bạn chỉ có thể bán thêm 1 Thỏi vàng");
                                 } else {
@@ -657,6 +657,7 @@ public class Input {
 
     public void createForm(Player pl, int typeInput, String title, SubInput... subInputs) {
         pl.idMark.setTypeInput(typeInput);
+        Service.gI().ClosePanel(pl);
         Message msg = null;
         try {
             msg = new Message(-125);

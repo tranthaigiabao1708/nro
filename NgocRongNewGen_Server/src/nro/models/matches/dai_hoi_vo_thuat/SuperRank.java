@@ -66,7 +66,7 @@ public final class SuperRank implements Runnable {
     private void start() {
         isCompeting = true;
         if (player.zone.zoneId != zone.zoneId) {
-            ChangeMapService.gI().changeZone(player, zone.zoneId);
+            ChangeMapService.gI().changeZoneBySystem(player, zone.zoneId);
         }
         threadPool.submit(this);
     }

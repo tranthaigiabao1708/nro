@@ -37,6 +37,10 @@ namespace Game1.Assets.src.f
 				case -125:
 				{
 					ChatTextField.gI().isShow = false;
+					if (GameCanvas.panel != null && GameCanvas.panel.isShow)
+					{
+						GameCanvas.panel.hideNow();
+					}
 					string text3 = msg.reader().readUTF();
 					Res.outz("titile= " + text3);
 					sbyte b21 = msg.reader().readByte();

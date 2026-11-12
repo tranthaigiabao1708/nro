@@ -359,8 +359,9 @@ public class AdminPanelServer {
         Player pl = online(p.get("name"));
         String type = p.getOrDefault("type", "");
         long amount = parseLong(p.get("amount"));
-        if (amount == 0 || Math.abs(amount) > 2_000_000_000L) {
-            return err("Số lượng phải khác 0 và không vượt quá 2.000.000.000");
+        long maxAllowed = "gold".equals(type) ? Inventory.LIMIT_GOLD : 2_000_000_000L;
+        if (amount == 0 || Math.abs(amount) > maxAllowed) {
+            return err("Số lượng phải khác 0 và không vượt quá " + ("gold".equals(type) ? "2.000.000.000.000" : "2.000.000.000"));
         }
         switch (type) {
             case "gold" -> {

@@ -32,9 +32,9 @@ public class EpSaoTrangBi {
                 int optionIdCheck = CombineSystem.getOptionDaPhaLe(daPhaLe);
                 if (CombineSystem.isPhuKienMoRong(trangBi) && !CombineSystem.isSplDaDungChoPhuKien(optionIdCheck)) {
                     CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
-                            "|7|Phụ kiện mở rộng (Đeo lưng, Thú cưỡi, Linh thú, Giáp tập luyện, Sách tuyệt kỹ) chỉ được ép Sao Pha Lê Đa Dụng:\n"
+                            "|7|Phụ kiện mở rộng (Đeo lưng, Thú cưỡi, Linh thú, Sách tuyệt kỹ) chỉ được ép Sao Pha Lê Đa Dụng:\n"
                             + "|2|- Hút HP / Hút KI\n- Phản sát thương\n- Xuyên giáp chưởng / cận chiến\n- % Vàng / % Tiềm năng sức mạnh\n"
-                            + "|1|(Ngọc Rồng & SPL % SĐ, % HP, % KI chỉ ép vào 6 Trang bị chính: Áo, Quần, Găng, Giày, Rada, Cải trang)",
+                            + "|1|(Ngọc Rồng & SPL % SĐ, % HP, % KI chỉ ép vào 7 Trang bị chính: Áo, Quần, Găng, Giày, Rada, Cải trang, Giáp tập luyện)",
                             "Đóng");
                     return;
                 }

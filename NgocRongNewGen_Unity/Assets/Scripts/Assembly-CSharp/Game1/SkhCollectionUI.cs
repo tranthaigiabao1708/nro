@@ -229,6 +229,23 @@ namespace Game1
 			}
 		}
 
+		public static bool HasStarAura(Item item)
+		{
+			if (!ModFunc.isEffectInven || item == null || item.itemOption == null)
+			{
+				return false;
+			}
+			for (int i = 0; i < item.itemOption.Length; i++)
+			{
+				ItemOption io = item.itemOption[i];
+				if (io != null && io.optionTemplate != null && io.param > 0 && (io.optionTemplate.id == 102 || io.optionTemplate.id == 72 || (io.optionTemplate.id >= 42 && io.optionTemplate.id <= 46)))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
 		public static void PaintSlotBg(mGraphics g, Item item, int x, int y, int w, int h)
 		{
 			if (item == null || w <= 4 || h <= 4)
@@ -236,6 +253,10 @@ namespace Game1
 				return;
 			}
 			if (PaintDragonBallSlotBg(g, item, x, y, w, h))
+			{
+				return;
+			}
+			if (HasStarAura(item))
 			{
 				return;
 			}

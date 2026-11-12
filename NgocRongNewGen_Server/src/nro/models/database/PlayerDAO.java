@@ -785,12 +785,16 @@ public class PlayerDAO {
                 String dataNhanThoiVang = dataArray.toJSONString();
                 dataArray.clear();
 
-                //Rương Gỗ
+                //Rương Gỗ & Rương Siêu Cấp VT6
                 dataArray.add(player.levelWoodChest);
                 dataArray.add(player.goldChallenge);
                 dataArray.add(player.rubyChallenge);
                 dataArray.add(player.lastTimeRewardWoodChest);
                 dataArray.add(player.lastTimePKDHVT23);
+                dataArray.add(player.levelSuperChest);
+                dataArray.add(player.goldSuperChallenge);
+                dataArray.add(player.gemSuperChallenge);
+                dataArray.add(player.lastTimePKVoDaiVt6);
                 String dataRuongGo = dataArray.toJSONString();
                 dataArray.clear();
 

@@ -104,7 +104,7 @@ public class NpcFactory {
             return switch (tempId) {
                 case ConstNpc.GHI_DANH ->
                     new GhiDanh(mapId, status, cx, cy, tempId, avatar);
-                case ConstNpc.TRONG_TAI ->
+                case ConstNpc.TRONG_TAI, ConstNpc.TRONG_TAI_2 ->
                     new TrongTai(mapId, status, cx, cy, tempId, avatar);
                 case ConstNpc.POTAGE ->
                     new Potage(mapId, status, cx, cy, tempId, avatar);
@@ -775,6 +775,9 @@ public class NpcFactory {
                         Item itemWoodChest = player.itemsWoodChest.get(i);
                         player.indexWoodChest--;
                         String info = "|1|" + itemWoodChest.template.name;
+                        if (itemWoodChest.quantity > 1) {
+                            info += " (x" + itemWoodChest.quantity + ")";
+                        }
                         String info2 = "\n|2|";
                         if (!itemWoodChest.itemOptions.isEmpty()) {
                             for (Item.ItemOption io : itemWoodChest.itemOptions) {

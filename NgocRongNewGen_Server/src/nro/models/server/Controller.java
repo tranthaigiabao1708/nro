@@ -427,10 +427,10 @@ public class Controller implements IMessageHandler {
                     if (player != null) {
                         try {
                             _msg.reader().readByte();
-                            int count = _msg.reader().readUnsignedByte();
+                            int count = _msg.reader().readShort();
                             int[] indexItem = new int[count];
                             for (int i = 0; i < indexItem.length; i++) {
-                                indexItem[i] = _msg.reader().readUnsignedByte();
+                                indexItem[i] = _msg.reader().readShort();
                             }
                             CombineService.gI().showInfoCombine(player, indexItem);
                         } catch (IOException e) {
@@ -855,7 +855,16 @@ public class Controller implements IMessageHandler {
                         byte type = _msg.reader().readByte();
                         short point = _msg.reader().readShort();
                         if (player != null && player.nPoint != null) {
-                            player.nPoint.increasePoint(type, point);
+                            player.nPoint.increasePoint(type, point, true);
+                        }
+                        break;
+                    case 18:
+                        byte typePet = _msg.reader().readByte();
+                        short pointPet = _msg.reader().readShort();
+                        if (player != null && player.pet != null && player.pet.nPoint != null) {
+                            player.pet.nPoint.increasePoint(typePet, pointPet, true);
+                            Service.gI().showInfoPet(player);
+                            Service.gI().point(player);
                         }
                         break;
                     case 64:

@@ -356,12 +356,12 @@ public class ConsignShopService {
                 ItemService.gI().ensureDefaultOptions(it);
                 return true;
             }
-            // Cấm ký gửi trang bị Hủy Diệt (kể cả Hủy Diệt SKH), vật phẩm khóa (Opt 30) hoặc có hạn sử dụng (Opt 93)
-            if (it.isDHD() || it.hasCannotTradeOrExpiry()) {
+            // Cấm ký gửi trang bị Hủy Diệt / Thiên Sứ thường (chưa SKH), vật phẩm khóa (Opt 30) hoặc có hạn sử dụng (Opt 93); cho phép ký gửi đồ SKH cấp cao
+            if (((it.isDHD() || it.isDTS()) && !it.isSKH()) || it.hasCannotTradeOrExpiry()) {
                 return false;
             }
             switch (it.template.id) {
-                case 454, 457, 570, 590, 921, 1819 -> {
+                case 454, 457, 570, 590, 921, 1819, 2030 -> {
                     return false;
                 }
             }
@@ -496,11 +496,12 @@ public class ConsignShopService {
             msg.writer().writeByte(5);
             for (byte i = 0; i < 5; i++) {
                 if (i == 4) {
+                    List<ConsignItem> canKiGui = getItemCanKiGui(pl);
                     msg.writer().writeUTF(ConsignShopManager.gI().tabName[i]);
                     msg.writer().writeByte(0);
-                    msg.writer().writeByte(getItemCanKiGui(pl).size());
-                    for (int j = 0; j < getItemCanKiGui(pl).size(); j++) {
-                        ConsignItem itk = getItemCanKiGui(pl).get(j);
+                    msg.writer().writeShort(canKiGui.size());
+                    for (int j = 0; j < canKiGui.size(); j++) {
+                        ConsignItem itk = canKiGui.get(j);
                         if (itk == null) {
                             continue;
                         }
@@ -538,7 +539,7 @@ public class ConsignShopService {
                     msg.writer().writeUTF(ConsignShopManager.gI().tabName[i]);
                     byte tab = (byte) (items.size() / 20 > 0 ? (items.size() / 20) + 1 : 1);
                     msg.writer().writeByte(tab); // max page
-                    msg.writer().writeByte(itemsSend.size());
+                    msg.writer().writeShort(itemsSend.size());
                     for (int j = 0; j < itemsSend.size(); j++) {
                         ConsignItem itk = itemsSend.get(j);
                         Item it = ItemService.gI().createNewItem(itk.itemId);

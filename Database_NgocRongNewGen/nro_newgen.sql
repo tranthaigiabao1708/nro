@@ -1,11 +1,11 @@
 CREATE DATABASE IF NOT EXISTS `nro_newgen` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `nro_newgen`;
 /*M!999999\- enable the sandbox mode */ 
--- MariaDB dump 10.19-11.4.4-MariaDB, for Win64 (AMD64)
+-- MariaDB dump 10.19  Distrib 10.11.11-MariaDB, for Win64 (AMD64)
 --
 -- Host: 127.0.0.1    Database: nro_newgen
 -- ------------------------------------------------------
--- Server version	11.4.4-MariaDB
+-- Server version	10.11.11-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -16,7 +16,7 @@ USE `nro_newgen`;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*M!100616 SET @OLD_NOTE_VERBOSITY=@@NOTE_VERBOSITY, NOTE_VERBOSITY=0 */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
 -- Table structure for table `account`
@@ -24,7 +24,7 @@ USE `nro_newgen`;
 
 DROP TABLE IF EXISTS `account`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `account` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(64) NOT NULL,
@@ -63,7 +63,7 @@ CREATE TABLE `account` (
   `admin` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `username` (`username`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=224 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=114 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -72,7 +72,7 @@ CREATE TABLE `account` (
 
 DROP TABLE IF EXISTS `adminpanel`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `adminpanel` (
   `domain` text DEFAULT NULL,
   `title` text DEFAULT NULL,
@@ -102,7 +102,7 @@ CREATE TABLE `adminpanel` (
 
 DROP TABLE IF EXISTS `bank_transfers`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `bank_transfers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `transaction_id` varchar(255) NOT NULL,
@@ -126,7 +126,7 @@ CREATE TABLE `bank_transfers` (
 
 DROP TABLE IF EXISTS `clan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `clan` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -152,7 +152,7 @@ CREATE TABLE `clan` (
 
 DROP TABLE IF EXISTS `comments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `comments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `post_id` int(11) NOT NULL,
@@ -176,7 +176,7 @@ CREATE TABLE `comments` (
 
 DROP TABLE IF EXISTS `giftcode`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `giftcode` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `code` text NOT NULL,
@@ -185,7 +185,7 @@ CREATE TABLE `giftcode` (
   `datecreate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `expired` timestamp NOT NULL DEFAULT '2037-12-31 17:00:00',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -194,7 +194,7 @@ CREATE TABLE `giftcode` (
 
 DROP TABLE IF EXISTS `history_transaction`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `history_transaction` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `player_1` varchar(255) NOT NULL,
@@ -207,7 +207,7 @@ CREATE TABLE `history_transaction` (
   `bag_2_after_tran` text NOT NULL,
   `time_tran` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -216,7 +216,7 @@ CREATE TABLE `history_transaction` (
 
 DROP TABLE IF EXISTS `napthe`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `napthe` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_nap` varchar(100) NOT NULL,
@@ -237,7 +237,7 @@ CREATE TABLE `napthe` (
 
 DROP TABLE IF EXISTS `payments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `payments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -266,7 +266,7 @@ CREATE TABLE `payments` (
 
 DROP TABLE IF EXISTS `phongchat`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `phongchat` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_user` int(11) DEFAULT NULL,
@@ -282,7 +282,7 @@ CREATE TABLE `phongchat` (
 
 DROP TABLE IF EXISTS `player`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `player` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `account_id` int(11) DEFAULT NULL,
@@ -357,7 +357,7 @@ CREATE TABLE `player` (
   `data_skh_collection` text NOT NULL DEFAULT '[]',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `account_id` (`account_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=222 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=112 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -366,7 +366,7 @@ CREATE TABLE `player` (
 
 DROP TABLE IF EXISTS `posts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `posts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `tieude` varchar(75) NOT NULL,
@@ -389,7 +389,7 @@ CREATE TABLE `posts` (
 
 DROP TABLE IF EXISTS `shop_ky_gui`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `shop_ky_gui` (
   `id` int(11) NOT NULL,
   `player_id` int(11) NOT NULL,
@@ -411,7 +411,7 @@ CREATE TABLE `shop_ky_gui` (
 
 DROP TABLE IF EXISTS `super_rank`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `super_rank` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `player_id` int(11) NOT NULL,
@@ -425,7 +425,7 @@ CREATE TABLE `super_rank` (
   `history` text NOT NULL,
   `info` text NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=222 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=112 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -435,7 +435,7 @@ CREATE TABLE `super_rank` (
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed
 
@@ -444,11 +444,11 @@ INSERT IGNORE INTO `account` (`id`, `username`, `password`, `is_admin`, `active`
 INSERT IGNORE INTO `giftcode` (`id`, `code`, `count_left`, `detail`, `datecreate`, `expired`) VALUES (1, 'tanthu', -1, '[{"id":457,"quantity":20,"options":[{"id":30,"param":0}]},{"id":1635,"quantity":5,"options":[{"id":30,"param":0}]},{"id":1787,"quantity":2,"options":[{"id":30,"param":0}]}]', '2026-01-01 00:00:00', '2035-12-31 23:59:59');
 
 /*M!999999\- enable the sandbox mode */ 
--- MariaDB dump 10.19-11.4.4-MariaDB, for Win64 (AMD64)
+-- MariaDB dump 10.19  Distrib 10.11.11-MariaDB, for Win64 (AMD64)
 --
 -- Host: 127.0.0.1    Database: nro_newgen
 -- ------------------------------------------------------
--- Server version	11.4.4-MariaDB
+-- Server version	10.11.11-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -459,7 +459,7 @@ INSERT IGNORE INTO `giftcode` (`id`, `code`, `count_left`, `detail`, `datecreate
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*M!100616 SET @OLD_NOTE_VERBOSITY=@@NOTE_VERBOSITY, NOTE_VERBOSITY=0 */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
 -- Table structure for table `achievement_template`
@@ -467,7 +467,7 @@ INSERT IGNORE INTO `giftcode` (`id`, `code`, `count_left`, `detail`, `datecreate
 
 DROP TABLE IF EXISTS `achievement_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `achievement_template` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `info1` text NOT NULL,
@@ -519,7 +519,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `array_head_2_frames`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `array_head_2_frames` (
   `id` int(11) NOT NULL,
   `data` text NOT NULL,
@@ -595,7 +595,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `bg_item_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `bg_item_template` (
   `id` int(11) NOT NULL,
   `image_id` int(11) NOT NULL,
@@ -1219,7 +1219,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `clan_task_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `clan_task_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -1307,7 +1307,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `data_badges`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `data_badges` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `idEffect` int(11) NOT NULL,
@@ -1353,7 +1353,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `flag_bag`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `flag_bag` (
   `id` int(11) NOT NULL,
   `icon_data` varchar(1000) NOT NULL,
@@ -1540,7 +1540,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `head_avatar`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `head_avatar` (
   `head_id` int(11) NOT NULL,
   `avatar_id` int(11) NOT NULL,
@@ -2059,7 +2059,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `img_by_name`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `img_by_name` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `NAME` varchar(55) NOT NULL,
@@ -2243,7 +2243,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `intrinsic`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `intrinsic` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -2264,7 +2264,7 @@ LOCK TABLES `intrinsic` WRITE;
 /*!40000 ALTER TABLE `intrinsic` DISABLE KEYS */;
 INSERT INTO `intrinsic` VALUES
 (0,'Chưa kích hoạt nội tại\nBấm vào để xem chi tiết',0,0,0,0,5223,3),
-(1,'Chiêu đấm Dragon +p0% đến p1% sát thương',5,25,0,0,569,0),
+(1,'Đấm Kaioken +p0% đến p1% sát thương',5,25,0,0,569,0),
 (2,'Chiêu Kamejoko +p0% đến p1% sát thương',5,25,0,0,569,0),
 (3,'Thái Dương Hạ San +p0% đến p1% tốc độ -p2% đến p3% KI',10,35,10,35,5222,0),
 (4,'Quả cầu kênh khi +p0% đến p1% tốc độ hồi phục',15,55,0,0,5222,0),
@@ -2290,7 +2290,7 @@ INSERT INTO `intrinsic` VALUES
 (24,'Sức mạnh và tiềm năng khi đánh quái +p0% đến p1%',5,35,0,0,3783,3),
 (25,'Chí mạng liên tục khi HP dưới p0% đến p1%',20,50,0,0,716,3),
 (0,'Chưa kích hoạt nội tại\nBấm vào để xem chi tiết',0,0,0,0,5223,3),
-(1,'Chiêu đấm Dragon +p0% đến p1% sát thương',5,25,0,0,569,0),
+(1,'Đấm Kaioken +p0% đến p1% sát thương',5,25,0,0,569,0),
 (2,'Chiêu Kamejoko +p0% đến p1% sát thương',5,25,0,0,569,0),
 (3,'Thái Dương Hạ San +p0% đến p1% tốc độ -p2% đến p3% KI',10,35,10,35,5222,0),
 (4,'Quả cầu kênh khi +p0% đến p1% tốc độ hồi phục',15,55,0,0,5222,0),
@@ -2316,7 +2316,7 @@ INSERT INTO `intrinsic` VALUES
 (24,'Sức mạnh và tiềm năng khi đánh quái +p0% đến p1%',5,35,0,0,3783,3),
 (25,'Chí mạng liên tục khi HP dưới p0% đến p1%',20,50,0,0,716,3),
 (0,'Chưa kích hoạt nội tại\nBấm vào để xem chi tiết',0,0,0,0,5223,3),
-(1,'Chiêu đấm Dragon +p0% đến p1% sát thương',5,25,0,0,569,0),
+(1,'Đấm Kaioken +p0% đến p1% sát thương',5,25,0,0,569,0),
 (2,'Chiêu Kamejoko +p0% đến p1% sát thương',5,25,0,0,569,0),
 (3,'Thái Dương Hạ San +p0% đến p1% tốc độ -p2% đến p3% KI',10,35,10,35,5222,0),
 (4,'Quả cầu kênh khi +p0% đến p1% tốc độ hồi phục',15,55,0,0,5222,0),
@@ -2342,7 +2342,7 @@ INSERT INTO `intrinsic` VALUES
 (24,'Sức mạnh và tiềm năng khi đánh quái +p0% đến p1%',5,35,0,0,3783,3),
 (25,'Chí mạng liên tục khi HP dưới p0% đến p1%',20,50,0,0,716,3),
 (0,'Chưa kích hoạt nội tại\nBấm vào để xem chi tiết',0,0,0,0,5223,3),
-(1,'Chiêu đấm Dragon +p0% đến p1% sát thương',5,25,0,0,569,0),
+(1,'Đấm Kaioken +p0% đến p1% sát thương',5,25,0,0,569,0),
 (2,'Chiêu Kamejoko +p0% đến p1% sát thương',5,25,0,0,569,0),
 (3,'Thái Dương Hạ San +p0% đến p1% tốc độ -p2% đến p3% KI',10,35,10,35,5222,0),
 (4,'Quả cầu kênh khi +p0% đến p1% tốc độ hồi phục',15,55,0,0,5222,0),
@@ -2368,7 +2368,7 @@ INSERT INTO `intrinsic` VALUES
 (24,'Sức mạnh và tiềm năng khi đánh quái +p0% đến p1%',5,35,0,0,3783,3),
 (25,'Chí mạng liên tục khi HP dưới p0% đến p1%',20,50,0,0,716,3),
 (0,'Chưa kích hoạt nội tại\nBấm vào để xem chi tiết',0,0,0,0,5223,3),
-(1,'Chiêu đấm Dragon +p0% đến p1% sát thương',5,25,0,0,569,0),
+(1,'Đấm Kaioken +p0% đến p1% sát thương',5,25,0,0,569,0),
 (2,'Chiêu Kamejoko +p0% đến p1% sát thương',5,25,0,0,569,0),
 (3,'Thái Dương Hạ San +p0% đến p1% tốc độ -p2% đến p3% KI',10,35,10,35,5222,0),
 (4,'Quả cầu kênh khi +p0% đến p1% tốc độ hồi phục',15,55,0,0,5222,0),
@@ -2394,7 +2394,7 @@ INSERT INTO `intrinsic` VALUES
 (24,'Sức mạnh và tiềm năng khi đánh quái +p0% đến p1%',5,35,0,0,3783,3),
 (25,'Chí mạng liên tục khi HP dưới p0% đến p1%',20,50,0,0,716,3),
 (0,'Chưa kích hoạt nội tại\nBấm vào để xem chi tiết',0,0,0,0,5223,3),
-(1,'Chiêu đấm Dragon +p0% đến p1% sát thương',5,25,0,0,569,0),
+(1,'Đấm Kaioken +p0% đến p1% sát thương',5,25,0,0,569,0),
 (2,'Chiêu Kamejoko +p0% đến p1% sát thương',5,25,0,0,569,0),
 (3,'Thái Dương Hạ San +p0% đến p1% tốc độ -p2% đến p3% KI',10,35,10,35,5222,0),
 (4,'Quả cầu kênh khi +p0% đến p1% tốc độ hồi phục',15,55,0,0,5222,0),
@@ -2420,7 +2420,7 @@ INSERT INTO `intrinsic` VALUES
 (24,'Sức mạnh và tiềm năng khi đánh quái +p0% đến p1%',5,35,0,0,3783,3),
 (25,'Chí mạng liên tục khi HP dưới p0% đến p1%',20,50,0,0,716,3),
 (0,'Chưa kích hoạt nội tại\nBấm vào để xem chi tiết',0,0,0,0,5223,3),
-(1,'Chiêu đấm Dragon +p0% đến p1% sát thương',5,25,0,0,569,0),
+(1,'Đấm Kaioken +p0% đến p1% sát thương',5,25,0,0,569,0),
 (2,'Chiêu Kamejoko +p0% đến p1% sát thương',5,25,0,0,569,0),
 (3,'Thái Dương Hạ San +p0% đến p1% tốc độ -p2% đến p3% KI',10,35,10,35,5222,0),
 (4,'Quả cầu kênh khi +p0% đến p1% tốc độ hồi phục',15,55,0,0,5222,0),
@@ -2446,7 +2446,7 @@ INSERT INTO `intrinsic` VALUES
 (24,'Sức mạnh và tiềm năng khi đánh quái +p0% đến p1%',5,35,0,0,3783,3),
 (25,'Chí mạng liên tục khi HP dưới p0% đến p1%',20,50,0,0,716,3),
 (0,'Chưa kích hoạt nội tại\nBấm vào để xem chi tiết',0,0,0,0,5223,3),
-(1,'Chiêu đấm Dragon +p0% đến p1% sát thương',5,25,0,0,569,0),
+(1,'Đấm Kaioken +p0% đến p1% sát thương',5,25,0,0,569,0),
 (2,'Chiêu Kamejoko +p0% đến p1% sát thương',5,25,0,0,569,0),
 (3,'Thái Dương Hạ San +p0% đến p1% tốc độ -p2% đến p3% KI',10,35,10,35,5222,0),
 (4,'Quả cầu kênh khi +p0% đến p1% tốc độ hồi phục',15,55,0,0,5222,0),
@@ -2480,7 +2480,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `item_option_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `item_option_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -2636,7 +2636,7 @@ INSERT INTO `item_option_template` VALUES
 (138,'$(5 món +80% HP)'),
 (139,'$(5 món x2 thời gian chói mắt)'),
 (140,'$(5 món +100% sát thương Quả Cầu Kênh Khi)'),
-(141,'$(5 món +100% sát thương Kamejoko)'),
+(141,'$(5 món +100% sát thương Kamejoko, không áp dụng cho Super Kame)'),
 (142,'$(5 món +100% sát thương Masenkosappo)'),
 (143,'$(5 món +100% sát thương Liên Hoàn)'),
 (144,'$(5 món +100% sát thương và bất tử đệ từ Đẻ Trứng)'),
@@ -2745,7 +2745,7 @@ INSERT INTO `item_option_template` VALUES
 (247,'$[4] Giảm nhẹ hao HP,KI chiêu Kaioken'),
 (248,'$[5] Tăng mạnh sát thương và giảm mạnh hao HP,KI chiêu Kaioken'),
 (249,'Tăng nhẹ tỉ lệ rơi Đồ Thần Linh tại Cold'),
-(250,'# Kilis'),
+(250,'Tiến độ: #/3000 Kilis'),
 (251,'#% rơi 100 Thỏi vàng khi tiêu diệt Boss'),
 (252,'+#% tỉ lệ rơi Đồ Thần Linh từ Boss'),
 (253,'Tăng mạnh tỉ lệ rơi Ngọc Rồng'),
@@ -2759,7 +2759,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `item_shop`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `item_shop` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `tab_id` int(11) NOT NULL,
@@ -3572,11 +3572,6 @@ INSERT INTO `item_shop` VALUES
 (1066,70,2022,1,1,3,120,11475,'2026-11-12 07:58:16'),
 (1070,71,2024,1,1,3,2,11475,'2026-11-12 09:26:36'),
 (1071,71,2025,1,1,3,5,11475,'2026-11-12 09:26:36'),
-(1072,71,1078,1,1,3,3,16187,'2026-11-12 09:26:36'),
-(1073,71,1083,1,1,3,3,16187,'2026-11-12 09:26:36'),
-(1074,71,1084,1,1,3,2,16187,'2026-11-12 09:26:36'),
-(1075,71,1085,1,1,3,2,16187,'2026-11-12 09:26:36'),
-(1076,71,1086,1,1,3,2,16187,'2026-11-12 09:26:36'),
 (1077,72,2026,1,1,3,60,16187,'2026-11-12 09:26:36'),
 (1078,72,2027,1,1,3,90,16187,'2026-11-12 09:26:36'),
 (1079,72,2028,1,1,3,75,16187,'2026-11-12 09:26:36'),
@@ -3590,7 +3585,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `item_shop_option`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `item_shop_option` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `item_shop_id` int(11) NOT NULL,
@@ -4690,6 +4685,10 @@ INSERT INTO `item_shop_option` VALUES
 (1269,784,0,9000),
 (1270,788,23,92),
 (1271,785,14,16),
+(1272,774,21,20),
+(1273,779,21,20),
+(1274,784,21,20),
+(1275,572,21,20),
 (1384,820,30,1),
 (1385,821,30,1),
 (1386,822,30,1),
@@ -4945,11 +4944,6 @@ INSERT INTO `item_shop_option` VALUES
 (2081,1044,67,0),
 (2082,1070,73,0),
 (2083,1071,73,0),
-(2084,1072,73,0),
-(2085,1073,73,0),
-(2086,1074,73,0),
-(2087,1075,73,0),
-(2088,1076,73,0),
 (2089,1077,0,18000),
 (2090,1077,50,40),
 (2091,1077,77,28),
@@ -4986,7 +4980,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `item_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `item_template` (
   `id` int(11) NOT NULL,
   `TYPE` int(11) NOT NULL,
@@ -5028,9 +5022,9 @@ INSERT INTO `item_template` VALUES
 (11,1,2,'Quần giáp sắt','Giúp tăng HP',3,399,8,0,22000,8000,0,-1,-1,-1),
 (12,4,3,'Rada cấp 1','Giúp tăng Chí Mạng',1,1089,-1,0,1300,600,0,-1,-1,-1),
 (13,6,3,'Đậu thần cấp 1','Thức ăn phục hồi HP và KI',1,241,-1,1,1,0,0,-1,-1,-1),
-(14,12,3,'Ngọc Rồng 1 sao','+9% Sức đánh (Chỉ ép vào 6 Trang bị chính: Áo, Quần, Găng, Giày, Rada, Cải trang). Ước Rồng Thần 1 sao nhận +20% May mắn',0,419,-1,1,0,0,0,-1,-1,-1),
-(15,12,3,'Ngọc Rồng 2 sao','+6% Sức đánh (Chỉ ép vào 6 Trang bị chính: Áo, Quần, Găng, Giày, Rada, Cải trang). Ước Rồng Thần 1 sao nhận +20% May mắn',0,420,-1,1,0,0,0,-1,-1,-1),
-(16,12,3,'Ngọc Rồng 3 sao','+3% Sức đánh (Chỉ ép vào 6 Trang bị chính: Áo, Quần, Găng, Giày, Rada, Cải trang). Ước Rồng Thần 1 sao nhận +20% May mắn',0,421,-1,1,0,0,0,-1,-1,-1),
+(14,12,3,'Ngọc Rồng 1 sao','+5% Sức đánh (Chỉ ép vào 7 Trang bị chính: Áo, Quần, Găng, Giày, Rada, Cải trang, Giáp tập luyện). Ước Rồng Thần 1 sao nhận +20% May mắn',0,419,-1,1,0,0,0,-1,-1,-1),
+(15,12,3,'Ngọc Rồng 2 sao','+4% Sức đánh (Chỉ ép vào 7 Trang bị chính: Áo, Quần, Găng, Giày, Rada, Cải trang, Giáp tập luyện). Ước Rồng Thần 1 sao nhận +20% May mắn',0,420,-1,1,0,0,0,-1,-1,-1),
+(16,12,3,'Ngọc Rồng 3 sao','+3% Sức đánh (Chỉ ép vào 7 Trang bị chính: Áo, Quần, Găng, Giày, Rada, Cải trang, Giáp tập luyện). Ước Rồng Thần 1 sao nhận +20% May mắn',0,421,-1,1,0,0,0,-1,-1,-1),
 (17,12,3,'Ngọc Rồng 4 sao','Ước bộ 1s có option +20% may mắn',0,422,-1,1,0,0,0,-1,-1,-1),
 (18,12,3,'Ngọc Rồng 5 sao','Ước bộ 1s có option +20% may mắn',0,423,-1,1,0,0,0,-1,-1,-1),
 (19,12,3,'Ngọc Rồng 6 sao','Dùng ước Rồng Thần. Gom đủ x20 viên + 1 Đá Hematite gặp Bà Hạt Mít tinh luyện thành Sao Pha Lê Khí Cấp 2 (+8% KI)',0,424,-1,1,0,0,0,-1,-1,-1),
@@ -6062,21 +6056,21 @@ INSERT INTO `item_template` VALUES
 (1045,27,3,'Đuôi khỉ','VPSK',1,5072,-1,0,0,0,0,-1,-1,-1),
 (1046,27,3,'Pet Khỉ Bong Bóng','VPSK',1,9978,-1,0,0,0,0,-1,-1,-1),
 (1047,11,3,'Lồng đèn lon','VPSK',1,9972,80,0,0,0,0,-1,-1,-1),
-(1048,0,0,'Áo Thiên Sứ','Giúp giảm sát thương',15,10165,1105,0,0,0,0,-1,-1,-1),
-(1049,0,1,'Áo Thiên Sứ','Giúp giảm sát thương',15,10185,1115,0,0,0,0,-1,-1,-1),
-(1050,0,2,'Áo Thiên Sứ','Giúp giảm sát thương',15,10175,1110,0,0,0,0,-1,-1,-1),
-(1051,1,0,'Quần Thiên Sứ','Giúp bạn tăng HP',15,10166,1106,0,0,0,0,-1,-1,-1),
-(1052,1,1,'Quần Thiên Sứ','Giúp bạn tăng HP',15,10186,1116,0,0,0,0,-1,-1,-1),
-(1053,1,2,'Quần Thiên Sứ','Giúp bạn tăng HP',15,10176,1111,0,0,0,0,-1,-1,-1),
-(1054,2,0,'Găng Thiên Sứ','Giúp bạn tăng sức đánh',15,10168,-1,0,0,0,0,-1,-1,-1),
-(1055,2,1,'Găng Thiên Sứ','Giúp bạn tăng sức đánh',15,10188,-1,0,0,0,0,-1,-1,-1),
-(1056,2,2,'Găng Thiên Sứ','Giúp bạn tăng sức đánh',15,10178,-1,0,0,0,0,-1,-1,-1),
-(1057,3,0,'Giầy Thiên Sứ','Giúp bạn tăng MP',15,10167,-1,0,0,0,0,-1,-1,-1),
-(1058,3,1,'Giầy Thiên Sứ','Giúp bạn tăng MP',15,10187,-1,0,0,0,0,-1,-1,-1),
-(1059,3,2,'Giầy Thiên Sứ','Giúp bạn tăng MP',15,10177,-1,0,0,0,0,-1,-1,-1),
-(1060,4,0,'Nhẫn Thiên Sứ','Giúp tăng Chí Mạng',15,10169,-1,0,0,0,0,-1,-1,-1),
-(1061,4,1,'Nhẫn Thiên Sứ','Giúp tăng Chí Mạng',15,10189,-1,0,0,0,0,-1,-1,-1),
-(1062,4,2,'Nhẫn Thiên Sứ','Giúp tăng Chí Mạng',15,10179,-1,0,0,0,0,-1,-1,-1),
+(1048,0,0,'Áo Thiên Sứ','Giúp giảm sát thương (Mặc đủ 5 món Thiên Sứ: +25% xuyên giáp)',15,10165,1105,0,0,0,0,-1,-1,-1),
+(1049,0,1,'Áo Thiên Sứ','Giúp giảm sát thương (Mặc đủ 5 món Thiên Sứ: +25% xuyên giáp)',15,10185,1115,0,0,0,0,-1,-1,-1),
+(1050,0,2,'Áo Thiên Sứ','Giúp giảm sát thương (Mặc đủ 5 món Thiên Sứ: +25% xuyên giáp)',15,10175,1110,0,0,0,0,-1,-1,-1),
+(1051,1,0,'Quần Thiên Sứ','Giúp bạn tăng HP (Mặc đủ 5 món Thiên Sứ: +25% xuyên giáp)',15,10166,1106,0,0,0,0,-1,-1,-1),
+(1052,1,1,'Quần Thiên Sứ','Giúp bạn tăng HP (Mặc đủ 5 món Thiên Sứ: +25% xuyên giáp)',15,10186,1116,0,0,0,0,-1,-1,-1),
+(1053,1,2,'Quần Thiên Sứ','Giúp bạn tăng HP (Mặc đủ 5 món Thiên Sứ: +25% xuyên giáp)',15,10176,1111,0,0,0,0,-1,-1,-1),
+(1054,2,0,'Găng Thiên Sứ','Giúp bạn tăng sức đánh (Mặc đủ 5 món Thiên Sứ: +25% xuyên giáp)',15,10168,-1,0,0,0,0,-1,-1,-1),
+(1055,2,1,'Găng Thiên Sứ','Giúp bạn tăng sức đánh (Mặc đủ 5 món Thiên Sứ: +25% xuyên giáp)',15,10188,-1,0,0,0,0,-1,-1,-1),
+(1056,2,2,'Găng Thiên Sứ','Giúp bạn tăng sức đánh (Mặc đủ 5 món Thiên Sứ: +25% xuyên giáp)',15,10178,-1,0,0,0,0,-1,-1,-1),
+(1057,3,0,'Giầy Thiên Sứ','Giúp bạn tăng MP (Mặc đủ 5 món Thiên Sứ: +25% xuyên giáp)',15,10167,-1,0,0,0,0,-1,-1,-1),
+(1058,3,1,'Giầy Thiên Sứ','Giúp bạn tăng MP (Mặc đủ 5 món Thiên Sứ: +25% xuyên giáp)',15,10187,-1,0,0,0,0,-1,-1,-1),
+(1059,3,2,'Giầy Thiên Sứ','Giúp bạn tăng MP (Mặc đủ 5 món Thiên Sứ: +25% xuyên giáp)',15,10177,-1,0,0,0,0,-1,-1,-1),
+(1060,4,0,'Nhẫn Thiên Sứ','Giúp tăng Chí Mạng (Mặc đủ 5 món Thiên Sứ: +25% xuyên giáp)',15,10169,-1,0,0,0,0,-1,-1,-1),
+(1061,4,1,'Nhẫn Thiên Sứ','Giúp tăng Chí Mạng (Mặc đủ 5 món Thiên Sứ: +25% xuyên giáp)',15,10189,-1,0,0,0,0,-1,-1,-1),
+(1062,4,2,'Nhẫn Thiên Sứ','Giúp tăng Chí Mạng (Mặc đủ 5 món Thiên Sứ: +25% xuyên giáp)',15,10179,-1,0,0,0,0,-1,-1,-1),
 (1063,5,0,'Avatar Thiên Sứ','Giúp giảm sát thương',15,9979,1104,0,0,0,0,1104,-1,-1),
 (1064,5,1,'Avatar Thiên Sứ','Giúp giảm sát thương',15,10099,1114,0,0,0,0,1114,-1,-1),
 (1065,5,2,'Avatar Thiên Sứ','Giúp giảm sát thương',15,10039,1109,0,0,0,0,1109,-1,-1),
@@ -6809,7 +6803,7 @@ INSERT INTO `item_template` VALUES
 (1792,33,3,'Mảnh khỉ Oorazu 1','Oorazu là một sinh vật khổng lồ, đó chính là hình dáng của người xayda khi ',0,14248,0,1,0,0,0,-1,-1,-1),
 (1793,33,3,'Mảnh khỉ Oorazu 2','Oorazu là một sinh vật khổng lồ, đó chính là hình dáng của người xayda khi ',0,14249,0,1,0,0,0,-1,-1,-1),
 (1794,75,3,'Con dấu','Vật phẩm tăng tỷ lệ đổi sách tuyệt kỹ',0,15412,0,1,0,0,0,-1,-1,-1),
-(1795,75,3,'Bình hút năng lượng','Tích đủ 3000 Kilis tại map Cađic để nâng đệ Mabư Vip (40 tỷ SM) lên Uub, Kid Beer hoặc Kid Jiren',0,15359,0,0,0,0,0,-1,-1,-1),
+(1795,75,3,'Bình hút năng lượng','Mang bình gặp NPC Ôsin tại Đại hội võ thuật -> chọn Bình hút năng lượng để vào Sa mạc hoang vu đánh quái tích đủ 3000 Kilis, dùng nâng Đệ Mabư Vip (40 tỷ SM) lên Uub, Kid Beer hoặc Kid Jiren',0,15359,0,0,0,0,0,-1,-1,-1),
 (1796,5,3,'Đệ tử vegeta','Đệ tử',0,18602,1743,0,0,0,0,1743,1744,1745),
 (1797,5,3,'Cải trang Picolo','Vật phẩm sự kiện',0,15232,1746,0,0,0,0,1746,1747,1748),
 (1798,75,3,'Tayaki','Vật phẩm sự kiện',0,15416,0,1,0,0,0,-1,-1,-1),
@@ -7043,7 +7037,8 @@ INSERT INTO `item_template` VALUES
 (2026,5,3,'CT Sát Thủ Hit VIP','Cải trang Át Chủ Bài Vũ Trụ 6 Sát Thủ Hit huyền thoại',0,4969,520,0,0,0,0,520,521,522),
 (2027,5,3,'CT Thần Hủy Diệt Champa VIP','Cải trang Thần Hủy Diệt Vũ Trụ 6 Champa uy áp vạn giới',0,4879,511,0,0,0,0,511,512,513),
 (2028,35,3,'Hào Quang Quán Quân Vũ Trụ','Hào quang rực rỡ vinh danh Quán Quân Giải Đấu Liên Vũ Trụ 6 & 7',0,32148,24,0,0,0,0,-1,-1,-1),
-(2029,27,3,'Ấn Triệu Tập Zeno','Bảo vật vĩnh viễn của Đấng Toàn Năng Zeno mở cổng sang chiến trường Phase 3: Đại chiến Bang hội tranh đoạt Ngọc Rồng Siêu Cấp để triệu hồi Rồng Thần ước nguyện!',0,15415,-1,0,0,0,0,-1,-1,-1);
+(2029,27,3,'Ấn Triệu Tập Zeno','Bảo vật vĩnh viễn của Đấng Toàn Năng Zeno mở cổng sang chiến trường Phase 3: Đại chiến Bang hội tranh đoạt Ngọc Rồng Siêu Cấp để triệu hồi Rồng Thần ước nguyện!',0,15415,-1,0,0,0,0,-1,-1,-1),
+(2030,27,3,'Rương Siêu Cấp','Chiến lợi phẩm Giải Đấu Liên Vũ Trụ 6 & 7. Cấp rương càng cao (1-9), vật phẩm bên trong càng quý giá!',0,12846,-1,0,0,0,0,-1,-1,-1);
 /*!40000 ALTER TABLE `item_template` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -7053,7 +7048,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `map_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `map_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(55) NOT NULL,
@@ -7225,7 +7220,7 @@ INSERT INTO `map_template` VALUES
 (142,'Con đường rắn độc',10,15,'[0,0,5,14,0]',6,0,5,14,0,'[\"[\"Con đường rắn độc\",0,312,24,336,0,0,141,1140,336]\",\"[\"Con đường rắn độc\",1176,312,1200,336,0,0,143,60,336]\"]','[\"[26,8,1150,204,336]\",\"[26,8,1150,444,336]\",\"[26,8,1150,684,336]\",\"[26,8,1150,924,336]\",\"[25,8,1150,324,192]\",\"[25,8,10350,588,216]\",\"[25,8,1150,828,192]\"]','[]',0),
 (143,'Con đường rắn độc',10,15,'[0,0,5,14,0]',6,0,5,14,0,'[\"[\"Con đường rắn độc\",0,312,24,336,0,0,142,1140,336]\",\"[\"Hoang mạc\",1176,312,1200,336,0,0,-1,0,0]\"]','[\"[49,11,1000,204,336]\",\"[49,11,1000,444,336]\",\"[49,11,1000,660,336]\",\"[49,11,1000,924,336]\",\"[50,12,1000,300,216]\",\"[50,12,9000,540,168]\",\"[50,12,1000,804,216]\"]','[]',0),
 (144,'Hoang mạc',10,15,'[0,2,2,12,11]',6,2,2,12,11,'[[\"Con đường rắn độc\",0,240,24,264,0,0,143,1139,0]\"]','[]','[]',0),
-(145,'Võ Đài Siêu Cấp VT6 - VT7',10,15,'[0,2,0,13,10]',0,2,0,13,10,'[]','[[72,30,2000000000,192,504],[72,30,2000000000,312,504],[72,30,2000000000,456,504],[72,30,2000000000,1224,456],[72,30,2000000000,1368,504],[72,30,2000000000,1512,504]]','[[59,840,504],[64,744,168]]',0),
+(145,'Võ Đài Siêu Cấp VT6 - VT7',10,15,'[0,2,0,13,10]',0,2,0,13,10,'[]','[]','[[59,840,504],[64,744,168]]',0),
 (146,'Tây Karin',10,15,'[0,0,0,4,3]',8,0,0,4,3,'[]','[\"[6,3,600730,300,336]\",\"[25,8,1501827,650,200]\",\"[26,8,901096,1000,336]\"]','[]',0),
 (147,'Sa mạc',10,15,'[0,0,0,3,2]',7,0,0,3,2,'[[\"Vùng đất băng giá\",1512,768,1536,792,0,0,152,1575,168],[\"Thành phố Santa\",0,768,24,792,0,0,149,1475,336]]','[[76,10,84800,1308,432],[73,9,53000,348,504],[73,9,53000,492,792],[73,9,53000,132,792],[73,9,53000,996,792],[73,9,636000,1428,792],[75,9,63600,540,408],[75,9,63600,348,432],[75,9,63600,180,672],[75,9,63600,876,240],[75,9,763200,996,672],[75,9,63600,1212,744],[75,9,63600,1260,384],[75,9,63600,1380,384],[76,10,84800,708,240],[73,9,636000,660,240],[73,9,53000,852,360]]','[]',0),
 (148,'Lâu đài Lychee',10,15,'[0,2,100,15,0]',7,2,0,15,0,'[[\"Hành tinh bóng tối\",0,456,24,500,0,0,151,1600,288]]','[[73,9,63123,708,480],[73,9,63123,444,480],[73,9,63123,180,480],[74,9,69435,300,480],[74,9,69435,588,480],[74,9,833220,852,480],[75,9,75747,228,384],[75,9,75747,396,384],[75,9,75747,564,384],[75,9,75747,732,384],[75,9,908964,852,384]]','[]',0),
@@ -7264,7 +7259,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `mob_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `mob_template` (
   `id` int(11) NOT NULL,
   `TYPE` int(11) NOT NULL,
@@ -7414,7 +7409,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `notify`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `notify` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
@@ -7438,7 +7433,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `npc_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `npc_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(50) NOT NULL,
@@ -7559,7 +7554,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `part`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `part` (
   `id` int(11) NOT NULL,
   `TYPE` int(11) NOT NULL,
@@ -9688,7 +9683,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `radar`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `radar` (
   `id` int(11) NOT NULL,
   `iconId` int(11) DEFAULT 0,
@@ -9743,7 +9738,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `settings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `settings` (
   `Title` varchar(100) DEFAULT 'Nguyen Duc Kien',
   `Description` longtext DEFAULT NULL,
@@ -9781,7 +9776,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `shop`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `shop` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `npc_id` int(11) NOT NULL,
@@ -9835,7 +9830,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `side_task_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `side_task_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -9923,7 +9918,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `skill_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `skill_template` (
   `nclass_id` int(11) NOT NULL,
   `id` int(11) NOT NULL,
@@ -9982,7 +9977,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tab_shop`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tab_shop` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `shop_id` int(11) NOT NULL,
@@ -10064,7 +10059,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `task_badges_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_badges_template` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `NAME` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
@@ -10108,7 +10103,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `task_main_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_main_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -10163,7 +10158,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `task_sub_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_sub_template` (
   `task_main_id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -10319,6 +10314,6 @@ UNLOCK TABLES;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed

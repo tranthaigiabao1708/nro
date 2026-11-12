@@ -41,6 +41,8 @@ public class ChangeMapService {
     public static final byte TELEPORT_YARDRAT = 2;
     public static final byte TENNIS_SPACE_SHIP = 3;
 
+    public static final long TIME_WAIT_CHANGE_ZONE_MS = 4000L;
+
     private static ChangeMapService instance;
 
     private ChangeMapService() {
@@ -156,53 +158,91 @@ public class ChangeMapService {
         }
     }
 
+    public void changeZoneBySystem(Player pl, int zoneId) {
+        if (pl == null || pl.zone == null || pl.zone.map == null) {
+            return;
+        }
+        Map map = pl.zone.map;
+        if (zoneId >= 0 && zoneId < map.zones.size()) {
+            Zone zoneJoin = map.zones.get(zoneId);
+            if (zoneJoin != null) {
+                changeMap(pl, zoneJoin, -1, -1, pl.location.x, pl.location.y, NON_SPACE_SHIP);
+            }
+        }
+    }
+
     /**
-     * Chuyển khu
+     * Chuyển khu (thời gian chờ chính xác 4 giây, chống spam đổi khu liên tiếp)
      *
      * @param pl
      * @param zoneId
      */
     public void changeZone(Player pl, int zoneId) {
-        if (pl.zone == null) {
-            NpcService.gI().createTutorial(pl, -1, "Không thể đến khu vực này");
+        if (pl == null || pl.zone == null || pl.zone.map == null) {
+            if (pl != null) {
+                NpcService.gI().createTutorial(pl, -1, "Không thể đến khu vực này");
+            }
             return;
         }
-        if (!pl.isAdmin() && !pl.isBoss) {
-            if (MapService.gI().isMapOffline(pl.zone.map.mapId)) {
-                NpcService.gI().createTutorial(pl, -1, "Không thể đến khu vực này");
-                return;
-            }
-            if (MapService.gI().isMapPhoBan(pl.zone.map.mapId)) {
-                NpcService.gI().createTutorial(pl, -1, "Không thể đến khu vực này");
-                return;
-            }
-            if (MapService.gI().isMapMaBu(pl.zone.map.mapId)) {
-                NpcService.gI().createTutorial(pl, -1, "Không thể đến khu vực này");
-                return;
-            }
-            if (MapService.gI().isMapMabu2H(pl.zone.map.mapId)) {
-                NpcService.gI().createTutorial(pl, -1, "Không thể đến khu vực này");
-                return;
-            }
-        }
-        if (pl.isAdmin() || pl.isBoss || Util.canDoWithTime(pl.idMark.getLastTimeChangeZone(), 5000)) {
-            pl.idMark.setLastTimeChangeZone(System.currentTimeMillis());
-            Map map = pl.zone.map;
-            if (zoneId >= 0 && zoneId <= map.zones.size() - 1) {
-                Zone zoneJoin = map.zones.get(zoneId);
-                if (zoneJoin != null && (zoneJoin.getNumOfPlayers() >= zoneJoin.maxPlayer && !pl.isAdmin() && !pl.isBoss)) {
-                    NpcService.gI().createTutorial(pl, -1, "Khu vực này đã đầy");
+        synchronized (pl) {
+            if (!pl.isAdmin() && !pl.isBoss) {
+                int mapId = pl.zone.map.mapId;
+                if (MapService.gI().isMapOffline(mapId)
+                        || MapService.gI().isMapPhoBan(mapId)
+                        || MapService.gI().isMapMaBu(mapId)
+                        || MapService.gI().isMapMabu2H(mapId)) {
+                    NpcService.gI().createTutorial(pl, -1, "Không thể đến khu vực này");
                     return;
                 }
-                if (zoneJoin != null) {
-                    changeMap(pl, zoneJoin, -1, -1, pl.location.x, pl.location.y, NON_SPACE_SHIP);
-                }
-            } else {
-                Service.gI().sendThongBao(pl, "Không thể thực hiện");
             }
-        } else {
-            NpcService.gI().createTutorial(pl, -1, "Chưa thể chuyển khu vực lúc này vui lòng chờ "
-                    + TimeUtil.getTimeLeft(pl.idMark.getLastTimeChangeZone(), 10) + " nữa");
+            Map map = pl.zone.map;
+            if (zoneId < 0 || zoneId >= map.zones.size()) {
+                Service.gI().sendThongBao(pl, "Không thể thực hiện");
+                return;
+            }
+            Zone zoneJoin = map.zones.get(zoneId);
+            if (zoneJoin == null) {
+                Service.gI().sendThongBao(pl, "Không thể thực hiện");
+                return;
+            }
+            if (zoneJoin.zoneId == pl.zone.zoneId) {
+                Service.gI().sendThongBao(pl, "Bạn đang ở khu vực này");
+                return;
+            }
+            if (!pl.isBoss) {
+                long now = System.currentTimeMillis();
+                long lastChange = pl.lastTimeChangeZone;
+                if (pl.idMark != null && pl.idMark.getLastTimeChangeZone() > lastChange) {
+                    lastChange = pl.idMark.getLastTimeChangeZone();
+                }
+                long elapsed = now - lastChange;
+                if (elapsed < TIME_WAIT_CHANGE_ZONE_MS) {
+                    long remainMs = TIME_WAIT_CHANGE_ZONE_MS - Math.max(0L, elapsed);
+                    long remainSec = Math.max(1L, (remainMs + 999L) / 1000L);
+                    NpcService.gI().createTutorial(pl, -1, "Chưa thể chuyển khu vực lúc này vui lòng chờ "
+                            + remainSec + " giây nữa");
+                    return;
+                }
+            }
+            if (zoneJoin.getNumOfPlayers() >= zoneJoin.maxPlayer && !pl.isAdmin() && !pl.isBoss) {
+                NpcService.gI().createTutorial(pl, -1, "Khu vực này đã đầy");
+                return;
+            }
+            Zone beforeZone = pl.zone;
+            long prevPlLastChange = pl.lastTimeChangeZone;
+            long prevMarkLastChange = pl.idMark != null ? pl.idMark.getLastTimeChangeZone() : 0L;
+            long approvedNow = System.currentTimeMillis();
+            pl.lastTimeChangeZone = approvedNow;
+            if (pl.idMark != null) {
+                pl.idMark.setLastTimeChangeZone(approvedNow);
+            }
+            changeMap(pl, zoneJoin, -1, -1, pl.location.x, pl.location.y, NON_SPACE_SHIP);
+            if (pl.zone == beforeZone) {
+                pl.lastTimeChangeZone = prevPlLastChange;
+                if (pl.idMark != null) {
+                    pl.idMark.setLastTimeChangeZone(prevMarkLastChange);
+                }
+            }
         }
     }
 

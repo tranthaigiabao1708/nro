@@ -3,11 +3,14 @@ package nro.models.boss.vodai_vt6;
 import java.util.List;
 import nro.models.boss.Boss;
 import nro.models.boss.BossData;
+import nro.models.consts.BossType;
 import nro.models.consts.ConstPlayer;
 import nro.models.consts.ConstTaskBadges;
 import nro.models.item.Item;
 import nro.models.map.ItemMap;
 import nro.models.map.Zone;
+import nro.models.matches.dai_hoi_vo_thuat.VoDaiVuTru6;
+import nro.models.matches.giai_dau.VoDaiVuTru6Manager;
 import nro.models.player.Player;
 import nro.models.server.ServerNotify;
 import nro.models.services.EffectSkillService;
@@ -27,6 +30,10 @@ public abstract class Universe6Boss extends Boss {
 
     public Universe6Boss(int id, BossData... data) throws Exception {
         super(id, data);
+    }
+
+    public Universe6Boss(BossType bossType, int id, BossData... data) throws Exception {
+        super(bossType, id, data);
     }
 
     protected abstract long getRealHpForCurrentStage();
@@ -148,6 +155,16 @@ public abstract class Universe6Boss extends Boss {
         }
         if (strike <= 0L) {
             return;
+        }
+        if (target.zone != null && target.zone.map != null && target.zone.map.mapId == 145 && target.isPKDHVT) {
+            if (strike >= target.nPoint.hp) {
+                target.lostByDeath = true;
+                VoDaiVuTru6 mc = VoDaiVuTru6Manager.gI().getMC(target.zone);
+                if (mc != null) {
+                    mc.die();
+                }
+                return;
+            }
         }
         target.nPoint.subHP(strike);
         PlayerService.gI().sendInfoHpMp(target);

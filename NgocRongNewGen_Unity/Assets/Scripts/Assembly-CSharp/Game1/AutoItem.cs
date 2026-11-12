@@ -14,7 +14,7 @@ namespace Game1
 
 		internal int timeDelay { get; set; }
 
-		internal sbyte indexUI { get; set; }
+		internal int indexUI { get; set; }
 
 		internal bool isGold { get; set; }
 
@@ -48,7 +48,7 @@ namespace Game1
 		{
 		}
 
-		internal AutoItem(int ID, sbyte indexUI, int timeDelay, bool isGold = false, bool isGem = false)
+		internal AutoItem(int ID, int indexUI, int timeDelay, bool isGold = false, bool isGem = false)
 		{
 			this.ID = ID;
 			this.indexUI = indexUI;

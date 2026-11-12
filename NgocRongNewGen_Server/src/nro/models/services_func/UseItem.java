@@ -96,7 +96,7 @@ public class UseItem {
         TransactionService.gI().cancelTrade(player);
         try {
             int type = msg.reader().readByte();
-            int index = msg.reader().readByte();
+            int index = msg.reader().readShort();
             if (index == -1) {
                 return;
             }
@@ -157,7 +157,7 @@ public class UseItem {
         try {
             type = _msg.reader().readByte();
             int where = _msg.reader().readByte();
-            int index = _msg.reader().readByte();
+            int index = _msg.reader().readShort();
             switch (type) {
                 case DO_USE_ITEM -> {
                     if (player != null && player.inventory != null) {
@@ -171,7 +171,7 @@ public class UseItem {
                                     msg = new Message(-43);
                                     msg.writer().writeByte(type);
                                     msg.writer().writeByte(where);
-                                    msg.writer().writeByte(index);
+                                    msg.writer().writeShort(index);
                                     msg.writer().writeUTF("Bạn chắc chắn học " + player.inventory.itemsBag.get(index).template.name + "?");
                                     player.sendMessage(msg);
                                 } else if (item.template.id == 570) {
@@ -182,7 +182,14 @@ public class UseItem {
                                     msg = new Message(-43);
                                     msg.writer().writeByte(type);
                                     msg.writer().writeByte(where);
-                                    msg.writer().writeByte(index);
+                                    msg.writer().writeShort(index);
+                                    msg.writer().writeUTF("Bạn chắc muốn mở\n" + player.inventory.itemsBag.get(index).template.name + " ?");
+                                    player.sendMessage(msg);
+                                } else if (item.template.id == 2030) {
+                                    msg = new Message(-43);
+                                    msg.writer().writeByte(type);
+                                    msg.writer().writeByte(where);
+                                    msg.writer().writeShort(index);
                                     msg.writer().writeUTF("Bạn chắc muốn mở\n" + player.inventory.itemsBag.get(index).template.name + " ?");
                                     player.sendMessage(msg);
                                 } else if (item.template.type == 22) {
@@ -193,7 +200,7 @@ public class UseItem {
                                     msg = new Message(-43);
                                     msg.writer().writeByte(type);
                                     msg.writer().writeByte(where);
-                                    msg.writer().writeByte(index);
+                                    msg.writer().writeShort(index);
                                     msg.writer().writeUTF("Bạn chắc muốn dùng\n" + player.inventory.itemsBag.get(index).template.name + " ?");
                                     player.sendMessage(msg);
                                 } else {
@@ -219,7 +226,7 @@ public class UseItem {
                             item = player.inventory.itemsBag.get(index);
                         }
 
-                        if (item.isNotNullItem() && item.template.id == 570) {
+                        if (item.isNotNullItem() && (item.template.id == 570 || item.template.id == 2030)) {
                             Service.gI().sendThongBao(player, "Không thể bỏ vật phẩm này.");
                             return;
                         }
@@ -229,7 +236,7 @@ public class UseItem {
                         msg = new Message(-43);
                         msg.writer().writeByte(type);
                         msg.writer().writeByte(where);
-                        msg.writer().writeByte(index);
+                        msg.writer().writeShort(index);
                         msg.writer().writeUTF("Bạn chắc chắn muốn vứt " + item.template.name + "?");
                         player.sendMessage(msg);
                     } else {
@@ -265,6 +272,10 @@ public class UseItem {
                 }
                 return;
             }
+            if (item.template.id == 2030) {
+                openRuongSieuCap(pl);
+                return;
+            }
             if (item.template.strRequire <= pl.nPoint.power) {
                 switch (item.template.type) {
                     case 33: //card
@@ -298,6 +309,7 @@ public class UseItem {
                     default:
                         switch (item.template.id) {
                             case 457: // Thỏi vàng -> chọn bán ra Vàng (500 Tr/thỏi) hoặc đổi ra Ngọc xanh (1k ngọc/thỏi)
+                                Service.gI().ClosePanel(pl);
                                 NpcService.gI().createMenuConMeo(pl, ConstNpc.MENU_DOI_THOI_VANG, -1,
                                         "Bạn muốn sử dụng Thỏi vàng để làm gì?\n"
                                         + "• Bán lấy Vàng: 1 Thỏi vàng = 500 Triệu vàng\n"
@@ -1201,6 +1213,126 @@ public class UseItem {
         }
     }
 
+    private void openRuongSieuCap(Player player) {
+        Item ruong = InventoryService.gI().findItemBag(player, 2030);
+        if (ruong == null) {
+            return;
+        }
+        int level = Math.max(1, Math.min(9, InventoryService.gI().getParam(player, 72, 2030)));
+        int requiredSlots = 9;
+        if (InventoryService.gI().getCountEmptyBag(player) < requiredSlots) {
+            Service.gI().sendThongBao(player, "Cần ít nhất " + requiredSlots + " ô trống trong hành trang để mở Rương Siêu Cấp!");
+            return;
+        }
+
+        player.itemsWoodChest.clear();
+
+        // 1. Thỏi vàng khóa [457]: 5 -> 45 Thỏi vàng theo cấp rương
+        Item thoiVang = ItemService.gI().createNewItem((short) 457, level * 5);
+        thoiVang.itemOptions.add(new Item.ItemOption(73, 0));
+        player.itemsWoodChest.add(thoiVang);
+
+        // 2. Đá Hematite [1423]: 2 -> 18 viên
+        Item hematite = ItemService.gI().createNewItem((short) 1423, level * 2);
+        ItemService.gI().ensureDefaultOptions(hematite);
+        player.itemsWoodChest.add(hematite);
+
+        // 3. Từ Cấp 3+: Ngọc xanh [77] & Ma Hồn Hủy Diệt [2019]
+        if (level >= 3) {
+            Item gem = ItemService.gI().createNewItem((short) 77, level * 20);
+            player.itemsWoodChest.add(gem);
+
+            int maHonQty = (level == 9) ? 5 : (level == 8 ? 3 : (level >= 6 ? 2 : 1));
+            Item maHon = ItemService.gI().createNewItem((short) 2019, maHonQty);
+            maHon.itemOptions.add(new Item.ItemOption(73, 0));
+            player.itemsWoodChest.add(maHon);
+        }
+
+        // 4. Rương Sao Pha Lê (Cấp 1-5: Rương SPL Cấp 1 [1440]; Cấp 6-9: Rương SPL VIP Cấp 2 [1453])
+        short splChestId = (level >= 6) ? (short) 1453 : (short) 1440;
+        int splChestQty = (level >= 8 || level == 5) ? 2 : 1;
+        Item splChest = ItemService.gI().createNewItem(splChestId, splChestQty);
+        splChest.itemOptions.add(new Item.ItemOption(73, 0));
+        player.itemsWoodChest.add(splChest);
+
+        // 5. Từ Cấp 4+: Dùi đục [1438] / Đá mài [1439]
+        if (level >= 4) {
+            short crystalToolId = Util.isTrue(50, 100) ? (short) 1438 : (short) 1439;
+            Item tool = ItemService.gI().createNewItem(crystalToolId, level);
+            tool.itemOptions.add(new Item.ItemOption(73, 0));
+            player.itemsWoodChest.add(tool);
+        }
+
+        // 6. Từ Cấp 5+: Đá nâng cấp / Đá may mắn Thiên Sứ (Cấp 8-9 đảm bảo ra Đá cấp 4-5)
+        if (level >= 5) {
+            int tierOffset = (level >= 8) ? Util.nextInt(3, 4) : Util.nextInt(0, 4);
+            int baseStone = Util.isTrue(50, 100) ? 1074 : 1079;
+            Item angelStone = ItemService.gI().createNewItem((short) (baseStone + tierOffset), 1);
+            angelStone.itemOptions.add(new Item.ItemOption(73, 0));
+            player.itemsWoodChest.add(angelStone);
+        }
+
+        // 7. Từ Cấp 7+: Tỉ lệ Công thức VIP Thiên Sứ theo hành tinh (Cấp 7: 40%, Cấp 8: 70%, Cấp 9 Vô Địch: 100%)
+        if (level >= 7) {
+            int recipeChance = (level == 9) ? 100 : (level == 8 ? 70 : 40);
+            if (Util.isTrue(recipeChance, 100)) {
+                short vipRecipeId = (short) (1084 + Math.max(0, Math.min(2, player.gender)));
+                Item vipRecipe = ItemService.gI().createNewItem(vipRecipeId, 1);
+                vipRecipe.itemOptions.add(new Item.ItemOption(73, 0));
+                player.itemsWoodChest.add(vipRecipe);
+            }
+        }
+
+        // 8. Cấp 8-9: Cơ hội nổ thêm Đồ Thần Linh (Cấp 8: 15%, Cấp 9: 30%) & Ấn Triệu Tập Zeno (Cấp 9: 3%)
+        if (level >= 8 && player.zone != null) {
+            int godChance = (level == 9) ? 30 : 15;
+            if (Util.isTrue(godChance, 100)) {
+                nro.models.map.ItemMap godMap = ItemService.gI().randDoTLBoss(player.zone, 1, 0, 0, player.id);
+                if (godMap != null) {
+                    Item godItem = ItemService.gI().createItemFromItemMap(godMap);
+                    player.itemsWoodChest.add(godItem);
+                }
+            }
+            if (level == 9 && Util.isTrue(3, 100)) {
+                Item zenoSeal = ItemService.gI().createNewItem((short) 2029, 1);
+                zenoSeal.itemOptions.add(new Item.ItemOption(30, 0));
+                player.itemsWoodChest.add(zenoSeal);
+                nro.models.server.ServerNotify.gI().notify(player.name
+                        + " mở Rương Siêu Cấp Cấp 9 may mắn đoạt được ẤN TRIỆU TẬP ZENO!");
+            }
+        }
+
+        InventoryService.gI().subQuantityItemsBag(player, ruong, 1);
+        for (Item it : player.itemsWoodChest) {
+            InventoryService.gI().addItemBag(player, it);
+        }
+        InventoryService.gI().sendItemBags(player);
+        nro.models.database.PlayerDAO.savePlayerAsync(player);
+
+        player.indexWoodChest = player.itemsWoodChest.size() - 1;
+        int i = player.indexWoodChest;
+        if (i < 0) {
+            return;
+        }
+        Item itemWoodChest = player.itemsWoodChest.get(i);
+        player.indexWoodChest--;
+        String info = "|1|" + itemWoodChest.template.name;
+        if (itemWoodChest.quantity > 1) {
+            info += " (x" + itemWoodChest.quantity + ")";
+        }
+        String info2 = "\n|2|";
+        if (!itemWoodChest.itemOptions.isEmpty()) {
+            for (Item.ItemOption io : itemWoodChest.itemOptions) {
+                if (io.optionTemplate.id != 102 && io.optionTemplate.id != 73) {
+                    info2 += io.getOptionString() + "\n";
+                }
+            }
+        }
+        info = (info2.length() > "\n|2|".length() ? (info + info2).trim() : info.trim()) + "\n|0|" + itemWoodChest.template.description;
+        NpcService.gI().createMenuConMeo(player, ConstNpc.RUONG_GO, -1, "Bạn nhận được\n"
+                + info.trim(), "OK" + (i > 0 ? " [" + i + "]" : ""));
+    }
+
     public int calculateRequiredEmptySlots(int level) {
         // Khởi tạo số ô trống cần thiết
         int requiredSlots = 0;
@@ -1389,8 +1521,10 @@ public class UseItem {
             return;
         }
 
-        if (!item.hasOption(250, 3000)) {
-            Service.gI().sendThongBao(player, "Cần ít nhất 3000 sức mạnh Kilis để mở!");
+        Item.ItemOption kilisOpt = item.getOptionById(250);
+        int currentKilis = kilisOpt != null ? kilisOpt.param : 0;
+        if (currentKilis < 3000) {
+            Service.gI().sendThongBaoOK(player, "Tiến độ hiện tại: " + currentKilis + "/3000 Kilis!\nHãy mang bình gặp NPC Ôsin (Đại hội võ thuật) chọn \"Bình hút năng lượng\" để vào Sa mạc hoang vu đánh quái tích đủ 3000 Kilis.");
             return;
         }
 

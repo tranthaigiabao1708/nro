@@ -635,12 +635,16 @@ public class Service {
     }
 
     public void reload_HP_NV(Player pl) {
+        reload_HP_NV_Custom(pl, pl.nPoint.hp, pl.nPoint.hpMax);
+    }
+
+    public void reload_HP_NV_Custom(Player pl, int hp, int hpMax) {
         Message msg = null;
         try {
             msg = messageSubCommand((byte) 9);
             msg.writer().writeInt((int) pl.id);
-            msg.writer().writeInt(pl.nPoint.hp);
-            msg.writer().writeInt(pl.nPoint.hpMax);
+            msg.writer().writeInt(hp);
+            msg.writer().writeInt(hpMax);
             sendMessAnotherNotMeInMap(pl, msg);
         } catch (Exception e) {
             e.printStackTrace();
@@ -873,7 +877,7 @@ public class Service {
 
             }
             ArrayList<Item> itemsBag = (ArrayList<Item>) pl.inventory.itemsBag;
-            msg.writer().writeByte(itemsBag.size());
+            msg.writer().writeShort(itemsBag.size());
             for (int i = 0; i < itemsBag.size(); i++) {
                 Item item = itemsBag.get(i);
                 if (!item.isNotNullItem()) {
@@ -952,10 +956,22 @@ public class Service {
         }
 
         if (player.isPet) {
-            player.nPoint.powerUp(param);
+            long petMaxPower = player.nPoint.getPowerLimit();
+            if (player.nPoint.power < petMaxPower) {
+                long petPowerGain = param;
+                if (player.nPoint.power + petPowerGain > petMaxPower) {
+                    petPowerGain = petMaxPower - player.nPoint.power;
+                }
+                if (petPowerGain > 0) {
+                    player.nPoint.powerUp(petPowerGain);
+                }
+            }
             player.nPoint.tiemNangUp(param);
 
             Player master = ((Pet) player).master;
+            if (master == null || master.nPoint == null) {
+                return;
+            }
 
             long masterParam = (long) (param * 0.5);
             masterParam = master.nPoint.calSubTNSM(masterParam);
@@ -1045,14 +1061,17 @@ public class Service {
         Captions.add("Giới Vương Thần cấp 1");
         Captions.add("Giới Vương Thần cấp 2");
         Captions.add("Giới Vương Thần cấp 3");
-        Captions.add("Thiên đạo");
-        Captions.add("kẻ hũy diệt vũ trụ");
-        Captions.add("vô địch đa giới");
+        Captions.add("Thiên Đạo");
+        Captions.add("Chân Thần Vũ Trụ");
+        Captions.add("Kẻ Hủy Diệt Vũ Trụ");
+        Captions.add("Vô Địch Đa Giới");
         return Captions;
     }
 
     public String getCurrStrLevel(Player pl) {
-        return ListCaption(pl.gender).get(getCurrLevel(pl));
+        List<String> captions = ListCaption(pl.gender);
+        int lvl = Math.max(0, Math.min(getCurrLevel(pl), captions.size() - 1));
+        return captions.get(lvl);
     }
 
     public int getCurrLevel(Player pl) {
@@ -1096,10 +1115,16 @@ public class Service {
             return 16;
         } else if (sucmanh < 80010000000L) {
             return 17;
-        } else if (sucmanh < 90010000000L) {
+        } else if (sucmanh < 100010000000L) {
             return 18;
+        } else if (sucmanh < 120010000000L) {
+            return 19;
+        } else if (sucmanh < 150010000000L) {
+            return 20;
+        } else if (sucmanh < 200010000000L) {
+            return 21;
         }
-        return 19;
+        return 22;
     }
 
     public void hsChar(Player pl, int hp, int mp) {
@@ -1152,7 +1177,7 @@ public class Service {
                 ((Pet) pl).lastTimeDie = System.currentTimeMillis();
             }
             msg = new Message(-8);
-            msg.writer().writeShort((int) pl.id);
+            msg.writer().writeInt((int) pl.id);
             int cPk = 0;
             msg.writer().writeByte(cPk); //cpk
             msg.writer().writeShort(pl.location.x);

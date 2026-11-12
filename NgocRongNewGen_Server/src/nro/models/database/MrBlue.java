@@ -390,6 +390,7 @@ public class MrBlue {
                         item.itemOptions.add(new Item.ItemOption(Integer.parseInt(String.valueOf(opt.get(0))),
                                 Integer.parseInt(String.valueOf(opt.get(1)))));
                     }
+                    ItemService.gI().ensureDefaultOptions(item);
                     item.createTime = Long.parseLong(String.valueOf(dataItem.get(3)));
                     if (ItemService.gI().isOutOfDateTime(item)) {
                         item = ItemService.gI().createItemNull();
@@ -428,9 +429,7 @@ public class MrBlue {
                         item.itemOptions.add(new Item.ItemOption(Integer.parseInt(String.valueOf(opt.get(0))),
                                 Integer.parseInt(String.valueOf(opt.get(1)))));
                     }
-                    if (tempId == 1423) {
-                        ItemService.gI().ensureDefaultOptions(item);
-                    }
+                    ItemService.gI().ensureDefaultOptions(item);
                     item.createTime = Long.parseLong(String.valueOf(dataItem.get(3)));
                     if (ItemService.gI().isOutOfDateTime(item)) {
                         item = ItemService.gI().createItemNull();
@@ -459,9 +458,7 @@ public class MrBlue {
                         item.itemOptions.add(new Item.ItemOption(Integer.parseInt(String.valueOf(opt.get(0))),
                                 Integer.parseInt(String.valueOf(opt.get(1)))));
                     }
-                    if (tempId == 1423) {
-                        ItemService.gI().ensureDefaultOptions(item);
-                    }
+                    ItemService.gI().ensureDefaultOptions(item);
                     item.createTime = Long.parseLong(String.valueOf(dataItem.get(3)));
                     if (item.template.id == 2132) {
                         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -907,6 +904,7 @@ public class MrBlue {
                             item.itemOptions.add(new Item.ItemOption(Integer.parseInt(String.valueOf(opt.get(0))),
                                     Integer.parseInt(String.valueOf(opt.get(1)))));
                         }
+                        ItemService.gI().ensureDefaultOptions(item);
                         item.createTime = Long.parseLong(String.valueOf(dataItem.get(3)));
                         if (item.template.id == 2132) {
                             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -943,6 +941,26 @@ public class MrBlue {
                 }
                 while (pet.inventory.itemsBody.size() < requiredSize) {
                     pet.inventory.itemsBody.add(ItemService.gI().createItemNull());
+                }
+                for (int idxBody = 0; idxBody < pet.inventory.itemsBody.size(); idxBody++) {
+                    Item bodyIt = pet.inventory.itemsBody.get(idxBody);
+                    if (bodyIt != null && bodyIt.isNotNullItem() && bodyIt.template != null) {
+                        int gloveReqB = ItemService.getFixedGlovePowerRequireBillion(bodyIt.template.id);
+                        if (gloveReqB > 0 && pet.nPoint.power < gloveReqB * 1_000_000_000L) {
+                            boolean movedToBag = false;
+                            for (int b = 0; b < player.inventory.itemsBag.size(); b++) {
+                                if (!player.inventory.itemsBag.get(b).isNotNullItem()) {
+                                    player.inventory.itemsBag.set(b, bodyIt);
+                                    movedToBag = true;
+                                    break;
+                                }
+                            }
+                            if (!movedToBag) {
+                                player.inventory.itemsBox.add(bodyIt);
+                            }
+                            pet.inventory.itemsBody.set(idxBody, ItemService.gI().createItemNull());
+                        }
+                    }
                 }
                 // data skills
                 dataArray = (JSONArray) JSONValue.parse(String.valueOf(petData.get(3)));
@@ -1056,7 +1074,7 @@ public class MrBlue {
                 player.lastRewardGoldBarTime = 0;
             }
 
-            //data Rương gỗ
+            //data Rương gỗ & Rương Siêu Cấp VT6
             try {
                 dataArray = (JSONArray) JSONValue.parse(rs.getString("ruonggo"));
                 player.levelWoodChest = Integer.parseInt(dataArray.get(0).toString());
@@ -1064,12 +1082,27 @@ public class MrBlue {
                 player.rubyChallenge = Long.parseLong(dataArray.get(2).toString());
                 player.lastTimeRewardWoodChest = Long.parseLong(dataArray.get(3).toString());
                 player.lastTimePKDHVT23 = Long.parseLong(dataArray.get(4).toString());
+                if (dataArray.size() >= 9) {
+                    player.levelSuperChest = Integer.parseInt(dataArray.get(5).toString());
+                    player.goldSuperChallenge = Long.parseLong(dataArray.get(6).toString());
+                    player.gemSuperChallenge = Long.parseLong(dataArray.get(7).toString());
+                    player.lastTimePKVoDaiVt6 = Long.parseLong(dataArray.get(8).toString());
+                } else {
+                    player.levelSuperChest = 0;
+                    player.goldSuperChallenge = 50_000_000L;
+                    player.gemSuperChallenge = 10L;
+                    player.lastTimePKVoDaiVt6 = 0L;
+                }
             } catch (Exception e) {
                 player.levelWoodChest = 0;
                 player.goldChallenge = 50000000;
                 player.rubyChallenge = 100;
                 player.lastTimeRewardWoodChest = System.currentTimeMillis();
                 player.lastTimePKDHVT23 = 0;
+                player.levelSuperChest = 0;
+                player.goldSuperChallenge = 50_000_000L;
+                player.gemSuperChallenge = 10L;
+                player.lastTimePKVoDaiVt6 = 0L;
             }
 
             //data Siêu Thần Thủy

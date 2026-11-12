@@ -375,7 +375,7 @@ public class SkhCollectionService {
                 if (bagItem.template.type != slot) {
                     continue;
                 }
-                if (slot != 4 && bagItem.template.gender != player.gender) {
+                if (bagItem.template.gender != 3 && bagItem.template.gender != player.gender) {
                     continue;
                 }
                 if (getMainSkhOptionId(bagItem) == targetSetOpt) {
@@ -506,11 +506,12 @@ public class SkhCollectionService {
                 + "- Phân rã 1 hoặc nhiều đồ SKH thường dư thừa cùng lúc -> mỗi món nhận 1 Khoáng tái chế (200 Tr vàng/món).\n"
                 + "- Capsule Kích Hoạt Thường (5 Khoáng + 500 Tr vàng): Mở tự chọn Set cơ bản (gồm cả Set Gohan) & món trang bị.\n"
                 + "- Capsule Kích Hoạt VIP (10 Khoáng + 1 Tỷ vàng): Mở tự chọn Set Kích Hoạt Mới & món trang bị.\n\n"
-                + "3. NÂNG CẤP ĐỒ THẦN LINH SKH & HỦY DIỆT SKH (BÀ HẠT MÍT ĐẢO KAME):\n"
+                + "3. NÂNG CẤP ĐỒ THẦN LINH, HỦY DIỆT & THIÊN SỨ KÍCH HOẠT (BÀ HẠT MÍT ĐẢO KAME):\n"
                 + "- Lên Đồ Thần Linh SKH (Tỉ lệ 40%): 1 Đồ SKH thường + 1 Đồ Thần Linh CÙNG LOẠI (Áo-Áo, Quần-Quần, Găng-Găng, Giày-Giày, Rada-Nhẫn) + 2 Khoáng tái chế + 500 Tr vàng.\n"
                 + "- Lên Đồ Hủy Diệt SKH (Tỉ lệ 30%): 1 Đồ Thần Linh SKH + 1 Đồ Hủy Diệt CÙNG LOẠI + 5 Khoáng tái chế + 2 Tỷ vàng.\n"
-                + "- Thành công: Chỉ thêm thuộc tính Set Kích Hoạt của phôi sang trang bị mới (KHÔNG chuyển cấp [+] và sao pha lê đã ép của trang bị cũ).\n"
-                + "- CẢNH BÁO: Không được bỏ thêm bất kỳ vật phẩm nào khác. Nếu nâng cấp THẤT BẠI sẽ mất luôn cả 2 trang bị!\n\n"
+                + "- Lên Đồ Thiên Sứ SKH (Tỉ lệ 20%): 1 Đồ Hủy Diệt SKH + 1 Đồ Thiên Sứ CÙNG LOẠI + 10 Khoáng tái chế + 2 Tỷ vàng (Mặc đủ 5 món Thiên Sứ nhận thêm +25% Xuyên giáp).\n"
+                + "- Thành công: Truyền Set Kích Hoạt sang trang bị mới & mở khóa cho phép giao dịch / ký gửi (giữ nguyên chỉ số & dòng thưởng của phôi Thiên Sứ, KHÔNG chuyển cấp [+] và sao pha lê đã ép của trang bị cũ).\n"
+                + "- LƯU Ý: Không được bỏ thêm bất kỳ vật phẩm nào khác. Nếu nâng cấp THẤT BẠI chỉ mất Khoáng tái chế và trang bị chưa kích hoạt (Đồ Thần / Hủy Diệt / Thiên Sứ), GIỮ NGUYÊN trang bị Kích Hoạt cũ!\n\n"
                 + "4. BẢNG SƯU TẬP SET KÍCH HOẠT TẠI NHÀ:\n"
                 + "- Gặp Ông Gôhan / Ông Moori / Ông Paragus trong Nhà (hoặc gõ chat 'skh') để mở Bảng Sưu Tập 5 Set.\n"
                 + "- Chỉ khi thu thập đủ trọn bộ 5/5 Set (5x5 = 25 món) mới kích hoạt Buff vĩnh viễn: +5% Sức đánh và +15% TNSM cho cả Sư phụ & Đệ tử (không cộng lẻ từng Set)!\n"

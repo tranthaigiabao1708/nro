@@ -707,7 +707,7 @@ namespace Game2
 				}
 				if (item.template.name.Contains("Bông tai") || item.template.name.Contains("Bông Tai") || item.template.name.Contains("Porata") || item.template.name.Contains("porata"))
 				{
-					Service.gI().useItem(0, 1, (sbyte)i, -1);
+					Service.gI().useItem(0, 1, i, -1);
 					break;
 				}
 			}
@@ -765,7 +765,7 @@ namespace Game2
 			int num = FindItemIndex(itemId);
 			if (num != -1)
 			{
-				Service.gI().useItem(0, 1, (sbyte)num, -1);
+				Service.gI().useItem(0, 1, num, -1);
 			}
 			else
 			{
@@ -794,7 +794,7 @@ namespace Game2
 				{
 					if (item.template.iconID == item2.iconID && item.template.id == item2.id && !ItemTime.isExistItem(item.template.iconID))
 					{
-						Service.gI().useItem(0, 1, (sbyte)FindItemIndex(item.template.id), -1);
+						Service.gI().useItem(0, 1, FindItemIndex(item.template.id), -1);
 						if (listItemAuto.Count == 1)
 						{
 							return;
@@ -891,7 +891,7 @@ namespace Game2
 					}
 					return;
 				}
-				Service.gI().useItem(0, 1, (sbyte)FindItemIndex(457), -1);
+				Service.gI().useItem(0, 1, FindItemIndex(457), -1);
 				GameScr.info1.addInfo("Đang bán thỏi vàng", 0);
 				Thread.Sleep(500);
 			}
@@ -1183,7 +1183,7 @@ namespace Game2
 				quayThuongDe();
 				lastVQMM = num;
 			}
-			if (autoWakeUp && num - lastAutoWakeUp >= 1000)
+			if (autoWakeUp && num - lastAutoWakeUp >= 1600)
 			{
 				AutoHoiSinh();
 				lastAutoWakeUp = num;
@@ -1618,6 +1618,11 @@ namespace Game2
 						isAutoFilterItem = !isAutoFilterItem;
 						GameScr.info1.addInfo("Tự động lọc đồ " + (isAutoFilterItem ? "[Bật]" : "[Tắt]"), 0);
 						break;
+					case 95:
+						autoWakeUp = !autoWakeUp;
+						Rms.saveRMSInt("autoWakeUp", autoWakeUp ? 1 : 0);
+						GameScr.info1.addInfo("Tự động hồi sinh " + (autoWakeUp ? "[Bật]" : "[Tắt]"), 0);
+						break;
 					case 100:
 					{
 						string obj = (string)p;
@@ -1763,6 +1768,7 @@ namespace Game2
 				myVector4.addElement(new Command(PickMob.vuotDiaHinh ? "Vượt địa hình [Bật]" : "Vượt địa hình [Tắt]", 76));
 				myVector4.addElement(new Command(PickMob.telePem ? "Dịch chuyển\n[Bật]" : "Dịch chuyển\n[Tắt]", 80));
 				myVector4.addElement(new Command(PickMob.isGoBack ? "Goback Tọa Độ [Bật]" : "Goback Tọa Độ [Tắt]", 38));
+				myVector4.addElement(new Command(autoWakeUp ? "Tự động\nhồi sinh [Bật]" : "Tự động\nhồi sinh [Tắt]", 95));
 				GameCanvas.menu.startAt(myVector4, 4);
 				break;
 			}
@@ -2908,7 +2914,7 @@ namespace Game2
 					{
 						if (listFilterItem.id == item.template.id)
 						{
-							Service.gI().useItem(1, 1, (sbyte)item.indexUI, -1);
+							Service.gI().useItem(1, 1, item.indexUI, -1);
 							Thread.Sleep(50);
 							return;
 						}

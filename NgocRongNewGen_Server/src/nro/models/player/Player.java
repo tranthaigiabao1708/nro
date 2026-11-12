@@ -223,6 +223,7 @@ public class Player implements Runnable {
     public long lastTimeRevived;
 
     public long timeChangeZone;
+    public volatile long lastTimeChangeZone;
     public long lastUseOptionTime;
 
     public short idNRNM = -1;
@@ -238,6 +239,12 @@ public class Player implements Runnable {
     public List<Item> itemsWoodChest = new ArrayList<>();
     public int indexWoodChest;
     public long lastTimePKDHVT23;
+
+    // Võ Đài Siêu Cấp Vũ Trụ 6 & 7 (Map 145)
+    public int levelSuperChest;
+    public long goldSuperChallenge = 50_000_000L;
+    public long gemSuperChallenge = 10L;
+    public long lastTimePKVoDaiVt6;
 
     public boolean lostByDeath;
 
@@ -1151,27 +1158,36 @@ public class Player implements Runnable {
             int tlNeDon = this.nPoint.tlNeDon;
             int tlNeDonXinbato = this.nPoint.tlNeDonXinbato;
 
-            if (plAtt != null && !isMobAttack && plAtt.playerSkill.skillSelect != null) {
-                switch (plAtt.playerSkill.skillSelect.template.id) {
-                    case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC, Skill.DRAGON, Skill.DEMON, Skill.GALICK, Skill.LIEN_HOAN, Skill.KAIOKEN, Skill.QUA_CAU_KENH_KHI, Skill.MAKANKOSAPPO, Skill.DICH_CHUYEN_TUC_THOI ->
-                        tlNeDon -= plAtt.nPoint.tlchinhxac;
-                    default ->
-                        tlNeDon = 0;
-                }
-
-                switch (plAtt.playerSkill.skillSelect.template.id) {
-                    case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC, Skill.MAKANKOSAPPO, Skill.QUA_CAU_KENH_KHI, Skill.SUPER_KAME, Skill.LIEN_HOAN_CHUONG -> {
-                        if (tlGiap - plAtt.nPoint.tlxgc >= 0) {
-                            tlGiap -= plAtt.nPoint.tlxgc;
-                        } else {
-                            tlGiap = 0;
-                        }
+            if (plAtt != null && !isMobAttack) {
+                Skill activeSkill = (plAtt.newSkill != null && plAtt.newSkill.isStartSkillSpecial && plAtt.newSkill.skillSelect != null)
+                        ? plAtt.newSkill.skillSelect
+                        : (plAtt.playerSkill != null ? plAtt.playerSkill.skillSelect : null);
+                if (activeSkill != null && activeSkill.template != null) {
+                    switch (activeSkill.template.id) {
+                        case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC, Skill.DRAGON, Skill.DEMON, Skill.GALICK, Skill.LIEN_HOAN, Skill.KAIOKEN, Skill.QUA_CAU_KENH_KHI, Skill.MAKANKOSAPPO, Skill.DICH_CHUYEN_TUC_THOI ->
+                            tlNeDon -= plAtt.nPoint.tlchinhxac;
+                        default ->
+                            tlNeDon = 0;
                     }
-                    case Skill.DRAGON, Skill.DEMON, Skill.GALICK, Skill.LIEN_HOAN, Skill.KAIOKEN -> {
-                        if (tlGiap - plAtt.nPoint.tlxgcc >= 0) {
-                            tlGiap -= plAtt.nPoint.tlxgcc;
-                        } else {
-                            tlGiap = 0;
+
+                    switch (activeSkill.template.id) {
+                        case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC, Skill.MAKANKOSAPPO, Skill.QUA_CAU_KENH_KHI, Skill.SUPER_KAME, Skill.LIEN_HOAN_CHUONG, Skill.MA_PHONG_BA -> {
+                            if (tlGiap - plAtt.nPoint.tlxgc >= 0) {
+                                tlGiap -= plAtt.nPoint.tlxgc;
+                            } else {
+                                tlGiap = 0;
+                            }
+                        }
+                        case Skill.DRAGON, Skill.DEMON, Skill.GALICK, Skill.LIEN_HOAN, Skill.KAIOKEN -> {
+                            if (tlGiap - plAtt.nPoint.tlxgcc >= 0) {
+                                tlGiap -= plAtt.nPoint.tlxgcc;
+                            } else {
+                                tlGiap = 0;
+                            }
+                        }
+                        case Skill.TU_SAT -> {
+                            int pen = Math.max(plAtt.nPoint.tlxgc, plAtt.nPoint.tlxgcc);
+                            tlGiap = Math.max(0, tlGiap - pen);
                         }
                     }
                 }
@@ -1247,6 +1263,16 @@ public class Player implements Runnable {
                 if (damage >= this.nPoint.hp) {
                     this.lostByDeath = true;
                     The23rdMartialArtCongress mc = The23rdMartialArtCongressManager.gI().getMC(zone);
+                    if (mc != null) {
+                        mc.die();
+                    }
+                    return 0;
+                }
+            }
+            if (this.zone.map.mapId == 145 && this.isPKDHVT) {
+                if (damage >= this.nPoint.hp) {
+                    this.lostByDeath = true;
+                    nro.models.matches.dai_hoi_vo_thuat.VoDaiVuTru6 mc = nro.models.matches.giai_dau.VoDaiVuTru6Manager.gI().getMC(zone);
                     if (mc != null) {
                         mc.die();
                     }

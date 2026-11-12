@@ -154,12 +154,11 @@ public class BossManager implements Runnable {
         this.createBoss(BossID.AN_TROM, 5);
         this.createBoss(BossID.O_DO1, 5);
         this.createBoss(BossID.BABY, 2);
-        // Dàn Boss Giải Đấu Liên Vũ Trụ 6 & 7 (Champa giáng lâm tự động khi hạ Hit)
+        // Dàn Boss ngoại vi Vũ Trụ 6 (Hit & Champa đấu trực tiếp theo vòng tại Võ Đài Map 145)
         this.createBoss(BossID.FROST_VT6, 1);
         this.createBoss(BossID.AUTA_MAGETTA, 1);
         this.createBoss(BossID.CABBA_VT6, 1);
         this.createBoss(BossID.CAULIFLA_VT6, 1);
-        this.createBoss(BossID.HIT_VT6, 1);
     }
 
     public void createBoss(int bossID, int total) {

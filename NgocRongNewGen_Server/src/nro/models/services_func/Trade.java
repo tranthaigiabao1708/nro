@@ -93,7 +93,7 @@ public class Trade {
         }
     }
 
-    public synchronized void addItemTrade(Player pl, byte index, int quantity) {
+    public synchronized void addItemTrade(Player pl, int index, int quantity) {
         if (this.finished || this.player1 == null || this.player2 == null || pl == null) {
             return;
         }
@@ -129,8 +129,8 @@ public class Trade {
                 if (item.template.id == 1423 || item.template.id == 1441) {
                     ItemService.gI().ensureDefaultOptions(item);
                 }
-                if (item.template.id == 570) {
-                    Service.gI().sendThongBao(pl, "Không thể giao dịch Rương Gỗ");
+                if (item.template.id == 570 || item.template.id == 2030) {
+                    Service.gI().sendThongBao(pl, "Không thể giao dịch rương phần thưởng giải đấu!");
                     removeItemTrade(pl, index);
                     return;
                 }
@@ -212,12 +212,12 @@ public class Trade {
     }
     
     // Các phương thức khác giữ nguyên
-    private void removeItemTrade(Player pl, byte index) {
+    private void removeItemTrade(Player pl, int index) {
         Message msg = null;
         try {
             msg = new Message(-86);
             msg.writer().writeByte(2);
-            msg.writer().write(index);
+            msg.writer().writeShort(index);
             pl.sendMessage(msg);
             Service.gI().sendThongBao(pl, "Không thể giao dịch vật phẩm này");
         } catch (Exception e) {
@@ -228,12 +228,12 @@ public class Trade {
         }
     }
 
-    private void removeItemTrade2(Player pl, byte index) {
+    private void removeItemTrade2(Player pl, int index) {
         Message msg = null;
         try {
             msg = new Message(-86);
             msg.writer().writeByte(2);
-            msg.writer().write(index);
+            msg.writer().writeShort(index);
             pl.sendMessage(msg);
         } catch (Exception e) {
         } finally {
@@ -250,8 +250,8 @@ public class Trade {
         if (item.template.id == 1423) {
             return false;
         }
-        // Không cho phép giao dịch trang bị Hủy Diệt (kể cả Hủy Diệt kích hoạt), đồ khóa (Opt 30) hoặc có hạn sử dụng (Opt 93)
-        if (item.isDHD() || item.hasCannotTradeOrExpiry()) {
+        // Không cho phép giao dịch trang bị Hủy Diệt / Thiên Sứ thường (chưa SKH), đồ khóa (Opt 30) hoặc có hạn sử dụng (Opt 93)
+        if (((item.isDHD() || item.isDTS()) && !item.isSKH()) || item.hasCannotTradeOrExpiry()) {
             return true;
         }
         switch (item.template.id) {
@@ -262,7 +262,7 @@ public class Trade {
             case 1819:
                 return true;
         }
-        // Cho phép giao dịch: Trang bị Thần Linh, Set Kích Hoạt (thường & Thần Linh), và các Phụ kiện vĩnh viễn không khóa
+        // Cho phép giao dịch: Trang bị Thần Linh, mọi bậc Set Kích Hoạt (Thường, Thần Linh, Hủy Diệt, Thiên Sứ), và các Phụ kiện vĩnh viễn không khóa
         if (item.isDTL() || item.isSKH() || item.isPhuKien()) {
             return false;
         }

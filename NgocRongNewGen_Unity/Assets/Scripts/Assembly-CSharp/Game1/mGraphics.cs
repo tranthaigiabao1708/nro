@@ -990,6 +990,43 @@ namespace Game1
 			}
 		}
 
+		public void drawImageScaleClipped(Image image, int x, int y, int w, int h)
+		{
+			if (image == null || image.texture == null || w <= 0 || h <= 0)
+			{
+				return;
+			}
+			float fx = x * zoomLevel;
+			float fy = y * zoomLevel;
+			float fw = w * zoomLevel;
+			float fh = h * zoomLevel;
+			if (isTranslate)
+			{
+				fx += translateX;
+				fy += translateY;
+			}
+			Rect dst = new Rect(fx, fy, fw, fh);
+			Rect uv = new Rect(0f, 0f, 1f, 1f);
+			if (isClip)
+			{
+				int cx = clipX + (isTranslate ? clipTX : 0);
+				int cy = clipY + (isTranslate ? clipTY : 0);
+				Rect clipped = intersectRect(dst, new Rect(cx, cy, clipW, clipH));
+				if (clipped.width <= 0f || clipped.height <= 0f)
+				{
+					return;
+				}
+				float u0 = (clipped.x - dst.x) / fw;
+				float uw = clipped.width / fw;
+				float topFrac = (clipped.y - dst.y) / fh;
+				float vh = clipped.height / fh;
+				float v0 = 1f - topFrac - vh;
+				dst = clipped;
+				uv = new Rect(u0, v0, uw, vh);
+			}
+			Graphics.DrawTexture(dst, image.texture, uv, 0, 0, 0, 0);
+		}
+
 		public static int getImageWidth(Image image)
 		{
 			return image.getWidth();

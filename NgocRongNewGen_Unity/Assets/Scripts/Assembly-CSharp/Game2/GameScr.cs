@@ -844,8 +844,8 @@ namespace Game2
 			{
 				if (item != null)
 				{
-					Service.gI().useItem(1, 1, (sbyte)item.indexUI, -1);
-					Service.gI().useItem(2, 1, (sbyte)item.indexUI, -1);
+					Service.gI().useItem(1, 1, item.indexUI, -1);
+					Service.gI().useItem(2, 1, item.indexUI, -1);
 					Thread.Sleep(300);
 				}
 			}

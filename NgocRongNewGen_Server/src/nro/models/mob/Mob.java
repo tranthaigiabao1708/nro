@@ -199,27 +199,25 @@ public class Mob {
             }
         }
         if (MapService.gI().isMapCadic(this.zone.map.mapId) && plAtt != null) {
-            boolean hasKilisBuff = plAtt.itemTime != null && plAtt.itemTime.isUseKilis;
-            int successRate = hasKilisBuff ? 10 : 1;
+            Player owner = (plAtt.isPet && ((nro.models.player.Pet) plAtt).master != null)
+                    ? ((nro.models.player.Pet) plAtt).master
+                    : plAtt;
+            if (owner != null && !owner.isPet && !owner.isBoss) {
+                boolean hasKilisBuff = owner.itemTime != null && owner.itemTime.isUseKilis;
+                int successRate = hasKilisBuff ? 10 : 1;
 
-            if (Util.isTrue(successRate, 333)) {
-                if (plAtt != null) {
-                    Item item = InventoryService.gI().findItemBag(plAtt, 1795);
+                if (Util.isTrue(successRate, 333)) {
+                    Item item = InventoryService.gI().findItemBag(owner, 1795);
                     if (item != null) {
-                        boolean updated = false;
                         Item.ItemOption kilisOption = item.getOptionById(250);
                         if (kilisOption != null) {
                             kilisOption.param += 1;
-                            updated = true;
                         } else {
-                            item.itemOptions.add(new Item.ItemOption(250, 1));
-                            updated = true;
+                            kilisOption = new Item.ItemOption(250, 1);
+                            item.itemOptions.add(0, kilisOption);
                         }
-
-                        if (updated) {
-                            InventoryService.gI().sendItemBags(plAtt);
-                            Service.gI().sendThongBao(plAtt, "Bạn vừa nhận được 1 chỉ số Kilis!");
-                        }
+                        InventoryService.gI().sendItemBags(owner);
+                        Service.gI().sendThongBao(owner, "Bình hút năng lượng +1 Kilis (" + kilisOption.param + "/3000)!");
                     }
                 }
             }
@@ -722,8 +720,14 @@ public class Mob {
     /**
      * Tính % May mắn chung CHỈ trên nhân vật chính (owner).
      * Đệ tử (Pet) mặc đồ/phụ kiện May mắn hoặc Set Gohan đều KHÔNG được tính (bỏ phí 100%).
+     * Đồng thời Set Gohan KHÔNG stack chéo giữa Sư phụ và Đệ tử: chỉ có hiệu lực khi chính Sư phụ
+     * là người trực tiếp kết liễu quái (killer == owner) và cho phép tính Set Gohan (allowSetGohan = true).
      */
     public static double getGeneralLuckPercent(Player owner) {
+        return getGeneralLuckPercent(owner, owner, true);
+    }
+
+    public static double getGeneralLuckPercent(Player owner, Player killer, boolean allowSetGohan) {
         if (owner == null || owner.isPet) {
             return 0.0;
         }
@@ -751,7 +755,7 @@ public class Mob {
         double percentFromOption236 = Math.pow(armorOption236Param / 100.0, 1.5) * 20.0 + directOption236Percent;
         int luckDragon = isUsingLuckDragon(owner) ? 20 : 0; // Ước NR 1 Sao: +20% trong 60 phút
         int luckRX = (owner.itemTime != null && owner.itemTime.isUseLuckRX) ? 20 : 0; // Ước Rồng Xương: +20% May mắn
-        int gohanLuck = (owner.setClothes != null && owner.setClothes.gohan == 5) ? 150 : 0; // 5 món Set Gohan trên Sư Phụ: +150%
+        int gohanLuck = (allowSetGohan && killer == owner && owner.setClothes != null && owner.setClothes.gohan == 5) ? 150 : 0;
         return percentFromOption236 + luckDragon + luckRX + gohanLuck;
     }
 
@@ -840,8 +844,11 @@ public class Mob {
             return list;
         }
         boolean hasCoBonLa = isUsingCoBonLa(owner);
-        double generalLuckNoClover = getGeneralLuckPercent(owner);
+        double generalLuckNoClover = getGeneralLuckPercent(owner, player, true);
         double generalLuckWithClover = generalLuckNoClover + (hasCoBonLa ? 20.0 : 0.0);
+        double luckNoGohanWithClover = getGeneralLuckPercent(owner, player, false) + (hasCoBonLa ? 20.0 : 0.0);
+        boolean killerHasGodSet = (player.setClothes != null && player.setClothes.checkSetGod());
+        boolean killerHasDesSet = (player.setClothes != null && player.setClothes.checkSetDes());
         double dragonBallMult = getMountDragonBallMult(owner);
         double goldBarMult = getMountGoldBarMult(owner);
         double upgradeMatMult = getMountUpgradeMatMult(owner);
@@ -957,11 +964,13 @@ public class Mob {
                 hema.options.add(new Item.ItemOption(168, 0));
                 list.add(hema);
             }
-            double foodBase = 50_000.0 * dropMult * upgradeMatMult;
-            if (Util.isTrue(scalePerMillion(foodBase, generalLuckWithClover), 1_000_000L)) {
-                int foodId = Util.nextInt(663, 667);
-                ItemMap food = new ItemMap(zone, foodId, 1, x, yEnd, owner.id);
-                list.add(food);
+            if (killerHasGodSet) {
+                double foodBase = 150_000.0 * dropMult * upgradeMatMult;
+                if (Util.isTrue(scalePerMillion(foodBase, luckNoGohanWithClover), 1_000_000L)) {
+                    int foodId = Util.nextInt(663, 667);
+                    ItemMap food = new ItemMap(zone, foodId, 1, x, yEnd, owner.id);
+                    list.add(food);
+                }
             }
         }
         if (MapService.gI().isMapTuongLai(mapid)) {
@@ -1101,21 +1110,17 @@ public class Mob {
         //========================Đồ Thần + Thức Ăn========================
         Item ownerAura = getActiveOwnerAura(owner);
         if (MapService.gI().isMapCold(mapid)) {
-            // Cân chỉnh giữ độ hiếm Đồ Thần ở Cold (~14.5h không buff, ~3.5-4h kể cả Full Buff May mắn ~305%)
-            // Nếu mặc Hào quang Vô Cực (#11 - thưởng đủ 5 Set SKH) có Opt 249: tăng nhẹ x1.25 tỉ lệ rơi Đồ Thần tại Cold
+            // Tỉ lệ gốc rơi Đồ Thần tại Cold: 1.5% (15.000 / 1.000.000), nhân thêm Hào quang Vô Cực (x1.25) và May mắn
             double coldAuraMult = (ownerAura != null && (ownerAura.template.id == 2007 || ownerAura.isHaveOption(249))) ? 1.25 : 1.0;
-            long coldCap = Math.round(90.0 * dropMult * coldAuraMult);
-            long coldGodChance = Math.min(coldCap, scalePerMillion(22.0 * dropMult * coldAuraMult, generalLuckWithClover));
+            long coldGodChance = scalePerMillion(15_000.0 * dropMult * coldAuraMult, generalLuckWithClover);
             if (Util.isTrue(coldGodChance, 1_000_000L)) {
                 ItemMap it = ItemService.gI().randDoTL(this.zone, 1, x, yEnd, owner.id);
                 list.add(it);
             }
         }
 
-        boolean hasGodSet = (player.setClothes != null && player.setClothes.checkSetGod())
-                || (owner.setClothes != null && owner.setClothes.checkSetGod());
-        if (!MapService.gI().isMapVuTru6(mapid) && hasGodSet
-                && Util.isTrue(scalePerMillion(20_000.0 * dropMult * upgradeMatMult, generalLuckWithClover), 1_000_000L)) {
+        if (MapService.gI().isMapCold(mapid) && killerHasGodSet
+                && Util.isTrue(scalePerMillion(100_000.0 * dropMult * upgradeMatMult, luckNoGohanWithClover), 1_000_000L)) {
             ItemMap it = new ItemMap(zone, Util.nextInt(663, 667), 1, x, yEnd, owner.id);
             list.add(it);
         }
@@ -1145,16 +1150,14 @@ public class Mob {
             list.add(it);
         }
 
-        boolean hasDesSet = (player.setClothes != null && player.setClothes.checkSetDes())
-                || (owner.setClothes != null && owner.setClothes.checkSetDes());
         if (MapService.gI().isMapNgucTu(mapid)) {
-            if (hasDesSet) {
-                double baseFoodDes = (owner.isActive() ? 103_600.0 : 100_000.0) * dropMult * upgradeMatMult;
-                if (Util.isTrue(scalePerMillion(baseFoodDes, generalLuckWithClover), 1_000_000L)) {
+            if (killerHasDesSet) {
+                double baseManhTS = 200_000.0 * dropMult * upgradeMatMult;
+                if (Util.isTrue(scalePerMillion(baseManhTS, luckNoGohanWithClover), 1_000_000L)) {
                     list.add(new ItemMap(zone, Util.nextInt(1066, 1070), 1, x, yEnd, owner.id));
                 }
             }
-            double baseNgucTu = ((owner.isActive() && hasDesSet) ? 280_000.0 : 100_000.0) * dropMult * upgradeMatMult;
+            double baseNgucTu = ((owner.isActive() && killerHasDesSet) ? 280_000.0 : 100_000.0) * dropMult * upgradeMatMult;
             if (Util.isTrue(scalePerMillion(baseNgucTu, generalLuckWithClover), 1_000_000L)) {
                 list.add(new ItemMap(zone, 1229, 1, x, yEnd, owner.id));
             }

@@ -218,7 +218,7 @@ public class NangCapVatPham {
                          //   ChatGlobalService.gI().ThongBaoRoiDo(player, "Chúc mừng " + player.name + " vừa nâng cấp " + "thành công " + itemDo.template.name + " lên +" + optionLevel.param);
                         }
                         CombineService.gI().sendEffectSuccessCombine(player);
-                        CombineService.gI().baHatMit.npcChat(player, "Chúc mừng con nhé");
+                        Service.gI().sendThongBao(player, "Chúc mừng! Đã nâng cấp thành công lên +" + (level + 1) + "!");
                         if (level == 7) {
                             BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.THANH_DAP_DO_7, 1);
                         }
@@ -252,7 +252,7 @@ public class NangCapVatPham {
                             "Ai đó gọi thầy độ chưa?"
                         };
                         String msg = failMessages[Util.nextInt(failMessages.length)];
-                        CombineService.gI().baHatMit.npcChat(player, msg);
+                        Service.gI().sendThongBao(player, msg);
                     }
                     if (player.combineNew.itemsCombine.size() == 3) {
                         InventoryService.gI().subQuantityItemsBag(player, itemDBV, countDaBaoVe);
@@ -261,7 +261,6 @@ public class NangCapVatPham {
                     InventoryService.gI().sendItemBags(player);
                     Service.gI().sendMoney(player);
                     CombineService.gI().reOpenItemCombine(player);
-                    player.combineNew.itemsCombine.clear();
                 }
             }
         }

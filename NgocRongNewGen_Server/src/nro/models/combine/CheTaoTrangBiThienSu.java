@@ -363,7 +363,9 @@ public class CheTaoTrangBiThienSu {
 
         InventoryService.gI().sendItemBags(player);
         Service.gI().sendMoney(player);
-        player.combineNew.itemsCombine.clear();
+        if (isSuccess) {
+            player.combineNew.itemsCombine.clear();
+        }
         CombineService.gI().reOpenItemCombine(player);
     }
 }

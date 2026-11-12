@@ -68,6 +68,7 @@ public class ItemService {
         for (Item.ItemOption io : itemShop.options) {
             item.itemOptions.add(new Item.ItemOption(io));
         }
+        ensureDefaultOptions(item);
         return item;
     }
 
@@ -97,6 +98,9 @@ public class ItemService {
         item.template = getTemplate(tempId);
         item.quantity = quantity;
         item.createTime = System.currentTimeMillis();
+        if (tempId == 1795) {
+            item.itemOptions.add(new Item.ItemOption(250, 0));
+        }
 
         item.content = item.getContent();
         item.info = item.getInfo();
@@ -777,6 +781,51 @@ public class ItemService {
             }
             return;
         }
+        if (item.template.id == 1795) {
+            item.itemOptions.removeIf(io -> io == null || io.optionTemplate == null || io.optionTemplate.id == 73);
+            if (item.getOptionById(250) == null) {
+                item.itemOptions.add(0, new Item.ItemOption(250, 0));
+            }
+            return;
+        }
+        // Mở khóa giao dịch (gỡ Opt 30) cho Trang bị Thần Linh / Hủy Diệt / Thiên Sứ Kích Hoạt
+        if ((item.isDTL() || item.isDHD() || item.isDTS()) && item.isSKH()) {
+            item.itemOptions.removeIf(io -> io != null && io.optionTemplate != null && io.optionTemplate.id == 30);
+        }
+        // Chuẩn hóa yêu cầu sức mạnh cho Găng Thần Linh (10 tỉ) & Găng Hủy Diệt (20 tỉ)
+        int gloveReqBillion = getFixedGlovePowerRequireBillion(item.template.id);
+        if (gloveReqBillion > 0) {
+            boolean foundOpt21 = false;
+            int attackOptIndex = -1;
+            Iterator<Item.ItemOption> itOpt = item.itemOptions.iterator();
+            int idx = 0;
+            while (itOpt.hasNext()) {
+                Item.ItemOption io = itOpt.next();
+                if (io == null || io.optionTemplate == null) {
+                    itOpt.remove();
+                    continue;
+                }
+                if (io.optionTemplate.id == 0 && attackOptIndex == -1) {
+                    attackOptIndex = idx;
+                }
+                if (io.optionTemplate.id == 21) {
+                    if (!foundOpt21) {
+                        io.param = gloveReqBillion;
+                        foundOpt21 = true;
+                    } else {
+                        itOpt.remove();
+                        continue;
+                    }
+                }
+                idx++;
+            }
+            if (!foundOpt21) {
+                int insertPos = (attackOptIndex >= 0 && attackOptIndex + 1 <= item.itemOptions.size())
+                        ? (attackOptIndex + 1)
+                        : item.itemOptions.size();
+                item.itemOptions.add(insertPos, new Item.ItemOption(21, gloveReqBillion));
+            }
+        }
         List<Item.ItemOption> intrinsic = getDefaultIntrinsicOptions(item.template.id);
         if (!intrinsic.isEmpty()) {
             int expectedOptId = intrinsic.get(0).optionTemplate.id;
@@ -836,6 +885,14 @@ public class ItemService {
                 opt228.param = 9;
             }
         }
+    }
+
+    public static int getFixedGlovePowerRequireBillion(int templateId) {
+        return switch (templateId) {
+            case 562, 564, 566 -> 10; // Găng Thần Linh: 10 tỉ sức mạnh
+            case 657, 659, 661 -> 20; // Găng Hủy Diệt: 20 tỉ sức mạnh
+            default -> 0;
+        };
     }
 
     public List<Item.ItemOption> getListOptionItemShop(short id) {
@@ -999,17 +1056,13 @@ public class ItemService {
         short[] giay = {563, 565, 567};
         short[] nhan = {561};
         short[] options = {86, 87};
-        /// Lựa chọn ngẫu nhiên trang bị
-        if (Util.isTrue(10, 100)) {  // Nhẫn (10%)
-            idTempTL = nhan[0];
-        } else if (Util.isTrue(25, 100)) {  // Găng tay (15%)
-            idTempTL = gang[Util.nextInt(3)];
-        } else if (Util.isTrue(45, 100)) {  // Quần (20%)
-            idTempTL = quan[Util.nextInt(3)];
-        } else if (Util.isTrue(75, 100)) {  // Áo (30%)
-            idTempTL = ao[Util.nextInt(3)];
-        } else {  // Giày (25%)
-            idTempTL = giay[Util.nextInt(3)];
+        // Chia đều 20% cho 5 món (Áo / Quần / Giày / Găng / Nhẫn) và giữ đều 1/3 giữa 3 hành tinh (TĐ / NM / XD)
+        switch (Util.nextInt(5)) {
+            case 0 -> idTempTL = ao[Util.nextInt(3)];   // Áo: 20% (6.67% mỗi hành tinh)
+            case 1 -> idTempTL = quan[Util.nextInt(3)]; // Quần: 20% (6.67% mỗi hành tinh)
+            case 2 -> idTempTL = giay[Util.nextInt(3)]; // Giày: 20% (6.67% mỗi hành tinh)
+            case 3 -> idTempTL = gang[Util.nextInt(3)]; // Găng: 20% (6.67% mỗi hành tinh)
+            default -> idTempTL = nhan[0];              // Nhẫn: 20% (dùng chung 3 hành tinh)
         }
 
         int tiLe = Util.nextInt(100, 115);
@@ -1113,7 +1166,8 @@ public class ItemService {
             }
         }
 
-        itemoptions.add(new ItemOption(21, Util.nextInt(15, 17)));
+        int reqPowerTl = (idTempTL == 562 || idTempTL == 564 || idTempTL == 566) ? 10 : Util.nextInt(15, 17);
+        itemoptions.add(new ItemOption(21, reqPowerTl));
         ItemMap it = new ItemMap(zone, idTempTL, quantity, x, y, id);
         it.options.clear();
         it.options.addAll(itemoptions);
@@ -1128,17 +1182,13 @@ public class ItemService {
         short[] giay = {563, 565, 567};
         short[] nhan = {561};
         short[] options = {86, 87};
-        /// Lựa chọn ngẫu nhiên trang bị
-        if (Util.isTrue(10, 100)) {  // Nhẫn (10%)
-            idTempTL = nhan[0];
-        } else if (Util.isTrue(25, 100)) {  // Găng tay (15%)
-            idTempTL = gang[Util.nextInt(3)];
-        } else if (Util.isTrue(45, 100)) {  // Quần (20%)
-            idTempTL = quan[Util.nextInt(3)];
-        } else if (Util.isTrue(75, 100)) {  // Áo (30%)
-            idTempTL = ao[Util.nextInt(3)];
-        } else {  // Giày (25%)
-            idTempTL = giay[Util.nextInt(3)];
+        // Chia đều 20% cho 5 món (Áo / Quần / Giày / Găng / Nhẫn) và giữ đều 1/3 giữa 3 hành tinh (TĐ / NM / XD)
+        switch (Util.nextInt(5)) {
+            case 0 -> idTempTL = ao[Util.nextInt(3)];   // Áo: 20% (6.67% mỗi hành tinh)
+            case 1 -> idTempTL = quan[Util.nextInt(3)]; // Quần: 20% (6.67% mỗi hành tinh)
+            case 2 -> idTempTL = giay[Util.nextInt(3)]; // Giày: 20% (6.67% mỗi hành tinh)
+            case 3 -> idTempTL = gang[Util.nextInt(3)]; // Găng: 20% (6.67% mỗi hành tinh)
+            default -> idTempTL = nhan[0];              // Nhẫn: 20% (dùng chung 3 hành tinh)
         }
 
         int tiLe = Util.nextInt(100, 115);
@@ -1243,7 +1293,8 @@ public class ItemService {
         }
 
         // Thêm chỉ số mặc định
-        itemoptions.add(new ItemOption(21, Util.nextInt(15, 17)));
+        int reqPowerTl = (idTempTL == 562 || idTempTL == 564 || idTempTL == 566) ? 10 : Util.nextInt(15, 17);
+        itemoptions.add(new ItemOption(21, reqPowerTl));
 
         // Tạo ItemMap và trả về
         ItemMap it = new ItemMap(zone, idTempTL, quantity, x, y, id);

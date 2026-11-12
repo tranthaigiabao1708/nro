@@ -176,10 +176,10 @@ public class CuongHoaLoSaoPhaLe {
                 opt228.param = targetSlot;
             }
             CombineService.gI().sendEffectSuccessCombine(player);
-            CombineService.gI().baHatMit.npcChat(player, "Chúc mừng con đã cường hóa thành công ô sao pha lê thứ " + targetSlot + "!");
+            Service.gI().sendThongBao(player, "Chúc mừng! Đã cường hóa thành công ô sao pha lê thứ " + targetSlot + "!");
         } else {
             CombineService.gI().sendEffectFailCombine(player);
-            CombineService.gI().baHatMit.npcChat(player, "Cường hóa thất bại rồi, thử lại nhé con!");
+            Service.gI().sendThongBao(player, "Cường hóa thất bại! Các nguyên liệu còn lại được giữ sẵn trong ô.");
         }
 
         Service.gI().sendMoney(player);

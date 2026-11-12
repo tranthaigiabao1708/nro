@@ -35,7 +35,7 @@ import nro.models.utils.TimeUtil;
  */
 public class NPoint {
 
-    public static final byte MAX_LIMIT = 9;
+    public static final byte MAX_LIMIT = 13;
 
     @Setter
     private Player player;
@@ -244,6 +244,9 @@ public class NPoint {
 
     private void setPointWhenWearClothes() {
         resetPoint();
+        if (this.player.setClothes != null) {
+            this.player.setClothes.setup();
+        }
         if (this.player.rewardBlackBall.timeOutOfDateReward[2] > System.currentTimeMillis()) {
             tlHutHp += RewardBlackBall.R3S_1;
         }
@@ -780,9 +783,13 @@ public class NPoint {
                     this.player.inventory.trainArmor = gtl;
                     this.tlSubSD += ItemService.gI().getPercentTrainArmor(gtl);
                 } else {
-                    if (this.player.inventory.trainArmor == null) {
-                        gtl = this.player.inventory.itemsBag.stream().filter(item -> item.isNotNullItem() && item.template.type == 32 && item.itemOptions != null
-                                && item.itemOptions.stream().filter(io -> io.optionTemplate.id == 9 && io.param > 0).findFirst().orElse(null) != null).findFirst().orElse(null);
+                    if (this.player.inventory.trainArmor == null
+                            || !this.player.inventory.trainArmor.isNotNullItem()
+                            || this.player.inventory.trainArmor.itemOptions == null
+                            || !this.player.inventory.itemsBag.contains(this.player.inventory.trainArmor)) {
+                        this.player.inventory.trainArmor = null;
+                        gtl = this.player.inventory.itemsBag.stream().filter(item -> item != null && item.isNotNullItem() && item.template.type == 32 && item.itemOptions != null
+                                && item.itemOptions.stream().filter(io -> io != null && io.optionTemplate != null && io.optionTemplate.id == 9 && io.param > 0).findFirst().orElse(null) != null).findFirst().orElse(null);
                         if (gtl == null) {
                             return;
                         }
@@ -790,7 +797,7 @@ public class NPoint {
                     }
                     this.wearingTrainArmor = false;
                     for (Item.ItemOption io : this.player.inventory.trainArmor.itemOptions) {
-                        if (io.optionTemplate.id == 9 && io.param > 0) {
+                        if (io != null && io.optionTemplate != null && io.optionTemplate.id == 9 && io.param > 0) {
                             this.tlDame.add(ItemService.gI().getPercentTrainArmor(this.player.inventory.trainArmor));
                             break;
                         }
@@ -815,6 +822,10 @@ public class NPoint {
         setLtdb();
         setThoBulma();
         setTinhNhatNguyetAn();
+        if (this.player.setClothes != null && this.player.setClothes.setThienSu == 5) {
+            this.tlxgc += 25;
+            this.tlxgcc += 25;
+        }
         if (!this.player.isPet && this.player.setClothes != null && this.player.setClothes.gohan == 5) {
             this.tlGold += 30;
         }
@@ -1056,8 +1067,11 @@ public class NPoint {
             this.bossRealHp = this.bossRealHpMax;
             this.hp = this.hpMax;
         } else {
-            long scaled = (this.bossRealHp * (long) this.hpMax + this.bossRealHpMax - 1L) / this.bossRealHpMax;
-            this.hp = (int) Math.max(1L, Math.min((long) this.hpMax, scaled));
+            java.math.BigInteger scaled = java.math.BigInteger.valueOf(this.bossRealHp)
+                    .multiply(java.math.BigInteger.valueOf(this.hpMax))
+                    .add(java.math.BigInteger.valueOf(this.bossRealHpMax - 1L))
+                    .divide(java.math.BigInteger.valueOf(this.bossRealHpMax));
+            this.hp = (int) Math.max(1L, Math.min((long) this.hpMax, scaled.longValue()));
         }
     }
 
@@ -1533,9 +1547,6 @@ public class NPoint {
         }
         switch (skillSelect.template.id) {
             case Skill.DRAGON:
-                if (intrinsic != null && intrinsic.id == 1) {
-                    percentDameIntrinsic = intrinsic.param1;
-                }
                 percentDameSkill = skillSelect.damage;
                 break;
             case Skill.KAMEJOKO:
@@ -1591,6 +1602,9 @@ public class NPoint {
                 }
                 break;
             case Skill.KAIOKEN:
+                if (intrinsic != null && intrinsic.id == 1) {
+                    percentDameIntrinsic = intrinsic.param1;
+                }
                 percentDameSkill = skillSelect.damage;
                 if (player.setClothes.thanVuTruKaio == 5) {
                     percentXDame = 120;
@@ -1707,7 +1721,10 @@ public class NPoint {
 
     public int getCurrPercentHP() {
         if (this.bossRealHpMax > 2_147_483_647L) {
-            return (int) (this.bossRealHp * 100L / this.bossRealHpMax);
+            return (int) java.math.BigInteger.valueOf(Math.max(0L, this.bossRealHp))
+                    .multiply(java.math.BigInteger.valueOf(100L))
+                    .divide(java.math.BigInteger.valueOf(this.bossRealHpMax))
+                    .longValue();
         }
         if (this.hpMax == 0) {
             return 100;
@@ -1848,7 +1865,13 @@ public class NPoint {
     }
 
     public long calSubTNSM(long tiemNang) {
-        if (power >= 90_000_000_000L) {
+        if (power >= 150_000_000_000L) {
+            tiemNang /= 140;
+        } else if (power >= 120_000_000_000L) {
+            tiemNang /= 120;
+        } else if (power >= 100_000_000_000L) {
+            tiemNang /= 110;
+        } else if (power >= 90_000_000_000L) {
             tiemNang /= 100;
         } else if (power >= 80_000_000_000L) {
             tiemNang /= 90;
@@ -1879,26 +1902,40 @@ public class NPoint {
     }
 
     public int subDameInjureWithDeff(long dame, Player plAtt) {
+        if (dame <= 0) {
+            return 0;
+        }
         long def = this.def;
-        if (plAtt != null && plAtt.nPoint != null && plAtt.playerSkill != null
-                && plAtt.playerSkill.skillSelect != null && plAtt.playerSkill.skillSelect.template != null) {
-            int pen = 0;
-            switch (plAtt.playerSkill.skillSelect.template.id) {
-                case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC ->
-                    pen = plAtt.nPoint.tlxgc;
-                case Skill.DRAGON, Skill.DEMON, Skill.GALICK, Skill.LIEN_HOAN, Skill.KAIOKEN ->
-                    pen = plAtt.nPoint.tlxgcc;
+        if (plAtt != null && plAtt.nPoint != null) {
+            Skill activeSkill = null;
+            if (plAtt.newSkill != null && plAtt.newSkill.isStartSkillSpecial && plAtt.newSkill.skillSelect != null) {
+                activeSkill = plAtt.newSkill.skillSelect;
+            } else if (plAtt.playerSkill != null) {
+                activeSkill = plAtt.playerSkill.skillSelect;
             }
-            if (pen > 0) {
-                pen = Math.min(100, pen);
-                def -= def * pen / 100;
+            if (activeSkill != null && activeSkill.template != null) {
+                int pen = 0;
+                switch (activeSkill.template.id) {
+                    case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC,
+                         Skill.MAKANKOSAPPO, Skill.QUA_CAU_KENH_KHI,
+                         Skill.SUPER_KAME, Skill.LIEN_HOAN_CHUONG, Skill.MA_PHONG_BA ->
+                        pen = plAtt.nPoint.tlxgc;
+                    case Skill.DRAGON, Skill.DEMON, Skill.GALICK, Skill.LIEN_HOAN, Skill.KAIOKEN ->
+                        pen = plAtt.nPoint.tlxgcc;
+                    case Skill.TU_SAT ->
+                        pen = Math.max(plAtt.nPoint.tlxgc, plAtt.nPoint.tlxgcc);
+                }
+                if (pen > 0) {
+                    pen = Math.min(100, pen);
+                    def -= def * pen / 100;
+                }
             }
         }
         dame -= def;
-        if (dame < 0) {
+        if (dame <= 0) {
             dame = 1;
         }
-        return (int) dame;
+        return (int) Math.min(2_147_483_647L, dame);
     }
 
     /*------------------------------------------------------------------------*/
@@ -1928,8 +1965,16 @@ public class NPoint {
                 return 80010000000L;
             case 9:
                 return 90010000000L;
+            case 10:
+                return 100010000000L;
+            case 11:
+                return 120010000000L;
+            case 12:
+                return 150010000000L;
+            case 13:
+                return 200010000000L;
             default:
-                return 0;
+                return 200010000000L;
         }
     }
 
@@ -1955,6 +2000,14 @@ public class NPoint {
                 return 80010000000L;
             case 9:
                 return 90010000000L;
+            case 10:
+                return 100010000000L;
+            case 11:
+                return 120010000000L;
+            case 12:
+                return 150010000000L;
+            case 13:
+                return 200010000000L;
             default:
                 return 0;
         }
@@ -1982,8 +2035,16 @@ public class NPoint {
                 return 550000;
             case 9:
                 return 575000;
+            case 10:
+                return 600000;
+            case 11:
+                return 650000;
+            case 12:
+                return 700000;
+            case 13:
+                return 750000;
             default:
-                return 0;
+                return 750000;
         }
     }
 
@@ -2004,13 +2065,21 @@ public class NPoint {
             case 6:
                 return 24000;
             case 7:
-                return 24500;
-            case 8:
                 return 25000;
-            case 9:
+            case 8:
                 return 26000;
+            case 9:
+                return 27000;
+            case 10:
+                return 28500;
+            case 11:
+                return 30500;
+            case 12:
+                return 32500;
+            case 13:
+                return 35000;
             default:
-                return 0;
+                return 35000;
         }
     }
 
@@ -2036,8 +2105,16 @@ public class NPoint {
                 return 1600;
             case 9:
                 return 1800;
+            case 10:
+                return 2000;
+            case 11:
+                return 2200;
+            case 12:
+                return 2500;
+            case 13:
+                return 3000;
             default:
-                return 0;
+                return 3000;
         }
     }
 
@@ -2063,10 +2140,24 @@ public class NPoint {
                 return 9;
             case 9:
                 return 10;
+            case 10:
+                return 11;
+            case 11:
+                return 12;
+            case 12:
+                return 13;
+            case 13:
+                return 14;
             default:
-                return 0;
+                return 14;
         }
     }
+
+    private static final long[] CRIT_TIEM_NANG_COSTS = {
+        50_000_000L, 250_000_000L, 1_250_000_000L, 5_000_000_000L, 15_000_000_000L,
+        30_000_000_000L, 45_000_000_000L, 60_000_000_000L, 75_000_000_000L, 90_000_000_000L,
+        110_000_000_000L, 130_000_000_000L, 150_000_000_000L, 170_000_000_000L
+    };
 
     public void powerUp(long power) {
         this.power += power;
@@ -2078,70 +2169,94 @@ public class NPoint {
     }
 
     public void increasePoint(byte type, short point) {
+        increasePoint(type, point, !player.isPet);
+    }
+
+    public void increasePoint(byte type, short point, boolean notifyLimit) {
         if (point <= 0 || point > 1000) {
             return;
         }
+        Player notifyTarget = player.isPet ? ((Pet) player).master : player;
         long tiemNangUse;
         if (type == 0) {
-            int pointHp = point * 20;
-            tiemNangUse = point * (2 * (this.hpg + 1000) + pointHp - 20) / 2;
-            if ((this.hpg + pointHp) <= getHpMpLimit()) {
-                if (doUseTiemNang(tiemNangUse)) {
-                    hpg += pointHp;
+            int maxPointsAdd = (getHpMpLimit() - this.hpg) / 20;
+            if (maxPointsAdd <= 0) {
+                if (notifyLimit && notifyTarget != null) {
+                    Service.gI().sendThongBaoOK(notifyTarget, "Vui lòng mở giới hạn sức mạnh");
                 }
-            } else {
-                Service.gI().sendThongBaoOK(player, "Vui lòng mở giới hạn sức mạnh");
                 return;
+            }
+            if (point > maxPointsAdd) {
+                point = (short) maxPointsAdd;
+            }
+            long pointHp = (long) point * 20L;
+            tiemNangUse = (long) point * (2L * (this.hpg + 1000L) + pointHp - 20L) / 2L;
+            if (doUseTiemNang(tiemNangUse)) {
+                hpg += (int) pointHp;
             }
         }
         if (type == 1) {
-            int pointMp = point * 20;
-            tiemNangUse = point * (2 * (this.mpg + 1000) + pointMp - 20) / 2;
-            if ((this.mpg + pointMp) <= getHpMpLimit()) {
-                if (doUseTiemNang(tiemNangUse)) {
-                    mpg += pointMp;
+            int maxPointsAdd = (getHpMpLimit() - this.mpg) / 20;
+            if (maxPointsAdd <= 0) {
+                if (notifyLimit && notifyTarget != null) {
+                    Service.gI().sendThongBaoOK(notifyTarget, "Vui lòng mở giới hạn sức mạnh");
                 }
-            } else {
-                Service.gI().sendThongBaoOK(player, "Vui lòng mở giới hạn sức mạnh");
                 return;
+            }
+            if (point > maxPointsAdd) {
+                point = (short) maxPointsAdd;
+            }
+            long pointMp = (long) point * 20L;
+            tiemNangUse = (long) point * (2L * (this.mpg + 1000L) + pointMp - 20L) / 2L;
+            if (doUseTiemNang(tiemNangUse)) {
+                mpg += (int) pointMp;
             }
         }
         if (type == 2) {
-            TaskService.gI().checkDoneTaskNangCS(player);
-            tiemNangUse = point * (2 * this.dameg + point - 1) / 2 * 100;
-            if ((this.dameg + point) <= getDameLimit()) {
-                if (doUseTiemNang(tiemNangUse)) {
-                    dameg += point;
+            int maxPointsAdd = getDameLimit() - this.dameg;
+            if (maxPointsAdd <= 0) {
+                if (notifyLimit && notifyTarget != null) {
+                    Service.gI().sendThongBaoOK(notifyTarget, "Vui lòng mở giới hạn sức mạnh");
                 }
-                TaskService.gI().checkDoneTaskNangCS(player);
-            } else {
-                Service.gI().sendThongBaoOK(player, "Vui lòng mở giới hạn sức mạnh");
                 return;
             }
+            if (point > maxPointsAdd) {
+                point = (short) maxPointsAdd;
+            }
+            TaskService.gI().checkDoneTaskNangCS(player);
+            tiemNangUse = (long) point * (2L * this.dameg + point - 1L) / 2L * 100L;
+            if (doUseTiemNang(tiemNangUse)) {
+                dameg += point;
+            }
+            TaskService.gI().checkDoneTaskNangCS(player);
         }
         if (type == 3) {
-            tiemNangUse = 2 * (this.defg + 5) / 2 * 100000;
-            if ((this.defg + point) <= getDefLimit()) {
-                if (doUseTiemNang(tiemNangUse)) {
-                    defg += point;
+            int maxPointsAdd = getDefLimit() - this.defg;
+            if (maxPointsAdd <= 0) {
+                if (notifyLimit && notifyTarget != null) {
+                    Service.gI().sendThongBaoOK(notifyTarget, "Vui lòng mở giới hạn sức mạnh");
                 }
-            } else {
-                Service.gI().sendThongBaoOK(player, "Vui lòng mở giới hạn sức mạnh");
                 return;
+            }
+            if (point > maxPointsAdd) {
+                point = (short) maxPointsAdd;
+            }
+            tiemNangUse = (long) point * (2L * (this.defg + 5L) + point - 1L) / 2L * 100000L;
+            if (doUseTiemNang(tiemNangUse)) {
+                defg += point;
             }
         }
         if (type == 4) {
-            tiemNangUse = 50000000L;
-            for (int i = 0; i < this.critg; i++) {
-                tiemNangUse *= 5L;
-            }
-            if ((this.critg + point) <= getCritLimit()) {
-                if (doUseTiemNang(tiemNangUse)) {
-                    critg += point;
+            if ((this.critg + 1) > getCritLimit()) {
+                if (notifyLimit && notifyTarget != null) {
+                    Service.gI().sendThongBaoOK(notifyTarget, "Vui lòng mở giới hạn sức mạnh");
                 }
-            } else {
-                Service.gI().sendThongBaoOK(player, "Vui lòng mở giới hạn sức mạnh");
                 return;
+            }
+            int idx = Math.max(0, Math.min(this.critg, CRIT_TIEM_NANG_COSTS.length - 1));
+            tiemNangUse = CRIT_TIEM_NANG_COSTS[idx];
+            if (doUseTiemNang(tiemNangUse)) {
+                critg += 1;
             }
         }
         Service.gI().point(player);

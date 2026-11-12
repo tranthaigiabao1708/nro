@@ -3,19 +3,38 @@ package nro.models.npc_list;
 import nro.models.boss.Boss;
 import nro.models.boss.BossID;
 import nro.models.boss.Boss_Manager.BossManager;
+import nro.models.boss.vodai_vt6.VoDaiVt6Boss;
 import nro.models.consts.BossStatus;
 import nro.models.consts.ConstNpc;
+import nro.models.database.PlayerDAO;
+import nro.models.item.Item;
 import nro.models.managers.SuperRankManager;
 import nro.models.map.service.ChangeMapService;
 import nro.models.map.service.NpcService;
 import nro.models.matches.dai_hoi_vo_thuat.SuperRankService;
+import nro.models.matches.dai_hoi_vo_thuat.VoDaiVuTru6Service;
 import nro.models.npc.Npc;
 import nro.models.player.Player;
 import nro.models.services.InventoryService;
+import nro.models.services.ItemService;
+import nro.models.services.PlayerService;
+import nro.models.services.Service;
 import nro.models.shop.ShopService;
 import nro.models.utils.Util;
 
 public class TrongTai extends Npc {
+
+    private static final int MENU_CLAIM_SUPER_CHEST = 14501;
+
+    private static final String TUTORIAL_VODAI_VT6 =
+            "Giải Đấu Liên Vũ Trụ 6 & 7 quy tụ 9 vòng khiêu chiến liên hoàn:\b"
+            + "Vòng 1-3: Frost (Dạng 1 -> Xung Kích -> Hoàn Thiện)\b"
+            + "Vòng 4: Auta Magetta | Vòng 5: Saiyan Cabba (SSJ)\b"
+            + "Vòng 6-7: Caulifla -> SSJ2 Caulifla\b"
+            + "Vòng 8: Sát Thủ Hit | Vòng 9: Thần Hủy Diệt Champa!\n"
+            + "Quyền lợi kép đặc biệt:\b"
+            + "1) Hạ mỗi Boss trên đài RƠI ĐỒ TRỰC TIẾP (Thỏi vàng, Ma Hồn Hủy Diệt, tỉ lệ Đồ Thần, Hematite, Đá & Công thức Thiên Sứ VIP, Ấn Zeno, Cải trang VIP) và tự hút vào túi sau 5s!\b"
+            + "2) Mỗi vòng vượt qua nâng cấp RƯƠNG SIÊU CẤP (tối đa Cấp 9/9) chứa thêm Thỏi vàng, Ngọc, Ma Hồn, Rương SPL VIP & báu vật Thiên Sứ!";
 
     public TrongTai(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         super(mapId, status, cx, cy, tempId, avartar);
@@ -23,14 +42,12 @@ public class TrongTai extends Npc {
 
     public static String buildUniverse6BossStatusText() {
         StringBuilder sb = new StringBuilder();
-        sb.append("|7|BẢNG THEO DÕI DÀN BOSS GIẢI ĐẤU VŨ TRỤ 6");
+        sb.append("|7|BẢNG THEO DÕI DÀN BOSS VŨ TRỤ 6");
         appendBossLine(sb, BossID.FROST_VT6, "1. Frost (3 cấp - Map 173)");
         appendBossLine(sb, BossID.AUTA_MAGETTA, "2. Auta Magetta (Map 174)");
         appendBossLine(sb, BossID.CABBA_VT6, "3. Saiyan Cabba (Map 176)");
         appendBossLine(sb, BossID.CAULIFLA_VT6, "4. SSJ2 Caulifla (Map 177)");
-        appendBossLine(sb, BossID.HIT_VT6, "5. Sát Thủ Hit (2x Hồn - Map 145)");
-        appendBossLine(sb, BossID.CHAMPA_VT6, "6. Trùm Ẩn Champa (3x Hồn - Map 145)");
-        sb.append("\n|5|Mẹo: Hạ gục Sát Thủ Hit tại Võ Đài sẽ lập tức triệu hồi Thần Hủy Diệt Champa!");
+        sb.append("\n|2|5. Sát Thủ Hit & Thần Hủy Diệt Champa: Đấu trực tiếp tại Vòng 8 & Vòng 9 Giải Đấu Võ Đài Siêu Cấp (Map 145)!");
         return sb.toString();
     }
 
@@ -50,10 +67,21 @@ public class TrongTai extends Npc {
             sb.append("|2|").append(label).append(": Đang xuất hiện tại ")
                     .append(found.zone.map.mapName).append(" Khu ").append(found.zone.zoneId)
                     .append(" (Còn ").append(pct).append("% HP)");
-        } else if (bossId == BossID.CHAMPA_VT6) {
-            sb.append("|0|").append(label).append(": Đang ẩn mình (Giáng lâm khi Hit gục ngã)");
         } else {
             sb.append("|0|").append(label).append(": Đang nghỉ hồi sinh");
+        }
+    }
+
+    private void refreshDailyArenaFeesIfNeeded(Player player) {
+        if (player.goldSuperChallenge <= 0) {
+            player.goldSuperChallenge = 50_000_000L;
+        }
+        if (player.gemSuperChallenge <= 0) {
+            player.gemSuperChallenge = 10L;
+        }
+        if (Util.isAfterMidnight(player.lastTimePKVoDaiVt6)) {
+            player.goldSuperChallenge = 50_000_000L;
+            player.gemSuperChallenge = 10L;
         }
     }
 
@@ -61,24 +89,16 @@ public class TrongTai extends Npc {
         int honTim = InventoryService.gI().getTotalQuantityBag(player, Boss.ITEM_HON_BOSS_TIM);
         int maHon = InventoryService.gI().getTotalQuantityBag(player, Boss.ITEM_MA_HON_HUY_DIET);
         int zenoSeal = InventoryService.gI().getTotalQuantityBag(player, 2029);
-        return "|7|VÕ ĐÀI LIÊN VŨ TRỤ 6 & 7 - TRỌNG TÀI GIẢI ĐẤU"
-                + "\n|2|Hồn Boss Tím hiện có: " + Util.numberToMoney(honTim)
-                + "\n|7|Ma Hồn Hủy Diệt hiện có: " + Util.numberToMoney(maHon)
-                + "\n|5|Ấn Triệu Tập Zeno hiện có: " + Util.numberToMoney(zenoSeal)
-                + "\n|0|Quy tắc thưởng Hồn Vũ Trụ 6: Frost, Magetta, Cabba, Caulifla rơi 1x Ma Hồn,"
-                + "\n|0|riêng Sát Thủ Hit rơi 2x Ma Hồn và Trùm ẩn Champa rơi 3x Ma Hồn Hủy Diệt!";
-    }
-
-    private void showPhase3BridgeInfo(Player player) {
-        String info = "|7|THÔNG TIN CẦU NỐI PHASE 3 - ẤN TRIỆU TẬP ZENO"
-                + "\n|2|1. Vật phẩm mở cổng duy nhất sang Phase 3:"
-                + "\n|0|- Ấn Triệu Tập Zeno là tín vật tối thượng duy nhất dẫn tới Thánh Địa Siêu Cấp."
-                + "\n|0|- Sở hữu bằng cách đổi 120 Ma Hồn Hủy Diệt tại Cửa hàng Giải Đấu"
-                + "\n|0|hoặc săn trực tiếp Trùm ẩn Thần Hủy Diệt Champa (tỉ lệ rơi hiếm 2%)."
-                + "\n|2|2. Chiến trường Ngọc Rồng Siêu Cấp (Phase 3 sắp mở):"
-                + "\n|0|- Nơi các Bang Hội đại chiến PK tranh đoạt 7 viên Ngọc Rồng Siêu Cấp"
-                + "\n|0|(tương tự Ngọc Rồng Đen & Ngọc Rồng Namek) để triệu hồi Rồng Thần Siêu Cấp!";
-        createOtherMenu(player, ConstNpc.IGNORE_MENU, info, "Đóng");
+        int lv = Math.max(0, Math.min(VoDaiVt6Boss.TOTAL_ROUNDS, player.levelSuperChest));
+        String progressLine = (lv >= VoDaiVt6Boss.TOTAL_ROUNDS)
+                ? "ĐÃ VÔ ĐỊCH 9/9 VÒNG (Sẵn sàng nhận Rương Siêu Cấp Cấp 9!)"
+                : ("Cấp " + lv + "/9 - Đối thủ kế tiếp: Vòng " + (lv + 1) + " (" + VoDaiVt6Boss.getRoundFighterTitle(lv) + ")");
+        return "|7|VÕ ĐÀI LIÊN VŨ TRỤ 6 & 7 - ĐẤU TRƯỜNG 9 VÒNG"
+                + "\n|2|Tiến độ Rương Siêu Cấp: " + progressLine
+                + "\n|1|Ma Hồn Hủy Diệt: " + Util.numberToMoney(maHon)
+                + " | Hồn Tím: " + Util.numberToMoney(honTim)
+                + " | Ấn Zeno: " + Util.numberToMoney(zenoSeal)
+                + "\n|0|Hạ mỗi Boss trên võ đài đều rơi trực tiếp vật phẩm + tăng cấp Rương Siêu Cấp!";
     }
 
     @Override
@@ -98,12 +118,32 @@ public class TrongTai extends Npc {
                         "Top 100\nCao Thủ", "Hướng\ndẫn\nthêm", ticketMsg, "Ưu tiên\nđấu ngay", "Về\nĐại Hội\nVõ Thuật");
             }
         } else if (mapId == 145) {
-            createOtherMenu(player, ConstNpc.BASE_MENU,
-                    buildArenaGreeting(player),
-                    "Cửa hàng\nGiải Đấu",
-                    "Tình trạng\nBoss VT6",
-                    "Thông tin\nẤn Zeno",
-                    "Về Đảo Kamê");
+            if (player.isPKDHVT) {
+                Service.gI().sendThongBao(player, "Bạn đang trong trận thi đấu Võ Đài!");
+                return;
+            }
+            refreshDailyArenaFeesIfNeeded(player);
+            String goldBtn = "Thi đấu\n" + Util.numberToMoney(player.goldSuperChallenge) + " vàng";
+            String gemBtn = "Thi đấu\n" + Util.numberToMoney(player.gemSuperChallenge) + " ngọc";
+            if (player.levelSuperChest > 0) {
+                createOtherMenu(player, ConstNpc.BASE_MENU,
+                        buildArenaGreeting(player),
+                        "Hướng dẫn\nGiải Đấu",
+                        goldBtn,
+                        gemBtn,
+                        "Nhận thưởng\nRương Siêu Cấp\nCấp " + player.levelSuperChest,
+                        "Cửa hàng\nGiải Đấu",
+                        "Về Đảo Kamê");
+            } else {
+                createOtherMenu(player, ConstNpc.BASE_MENU,
+                        buildArenaGreeting(player),
+                        "Hướng dẫn\nGiải Đấu",
+                        goldBtn,
+                        gemBtn,
+                        "Cửa hàng\nGiải Đấu",
+                        "Tình trạng\nBoss VT6",
+                        "Về Đảo Kamê");
+            }
         } else {
             super.openBaseMenu(player);
         }
@@ -111,11 +151,14 @@ public class TrongTai extends Npc {
 
     @Override
     public void confirmMenu(Player player, int select) {
-        if (!canOpenNpc(player) || !player.idMark.isBaseMenu()) {
+        if (!canOpenNpc(player)) {
             return;
         }
 
         if (mapId == 113) {
+            if (!player.idMark.isBaseMenu()) {
+                return;
+            }
             if (SuperRankManager.gI().awaiting(player)) {
                 if (select == 1) {
                     ChangeMapService.gI().changeMapNonSpaceship(player, 52, player.location.x, 336);
@@ -131,12 +174,99 @@ public class TrongTai extends Npc {
                 case 4 -> ChangeMapService.gI().changeMapNonSpaceship(player, 52, player.location.x, 336);
             }
         } else if (mapId == 145) {
-            switch (select) {
-                case 0 -> ShopService.gI().opendShop(player, "TRONG_TAI_VT6", false);
-                case 1 -> createOtherMenu(player, ConstNpc.IGNORE_MENU, buildUniverse6BossStatusText(), "Đóng");
-                case 2 -> showPhase3BridgeInfo(player);
-                case 3 -> ChangeMapService.gI().changeMapNonSpaceship(player, 5, 220, 408);
+            if (player.isPKDHVT) {
+                return;
+            }
+            int idxMenu = player.idMark.getIndexMenu();
+            if (idxMenu == ConstNpc.BASE_MENU) {
+                refreshDailyArenaFeesIfNeeded(player);
+                boolean hasChestProgress = player.levelSuperChest > 0;
+                if (select == 0) {
+                    NpcService.gI().createTutorial(player, tempId, avartar, TUTORIAL_VODAI_VT6);
+                } else if (select == 1 || select == 2) {
+                    handleStartArenaChallenge(player, select == 1);
+                } else if (hasChestProgress && select == 3) {
+                    createOtherMenu(player, MENU_CLAIM_SUPER_CHEST,
+                            "|7|NHẬN THƯỞNG RƯƠNG SIÊU CẤP"
+                            + "\n|2|Phần thưởng hiện tại của bạn đang ở Cấp " + player.levelSuperChest + " / " + VoDaiVt6Boss.TOTAL_ROUNDS
+                            + "\n|0|- Sau khi nhận rương, tiến độ vòng sẽ đặt lại về 0 để bạn mở rương lấy thưởng."
+                            + "\n|5|Bạn có chắc chắn muốn chốt nhận Rương Siêu Cấp Cấp " + player.levelSuperChest + " ngay bây giờ?",
+                            "Nhận Rương", "Từ chối");
+                } else if ((hasChestProgress && select == 4) || (!hasChestProgress && select == 3)) {
+                    ShopService.gI().opendShop(player, "TRONG_TAI_VT6", false);
+                } else if (!hasChestProgress && select == 4) {
+                    createOtherMenu(player, ConstNpc.IGNORE_MENU, buildUniverse6BossStatusText(), "Đóng");
+                } else if (select == 5) {
+                    ChangeMapService.gI().changeMapNonSpaceship(player, 5, 220, 408);
+                }
+            } else if (idxMenu == MENU_CLAIM_SUPER_CHEST && select == 0) {
+                handleClaimSuperChest(player);
             }
         }
+    }
+
+    private void handleStartArenaChallenge(Player player, boolean payWithGold) {
+        if (player.levelSuperChest >= VoDaiVt6Boss.TOTAL_ROUNDS) {
+            Service.gI().sendThongBao(player, "Bạn đã vô địch cả 9/9 vòng! Hãy nhận thưởng Rương Siêu Cấp Cấp 9 trước nhé!");
+            return;
+        }
+        if (!InventoryService.gI().findItemSuperChest(player)) {
+            Service.gI().sendThongBao(player, "Hãy mở Rương Siêu Cấp đang có trong hành trang hoặc rương đồ trước khi thi đấu tiếp!");
+            return;
+        }
+        long goldCost = player.goldSuperChallenge;
+        long gemCost = player.gemSuperChallenge;
+        if (payWithGold) {
+            if (player.inventory.gold < goldCost) {
+                Service.gI().sendThongBao(player, "Bạn không đủ vàng, còn thiếu "
+                        + Util.numberToMoney(goldCost - player.inventory.gold) + " vàng!");
+                return;
+            }
+            if (VoDaiVuTru6Service.gI().startChallenge(player)) {
+                player.inventory.gold -= goldCost;
+                PlayerService.gI().sendInfoHpMpMoney(player);
+                player.goldSuperChallenge = Math.min(1_500_000_000L, player.goldSuperChallenge * 2L);
+                player.gemSuperChallenge = Math.min(200L, player.gemSuperChallenge + 10L);
+            }
+        } else {
+            if (player.inventory.gem < gemCost) {
+                Service.gI().sendThongBao(player, "Bạn không đủ ngọc, còn thiếu "
+                        + Util.numberToMoney(gemCost - player.inventory.gem) + " ngọc!");
+                return;
+            }
+            if (VoDaiVuTru6Service.gI().startChallenge(player)) {
+                player.inventory.gem -= (int) gemCost;
+                PlayerService.gI().sendInfoHpMpMoney(player);
+                player.goldSuperChallenge = Math.min(1_500_000_000L, player.goldSuperChallenge * 2L);
+                player.gemSuperChallenge = Math.min(200L, player.gemSuperChallenge + 10L);
+            }
+        }
+    }
+
+    private void handleClaimSuperChest(Player player) {
+        if (player.levelSuperChest <= 0) {
+            Service.gI().sendThongBao(player, "Bạn chưa vượt qua vòng đấu nào để nhận Rương Siêu Cấp!");
+            return;
+        }
+        if (!InventoryService.gI().findItemSuperChest(player)) {
+            Service.gI().sendThongBao(player, "Hãy mở Rương Siêu Cấp đang có trước khi nhận rương mới!");
+            return;
+        }
+        if (InventoryService.gI().getCountEmptyBag(player) <= 0) {
+            this.npcChat(player, "Hành trang đã đầy, cần ít nhất 1 ô trống để nhận Rương Siêu Cấp!");
+            return;
+        }
+        int lv = Math.min(VoDaiVt6Boss.TOTAL_ROUNDS, player.levelSuperChest);
+        Item chest = ItemService.gI().createNewItem((short) 2030);
+        chest.itemOptions.add(new Item.ItemOption(72, lv));
+        chest.itemOptions.add(new Item.ItemOption(30, 0));
+        chest.createTime = System.currentTimeMillis();
+        InventoryService.gI().addItemBag(player, chest);
+        InventoryService.gI().sendItemBags(player);
+        player.levelSuperChest = 0;
+        PlayerDAO.savePlayerAsync(player);
+        NpcService.gI().createMenuConMeo(player, -1, -1,
+                "Bạn nhận được\n|1|Rương Siêu Cấp (Cấp " + lv + ")\n|2|Hãy mở ngay trong hành trang để thu hoạch kho báu Liên Vũ Trụ!",
+                "OK");
     }
 }

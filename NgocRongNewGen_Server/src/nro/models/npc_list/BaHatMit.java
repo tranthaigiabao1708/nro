@@ -161,14 +161,15 @@ public class BaHatMit extends Npc {
                                         "Từ chối");
                             case 4 ->
                                 createOtherMenu(player, ConstNpc.MENU_BA_HAT_MIT_NANG_CAP_SKH,
-                                        "|8|NÂNG CẤP ĐỒ THẦN LINH & HỦY DIỆT KÍCH HOẠT\n"
+                                        "|8|NÂNG CẤP ĐỒ THẦN LINH, HỦY DIỆT & THIÊN SỨ KÍCH HOẠT\n"
                                         + "|2|- Bắt buộc dùng trang bị CÙNG LOẠI & CÙNG HÀNH TINH:\n"
                                         + "  Áo-Áo | Quần-Quần | Găng-Găng | Giày-Giày | Rada-Nhẫn\n"
-                                        + "- Chỉ dùng Đồ SKH + Đồ Thần/Hủy Diệt + Khoáng tái chế, cấm đặt đồ khác!\n"
-                                        + "|1|- Thành công: Chỉ thêm thuộc tính Kích Hoạt sang trang bị mới (không chuyển cấp [+] và sao pha lê đã ép).\n"
-                                        + "|7|- THẤT BẠI SẼ MẤT LUÔN CẢ ĐỒ THẦN/HỦY DIỆT VÀ ĐỒ SKH!",
+                                        + "- Chỉ dùng Đồ SKH + Đồ Thần/Hủy Diệt/Thiên Sứ + Khoáng tái chế, cấm đặt đồ khác!\n"
+                                        + "|1|- Thành công: Truyền Set Kích Hoạt sang trang bị mới & mở khóa cho phép giao dịch (giữ nguyên chỉ số & dòng thưởng của phôi mới).\n"
+                                        + "|7|- Thất bại: Chỉ mất Khoáng tái chế & trang bị chưa kích hoạt, GIỮ NGUYÊN trang bị Kích Hoạt!",
                                         "Lên Đồ Thần\nKích hoạt\n(40%)",
                                         "Lên Hủy Diệt\nKích hoạt\n(30%)",
+                                        "Lên Thiên Sứ\nKích hoạt\n(20%)",
                                         "Cẩm nang\nSet Kích Hoạt");
                             case 5 ->
                                 nro.models.services.SkhCollectionService.gI().showGuide(player);
@@ -187,6 +188,8 @@ public class BaHatMit extends Npc {
                             case 1 ->
                                 CombineService.gI().openTabCombine(player, CombineService.NANG_CAP_HUY_DIET_SKH);
                             case 2 ->
+                                CombineService.gI().openTabCombine(player, CombineService.NANG_CAP_THIEN_SU_SKH);
+                            case 3 ->
                                 nro.models.services.SkhCollectionService.gI().showGuide(player);
                         }
                     } else if (player.idMark.getIndexMenu() == 3) {
@@ -218,7 +221,7 @@ public class BaHatMit extends Npc {
                         }
                     } else if (player.idMark.getIndexMenu() == ConstNpc.MENU_START_COMBINE) {
                         switch (player.combineNew.typeCombine) {
-                            case CombineService.EP_SAO_TRANG_BI, CombineService.PHA_LE_HOA_TRANG_BI, CombineService.CHUYEN_HOA_TRANG_BI_VANG, CombineService.CHUYEN_HOA_TRANG_BI_NGOC, CombineService.PHAN_RA_TRANG_BI_KH, CombineService.TAI_TAO_CAPSULE_KH, CombineService.TAI_TAO_CAPSULE_KH_VIP, CombineService.NANG_CAP_THAN_LINH_SKH, CombineService.NANG_CAP_HUY_DIET_SKH, CombineService.NANG_CAP_SAO_PHA_LE, CombineService.DANH_BONG_SAO_PHA_LE, CombineService.CUONG_HOA_LO_SAO_PHA_LE, CombineService.TAO_DA_HEMATITE, CombineService.DUI_DUC, CombineService.DA_MAI -> {
+                            case CombineService.EP_SAO_TRANG_BI, CombineService.PHA_LE_HOA_TRANG_BI, CombineService.CHUYEN_HOA_TRANG_BI_VANG, CombineService.CHUYEN_HOA_TRANG_BI_NGOC, CombineService.PHAN_RA_TRANG_BI_KH, CombineService.TAI_TAO_CAPSULE_KH, CombineService.TAI_TAO_CAPSULE_KH_VIP, CombineService.NANG_CAP_THAN_LINH_SKH, CombineService.NANG_CAP_HUY_DIET_SKH, CombineService.NANG_CAP_THIEN_SU_SKH, CombineService.NANG_CAP_SAO_PHA_LE, CombineService.DANH_BONG_SAO_PHA_LE, CombineService.CUONG_HOA_LO_SAO_PHA_LE, CombineService.TAO_DA_HEMATITE, CombineService.DUI_DUC, CombineService.DA_MAI -> {
                                 switch (select) {
                                     case 0 ->
                                         CombineService.gI().startCombine(player);
@@ -226,6 +229,8 @@ public class BaHatMit extends Npc {
                                         CombineService.gI().startCombineVip(player, 10);
                                     case 2 ->
                                         CombineService.gI().startCombineVip(player, 100);
+                                    case 3 ->
+                                        CombineService.gI().startCombineVip(player, -1);
                                     default -> {
                                     }
                                 }

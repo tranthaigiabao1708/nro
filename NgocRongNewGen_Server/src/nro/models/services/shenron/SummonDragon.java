@@ -78,7 +78,7 @@ public class SummonDragon {
     private final Map pl_dragonStar;
     private long lastTimeShenronAppeared;
     private long lastTimeShenronWait;
-    private final int timeResummonShenron = 600000;
+    private final int timeResummonShenron = 30000;
     private boolean isShenronAppear;
     private final int timeShenronWait = 300000;
 
@@ -178,7 +178,7 @@ public class SummonDragon {
                     activeShenron(pl, true, SummonDragon.DRAGON_SHENRON);
                     sendBlackGokuhesShenron(pl);
                 } else {
-                    int timeLeft = (int) ((timeResummonShenron - (System.currentTimeMillis() - lastTimeShenronAppeared)) / 1000);
+                    int timeLeft = Math.max(1, (int) ((timeResummonShenron - (System.currentTimeMillis() - lastTimeShenronAppeared)) / 1000));
                     Service.gI().sendThongBao(pl, "Vui lòng đợi " + (timeLeft < 7200 ? timeLeft + " giây" : timeLeft / 60 + " phút") + " nữa");
                 }
             }

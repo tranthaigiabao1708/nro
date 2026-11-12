@@ -139,10 +139,10 @@ namespace Game1
 				message.writer().writeByte(action);
 				if (action == 1)
 				{
-					message.writer().writeByte(id.size());
+					message.writer().writeShort(id.size());
 					for (int i = 0; i < id.size(); i++)
 					{
-						message.writer().writeByte(((Item)id.elementAt(i)).indexUI);
+						message.writer().writeShort(((Item)id.elementAt(i)).indexUI);
 						Res.outz("gui id " + ((Item)id.elementAt(i)).indexUI);
 					}
 				}
@@ -157,7 +157,7 @@ namespace Game1
 			}
 		}
 
-		public void giaodich(sbyte action, int playerID, sbyte index, int num)
+		public void giaodich(sbyte action, int playerID, int index, int num)
 		{
 			Res.outz2("giao dich action = " + action);
 			Message message = null;
@@ -173,13 +173,13 @@ namespace Game1
 				if (action == 2)
 				{
 					Res.outz2("gui len index =" + index + " num= " + num);
-					message.writer().writeByte(index);
+					message.writer().writeShort(index);
 					message.writer().writeInt(num);
 				}
 				if (action == 4)
 				{
 					Res.outz2(">>>> len index =" + index);
-					message.writer().writeByte(index);
+					message.writer().writeShort(index);
 				}
 				session.sendMessage(message);
 			}
@@ -400,7 +400,7 @@ namespace Game1
 			}
 		}
 
-		public void useItem(sbyte type, sbyte where, sbyte index, short template)
+		public void useItem(sbyte type, sbyte where, int index, short template)
 		{
 			Cout.println("USE ITEM! " + type);
 			if (Char.myCharz().statusMe == 14)
@@ -413,7 +413,7 @@ namespace Game1
 				message = new Message(-43);
 				message.writer().writeByte(type);
 				message.writer().writeByte(where);
-				message.writer().writeByte(index);
+				message.writer().writeShort(index);
 				if (index == -1)
 				{
 					message.writer().writeShort(template);
@@ -596,14 +596,14 @@ namespace Game1
 			}
 		}
 
-		public void getItem(sbyte type, sbyte id)
+		public void getItem(sbyte type, int id)
 		{
 			Message message = null;
 			try
 			{
 				message = new Message(-40);
 				message.writer().writeByte(type);
-				message.writer().writeByte(id);
+				message.writer().writeShort(id);
 				session.sendMessage(message);
 			}
 			catch (Exception ex)

@@ -34,7 +34,7 @@ public class DataGame {
     public static byte vsData = 11;
     public static byte vsMap = 4;
     public static byte vsSkill = 2;
-    public static byte vsItem = 50;
+    public static byte vsItem = 55;
     public static int vsRes = 1;
     public static short maxSmallVersion = 32767;
 
@@ -53,7 +53,8 @@ public class DataGame {
 
             long[] smtieuchuan = {1000L, 3000L, 15000L, 40000L, 90000L, 170000L, 340000L, 700000L,
                 1500000L, 15000000L, 150000000L, 1500000000L, 5000000000L, 10000000000L, 40000000000L,
-                50010000000L, 60010000000L, 70010000000L, 80010000000L, 100010000000L, 1000010000000L, 10000010000000L};
+                50010000000L, 60010000000L, 70010000000L, 80010000000L, 100010000000L,
+                120010000000L, 150010000000L, 200010000000L};
             msg.writer().writeByte(smtieuchuan.length);
             for (int i = 0; i < smtieuchuan.length; i++) {
                 msg.writer().writeLong(smtieuchuan[i]);

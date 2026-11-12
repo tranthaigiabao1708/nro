@@ -687,7 +687,7 @@ namespace Game2
 					}
 					if (b13 == 2)
 					{
-						sbyte b14 = msg.reader().readByte();
+						short b14 = msg.reader().readShort();
 						for (int num38 = 0; num38 < GameCanvas.panel.vMyGD.size(); num38++)
 						{
 							Item item = (Item)GameCanvas.panel.vMyGD.elementAt(num38);
@@ -905,10 +905,10 @@ namespace Game2
 					if (b31 == 1)
 					{
 						GameCanvas.panel.vItemCombine.removeAllElements();
-						sbyte b32 = msg.reader().readByte();
+						short b32 = msg.reader().readShort();
 						for (int num117 = 0; num117 < b32; num117++)
 						{
-							sbyte b33 = msg.reader().readByte();
+							short b33 = msg.reader().readShort();
 							for (int num118 = 0; num118 < Char.myCharz().arrItemBag.Length; num118++)
 							{
 								Item item3 = Char.myCharz().arrItemBag[num118];
@@ -2151,7 +2151,7 @@ namespace Game2
 							GameCanvas.panel.shopTabName[num137][0] = array9[0];
 							GameCanvas.panel.shopTabName[num137][1] = string.Empty;
 						}
-						int num138 = msg.reader().readUnsignedByte();
+						int num138 = ((b35 == 2) ? msg.reader().readShort() : msg.reader().readUnsignedByte());
 						Char.myCharz().arrItemShop[num137] = new Item[num138];
 						Panel.strWantToBuy = mResources.say_wat_do_u_want_to_buy;
 						if (b35 == 1)
@@ -2276,7 +2276,7 @@ namespace Game2
 				{
 					sbyte itemAction = msg.reader().readByte();
 					sbyte where = msg.reader().readByte();
-					sbyte index2 = msg.reader().readByte();
+					short index2 = msg.reader().readShort();
 					string info4 = msg.reader().readUTF();
 					GameCanvas.panel.itemRequest(itemAction, info4, where, index2);
 					break;
@@ -2370,7 +2370,7 @@ namespace Game2
 					Res.outz("cAction= " + b25);
 					if (b25 == 0)
 					{
-						int num76 = msg.reader().readUnsignedByte();
+						int num76 = msg.reader().readShort();
 						Char.myCharz().arrItemBag = new Item[num76];
 						GameScr.hpPotion = 0;
 						Res.outz("numC=" + num76);
@@ -2411,7 +2411,7 @@ namespace Game2
 					}
 					if (b25 == 2)
 					{
-						sbyte b26 = msg.reader().readByte();
+						short b26 = msg.reader().readShort();
 						int quantity2 = msg.reader().readInt();
 						int quantity3 = Char.myCharz().arrItemBag[b26].quantity;
 						Char.myCharz().arrItemBag[b26].quantity = quantity2;
@@ -5458,7 +5458,7 @@ namespace Game2
 					catch (Exception)
 					{
 					}
-					Char.myCharz().arrItemBag = new Item[msg.reader().readByte()];
+					Char.myCharz().arrItemBag = new Item[msg.reader().readShort()];
 					GameScr.hpPotion = 0;
 					for (int l = 0; l < Char.myCharz().arrItemBag.Length; l++)
 					{

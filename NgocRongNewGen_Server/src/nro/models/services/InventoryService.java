@@ -218,7 +218,7 @@ public class InventoryService {
             Service.gI().Send_Caitrang(player);
         } else if (where == 1) {
             itemThrow = player.inventory.itemsBag.get(index);
-            if (itemThrow.template != null && itemThrow.template.id == 570) {
+            if (itemThrow.template != null && (itemThrow.template.id == 570 || itemThrow.template.id == 2030)) {
                 Service.gI().sendThongBao(player, "Không thể bỏ vật phẩm này.");
                 return;
             }
@@ -415,12 +415,17 @@ public class InventoryService {
         }
 
         // Kiểm tra yêu cầu sức mạnh
+        ItemService.gI().ensureDefaultOptions(item);
         long powerRequire = item.template.strRequire;
         for (Item.ItemOption io : item.itemOptions) {
             if (io.optionTemplate.id == 21) {
                 powerRequire = io.param * 1000000000L;
                 break;
             }
+        }
+        int fixedGloveBillion = ItemService.getFixedGlovePowerRequireBillion(item.template.id);
+        if (fixedGloveBillion > 0) {
+            powerRequire = fixedGloveBillion * 1000000000L;
         }
         if (player.nPoint.power < powerRequire) {
             Service.gI().sendThongBaoOK(player.isPet ? ((Pet) player).master : player, "Sức mạnh không đủ yêu cầu!");
@@ -590,12 +595,17 @@ public class InventoryService {
                 Item itemBody = player.inventory.itemsBody.get(item.template.type == 32 ? 6 : item.template.type);
                 if (!itemBody.isNotNullItem()) {
                     if (item.template.gender == player.gender || item.template.gender == 3) {
+                        ItemService.gI().ensureDefaultOptions(item);
                         long powerRequire = item.template.strRequire;
                         for (Item.ItemOption io : item.itemOptions) {
                             if (io.optionTemplate.id == 21) {
                                 powerRequire = io.param * 1000000000L;
                                 break;
                             }
+                        }
+                        int fixedGloveBillion = ItemService.getFixedGlovePowerRequireBillion(item.template.id);
+                        if (fixedGloveBillion > 0) {
+                            powerRequire = fixedGloveBillion * 1000000000L;
                         }
                         if (powerRequire <= player.nPoint.power) {
                             player.inventory.itemsBody.set(item.template.type == 32 ? 6 : item.template.type, item);
@@ -690,10 +700,11 @@ public class InventoryService {
         try {
             msg = new Message(-36);
             msg.writer().writeByte(0);
-            msg.writer().writeByte(player.inventory.itemsBag.size());
+            msg.writer().writeShort(player.inventory.itemsBag.size());
             for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
                 Item item = player.inventory.itemsBag.get(i);
                 if (!item.isNotNullItem()) {
+                    msg.writer().writeShort(-1);
                     continue;
                 }
                 msg.writer().writeShort(item.template.id);
@@ -880,11 +891,12 @@ public class InventoryService {
         //gold, gem, ruby
         switch (item.template.type) {
             case 9:
-                if (player.inventory.gold + item.quantity <= Inventory.LIMIT_GOLD) {
+                if (player.inventory.gold < Inventory.LIMIT_GOLD) {
+                    long addedGold = item.quantity;
                     if (player.effectSkill.isChibi && player.typeChibi == 0) {
-                        player.inventory.gold += item.quantity;
+                        addedGold += item.quantity;
                     }
-                    player.inventory.gold += item.quantity;
+                    player.inventory.addGold(addedGold);
                     Service.gI().sendMoney(player);
                     return true;
                 } else {
@@ -913,19 +925,19 @@ public class InventoryService {
         if (item.template.id == 517) {
             if (player.inventory.itemsBag.size() < Inventory.MAX_ITEMS_BAG) {
                 player.inventory.itemsBag.add(ItemService.gI().createItemNull());
-                Service.gI().sendThongBaoOK(player, "Hành trang của bạn đã được mở rộng thêm 1 ô");
+                Service.gI().sendThongBao(player, "Hành trang đã mở rộng lên " + player.inventory.itemsBag.size() + "/" + Inventory.MAX_ITEMS_BAG + " ô");
                 return true;
             } else {
-                Service.gI().sendThongBaoOK(player, "Hành trang của bạn đã đạt tối đa");
+                Service.gI().sendThongBao(player, "Hành trang của bạn đã đạt tối đa (" + Inventory.MAX_ITEMS_BAG + " ô)");
                 return false;
             }
         } else if (item.template.id == 518) {
             if (player.inventory.itemsBox.size() < Inventory.MAX_ITEMS_BOX) {
                 player.inventory.itemsBox.add(ItemService.gI().createItemNull());
-                Service.gI().sendThongBaoOK(player, "Rương đồ của bạn đã được mở rộng thêm 1 ô");
+                Service.gI().sendThongBao(player, "Rương đồ đã mở rộng lên " + player.inventory.itemsBox.size() + "/" + Inventory.MAX_ITEMS_BOX + " ô");
                 return true;
             } else {
-                Service.gI().sendThongBaoOK(player, "Rương đồ của bạn đã đạt tối đa");
+                Service.gI().sendThongBao(player, "Rương đồ của bạn đã đạt tối đa (" + Inventory.MAX_ITEMS_BOX + " ô)");
                 return false;
             }
         }
@@ -1063,12 +1075,12 @@ public class InventoryService {
         //**********************************************************************
     }
 
-    public byte getCountEmptyBag(Player player) {
+    public int getCountEmptyBag(Player player) {
         return getCountEmptyListItem(player.inventory.itemsBag);
     }
 
-    public byte getCountEmptyListItem(List<Item> list) {
-        byte count = 0;
+    public int getCountEmptyListItem(List<Item> list) {
+        int count = 0;
         for (Item item : list) {
             if (!item.isNotNullItem()) {
                 count++;
@@ -1077,8 +1089,8 @@ public class InventoryService {
         return count;
     }
 
-    public byte getIndexBag(Player pl, Item it) {
-        for (byte i = 0; i < pl.inventory.itemsBag.size(); ++i) {
+    public int getIndexBag(Player pl, Item it) {
+        for (int i = 0; i < pl.inventory.itemsBag.size(); ++i) {
             Item item = pl.inventory.itemsBag.get(i);
             if (item != null && it.equals(item)) {
                 return i;
@@ -1095,6 +1107,20 @@ public class InventoryService {
         }
         for (Item item : player.inventory.itemsBox) {
             if (item.isNotNullItem() && item.template.id == 570) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean findItemSuperChest(Player player) {
+        for (Item item : player.inventory.itemsBag) {
+            if (item.isNotNullItem() && item.template.id == 2030) {
+                return false;
+            }
+        }
+        for (Item item : player.inventory.itemsBox) {
+            if (item.isNotNullItem() && item.template.id == 2030) {
                 return false;
             }
         }

@@ -4,6 +4,8 @@ import nro.models.consts.ConstNpc;
 import nro.models.item.Item;
 import nro.models.item.Item.ItemOption;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import nro.models.player.Player;
 import nro.models.network.Message;
 import nro.models.npc.Npc;
@@ -39,6 +41,7 @@ public class CombineService {
     public static final int TAI_TAO_CAPSULE_KH_VIP = 998;
     public static final int NANG_CAP_THAN_LINH_SKH = 999;
     public static final int NANG_CAP_HUY_DIET_SKH = 1000;
+    public static final int NANG_CAP_THIEN_SU_SKH = 1001;
     public static final int NANG_CAP_SAO_PHA_LE = 100;
     public static final int DANH_BONG_SAO_PHA_LE = 101;
     public static final int CUONG_HOA_LO_SAO_PHA_LE = 102;
@@ -119,6 +122,9 @@ public class CombineService {
                 break;
             case NANG_CAP_HUY_DIET_SKH:
                 NangCapTrangBiKichHoat.showInfoHuyDietSKH(player);
+                break;
+            case NANG_CAP_THIEN_SU_SKH:
+                NangCapTrangBiKichHoat.showInfoThienSuSKH(player);
                 break;
             case NHAP_NGOC_RONG:
                 NhapNgocRong.showInfoCombine(player);
@@ -208,6 +214,9 @@ public class CombineService {
                 break;
             case NANG_CAP_HUY_DIET_SKH:
                 NangCapTrangBiKichHoat.thucHienHuyDietSKH(player);
+                break;
+            case NANG_CAP_THIEN_SU_SKH:
+                NangCapTrangBiKichHoat.thucHienThienSuSKH(player);
                 break;
             case NHAP_NGOC_RONG:
                 NhapNgocRong.nhapNgocRong(player);
@@ -330,9 +339,9 @@ public class CombineService {
             msg.cleanup();
             msg = new Message(-81);
             msg.writer().writeByte(1);
-            msg.writer().writeByte(items.length);
+            msg.writer().writeShort(items.length);
             for (Item item : items) {
-                msg.writer().writeByte(InventoryService.gI().getIndexItemBag(player, item));
+                msg.writer().writeShort(InventoryService.gI().getIndexItemBag(player, item));
             }
             player.sendMessage(msg);
             msg.cleanup();
@@ -367,8 +376,7 @@ public class CombineService {
                     msg.writer().writeUTF("");
                     break;
                 case 1:
-                    msg.writer().writeByte(0);
-                    msg.writer().writeByte(-1);
+                    msg.writer().writeShort(0);
                     break;
                 case 2: // success 0 eff 0
                 case 3: // success 1 eff 0
@@ -579,17 +587,50 @@ public class CombineService {
      * @param player
      */
     public void reOpenItemCombine(Player player) {
+        if (player == null || player.combineNew == null
+                || player.inventory == null || player.inventory.itemsBag == null) {
+            return;
+        }
+        List<Integer> validBagIndices = new ArrayList<>();
+        List<Item> keptItems = new ArrayList<>();
+        for (Item it : player.combineNew.itemsCombine) {
+            if (it == null || !it.isNotNullItem() || it.quantity <= 0) {
+                continue;
+            }
+            int foundIdx = -1;
+            for (int j = 0; j < player.inventory.itemsBag.size(); j++) {
+                Item bagIt = player.inventory.itemsBag.get(j);
+                if (bagIt == it && bagIt.isNotNullItem() && bagIt.quantity > 0) {
+                    foundIdx = j;
+                    break;
+                }
+            }
+            if (foundIdx == -1 && it.template != null && it.template.isUpToUp) {
+                for (int j = 0; j < player.inventory.itemsBag.size(); j++) {
+                    Item bagIt = player.inventory.itemsBag.get(j);
+                    if (bagIt != null && bagIt.isNotNullItem() && bagIt.quantity > 0
+                            && bagIt.template.id == it.template.id && !validBagIndices.contains(j)) {
+                        foundIdx = j;
+                        it = bagIt;
+                        break;
+                    }
+                }
+            }
+            if (foundIdx != -1 && !validBagIndices.contains(foundIdx)) {
+                validBagIndices.add(foundIdx);
+                keptItems.add(it);
+            }
+        }
+        player.combineNew.itemsCombine.clear();
+        player.combineNew.itemsCombine.addAll(keptItems);
+
         Message msg = null;
         try {
             msg = new Message(-81);
             msg.writer().writeByte(REOPEN_TAB_COMBINE);
-            msg.writer().writeByte(player.combineNew.itemsCombine.size());
-            for (Item it : player.combineNew.itemsCombine) {
-                for (int j = 0; j < player.inventory.itemsBag.size(); j++) {
-                    if (it == player.inventory.itemsBag.get(j)) {
-                        msg.writer().writeByte(j);
-                    }
-                }
+            msg.writer().writeShort(validBagIndices.size());
+            for (int idx : validBagIndices) {
+                msg.writer().writeShort(idx);
             }
             player.sendMessage(msg);
         } catch (Exception e) {
@@ -639,9 +680,11 @@ public class CombineService {
             case TAI_TAO_CAPSULE_KH_VIP:
                 return "Tái tạo Capsule VIP\n(10 Khoáng tái chế)\nTự chọn Set KH Mới";
             case NANG_CAP_THAN_LINH_SKH:
-                return "Truyền nguyên Set KH\nsang Đồ Thần Linh cùng loại\n(Thất bại MẤT CẢ 2 MÓN!)";
+                return "Truyền nguyên Set KH\nsang Đồ Thần Linh cùng loại\n(Thất bại giữ nguyên đồ SKH)";
             case NANG_CAP_HUY_DIET_SKH:
-                return "Truyền nguyên Set KH\nsang Đồ Hủy Diệt cùng loại\n(Thất bại MẤT CẢ 2 MÓN!)";
+                return "Truyền nguyên Set KH\nsang Đồ Hủy Diệt cùng loại\n(Thất bại giữ nguyên đồ SKH)";
+            case NANG_CAP_THIEN_SU_SKH:
+                return "Truyền nguyên Set KH\nsang Đồ Thiên Sứ cùng loại\n(Thất bại giữ nguyên đồ SKH)";
             case NHAP_NGOC_RONG:
                 return "Ta sẽ phù phép\ncho 7 viên Ngọc Rồng\nthành 1 viên Ngọc Rồng cấp cao";
             case NANG_CAP_VAT_PHAM:
@@ -703,9 +746,11 @@ public class CombineService {
             case TAI_TAO_CAPSULE_KH_VIP:
                 return "Vào hành trang\nChọn đúng 10 Khoáng tái chế\nPhí: 1 Tỷ vàng\nNhận 1 Capsule Kích Hoạt VIP\n(Mở chọn Set KH Mới & món đồ)";
             case NANG_CAP_THAN_LINH_SKH:
-                return "BẮT BUỘC đặt ĐÚNG 3 ô:\n- 1 Đồ SKH thường (chỉ chuyển dòng Kích Hoạt, không chuyển cấp [+] & sao pha lê)\n- 1 Đồ Thần Linh CÙNG LOẠI & HÀNH TINH\n  (Áo-Áo, Quần-Quần, Găng-Găng, Giày-Giày, Rada-Nhẫn)\n- 2 Khoáng tái chế (+ 500 Tr vàng, tỉ lệ 40%)\nCẤM đặt đồ khác! XỊT MẤT CẢ ĐỒ THẦN & ĐỒ SKH!";
+                return "BẮT BUỘC đặt ĐÚNG 3 ô:\n- 1 Đồ SKH thường (chỉ chuyển dòng Kích Hoạt, không chuyển cấp [+] & sao pha lê)\n- 1 Đồ Thần Linh CÙNG LOẠI & HÀNH TINH\n  (Áo-Áo, Quần-Quần, Găng-Găng, Giày-Giày, Rada-Nhẫn)\n- 2 Khoáng tái chế (+ 500 Tr vàng, tỉ lệ 40%)\nThất bại chỉ mất Đồ Thần & Khoáng, GIỮ NGUYÊN đồ SKH!";
             case NANG_CAP_HUY_DIET_SKH:
-                return "BẮT BUỘC đặt ĐÚNG 3 ô:\n- 1 Đồ Thần Linh SKH (chỉ chuyển dòng Kích Hoạt, không chuyển cấp [+] & sao pha lê)\n- 1 Đồ Hủy Diệt CÙNG LOẠI & HÀNH TINH\n  (Áo-Áo, Quần-Quần, Găng-Găng, Giày-Giày, Nhẫn-Nhẫn)\n- 5 Khoáng tái chế (+ 2 Tỷ vàng, tỉ lệ 30%)\nCẤM đặt đồ khác! XỊT MẤT CẢ ĐỒ HỦY DIỆT & ĐỒ THẦN SKH!";
+                return "BẮT BUỘC đặt ĐÚNG 3 ô:\n- 1 Đồ Thần Linh SKH (chỉ chuyển dòng Kích Hoạt, không chuyển cấp [+] & sao pha lê)\n- 1 Đồ Hủy Diệt CÙNG LOẠI & HÀNH TINH\n  (Áo-Áo, Quần-Quần, Găng-Găng, Giày-Giày, Nhẫn-Nhẫn)\n- 5 Khoáng tái chế (+ 2 Tỷ vàng, tỉ lệ 30%)\nThất bại chỉ mất Đồ Hủy Diệt & Khoáng, GIỮ NGUYÊN Đồ Thần SKH!";
+            case NANG_CAP_THIEN_SU_SKH:
+                return "BẮT BUỘC đặt ĐÚNG 3 ô:\n- 1 Đồ Hủy Diệt SKH (chỉ chuyển dòng Kích Hoạt, không chuyển cấp [+] & sao pha lê)\n- 1 Đồ Thiên Sứ CÙNG LOẠI & HÀNH TINH\n  (Áo-Áo, Quần-Quần, Găng-Găng, Giày-Giày, Nhẫn-Nhẫn)\n- 10 Khoáng tái chế (+ 2 Tỷ vàng, tỉ lệ 20%)\nThất bại chỉ mất Đồ Thiên Sứ & Khoáng, GIỮ NGUYÊN Đồ Hủy Diệt SKH!";
             case CHUYEN_HOA_TRANG_BI_NGOC:
             case CHUYEN_HOA_TRANG_BI_VANG:
                 return "Vào hành trang\nChọn trang bị gốc\n(Áo,quần,găng,giày hoặc rada)\ntừ cấp[+4] trở lên\nChọn tiếp trang bị mới\nchưa nâng cấp cần nhập thể\nsau đó chọn 'Nâng cấp'";

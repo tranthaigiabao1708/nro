@@ -422,7 +422,7 @@ public class EffectSkillService {
     public void removeMabuHold(Player player) {
         player.maBuHold = null;
         player.precentMabuHold = 0;
-        PlayerService.gI().changeAndSendTypePK(player, ConstPlayer.NON_PK);
+        PlayerService.gI().changeAndSendTypePK(player, (player.isBoss && !player.isDie()) ? ConstPlayer.PK_ALL : ConstPlayer.NON_PK);
         Service.gI().sendMabuHold(player, 0, (short) player.location.x, (short) 312);
         player.effectSkill.isMabuHold = false;
     }
@@ -615,7 +615,7 @@ public class EffectSkillService {
     }
 
     public void removeBodyChangeTechnique(Player player) {
-        PlayerService.gI().changeAndSendTypePK(player, 0);
+        PlayerService.gI().changeAndSendTypePK(player, (player.isBoss && !player.isDie()) ? ConstPlayer.PK_ALL : ConstPlayer.NON_PK);
         player.effectSkill.isTanHinh = false;
     }
 }
