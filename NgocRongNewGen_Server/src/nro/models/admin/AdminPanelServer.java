@@ -336,7 +336,7 @@ public class AdminPanelServer {
         String k = keyword.trim().toLowerCase();
         JSONArray arr = new JSONArray();
         for (Template.ItemTemplate t : Manager.ITEM_TEMPLATES) {
-            if (t == null || t.name == null) {
+            if (t == null || t.name == null || t.id == 1441) {
                 continue;
             }
             if (k.isEmpty() || t.name.toLowerCase().contains(k) || String.valueOf(t.id).equals(k)) {
@@ -383,6 +383,9 @@ public class AdminPanelServer {
     private JSONObject addItem(Map<String, String> p) {
         Player pl = online(p.get("name"));
         int itemId = (int) parseLong(p.get("itemId"));
+        if (itemId == 1441) {
+            itemId = 1423;
+        }
         int quantity = (int) parseLong(p.get("quantity"));
         if (quantity <= 0 || quantity > 100_000) {
             return err("Số lượng phải từ 1 đến 100.000");
@@ -711,6 +714,10 @@ public class AdminPanelServer {
     }
 
     private void applyOptions(Item item, List<Item.ItemOption> options, int itemId) {
+        if (itemId == 1423) {
+            ItemService.gI().ensureDefaultOptions(item);
+            return;
+        }
         if (!options.isEmpty()) {
             item.itemOptions = new ArrayList<>();
             for (Item.ItemOption o : options) {

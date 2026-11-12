@@ -352,6 +352,10 @@ public class ConsignShopService {
 
     public boolean itemCanConsign(Item it) {
         if (it != null && it.template != null) {
+            if (it.template.id == 1423 || it.template.id == 1441) {
+                ItemService.gI().ensureDefaultOptions(it);
+                return true;
+            }
             // Cấm ký gửi trang bị Hủy Diệt (kể cả Hủy Diệt SKH), vật phẩm khóa (Opt 30) hoặc có hạn sử dụng (Opt 93)
             if (it.isDHD() || it.hasCannotTradeOrExpiry()) {
                 return false;
@@ -369,7 +373,9 @@ public class ConsignShopService {
                     || it.template.type == 14
                     || it.template.type == 15
                     || it.template.type == 6
-                    || (it.template.id >= 14 && it.template.id <= 20)) {
+                    || (it.template.id >= 14 && it.template.id <= 20)
+                    || it.template.id == 1438
+                    || it.template.id == 1439) {
                 return true;
             }
         }

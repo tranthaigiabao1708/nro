@@ -126,6 +126,9 @@ public class Trade {
                 if (item == null || !item.isNotNullItem()) {
                     return;
                 }
+                if (item.template.id == 1423 || item.template.id == 1441) {
+                    ItemService.gI().ensureDefaultOptions(item);
+                }
                 if (item.template.id == 570) {
                     Service.gI().sendThongBao(pl, "Không thể giao dịch Rương Gỗ");
                     removeItemTrade(pl, index);
@@ -243,6 +246,9 @@ public class Trade {
     private boolean isItemCannotTran(Item item) {
         if (item == null || !item.isNotNullItem()) {
             return true;
+        }
+        if (item.template.id == 1423) {
+            return false;
         }
         // Không cho phép giao dịch trang bị Hủy Diệt (kể cả Hủy Diệt kích hoạt), đồ khóa (Opt 30) hoặc có hạn sử dụng (Opt 93)
         if (item.isDHD() || item.hasCannotTradeOrExpiry()) {

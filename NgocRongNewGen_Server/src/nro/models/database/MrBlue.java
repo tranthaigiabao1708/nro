@@ -418,12 +418,18 @@ public class MrBlue {
                 JSONArray dataItem = (JSONArray) JSONValue.parse(dataArray.get(i).toString());
                 short tempId = Short.parseShort(String.valueOf(dataItem.get(0)));
                 if (tempId != -1) {
+                    if (tempId == 1441) {
+                        tempId = 1423;
+                    }
                     item = ItemService.gI().createNewItem(tempId, Integer.parseInt(String.valueOf(dataItem.get(1))));
                     JSONArray options = (JSONArray) JSONValue.parse(String.valueOf(dataItem.get(2)).replaceAll("\"", ""));
                     for (int j = 0; j < options.size(); j++) {
                         JSONArray opt = (JSONArray) JSONValue.parse(String.valueOf(options.get(j)));
                         item.itemOptions.add(new Item.ItemOption(Integer.parseInt(String.valueOf(opt.get(0))),
                                 Integer.parseInt(String.valueOf(opt.get(1)))));
+                    }
+                    if (tempId == 1423) {
+                        ItemService.gI().ensureDefaultOptions(item);
                     }
                     item.createTime = Long.parseLong(String.valueOf(dataItem.get(3)));
                     if (ItemService.gI().isOutOfDateTime(item)) {
@@ -443,12 +449,18 @@ public class MrBlue {
                 JSONArray dataItem = (JSONArray) JSONValue.parse(dataArray.get(i).toString());
                 short tempId = Short.parseShort(String.valueOf(dataItem.get(0)));
                 if (tempId != -1) {
+                    if (tempId == 1441) {
+                        tempId = 1423;
+                    }
                     item = ItemService.gI().createNewItem(tempId, Integer.parseInt(String.valueOf(dataItem.get(1))));
                     JSONArray options = (JSONArray) JSONValue.parse(String.valueOf(dataItem.get(2)).replaceAll("\"", ""));
                     for (int j = 0; j < options.size(); j++) {
                         JSONArray opt = (JSONArray) JSONValue.parse(String.valueOf(options.get(j)));
                         item.itemOptions.add(new Item.ItemOption(Integer.parseInt(String.valueOf(opt.get(0))),
                                 Integer.parseInt(String.valueOf(opt.get(1)))));
+                    }
+                    if (tempId == 1423) {
+                        ItemService.gI().ensureDefaultOptions(item);
                     }
                     item.createTime = Long.parseLong(String.valueOf(dataItem.get(3)));
                     if (item.template.id == 2132) {

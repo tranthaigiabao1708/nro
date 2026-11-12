@@ -1,12 +1,16 @@
 @ECHO OFF
 chcp 65001 >nul
+setlocal EnableDelayedExpansion
 title HỆ THỐNG KHỞI ĐỘNG NGỌC RỒNG NEWGEN (DATABASE + SERVER)
 color 0A
 set "ROOT_DIR=%~dp0"
 set "JAVA_EXE=C:\Users\giaba\.antigravity-ide\extensions\redhat.java-1.58.0-win32-x64\jre\25.0.4.1-win32-x86_64\bin\java.exe"
 if exist "%ROOT_DIR%runtime\jdk21\bin\java.exe" set "JAVA_EXE=%ROOT_DIR%runtime\jdk21\bin\java.exe"
 set "MYSQL_EXE=%ROOT_DIR%runtime\mariadb\bin\mysql.exe"
+if not exist "%MYSQL_EXE%" set "MYSQL_EXE=%ROOT_DIR%runtime\mariadb\bin\mariadb.exe"
 set "NEWGEN_SQL=%ROOT_DIR%Database_NgocRongNewGen\nro_newgen.sql"
+set "CONFIG_SQL=%ROOT_DIR%Database_NgocRongNewGen\data_cau_hinh_shop_item.sql"
+set "SYNC_HASH_FILE=%ROOT_DIR%runtime\mariadb_data\.shop_sync_md5"
 
 echo ====================================================================
 echo   [1/2] KIỂM TRA CƠ SỞ DỮ LIỆU MARIADB (PORT 3306 - DB: nro_newgen)
@@ -27,7 +31,25 @@ if exist "%MYSQL_EXE%" (
         if exist "%NEWGEN_SQL%" (
             echo [INFO] Chưa thấy database nro_newgen, đang tự động nạp từ %NEWGEN_SQL%...
             "%MYSQL_EXE%" -u root -P 3306 -h 127.0.0.1 --default-character-set=utf8mb4 < "%NEWGEN_SQL%"
+            if exist "%CONFIG_SQL%" (
+                set "CUR_MD5="
+                for /f "skip=1 tokens=1" %%h in ('certutil -hashfile "%CONFIG_SQL%" MD5') do if not defined CUR_MD5 set "CUR_MD5=%%h"
+                if defined CUR_MD5 >"%SYNC_HASH_FILE%" echo !CUR_MD5!
+            )
             echo [OK] Đã khởi tạo thành công database nro_newgen!
+        )
+    ) else if exist "%CONFIG_SQL%" (
+        set "CUR_MD5="
+        set "OLD_MD5="
+        for /f "skip=1 tokens=1" %%h in ('certutil -hashfile "%CONFIG_SQL%" MD5') do if not defined CUR_MD5 set "CUR_MD5=%%h"
+        if exist "%SYNC_HASH_FILE%" set /p OLD_MD5=<"%SYNC_HASH_FILE%"
+        if /I not "!CUR_MD5!"=="!OLD_MD5!" (
+            echo [INFO] Phát hiện cập nhật Shop / Vật phẩm mới từ Git, đang đồng bộ an toàn ^(giữ nguyên nhân vật^)...
+            "%MYSQL_EXE%" -u root -P 3306 -h 127.0.0.1 --default-character-set=utf8mb4 nro_newgen < "%CONFIG_SQL%"
+            if not errorlevel 1 (
+                >"%SYNC_HASH_FILE%" echo !CUR_MD5!
+                echo [OK] Đã cập nhật Shop / Vật phẩm mới nhất từ Git!
+            )
         )
     )
 )

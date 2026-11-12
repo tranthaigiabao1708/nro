@@ -1,9 +1,11 @@
+CREATE DATABASE IF NOT EXISTS `nro_newgen` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `nro_newgen`;
 /*M!999999\- enable the sandbox mode */ 
--- MariaDB dump 10.19  Distrib 10.11.11-MariaDB, for Win64 (AMD64)
+-- MariaDB dump 10.19-11.4.4-MariaDB, for Win64 (AMD64)
 --
--- Host: localhost    Database: nro_newgen
+-- Host: 127.0.0.1    Database: nro_newgen
 -- ------------------------------------------------------
--- Server version	10.11.11-MariaDB
+-- Server version	11.4.4-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -14,7 +16,7 @@
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*M!100616 SET @OLD_NOTE_VERBOSITY=@@NOTE_VERBOSITY, NOTE_VERBOSITY=0 */;
 
 --
 -- Table structure for table `account`
@@ -22,7 +24,7 @@
 
 DROP TABLE IF EXISTS `account`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `account` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(64) NOT NULL,
@@ -61,21 +63,403 @@ CREATE TABLE `account` (
   `admin` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `username` (`username`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=224 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `account`
+-- Table structure for table `adminpanel`
 --
 
-LOCK TABLES `account` WRITE;
-/*!40000 ALTER TABLE `account` DISABLE KEYS */;
-INSERT INTO `account` VALUES
-(1,'admin','123456','','2026-11-09 12:52:21','2026-11-09 12:52:21',0,1,'2002-07-30 10:00:00','2002-07-30 10:00:00',NULL,1,9999,-1,1,0,'0',NULL,99999999,0,'','','',0,0,0,0,0,0,0,NULL,0,0,0,1),
-(2,'test','123456','','2026-11-09 12:58:44','2026-11-09 12:58:44',0,0,'2026-11-10 06:01:54','2026-11-10 06:13:09','127.0.0.1',1,20,-1,1,0,'0',NULL,100000,0,'','','',0,0,0,0,0,0,0,NULL,0,0,0,0),
-(3,'1','1','','2026-11-09 20:13:46','2026-11-09 20:13:46',0,0,'2002-07-30 17:00:00','2002-07-30 17:00:00',NULL,1,20,-1,1,0,'0',NULL,100000,0,'','','',0,0,0,0,0,0,0,NULL,0,0,0,0);
-/*!40000 ALTER TABLE `account` ENABLE KEYS */;
-UNLOCK TABLES;
+DROP TABLE IF EXISTS `adminpanel`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `adminpanel` (
+  `domain` text DEFAULT NULL,
+  `title` text DEFAULT NULL,
+  `tenmaychu` text DEFAULT NULL,
+  `logo` text DEFAULT NULL,
+  `trangthai` text NOT NULL,
+  `android` text DEFAULT NULL,
+  `iphone` text DEFAULT NULL,
+  `windows` text DEFAULT NULL,
+  `java` text DEFAULT NULL,
+  `apikey` text DEFAULT NULL,
+  `giatri` int(11) NOT NULL DEFAULT 1,
+  `userlogin` varchar(20) DEFAULT NULL,
+  `stk` varchar(20) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `sessionId` varchar(255) DEFAULT NULL,
+  `deviceId` varchar(255) DEFAULT NULL,
+  `token` varchar(255) DEFAULT NULL,
+  `time` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `bank_transfers`
+--
+
+DROP TABLE IF EXISTS `bank_transfers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `bank_transfers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `transaction_id` varchar(255) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `amount` decimal(15,2) NOT NULL,
+  `description` text DEFAULT NULL,
+  `status` varchar(50) NOT NULL,
+  `sender_bank_name` varchar(255) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `is_credited` tinyint(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `transaction_id` (`transaction_id`) USING BTREE,
+  KEY `username` (`username`) USING BTREE,
+  KEY `status` (`status`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `clan`
+--
+
+DROP TABLE IF EXISTS `clan`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `clan` (
+  `id` int(11) NOT NULL,
+  `NAME` varchar(255) NOT NULL,
+  `NAME_2` varchar(4) NOT NULL,
+  `slogan` varchar(255) NOT NULL DEFAULT '',
+  `img_id` int(11) NOT NULL DEFAULT 0,
+  `power_point` bigint(20) NOT NULL DEFAULT 0,
+  `max_member` smallint(6) NOT NULL DEFAULT 10,
+  `clan_point` int(11) NOT NULL DEFAULT 0,
+  `LEVEL` int(11) NOT NULL DEFAULT 1,
+  `members` text NOT NULL,
+  `tops` text NOT NULL,
+  `create_time` timestamp NOT NULL DEFAULT current_timestamp(),
+  `thanhTichBDKB` varchar(255) NOT NULL DEFAULT '[0,0]',
+  `thongTinLeader` varchar(255) NOT NULL DEFAULT '[0,0,0,0,0]',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `comments`
+--
+
+DROP TABLE IF EXISTS `comments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `comments` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `post_id` int(11) NOT NULL,
+  `nguoidung` varchar(255) NOT NULL,
+  `traloi` text NOT NULL,
+  `gender` int(11) NOT NULL DEFAULT 0,
+  `admin` int(11) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `binhluan` int(11) NOT NULL DEFAULT 0,
+  `image` varchar(255) DEFAULT NULL,
+  `server` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `post_id` (`post_id`) USING BTREE,
+  CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `giftcode`
+--
+
+DROP TABLE IF EXISTS `giftcode`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `giftcode` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` text NOT NULL,
+  `count_left` int(11) NOT NULL,
+  `detail` text NOT NULL,
+  `datecreate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `expired` timestamp NOT NULL DEFAULT '2037-12-31 17:00:00',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `history_transaction`
+--
+
+DROP TABLE IF EXISTS `history_transaction`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `history_transaction` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `player_1` varchar(255) NOT NULL,
+  `player_2` varchar(255) NOT NULL,
+  `item_player_1` text NOT NULL,
+  `item_player_2` text NOT NULL,
+  `bag_1_before_tran` text NOT NULL,
+  `bag_2_before_tran` text NOT NULL,
+  `bag_1_after_tran` text NOT NULL,
+  `bag_2_after_tran` text NOT NULL,
+  `time_tran` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `napthe`
+--
+
+DROP TABLE IF EXISTS `napthe`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `napthe` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_nap` varchar(100) NOT NULL,
+  `telco` varchar(255) NOT NULL,
+  `serial` varchar(255) NOT NULL,
+  `code` varchar(255) NOT NULL,
+  `amount` int(11) NOT NULL,
+  `status` int(11) NOT NULL,
+  `request_id` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `payments`
+--
+
+DROP TABLE IF EXISTS `payments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `payments` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `refNo` varchar(255) NOT NULL,
+  `date` datetime NOT NULL,
+  `card_serial` varchar(255) DEFAULT NULL,
+  `card_pin` varchar(255) DEFAULT NULL,
+  `declared_amount` int(11) NOT NULL,
+  `api_declared_value` int(11) DEFAULT NULL,
+  `detected_value` int(11) DEFAULT NULL,
+  `received_amount_from_api` int(11) DEFAULT NULL,
+  `final_credited_amount` int(11) DEFAULT 0,
+  `status_text` varchar(255) NOT NULL,
+  `api_status_code` varchar(50) NOT NULL,
+  `api_message` text DEFAULT NULL,
+  `card_telco` varchar(50) DEFAULT NULL,
+  `is_credited` tinyint(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `refNo` (`refNo`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `phongchat`
+--
+
+DROP TABLE IF EXISTS `phongchat`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `phongchat` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_user` int(11) DEFAULT NULL,
+  `noidung` text NOT NULL,
+  `ngaytao` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `player`
+--
+
+DROP TABLE IF EXISTS `player`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `player` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `account_id` int(11) DEFAULT NULL,
+  `name` varchar(20) NOT NULL,
+  `head` int(11) NOT NULL DEFAULT 102,
+  `gender` int(11) NOT NULL,
+  `have_tennis_space_ship` tinyint(1) DEFAULT 0,
+  `clan_id` int(11) NOT NULL DEFAULT -1,
+  `data_inventory` text NOT NULL,
+  `data_location` text NOT NULL,
+  `data_point` text NOT NULL,
+  `data_magic_tree` text NOT NULL,
+  `items_body` text NOT NULL,
+  `items_bag` text NOT NULL,
+  `items_box` text NOT NULL,
+  `items_box_lucky_round` text NOT NULL,
+  `items_daban` text NOT NULL,
+  `friends` text NOT NULL,
+  `enemies` text NOT NULL,
+  `data_intrinsic` text NOT NULL,
+  `data_item_time` text NOT NULL,
+  `data_task` text NOT NULL,
+  `data_mabu_egg` text NOT NULL,
+  `data_charm` text NOT NULL,
+  `skills` text NOT NULL,
+  `skills_shortcut` text NOT NULL,
+  `pet` text NOT NULL,
+  `data_black_ball` text NOT NULL,
+  `data_side_task` text NOT NULL,
+  `create_time` timestamp NOT NULL DEFAULT current_timestamp(),
+  `notify` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `baovetaikhoan` varchar(1000) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '[]',
+  `captcha` varchar(1000) NOT NULL DEFAULT '[]',
+  `data_card` varchar(10000) NOT NULL DEFAULT '[]',
+  `lasttimepkcommeson` bigint(20) NOT NULL DEFAULT 0,
+  `bandokhobau` varchar(250) NOT NULL DEFAULT '[]',
+  `doanhtrai` bigint(20) NOT NULL DEFAULT 0,
+  `conduongrandoc` varchar(255) NOT NULL DEFAULT '[]',
+  `masterDoesNotAttack` text NOT NULL,
+  `nhanthoivang` varchar(200) NOT NULL DEFAULT '[]',
+  `ruonggo` varchar(255) NOT NULL DEFAULT '[]',
+  `sieuthanthuy` varchar(255) NOT NULL DEFAULT '[]',
+  `vodaisinhtu` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '[]',
+  `rongxuong` bigint(20) NOT NULL DEFAULT 0,
+  `data_item_event` varchar(1000) NOT NULL DEFAULT '[]',
+  `data_luyentap` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `data_clan_task` varchar(255) NOT NULL DEFAULT '[]',
+  `data_vip` text DEFAULT NULL,
+  `rank` int(11) NOT NULL DEFAULT 0,
+  `data_achievement` text NOT NULL,
+  `giftcode` text NOT NULL,
+  `event_point` int(11) NOT NULL DEFAULT 0,
+  `data_event` text DEFAULT NULL,
+  `dataBadges` text DEFAULT NULL,
+  `dataTaskBadges` text DEFAULT NULL,
+  `firstTimeLogin` timestamp NOT NULL DEFAULT current_timestamp(),
+  `BoughtSkill` text DEFAULT NULL,
+  `LearnSkill` text DEFAULT NULL,
+  `dailyGift` text NOT NULL,
+  `point_sukien` int(11) NOT NULL DEFAULT 0,
+  `thachdauwhis` int(11) NOT NULL DEFAULT 0,
+  `point_sukien1` int(11) NOT NULL DEFAULT 0,
+  `point_maydam` int(11) NOT NULL DEFAULT 0,
+  `total_damage_maydam` bigint(20) NOT NULL,
+  `data_duahau_egg` text NOT NULL,
+  `checkNhanQua` varchar(255) NOT NULL DEFAULT '[1,1,"1970-01-01T00:00:00"]',
+  `thanhTichBang` varchar(255) NOT NULL DEFAULT '[0,0,0,0]',
+  `thanhTichKhiGas` varchar(255) NOT NULL DEFAULT '[0,0,0,0]',
+  `thanhTichCDRD` varchar(255) NOT NULL DEFAULT '[0,0,0,0]',
+  `nhiem_vu_kol` text NOT NULL,
+  `point_sukien2` int(11) NOT NULL DEFAULT 0,
+  `data_skh_collection` text NOT NULL DEFAULT '[]',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `account_id` (`account_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=222 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `posts`
+--
+
+DROP TABLE IF EXISTS `posts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `posts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `tieude` varchar(75) NOT NULL,
+  `noidung` text NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `theloai` int(11) NOT NULL DEFAULT 0,
+  `ghimbai` int(11) NOT NULL DEFAULT 0,
+  `image` varchar(255) DEFAULT NULL,
+  `trangthai` int(11) NOT NULL DEFAULT 0,
+  `tinhtrang` int(11) NOT NULL DEFAULT 0,
+  `like` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `shop_ky_gui`
+--
+
+DROP TABLE IF EXISTS `shop_ky_gui`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shop_ky_gui` (
+  `id` int(11) NOT NULL,
+  `player_id` int(11) NOT NULL,
+  `tab` int(11) NOT NULL,
+  `item_id` int(11) NOT NULL,
+  `gold` int(11) NOT NULL,
+  `gem` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `itemOption` text NOT NULL,
+  `isUpTop` int(11) NOT NULL,
+  `isBuy` int(11) NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `super_rank`
+--
+
+DROP TABLE IF EXISTS `super_rank`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `super_rank` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `player_id` int(11) NOT NULL,
+  `name` text NOT NULL,
+  `rank` int(11) NOT NULL,
+  `last_pk_time` bigint(20) NOT NULL,
+  `last_reward_time` bigint(20) NOT NULL,
+  `ticket` int(11) NOT NULL,
+  `win` int(11) NOT NULL,
+  `lose` int(11) NOT NULL,
+  `history` text NOT NULL,
+  `info` text NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=222 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
+
+-- Dump completed
+
+-- Tai khoan Admin mac dinh cho may moi
+INSERT IGNORE INTO `account` (`id`, `username`, `password`, `is_admin`, `active`) VALUES (1, 'admin', '123456', 1, 1);
+INSERT IGNORE INTO `giftcode` (`id`, `code`, `count_left`, `detail`, `datecreate`, `expired`) VALUES (1, 'tanthu', -1, '[{"id":457,"quantity":20,"options":[{"id":30,"param":0}]},{"id":1635,"quantity":5,"options":[{"id":30,"param":0}]},{"id":1787,"quantity":2,"options":[{"id":30,"param":0}]}]', '2026-01-01 00:00:00', '2035-12-31 23:59:59');
+
+/*M!999999\- enable the sandbox mode */ 
+-- MariaDB dump 10.19-11.4.4-MariaDB, for Win64 (AMD64)
+--
+-- Host: 127.0.0.1    Database: nro_newgen
+-- ------------------------------------------------------
+-- Server version	11.4.4-MariaDB
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*M!100616 SET @OLD_NOTE_VERBOSITY=@@NOTE_VERBOSITY, NOTE_VERBOSITY=0 */;
 
 --
 -- Table structure for table `achievement_template`
@@ -83,7 +467,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `achievement_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `achievement_template` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `info1` text NOT NULL,
@@ -130,51 +514,12 @@ INSERT INTO `achievement_template` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `adminpanel`
---
-
-DROP TABLE IF EXISTS `adminpanel`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `adminpanel` (
-  `domain` text DEFAULT NULL,
-  `title` text DEFAULT NULL,
-  `tenmaychu` text DEFAULT NULL,
-  `logo` text DEFAULT NULL,
-  `trangthai` text NOT NULL,
-  `android` text DEFAULT NULL,
-  `iphone` text DEFAULT NULL,
-  `windows` text DEFAULT NULL,
-  `java` text DEFAULT NULL,
-  `apikey` text DEFAULT NULL,
-  `giatri` int(11) NOT NULL DEFAULT 1,
-  `userlogin` varchar(20) DEFAULT NULL,
-  `stk` varchar(20) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
-  `sessionId` varchar(255) DEFAULT NULL,
-  `deviceId` varchar(255) DEFAULT NULL,
-  `token` varchar(255) DEFAULT NULL,
-  `time` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `adminpanel`
---
-
-LOCK TABLES `adminpanel` WRITE;
-/*!40000 ALTER TABLE `adminpanel` DISABLE KEYS */;
-/*!40000 ALTER TABLE `adminpanel` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `array_head_2_frames`
 --
 
 DROP TABLE IF EXISTS `array_head_2_frames`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `array_head_2_frames` (
   `id` int(11) NOT NULL,
   `data` text NOT NULL,
@@ -245,45 +590,12 @@ INSERT INTO `array_head_2_frames` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `bank_transfers`
---
-
-DROP TABLE IF EXISTS `bank_transfers`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `bank_transfers` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `transaction_id` varchar(255) NOT NULL,
-  `username` varchar(255) NOT NULL,
-  `amount` decimal(15,2) NOT NULL,
-  `description` text DEFAULT NULL,
-  `status` varchar(50) NOT NULL,
-  `sender_bank_name` varchar(255) DEFAULT NULL,
-  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
-  `is_credited` tinyint(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `transaction_id` (`transaction_id`) USING BTREE,
-  KEY `username` (`username`) USING BTREE,
-  KEY `status` (`status`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `bank_transfers`
---
-
-LOCK TABLES `bank_transfers` WRITE;
-/*!40000 ALTER TABLE `bank_transfers` DISABLE KEYS */;
-/*!40000 ALTER TABLE `bank_transfers` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `bg_item_template`
 --
 
 DROP TABLE IF EXISTS `bg_item_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `bg_item_template` (
   `id` int(11) NOT NULL,
   `image_id` int(11) NOT NULL,
@@ -902,47 +1214,12 @@ INSERT INTO `bg_item_template` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `clan`
---
-
-DROP TABLE IF EXISTS `clan`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `clan` (
-  `id` int(11) NOT NULL,
-  `NAME` varchar(255) NOT NULL,
-  `NAME_2` varchar(4) NOT NULL,
-  `slogan` varchar(255) NOT NULL DEFAULT '',
-  `img_id` int(11) NOT NULL DEFAULT 0,
-  `power_point` bigint(20) NOT NULL DEFAULT 0,
-  `max_member` smallint(6) NOT NULL DEFAULT 10,
-  `clan_point` int(11) NOT NULL DEFAULT 0,
-  `LEVEL` int(11) NOT NULL DEFAULT 1,
-  `members` text NOT NULL,
-  `tops` text NOT NULL,
-  `create_time` timestamp NOT NULL DEFAULT current_timestamp(),
-  `thanhTichBDKB` varchar(255) NOT NULL DEFAULT '[0,0]',
-  `thongTinLeader` varchar(255) NOT NULL DEFAULT '[0,0,0,0,0]',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `clan`
---
-
-LOCK TABLES `clan` WRITE;
-/*!40000 ALTER TABLE `clan` DISABLE KEYS */;
-/*!40000 ALTER TABLE `clan` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `clan_task_template`
 --
 
 DROP TABLE IF EXISTS `clan_task_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `clan_task_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -1025,45 +1302,12 @@ INSERT INTO `clan_task_template` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `comments`
---
-
-DROP TABLE IF EXISTS `comments`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `comments` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `post_id` int(11) NOT NULL,
-  `nguoidung` varchar(255) NOT NULL,
-  `traloi` text NOT NULL,
-  `gender` int(11) NOT NULL DEFAULT 0,
-  `admin` int(11) NOT NULL DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `binhluan` int(11) NOT NULL DEFAULT 0,
-  `image` varchar(255) DEFAULT NULL,
-  `server` int(11) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `post_id` (`post_id`) USING BTREE,
-  CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `comments`
---
-
-LOCK TABLES `comments` WRITE;
-/*!40000 ALTER TABLE `comments` DISABLE KEYS */;
-/*!40000 ALTER TABLE `comments` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `data_badges`
 --
 
 DROP TABLE IF EXISTS `data_badges`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `data_badges` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `idEffect` int(11) NOT NULL,
@@ -1109,7 +1353,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `flag_bag`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `flag_bag` (
   `id` int(11) NOT NULL,
   `icon_data` varchar(1000) NOT NULL,
@@ -1291,42 +1535,12 @@ INSERT INTO `flag_bag` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `giftcode`
---
-
-DROP TABLE IF EXISTS `giftcode`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `giftcode` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `code` text NOT NULL,
-  `count_left` int(11) NOT NULL,
-  `detail` text NOT NULL,
-  `datecreate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `expired` timestamp NOT NULL DEFAULT '2037-12-31 17:00:00',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `giftcode`
---
-
-LOCK TABLES `giftcode` WRITE;
-/*!40000 ALTER TABLE `giftcode` DISABLE KEYS */;
-INSERT INTO `giftcode` VALUES
-(1,'newgen',-1,'[{\"id\":457,\"quantity\":50,\"options\":[{\"id\":30,\"param\":0}]},{\"id\":381,\"quantity\":10,\"options\":[{\"id\":30,\"param\":0}]},{\"id\":382,\"quantity\":10,\"options\":[{\"id\":30,\"param\":0}]},{\"id\":383,\"quantity\":10,\"options\":[{\"id\":30,\"param\":0}]},{\"id\":384,\"quantity\":10,\"options\":[{\"id\":30,\"param\":0}]},{\"id\":385,\"quantity\":10,\"options\":[{\"id\":30,\"param\":0}]}]','2026-11-09 12:52:21','2035-12-31 16:59:59'),
-(2,'tanthu',-1,'[{\"id\":457,\"quantity\":20,\"options\":[{\"id\":30,\"param\":0}]},{\"id\":1635,\"quantity\":5,\"options\":[{\"id\":30,\"param\":0}]},{\"id\":1787,\"quantity\":2,\"options\":[{\"id\":30,\"param\":0}]}]','2026-11-09 12:52:21','2035-12-31 16:59:59');
-/*!40000 ALTER TABLE `giftcode` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `head_avatar`
 --
 
 DROP TABLE IF EXISTS `head_avatar`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `head_avatar` (
   `head_id` int(11) NOT NULL,
   `avatar_id` int(11) NOT NULL,
@@ -1840,43 +2054,12 @@ INSERT INTO `head_avatar` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `history_transaction`
---
-
-DROP TABLE IF EXISTS `history_transaction`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `history_transaction` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `player_1` varchar(255) NOT NULL,
-  `player_2` varchar(255) NOT NULL,
-  `item_player_1` text NOT NULL,
-  `item_player_2` text NOT NULL,
-  `bag_1_before_tran` text NOT NULL,
-  `bag_2_before_tran` text NOT NULL,
-  `bag_1_after_tran` text NOT NULL,
-  `bag_2_after_tran` text NOT NULL,
-  `time_tran` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `history_transaction`
---
-
-LOCK TABLES `history_transaction` WRITE;
-/*!40000 ALTER TABLE `history_transaction` DISABLE KEYS */;
-/*!40000 ALTER TABLE `history_transaction` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `img_by_name`
 --
 
 DROP TABLE IF EXISTS `img_by_name`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `img_by_name` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `NAME` varchar(55) NOT NULL,
@@ -2036,8 +2219,8 @@ INSERT INTO `img_by_name` VALUES
 (142,'mount_46_1',6),
 (143,'mount_47_0',4),
 (144,'mount_47_1',4),
-(145,'aura_3_1',8),
-(146,'aura_4_0',8),
+(145,'mount_48_0',4),
+(146,'mount_48_1',4),
 (147,'aura_4_1',8),
 (148,'mount_49_0',4),
 (149,'mount_49_1',4),
@@ -2058,7 +2241,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `intrinsic`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `intrinsic` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -2295,7 +2478,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `item_option_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `item_option_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -2477,8 +2660,8 @@ INSERT INTO `item_option_template` VALUES
 (164,'Đổi bằng # điểm sự kiện'),
 (165,'Cơ hội ra đòn +#% sát thương lửa khi cận chiến quái'),
 (166,'Ngầu +#% sức đánh lên quái khi bay với Cải Trang Tàu Pảy Pảy'),
-(167,'Tạo không khí lạnh'),
-(168,'Hấp thụ sức mạnh rồi bộc phá'),
+(167,'Dùng cùng Dùi đục để Cường hóa lỗ sao pha lê thứ 8, 9'),
+(168,'Dùng nâng cấp Sao Pha Lê cấp 2 hoặc chế tạo Dùi đục tại Bà Hạt Mít'),
 (169,'Cơ hội hạ độc đối thủ'),
 (170,'Ngầu +#% sức đánh lên quái khi bay với Cải Trang nhà Fide'),
 (171,'Số lượng #K'),
@@ -2574,7 +2757,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `item_shop`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `item_shop` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `tab_id` int(11) NOT NULL,
@@ -2588,7 +2771,7 @@ CREATE TABLE `item_shop` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `tab_id` (`tab_id`) USING BTREE,
   KEY `temp_id` (`temp_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=1029 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=1032 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3257,11 +3440,14 @@ INSERT INTO `item_shop` VALUES
 (910,17,935,1,1,1,150,0,'2025-05-01 13:17:59'),
 (911,17,933,1,1,1,50,0,'2025-05-01 13:18:06'),
 (912,18,282,0,1,1,500,0,'2025-05-01 13:22:23'),
-(913,18,1255,1,1,1,300,4028,'2026-11-09 15:39:03'),
-(914,18,879,1,1,1,300,4028,'2026-11-09 15:39:02'),
-(915,18,878,1,1,1,300,4028,'2026-11-09 15:39:01'),
+(913,47,1255,1,1,1,100,4028,'2026-11-09 15:39:03'),
+(914,47,879,1,1,1,100,4028,'2026-11-09 15:39:02'),
+(915,47,878,1,1,1,100,4028,'2026-11-09 15:39:01'),
 (916,18,1566,1,1,1,99,0,'2025-05-01 13:37:27'),
 (917,18,885,1,1,0,99000000,0,'2025-05-01 13:39:07'),
+(920,17,1423,1,1,1,100,4028,'2026-11-11 13:00:00'),
+(921,17,1438,1,1,1,500,4028,'2026-11-11 13:00:01'),
+(922,17,1439,1,1,1,100,4028,'2026-11-11 13:00:02'),
 (930,50,458,1,1,1,400,0,'2025-05-07 14:35:14'),
 (931,50,455,1,1,1,400,0,'2025-05-07 14:37:45'),
 (932,50,452,1,1,1,400,0,'2025-05-07 14:42:42'),
@@ -3324,18 +3510,18 @@ INSERT INTO `item_shop` VALUES
 (997,44,1297,1,1,1,2,0,'2025-06-07 11:24:08'),
 (998,45,1297,1,1,1,2,0,'2025-06-07 11:24:25'),
 (999,34,987,1,1,1,10,4028,'2026-11-09 15:39:01'),
-(1001,47,1275,1,1,1,600,4028,'2026-11-09 18:01:52'),
-(1002,47,1274,1,1,1,300,4028,'2026-11-09 18:01:52'),
+(1001,47,1275,1,1,1,200,4028,'2026-11-09 18:01:52'),
+(1002,47,1274,1,1,1,50,4028,'2026-11-09 18:01:52'),
 (1003,47,906,1,1,1,1000,4028,'2026-11-09 18:01:52'),
-(1004,47,1783,1,1,1,500,4028,'2026-11-09 18:01:52'),
-(1005,47,1784,1,1,1,1000,4028,'2026-11-09 18:01:52'),
-(1006,47,1781,1,1,1,1000,4028,'2026-11-09 18:01:52'),
-(1007,47,1697,1,1,1,1000,4028,'2026-11-09 18:01:52'),
-(1008,47,1870,1,1,1,1500,4028,'2026-11-09 18:01:52'),
-(1009,47,1815,1,1,1,1500,4028,'2026-11-09 18:01:52'),
-(1010,47,1816,1,1,1,1500,4028,'2026-11-09 18:01:52'),
-(1011,47,1817,1,1,1,1500,4028,'2026-11-09 18:01:52'),
-(1012,48,2002,1,1,1,1500,4028,'2026-11-09 19:46:22'),
+(1004,47,1783,1,1,1,100,4028,'2026-11-09 18:01:52'),
+(1005,47,1784,1,1,1,200,4028,'2026-11-09 18:01:52'),
+(1006,47,1781,1,1,1,1500,4028,'2026-11-11 13:00:10'),
+(1007,47,1697,1,1,1,100,4028,'2026-11-09 18:01:52'),
+(1008,47,1870,1,1,1,500,4028,'2026-11-09 18:01:52'),
+(1009,47,1815,1,1,1,2000,4028,'2026-11-09 18:01:52'),
+(1010,47,1816,1,1,1,2000,4028,'2026-11-09 18:01:52'),
+(1011,47,1817,1,1,1,2000,4028,'2026-11-11 13:00:11'),
+(1012,47,2015,1,1,1,1500,4028,'2026-11-11 13:00:12'),
 (1013,48,2001,1,1,1,1500,4028,'2026-11-09 19:46:22'),
 (1014,48,2000,1,1,1,1500,4028,'2026-11-09 19:46:22'),
 (1015,48,1149,1,1,1,1000,4028,'2026-11-09 19:46:22'),
@@ -3351,7 +3537,10 @@ INSERT INTO `item_shop` VALUES
 (1025,64,2006,1,1,1,1000,4028,'2026-11-09 19:46:22'),
 (1026,64,1443,1,1,1,500,4028,'2026-11-09 19:46:22'),
 (1027,65,2008,1,1,3,200,4028,'2026-11-09 21:35:49'),
-(1028,65,2009,1,1,3,200,4028,'2026-11-09 21:35:49');
+(1028,65,2009,1,1,3,200,4028,'2026-11-09 21:35:49'),
+(1029,47,907,1,1,1,1500,4028,'2026-11-12 02:30:00'),
+(1030,47,1731,1,1,1,1500,4028,'2026-11-12 02:30:01'),
+(1031,47,1499,1,1,1,1500,4028,'2026-11-12 02:30:02');
 /*!40000 ALTER TABLE `item_shop` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3361,7 +3550,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `item_shop_option`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `item_shop_option` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `item_shop_id` int(11) NOT NULL,
@@ -3372,7 +3561,7 @@ CREATE TABLE `item_shop_option` (
   KEY `option_id` (`option_id`) USING BTREE,
   CONSTRAINT `item_shop_option_ibfk_1` FOREIGN KEY (`item_shop_id`) REFERENCES `item_shop` (`id`) ON DELETE CASCADE,
   CONSTRAINT `item_shop_option_ibfk_2` FOREIGN KEY (`option_id`) REFERENCES `item_option_template` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1929 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2010 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4246,9 +4435,8 @@ INSERT INTO `item_shop_option` VALUES
 (1018,960,30,0),
 (1019,961,30,0),
 (1020,962,30,0),
-(1021,963,30,0),
-(1022,964,30,0),
-(1023,965,30,0),
+(1021,963,73,0),
+(1022,964,73,0),
 (1024,966,30,0),
 (1025,967,30,0),
 (1026,968,50,10),
@@ -4515,12 +4703,6 @@ INSERT INTO `item_shop_option` VALUES
 (1824,1005,103,30),
 (1825,1005,160,60),
 (1826,1005,106,0),
-(1827,1006,0,8000),
-(1828,1006,50,25),
-(1829,1006,77,30),
-(1830,1006,103,30),
-(1831,1006,5,10),
-(1832,1006,106,0),
 (1833,1007,0,8000),
 (1834,1007,50,25),
 (1835,1007,77,30),
@@ -4533,30 +4715,6 @@ INSERT INTO `item_shop_option` VALUES
 (1842,1008,103,30),
 (1843,1008,5,10),
 (1844,1008,106,0),
-(1845,1009,0,10000),
-(1846,1009,50,25),
-(1847,1009,77,30),
-(1848,1009,103,30),
-(1849,1009,106,0),
-(1850,1009,38,0),
-(1851,1010,0,10000),
-(1852,1010,50,25),
-(1853,1010,77,30),
-(1854,1010,103,30),
-(1855,1010,106,0),
-(1856,1010,38,0),
-(1857,1011,0,10000),
-(1858,1011,50,25),
-(1859,1011,77,30),
-(1860,1011,103,30),
-(1861,1011,106,0),
-(1862,1011,38,0),
-(1863,1012,50,18),
-(1864,1012,77,18),
-(1865,1012,103,18),
-(1866,1012,236,25),
-(1867,1012,251,20),
-(1868,1012,252,20),
 (1869,1013,50,18),
 (1870,1013,77,18),
 (1871,1013,103,18),
@@ -4616,7 +4774,68 @@ INSERT INTO `item_shop_option` VALUES
 (1925,1027,232,0),
 (1926,1027,101,20),
 (1927,1028,232,0),
-(1928,1028,101,20);
+(1928,1028,101,20),
+(1929,920,167,0),
+(1930,920,168,0),
+(1931,921,73,0),
+(1932,922,73,0),
+(1933,1006,0,12000),
+(1934,1006,50,32),
+(1935,1006,77,22),
+(1936,1006,103,22),
+(1937,1006,5,18),
+(1938,1006,106,0),
+(1945,1012,22,100),
+(1946,1012,77,42),
+(1947,1012,50,26),
+(1948,1012,103,20),
+(1949,1012,94,10),
+(1950,1012,106,0),
+(1951,1029,0,14000),
+(1952,1029,50,36),
+(1953,1029,77,22),
+(1954,1029,103,22),
+(1955,1029,14,15),
+(1956,1029,5,24),
+(1957,1029,106,0),
+(1958,1030,0,10000),
+(1959,1030,50,28),
+(1960,1030,77,25),
+(1961,1030,103,20),
+(1962,1030,5,12),
+(1963,1030,99,12),
+(1964,1030,106,0),
+(1971,1009,0,12000),
+(1972,1009,50,32),
+(1973,1009,77,22),
+(1974,1009,103,22),
+(1975,1009,5,18),
+(1976,1009,106,0),
+(1977,1009,38,0),
+(1978,1010,0,10000),
+(1979,1010,50,28),
+(1980,1010,77,25),
+(1981,1010,103,20),
+(1982,1010,5,12),
+(1983,1010,99,12),
+(1984,1010,106,0),
+(1985,1010,38,0),
+(1994,1011,0,14000),
+(1995,1011,50,36),
+(1996,1011,77,22),
+(1997,1011,103,22),
+(1998,1011,14,15),
+(1999,1011,5,24),
+(2000,1011,106,0),
+(2001,1011,38,0),
+(2002,1031,23,100),
+(2003,1031,103,42),
+(2004,1031,50,24),
+(2005,1031,77,25),
+(2006,1031,98,10),
+(2007,1031,106,0),
+(2008,965,167,0),
+(2009,965,168,0);
 /*!40000 ALTER TABLE `item_shop_option` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -4626,13 +4845,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `item_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `item_template` (
   `id` int(11) NOT NULL,
   `TYPE` int(11) NOT NULL,
   `gender` smallint(6) NOT NULL,
   `NAME` varchar(255) NOT NULL,
-  `description` varchar(75) DEFAULT NULL,
+  `description` varchar(500) DEFAULT NULL,
   `level` int(11) NOT NULL DEFAULT 0,
   `icon_id` int(11) NOT NULL,
   `part` int(11) NOT NULL,
@@ -4668,13 +4887,13 @@ INSERT INTO `item_template` VALUES
 (11,1,2,'Quần giáp sắt','Giúp tăng HP',3,399,8,0,22000,8000,0,-1,-1,-1),
 (12,4,3,'Rada cấp 1','Giúp tăng Chí Mạng',1,1089,-1,0,1300,600,0,-1,-1,-1),
 (13,6,3,'Đậu thần cấp 1','Thức ăn phục hồi HP và KI',1,241,-1,1,1,0,0,-1,-1,-1),
-(14,12,3,'Ngọc Rồng 1 sao','+9% sức đánh\nƯớc bộ 1s có option +20% may mắn',0,419,-1,1,0,0,0,-1,-1,-1),
-(15,12,3,'Ngọc Rồng 2 sao','+6% sức đánh\nƯớc bộ 1s có option +20% may mắn',0,420,-1,1,0,0,0,-1,-1,-1),
-(16,12,3,'Ngọc Rồng 3 sao','+3% sức đánh (2s : +6%; / 1s+9%)\nƯớc bộ 1s có option +20% may mắn',0,421,-1,1,0,0,0,-1,-1,-1),
+(14,12,3,'Ngọc Rồng 1 sao','+9% Sức đánh (Chỉ ép vào 6 Trang bị chính: Áo, Quần, Găng, Giày, Rada, Cải trang). Ước Rồng Thần 1 sao nhận +20% May mắn',0,419,-1,1,0,0,0,-1,-1,-1),
+(15,12,3,'Ngọc Rồng 2 sao','+6% Sức đánh (Chỉ ép vào 6 Trang bị chính: Áo, Quần, Găng, Giày, Rada, Cải trang). Ước Rồng Thần 1 sao nhận +20% May mắn',0,420,-1,1,0,0,0,-1,-1,-1),
+(16,12,3,'Ngọc Rồng 3 sao','+3% Sức đánh (Chỉ ép vào 6 Trang bị chính: Áo, Quần, Găng, Giày, Rada, Cải trang). Ước Rồng Thần 1 sao nhận +20% May mắn',0,421,-1,1,0,0,0,-1,-1,-1),
 (17,12,3,'Ngọc Rồng 4 sao','Ước bộ 1s có option +20% may mắn',0,422,-1,1,0,0,0,-1,-1,-1),
 (18,12,3,'Ngọc Rồng 5 sao','Ước bộ 1s có option +20% may mắn',0,423,-1,1,0,0,0,-1,-1,-1),
-(19,12,3,'Ngọc Rồng 6 sao','Ước bộ 1s có option +20% may mắn',0,424,-1,1,0,0,0,-1,-1,-1),
-(20,12,3,'Ngọc Rồng 7 sao','Ước bộ 1s có option +20% may mắn',0,425,-1,1,0,0,0,-1,-1,-1),
+(19,12,3,'Ngọc Rồng 6 sao','Dùng ước Rồng Thần. Gom đủ x20 viên + 1 Đá Hematite gặp Bà Hạt Mít tinh luyện thành Sao Pha Lê Khí Cấp 2 (+8% KI)',0,424,-1,1,0,0,0,-1,-1,-1),
+(20,12,3,'Ngọc Rồng 7 sao','Dùng ước Rồng Thần. Gom đủ x20 viên + 1 Đá Hematite gặp Bà Hạt Mít tinh luyện thành Sao Pha Lê Huyết Cấp 2 (+8% HP)',0,425,-1,1,0,0,0,-1,-1,-1),
 (21,2,0,'Găng vải đen','Giúp tăng sức đánh',1,408,-1,0,1500,700,0,-1,-1,-1),
 (22,2,1,'Găng sợi len','Giúp tăng sức đánh',1,411,-1,0,1500,700,0,-1,-1,-1),
 (23,2,2,'Găng vải thô','Giúp tăng sức đánh',1,409,-1,0,1500,700,0,-1,-1,-1),
@@ -5095,13 +5314,13 @@ INSERT INTO `item_template` VALUES
 (438,7,3,'Khiên năng lượng lv5','nâng khiên năng lượng lên cấp 5',5,3784,-1,1,150000000,0,500,-1,-1,-1),
 (439,7,3,'Khiên năng lượng lv6','nâng khiên năng lượng lên cấp 6',6,3784,-1,1,150000000,0,600,-1,-1,-1),
 (440,7,3,'Khiên năng lượng lv7','nâng khiên năng lượng lên cấp 7',7,3784,-1,1,150000000,0,700,-1,-1,-1),
-(441,30,3,'Sao pha lê đỏ','Ép vào đồ sao pha lê để tăng chỉ số',1,3887,-1,1,1,0,0,-1,-1,-1),
-(442,30,3,'Sao pha lê lam','Ép vào đồ sao pha lê để tăng chỉ số',2,3888,-1,1,1,0,0,-1,-1,-1),
-(443,30,3,'Sao pha lê hồng','Ép vào đồ sao pha lê để tăng chỉ số',3,3889,-1,1,1,0,0,-1,-1,-1),
-(444,30,3,'Sao pha lê tím','Ép vào đồ sao pha lê để tăng chỉ số',4,3890,-1,1,1,0,0,-1,-1,-1),
-(445,30,3,'Sao pha lê cam','Ép vào đồ sao pha lê để tăng chỉ số',5,3891,-1,1,1,0,0,-1,-1,-1),
-(446,30,3,'Sao pha lê vàng','Ép vào đồ sao pha lê để tăng chỉ số',6,3892,-1,1,1,0,0,-1,-1,-1),
-(447,30,3,'Sao pha lê lục','Ép vào đồ sao pha lê để tăng chỉ số',7,3893,-1,1,1,0,0,-1,-1,-1),
+(441,30,3,'Sao pha lê đỏ','Sao Pha Lê Cấp 1. Ép vào trang bị (ô 1-7) hoặc gom x20 viên cùng loại gặp Bà Hạt Mít tạo Đá Hematite',1,3887,-1,1,1,0,0,-1,-1,-1),
+(442,30,3,'Sao pha lê lam','Sao Pha Lê Cấp 1. Ép vào trang bị (ô 1-7) hoặc gom x20 viên cùng loại gặp Bà Hạt Mít tạo Đá Hematite',2,3888,-1,1,1,0,0,-1,-1,-1),
+(443,30,3,'Sao pha lê hồng','Sao Pha Lê Cấp 1. Ép vào trang bị (ô 1-7) hoặc gom x20 viên cùng loại gặp Bà Hạt Mít tạo Đá Hematite',3,3889,-1,1,1,0,0,-1,-1,-1),
+(444,30,3,'Sao pha lê tím','Sao Pha Lê Cấp 1. Ép vào trang bị (ô 1-7) hoặc gom x20 viên cùng loại gặp Bà Hạt Mít tạo Đá Hematite',4,3890,-1,1,1,0,0,-1,-1,-1),
+(445,30,3,'Sao pha lê cam','Sao Pha Lê Cấp 1. Ép vào trang bị (ô 1-7) hoặc gom x20 viên cùng loại gặp Bà Hạt Mít tạo Đá Hematite',5,3891,-1,1,1,0,0,-1,-1,-1),
+(446,30,3,'Sao pha lê vàng','Sao Pha Lê Cấp 1. Ép vào trang bị (ô 1-7) hoặc gom x20 viên cùng loại gặp Bà Hạt Mít tạo Đá Hematite',6,3892,-1,1,1,0,0,-1,-1,-1),
+(447,30,3,'Sao pha lê lục','Sao Pha Lê Cấp 1. Ép vào trang bị (ô 1-7) hoặc gom x20 viên cùng loại gặp Bà Hạt Mít tạo Đá Hematite',7,3893,-1,1,1,0,0,-1,-1,-1),
 (448,5,3,'Cải trang','Cải trang thành Đracula',1,3496,-1,0,1500000,0,2000,353,354,355),
 (449,5,3,'Cải trang','Cải trang thành Người Vô Hình',1,3745,-1,0,1500000,0,2000,377,378,379),
 (450,5,3,'Cải trang','Cải trang thành Bông Băng',1,3469,-1,0,1500000,0,2000,350,351,352),
@@ -5222,7 +5441,7 @@ INSERT INTO `item_template` VALUES
 (565,3,1,'Giầy Thần Namếc','Giúp bạn tăng MP',13,4660,-1,0,0,170000000,0,-1,-1,-1),
 (566,2,2,'Găng Thần Xayda','Giúp bạn tăng sức đánh',13,4656,-1,0,0,500000000,0,-1,-1,-1),
 (567,3,2,'Giầy Thần Xayda','Giúp bạn tăng MP',13,4655,-1,0,0,170000000,0,-1,-1,-1),
-(568,27,3,'Quả Trứng','',1,2164,-1,1,0,0,0,-1,-1,-1),
+(568,27,3,'Quả Trứng Mabư Thường','Ấp nở đệ Mabư thường (HT 60% chỉ số)',1,2164,-1,1,0,0,0,-1,-1,-1),
 (569,27,3,'Dưa Hấu','VPSK',1,4671,-1,1,0,0,0,-1,-1,-1),
 (570,27,3,'Rương Gỗ','Giấu bên trong nhiều vật phẩm quý giá',1,265,-1,1,1000,0,0,-1,-1,-1),
 (571,27,3,'Rương Bạc','Giấu bên trong nhiều vật phẩm quý giá',1,5006,-1,1,15000,0,0,-1,-1,-1),
@@ -5561,7 +5780,7 @@ INSERT INTO `item_template` VALUES
 (904,5,3,'Cải trang Black Goku SSJ White','VPSK',1,8248,-1,0,0,0,0,906,904,905),
 (905,5,0,'Cải trang Siêu Thần Trái Đất','VPSK',1,8283,-1,0,0,0,0,910,911,912),
 (906,5,3,'Cải trang Mighty Mask','Cải trang thành Mighty Mask may mắn',1,8251,-1,0,0,0,0,907,908,909),
-(907,5,1,'Cải trang Siêu thần Namếc','VPSK',1,8315,-1,0,0,0,0,913,914,915),
+(907,5,1,'CT Siêu Thần Namếc','',1,8315,913,0,0,0,0,913,914,915),
 (908,27,3,'Ma phong ba','Linh thú đi theo tăng chỉ số và May mắn cho chủ nhân',1,8185,-1,1,0,0,0,-1,-1,-1),
 (909,27,3,'Thần chết cute','VPSK',1,8200,-1,1,0,0,0,-1,-1,-1),
 (910,27,3,'Bí ngô nhí nhảnh','VPSK',1,8192,-1,1,0,0,0,-1,-1,-1),
@@ -5618,8 +5837,8 @@ INSERT INTO `item_template` VALUES
 (961,28,3,'Cờ đen','Bật để PK đồ sát các màu cờ khác',1,9065,-1,0,0,0,0,-1,-1,-1),
 (962,27,3,'Cap thời trang 5 ngày','VPSK',1,9109,-1,1,0,0,0,-1,-1,-1),
 (963,27,3,'Cap thời trang 7 ngày','VPSK',1,9109,-1,1,0,0,0,-1,-1,-1),
-(964,30,3,'Sao pha lê đen cấp 2','Ép vào đồ sao pha lê để tăng chỉ số',8,9176,-1,1,1,0,0,-1,-1,-1),
-(965,30,3,'Sao pha lê trắng cấp 2','Ép vào đồ sao pha lê để tăng chỉ số',9,9175,-1,1,1,0,0,-1,-1,-1),
+(964,30,3,'Sao pha lê đen cấp 2','Sao Pha Lê Cấp 2. Ép vào trang bị hoặc dùng x2 viên + 1 Đá mài đánh bóng lên Sao Pha Lê Lấp Lánh (x2 chỉ số) tại Bà Hạt Mít',8,9176,-1,1,1,0,0,-1,-1,-1),
+(965,30,3,'Sao pha lê trắng cấp 2','Sao Pha Lê Cấp 2. Ép vào trang bị hoặc dùng x2 viên + 1 Đá mài đánh bóng lên Sao Pha Lê Lấp Lánh (x2 chỉ số) tại Bà Hạt Mít',9,9175,-1,1,1,0,0,-1,-1,-1),
 (966,11,3,'Trái bóng','VPSK',1,9396,56,0,0,0,0,-1,-1,-1),
 (967,27,3,'Sao la','VPSK',1,9372,-1,0,0,0,0,-1,-1,-1),
 (968,5,3,'Số 7 Goku','VPSK',1,9383,-1,0,0,0,0,1029,1047,1048),
@@ -6070,32 +6289,32 @@ INSERT INTO `item_template` VALUES
 (1413,29,3,'Kamejoko 2','Trong 30 giây +20% phạm vi sát thương của kỹ năng ...',0,10553,-1,0,0,0,0,-1,-1,-1),
 (1414,27,3,'Pet Shiba','VPSK',0,12096,-1,0,0,0,0,-1,-1,-1),
 (1415,5,3,'Cải trang Dr Myuu','VPSK',0,12098,-1,0,0,0,0,-1,-1,-1),
-(1416,30,3,'Sao pha lê đỏ cấp 2','Ép vào đồ sao pha lê để tăng chỉ số',0,12231,-1,1,0,0,0,-1,-1,-1),
-(1417,30,3,'Sao pha lê lam cấp 2','Ép vào đồ sao pha lê để tăng chỉ số',0,12232,-1,1,0,0,0,-1,-1,-1),
-(1418,30,3,'Sao pha lê hồng cấp 2','Ép vào đồ sao pha lê để tăng chỉ số',0,12233,-1,1,0,0,0,-1,-1,-1),
-(1419,30,3,'Sao pha lê tím cấp 2','Ép vào đồ sao pha lê để tăng chỉ số',0,12234,-1,1,0,0,0,-1,-1,-1),
-(1420,30,3,'Sao pha lê cam cấp 2','Ép vào đồ sao pha lê để tăng chỉ số',0,12235,-1,1,0,0,0,-1,-1,-1),
-(1421,30,3,'Sao pha lê vàng cấp 2','Ép vào đồ sao pha lê để tăng chỉ số',0,12236,-1,1,0,0,0,-1,-1,-1),
-(1422,30,3,'Sao pha lê lục cấp 2','Ép vào đồ sao pha lê để tăng chỉ số',0,12237,-1,1,0,0,0,-1,-1,-1),
-(1423,27,3,'Hematite','Nguyên liệu. Gặp bà Hạt Mít để sử dụng',0,11759,-1,1,0,0,0,-1,-1,-1),
+(1416,30,3,'Sao pha lê đỏ cấp 2','Sao Pha Lê Cấp 2. Ép vào trang bị hoặc dùng x2 viên + 1 Đá mài đánh bóng lên Sao Pha Lê Lấp Lánh (x2 chỉ số) tại Bà Hạt Mít',0,12231,-1,1,0,0,0,-1,-1,-1),
+(1417,30,3,'Sao pha lê lam cấp 2','Sao Pha Lê Cấp 2. Ép vào trang bị hoặc dùng x2 viên + 1 Đá mài đánh bóng lên Sao Pha Lê Lấp Lánh (x2 chỉ số) tại Bà Hạt Mít',0,12232,-1,1,0,0,0,-1,-1,-1),
+(1418,30,3,'Sao pha lê hồng cấp 2','Sao Pha Lê Cấp 2. Ép vào trang bị hoặc dùng x2 viên + 1 Đá mài đánh bóng lên Sao Pha Lê Lấp Lánh (x2 chỉ số) tại Bà Hạt Mít',0,12233,-1,1,0,0,0,-1,-1,-1),
+(1419,30,3,'Sao pha lê tím cấp 2','Sao Pha Lê Cấp 2. Ép vào trang bị hoặc dùng x2 viên + 1 Đá mài đánh bóng lên Sao Pha Lê Lấp Lánh (x2 chỉ số) tại Bà Hạt Mít',0,12234,-1,1,0,0,0,-1,-1,-1),
+(1420,30,3,'Sao pha lê cam cấp 2','Sao Pha Lê Cấp 2. Ép vào trang bị hoặc dùng x2 viên + 1 Đá mài đánh bóng lên Sao Pha Lê Lấp Lánh (x2 chỉ số) tại Bà Hạt Mít',0,12235,-1,1,0,0,0,-1,-1,-1),
+(1421,30,3,'Sao pha lê vàng cấp 2','Sao Pha Lê Cấp 2. Ép vào trang bị hoặc dùng x2 viên + 1 Đá mài đánh bóng lên Sao Pha Lê Lấp Lánh (x2 chỉ số) tại Bà Hạt Mít',0,12236,-1,1,0,0,0,-1,-1,-1),
+(1422,30,3,'Sao pha lê lục cấp 2','Sao Pha Lê Cấp 2. Ép vào trang bị hoặc dùng x2 viên + 1 Đá mài đánh bóng lên Sao Pha Lê Lấp Lánh (x2 chỉ số) tại Bà Hạt Mít',0,12237,-1,1,0,0,0,-1,-1,-1),
+(1423,27,3,'Hematite','Nguyên liệu quý hiếm (Săn Boss 30% rơi x5, ghép từ x20 SPL Cấp 1 tại Bà Hạt Mít, hoặc mua tại Shop Santa)',0,11759,-1,1,0,0,0,-1,-1,-1),
 (1424,5,3,'Cải trang Goku Santa','VPSK',0,12099,-1,0,0,0,0,1344,1345,1346),
 (1425,29,3,'Anti phong ấn','Giảm 1s thời gian phong ấn của Ma phong ba',0,11474,-1,0,0,0,0,-1,-1,-1),
-(1426,30,3,'Sao pha lê đỏ lấp lánh','Ép vào đồ sao pha lê để tăng chỉ số',0,12181,-1,1,0,0,0,-1,-1,-1),
-(1427,30,3,'Sao pha lê lam lấp lánh','Ép vào đồ sao pha lê để tăng chỉ số',0,12182,-1,1,0,0,0,-1,-1,-1),
-(1428,30,3,'Sao pha lê hồng lấp lánh','Ép vào đồ sao pha lê để tăng chỉ số',0,12183,-1,1,0,0,0,-1,-1,-1),
-(1429,30,3,'Sao pha lê tím lấp lánh','Ép vào đồ sao pha lê để tăng chỉ số',0,12184,-1,1,0,0,0,-1,-1,-1),
-(1430,30,3,'Sao pha lê cam lấp lánh','Ép vào đồ sao pha lê để tăng chỉ số',0,12185,-1,1,0,0,0,-1,-1,-1),
-(1431,30,3,'Sao pha lê vàng lấp lánh','Ép vào đồ sao pha lê để tăng chỉ số',0,12186,-1,1,0,0,0,-1,-1,-1),
-(1432,30,3,'Sao pha lê lục lấp lánh','Ép vào đồ sao pha lê để tăng chỉ số',0,12187,-1,1,0,0,0,-1,-1,-1),
-(1433,30,3,'Sao pha lê đen lấp lánh','Ép vào đồ sao pha lê để tăng chỉ số',0,12190,-1,1,0,0,0,-1,-1,-1),
-(1434,30,3,'Sao pha lê trắng lấp lánh','Ép vào đồ sao pha lê để tăng chỉ số',0,12189,-1,1,0,0,0,-1,-1,-1),
+(1426,30,3,'Sao pha lê đỏ lấp lánh','Sao Pha Lê Lấp Lánh (đã đánh bóng x2 chỉ số). Gặp Bà Hạt Mít để ép vào trang bị (tối đa 9 sao gộp dòng)',0,12181,-1,1,0,0,0,-1,-1,-1),
+(1427,30,3,'Sao pha lê lam lấp lánh','Sao Pha Lê Lấp Lánh (đã đánh bóng x2 chỉ số). Gặp Bà Hạt Mít để ép vào trang bị (tối đa 9 sao gộp dòng)',0,12182,-1,1,0,0,0,-1,-1,-1),
+(1428,30,3,'Sao pha lê hồng lấp lánh','Sao Pha Lê Lấp Lánh (đã đánh bóng x2 chỉ số). Gặp Bà Hạt Mít để ép vào trang bị (tối đa 9 sao gộp dòng)',0,12183,-1,1,0,0,0,-1,-1,-1),
+(1429,30,3,'Sao pha lê tím lấp lánh','Sao Pha Lê Lấp Lánh (đã đánh bóng x2 chỉ số). Gặp Bà Hạt Mít để ép vào trang bị (tối đa 9 sao gộp dòng)',0,12184,-1,1,0,0,0,-1,-1,-1),
+(1430,30,3,'Sao pha lê cam lấp lánh','Sao Pha Lê Lấp Lánh (đã đánh bóng x2 chỉ số). Gặp Bà Hạt Mít để ép vào trang bị (tối đa 9 sao gộp dòng)',0,12185,-1,1,0,0,0,-1,-1,-1),
+(1431,30,3,'Sao pha lê vàng lấp lánh','Sao Pha Lê Lấp Lánh (đã đánh bóng x2 chỉ số). Gặp Bà Hạt Mít để ép vào trang bị (tối đa 9 sao gộp dòng)',0,12186,-1,1,0,0,0,-1,-1,-1),
+(1432,30,3,'Sao pha lê lục lấp lánh','Sao Pha Lê Lấp Lánh (đã đánh bóng x2 chỉ số). Gặp Bà Hạt Mít để ép vào trang bị (tối đa 9 sao gộp dòng)',0,12187,-1,1,0,0,0,-1,-1,-1),
+(1433,30,3,'Sao pha lê đen lấp lánh','Sao Pha Lê Lấp Lánh (đã đánh bóng x2 chỉ số). Gặp Bà Hạt Mít để ép vào trang bị (tối đa 9 sao gộp dòng)',0,12190,-1,1,0,0,0,-1,-1,-1),
+(1434,30,3,'Sao pha lê trắng lấp lánh','Sao Pha Lê Lấp Lánh (đã đánh bóng x2 chỉ số). Gặp Bà Hạt Mít để ép vào trang bị (tối đa 9 sao gộp dòng)',0,12189,-1,1,0,0,0,-1,-1,-1),
 (1435,27,3,'Pet chim cánh cụt','Tăng 5% chí mạng cho chủ nhân trong 5 giây, hồi sk...',0,12138,-1,0,0,0,0,-1,-1,-1),
 (1436,5,3,'Cải trang Chi Chi tuần lộc','VPSK',0,12173,-1,0,0,0,0,1350,1351,1352),
 (1437,5,3,'Cải trang Bông Băng Vàng','VPSK',0,12223,-1,0,0,0,0,1353,1354,1355),
-(1438,27,3,'Dùi đục','Vật phẩm hổ trợ. Gặp bà Hạt Mít để sử dụng',0,12139,-1,1,0,0,0,-1,-1,-1),
-(1439,27,3,'Đá mài','Vật phẩm hổ trợ. Gặp bà Hạt Mít để sử dụng',0,12140,-1,1,0,0,0,-1,-1,-1),
-(1440,27,3,'Rương sao pha lê','Vật phẩm hổ trợ',0,12180,-1,0,0,0,0,-1,-1,-1),
-(1441,27,3,'Hematite (khóa)','Nguyên liệu. Gặp bà Hạt Mít để sử dụng',0,11759,-1,0,0,0,0,-1,-1,-1),
+(1438,27,3,'Dùi đục','Dùng cùng Đá Hematite cường hóa mở khóa lỗ sao thứ 8, 9 hoặc ghép x5 Dùi đục thành 1 Đá mài tại Bà Hạt Mít',0,12139,-1,1,0,0,0,-1,-1,-1),
+(1439,27,3,'Đá mài','Dùng cùng x2 Sao Pha Lê Cấp 2 để Đánh bóng lên Sao Pha Lê Lấp Lánh tại Bà Hạt Mít (Săn Boss, chế tạo từ x5 Dùi đục, hoặc mua tại Shop Santa)',0,12140,-1,1,0,0,0,-1,-1,-1),
+(1440,27,3,'Rương sao pha lê','Sử dụng nhận ngẫu nhiên 1 viên Sao Pha Lê Cấp 1',0,12180,-1,0,0,0,0,-1,-1,-1),
+(1441,27,3,'[Không dùng - 1441]','Đã gộp về Hematite [1423] không khóa',0,11759,-1,0,0,0,0,-1,-1,-1),
 (1442,5,3,'Cải trang Super Xayda God','VPSK',0,12305,-1,0,0,0,0,1362,1363,1364),
 (1443,23,3,'Phượng hoàng băng','Thú cưỡi băng giá giúp bay hồi HP, KI và tăng rơi Thỏi vàng',0,12324,22,0,0,0,0,-1,-1,-1),
 (1444,27,3,'Mũi cà rốt','VPSK',0,12175,-1,0,0,0,0,-1,-1,-1),
@@ -6107,7 +6326,7 @@ INSERT INTO `item_template` VALUES
 (1450,5,3,'Cải trang Broly Base','VPSK',0,12272,-1,0,0,0,0,1359,1360,1361),
 (1451,27,3,'Nón Noel','VPSK',0,12314,-1,0,0,0,0,-1,-1,-1),
 (1452,27,3,'Pet Ông già Noel','VPSK',0,12313,-1,0,0,0,0,-1,-1,-1),
-(1453,27,3,'Rương sao pha lê VIP','Vật phẩm hổ trợ',0,12180,-1,0,0,0,0,-1,-1,-1),
+(1453,27,3,'Rương sao pha lê VIP','Sử dụng nhận ngẫu nhiên 1 viên Sao Pha Lê Cấp 2 (bao gồm cả SPL Huyết Cấp 2 & SPL Khí Cấp 2)',0,12180,-1,0,0,0,0,-1,-1,-1),
 (1454,5,3,'Cải trang Super Black Goku Rose','VPSK',0,5173,-1,0,0,0,0,553,551,552),
 (1455,23,3,'Quả bóng tuyết','VPSK',0,12315,25,0,0,0,0,-1,-1,-1),
 (1456,11,3,'Kiếm Kitetsu','VPSK',0,12321,246,0,0,0,0,-1,-1,-1),
@@ -6153,7 +6372,7 @@ INSERT INTO `item_template` VALUES
 (1496,27,3,'Thiệp chúc mừng','VPSK',0,12550,-1,0,0,0,0,-1,-1,-1),
 (1497,27,3,'Pet rồng con thần tài','Tăng 10% giáp cho chủ nhân trong 5 giây, hồi skill...',0,12558,-1,0,0,0,0,-1,-1,-1),
 (1498,5,0,'Cải trang Goku Dragon','VPSK',0,12653,-1,0,0,0,0,1404,1405,1406),
-(1499,5,1,'Cải trang Pôcôlô Dragon','VPSK',0,12657,-1,0,0,0,0,1410,1411,1412),
+(1499,5,1,'CT Pôcôlô Dragon','Cải trang dành cho Namếc',0,12657,1410,0,0,0,0,1410,1411,1412),
 (1500,5,2,'Cải trang Cađíc Dragon','Tăng 10% giáp trong 30 giây, mỗi 120 giây',0,12655,-1,0,0,0,0,1407,1408,1409),
 (1501,27,3,'Hộp quà Lucky 2024','VPSK',0,6983,-1,0,0,0,0,-1,-1,-1),
 (1502,11,3,'Thanh Long Yển Nguyệt đao','VPSK',0,12658,252,0,0,0,0,-1,-1,-1),
@@ -6385,7 +6604,7 @@ INSERT INTO `item_template` VALUES
 (1728,27,3,'Túi mù Halloween','VPSK',0,14284,-1,0,0,0,0,-1,-1,-1),
 (1729,27,3,'Pet Rồng Xanh','VPSK',0,14294,-1,0,0,0,0,-1,-1,-1),
 (1730,27,3,'Vé ước miễn phí','VPSK',0,11474,-1,0,0,0,0,-1,-1,-1),
-(1731,5,3,'CT Black Goku Rose','Đi Cùng Lưỡi Hái Hồng Tăng 5% Sức Đánh Chí Mạng',0,14336,-1,0,0,0,0,1624,1628,1629),
+(1731,5,2,'CT Black Goku Rose','',0,14336,1624,0,0,0,0,1624,1628,1629),
 (1732,5,3,'CT Black Goku','Đi Cùng Black Goku Rose Tăng 5% HP',0,14334,-1,0,0,0,0,1627,1628,1629),
 (1733,23,3,'Thú cưỡi Thích Kim Quy','VPSK',0,14343,47,0,0,0,0,-1,-1,-1),
 (1734,23,3,'Thú cưỡi Phong Xích Lan','VPSK',0,14342,46,0,0,0,0,-1,-1,-1),
@@ -6435,7 +6654,7 @@ INSERT INTO `item_template` VALUES
 (1778,27,3,'Cuốn chả giò','Vật phẩm sự kiện',0,15294,-1,1,0,0,0,-1,-1,-1),
 (1779,5,3,'Cải trang buma','Vật phẩm sự kiện',0,14865,1689,0,0,0,0,1689,1690,1691),
 (1780,5,3,'Cải trang goku','Vật phẩm sự kiện',0,14952,1692,0,0,0,0,1692,1695,1696),
-(1781,5,3,'Cải trang Gohan Beast','Cải trang thành Gohan Beast',0,15283,1697,0,0,0,0,1697,1700,1701),
+(1781,5,0,'CT Gohan Beast','Cải trang dành cho Trái Đất',0,15283,1697,0,0,0,0,1697,1700,1701),
 (1782,5,3,'Cải trang chichi','Vật phẩm sự kiện',0,14863,1702,0,0,0,0,1702,1703,1704),
 (1783,5,3,'Cải trang Broly','Cải trang thành Broly Huyền Thoại',0,14712,1705,0,0,0,0,1705,1708,1709),
 (1784,5,3,'Cải trang Broly Red','Cải trang thành Broly Cuồng Nộ',0,14736,1710,0,0,0,0,1710,1713,1714),
@@ -6663,7 +6882,13 @@ INSERT INTO `item_template` VALUES
 (2006,23,3,'Ván bay thần tài','Thú cưỡi thần tài tăng mạnh rơi Thỏi vàng và nguyên liệu',0,30407,49,0,0,0,0,-1,-1,-1),
 (2007,35,3,'Hào quang Vô Cực','Phần thưởng khi sưu tập đủ 5 Set Kích Hoạt tại Nhà',0,32111,11,0,0,0,0,-1,-1,-1),
 (2008,35,3,'Hào quang Lam Cực','Hào quang hộ thể tăng vận may và tiềm năng',0,32129,29,0,0,0,0,-1,-1,-1),
-(2009,35,3,'Hào quang Tử Cực','Hào quang hộ thể tăng vận may và tiềm năng',0,32130,30,0,0,0,0,-1,-1,-1);
+(2009,35,3,'Hào quang Tử Cực','Hào quang hộ thể tăng vận may và tiềm năng',0,32130,30,0,0,0,0,-1,-1,-1),
+(2010,27,3,'Quả Trứng Mabư Vip','Ấp nở đệ Mabư Vip (HT 100% chỉ số)',1,2164,-1,1,0,0,0,-1,-1,-1),
+(2011,30,3,'Sao pha lê huyết cấp 2','Sao Pha Lê Huyết Cấp 2 (+8% HP). Ép vào 6 trang bị chính hoặc dùng x2 viên + 1 Đá mài đánh bóng lên SPL Huyết Lấp Lánh (+11% HP)',0,32716,-1,1,0,0,0,-1,-1,-1),
+(2012,30,3,'Sao pha lê huyết lấp lánh','Sao Pha Lê Huyết Lấp Lánh (+11% HP). Chỉ ép vào 6 trang bị chính (Áo, Quần, Găng, Giày, Rada, Cải trang - tối đa 9 sao gộp dòng)',0,32717,-1,1,0,0,0,-1,-1,-1),
+(2013,30,3,'Sao pha lê khí cấp 2','Sao Pha Lê Khí Cấp 2 (+8% KI). Ép vào 6 trang bị chính hoặc dùng x2 viên + 1 Đá mài đánh bóng lên SPL Khí Lấp Lánh (+11% KI)',0,32718,-1,1,0,0,0,-1,-1,-1),
+(2014,30,3,'Sao pha lê khí lấp lánh','Sao Pha Lê Khí Lấp Lánh (+11% KI). Chỉ ép vào 6 trang bị chính (Áo, Quần, Găng, Giày, Rada, Cải trang - tối đa 9 sao gộp dòng)',0,32719,-1,1,0,0,0,-1,-1,-1),
+(2015,5,2,'CT Hoàng Tử Cađíc Majin','Cải trang dành cho Xayda',0,14379,1639,0,0,0,0,1639,1632,1633);
 /*!40000 ALTER TABLE `item_template` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -6673,7 +6898,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `map_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `map_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(55) NOT NULL,
@@ -6700,7 +6925,7 @@ CREATE TABLE `map_template` (
 LOCK TABLES `map_template` WRITE;
 /*!40000 ALTER TABLE `map_template` DISABLE KEYS */;
 INSERT INTO `map_template` VALUES
-(0,'Làng Aru',10,15,'[0,0,0,1,0]',0,0,0,1,0,'[\"[\"Đồi hoa cúc\",1224,408,1248,432,0,0,1,60,384]\",\"[\"Nhà Gôhan\",288,408,360,432,1,1,21,489,336]\",\"[\"Vách núi Aru\",0,408,24,432,0,0,42,1380,432]\"]','[\"[0,1,100,780,432]\",\"[0,1,100,900,432]\",\"[0,1,100,1020,432]\",\"[0,1,100,660,432]\"]','[[7,228,432],[67,590,432]]',0),
+(0,'Làng Aru',10,15,'[0,0,0,1,0]',0,0,0,1,0,'[\"[\"Đồi hoa cúc\",1224,408,1248,432,0,0,1,60,384]\",\"[\"Nhà Gôhan\",288,408,360,432,1,1,21,489,336]\",\"[\"Vách núi Aru\",0,408,24,432,0,0,42,1380,432]\"]','[\"[0,1,100,780,432]\",\"[0,1,100,900,432]\",\"[0,1,100,1020,432]\",\"[0,1,100,660,432]\"]','[[7,228,432],[49,460,432],[67,590,432]]',0),
 (1,'Đồi hoa cúc',10,15,'[0,0,0,1,0]',0,0,0,1,0,'[\"[\"Làng Aru\",0,360,24,384,0,0,0,1188,432]\",\"[\"Thung lũng tre\",1512,336,1536,360,0,0,2,60,360]\",\"[\"Rừng Karin\",1200,336,1272,360,1,0,47,60,336]\"]','[\"[1,2,200,348,384]\",\"[1,2,200,804,408]\",\"[1,2,200,972,360]\",\"[1,2,200,540,408]\"]','[[6,468,312]]',0),
 (2,'Thung lũng tre',10,15,'[0,0,0,1,0]',0,0,0,1,0,'[\"[\"Đồi hoa cúc\",0,336,24,360,0,0,1,1476,360]\",\"[\"Rừng nấm\",1224,264,1248,288,0,0,3,60,408]\",\"[\"Trạm tàu vũ trụ\",552,360,624,384,1,0,24,235,336]\"]','[\"[4,3,500,348,408]\",\"[1,2,200,996,288]\",\"[1,2,200,876,336]\",\"[4,3,500,756,336]\"]','[[6,180,360]]',0),
 (3,'Rừng nấm',10,15,'[0,0,0,2,1]',0,0,0,2,1,'[\"[\"Thung lũng tre\",0,384,24,408,0,0,2,1188,288]\",\"[\"Rừng xương\",1608,312,1632,336,0,0,4,60,312]\",\"[\"Rừng Bamboo\",1344,312,1416,336,1,0,27,60,192]\"]','[\"[1,2,200,372,408]\",\"[1,2,200,540,408]\",\"[1,2,200,732,408]\",\"[4,3,500,1140,336]\",\"[7,4,600,444,288]\",\"[7,4,600,708,288]\",\"[7,4,600,924,240]\",\"[7,4,600,1188,240]\"]','[[6,204,408]]',0),
@@ -6822,8 +7047,8 @@ INSERT INTO `map_template` VALUES
 (119,'Cửa Ải 3',10,15,'[0,2,2,12,11]',0,2,2,12,11,'[]','[]','[[44,231,330],[46,480,330]]',0),
 (120,'Phòng chỉ huy',10,15,'[0,2,0,12,0]',0,2,0,12,0,'[]','[]','[[44,231,330],[46,480,330]]',0),
 (121,'121',10,15,'[]',1,1,1,1,1,'[]','[]','[]',0),
-(122,'Ngũ Hành Sơn',10,15,'[1,2,0,1,0]',1,2,0,1,0,'[\"[\"Ngũ Hành Sơn\",0,263,24,288,0,0,124,1200,288]\"]','[\"[50,20,500000,564,216]\",\"[50,20,500000,348,144]\",\"[57,20,500000,588,408]\",\"[50,20,500000,852,192]\",\"[57,20,500000,324,432]\",\"[57,20,500000,780,432]\"]	','[\"[6,517,233,0]\"]',0),
-(123,'Ngũ Hành Sơn',10,15,'[1,2,0,1,0]',0,2,0,1,0,'[\"[\"Ngũ Hành Sơn\",1512,336,1536,360,0,0,124,60,360]\"]','[\"[56,20,400000,324,384]\",\"[56,20,400000,588,408]\",\"[56,20,400000,780,408]\",\"[56,20,400000,1140,360]\"]','[\"[6,468,312,0]\"]',0),
+(122,'Ngũ Hành Sơn',10,15,'[1,2,0,1,0]',1,2,0,1,0,'[\"[\"Ngũ Hành Sơn\",0,263,24,288,0,0,124,1200,288]\"]','[\"[50,20,500000,564,216]\",\"[50,20,500000,348,144]\",\"[57,20,500000,588,408]\",\"[50,20,500000,852,192]\",\"[57,20,500000,324,432]\",\"[57,20,500000,780,432]\"]	','[\"[6,517,233,0]\",\"[49,612,288,0]\",\"[48,720,288,0]\"]',0),
+(123,'Ngũ Hành Sơn',10,15,'[1,2,0,1,0]',0,2,0,1,0,'[\"[\"Ngũ Hành Sơn\",1512,336,1536,360,0,0,124,60,360]\"]','[\"[56,20,400000,324,384]\",\"[56,20,400000,588,408]\",\"[56,20,400000,780,408]\",\"[56,20,400000,1140,360]\"]','[\"[6,468,312,0]\",\"[49,180,336,0]\"]',0),
 (124,'Ngũ Hành Sơn',10,15,'[1,2,0,1,0]',0,2,0,1,0,'[\"[\"Ngũ Hành Sơn\",0,336,24,360,0,0,123,1476,360]\",\"[\"Ngũ Hành Sơn\",1224,264,1248,288,0,0,122,60,288]\"]','[\"[57,20,450000,300,408]\",\"[57,20,450000,492,384]\",\"[57,20,450000,636,384]\",\"[57,20,450000,828,336]\"]','[\"[6,180,360,0]\"]',0),
 (125,'125',10,15,'[]',1,1,1,1,1,'[]','[]','[]',0),
 (126,'Thành phố Santa',10,15,'[0,2,0,11,10]',0,2,0,11,10,'[]','[\"[70,0,40000000,400,360]\",\"[50,12,180000,228,240]\",\"[50,12,180000,540,240]\",\"[50,12,180000,708,240]\",\"[50,12,180000,1020,240]\",\"[50,12,180000,372,168]\",\"[50,12,180000,876,168]\"]','[[53,137,360]]',0),
@@ -6878,7 +7103,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `mob_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mob_template` (
   `id` int(11) NOT NULL,
   `TYPE` int(11) NOT NULL,
@@ -7023,42 +7248,12 @@ INSERT INTO `mob_template` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `napthe`
---
-
-DROP TABLE IF EXISTS `napthe`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `napthe` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_nap` varchar(100) NOT NULL,
-  `telco` varchar(255) NOT NULL,
-  `serial` varchar(255) NOT NULL,
-  `code` varchar(255) NOT NULL,
-  `amount` int(11) NOT NULL,
-  `status` int(11) NOT NULL,
-  `request_id` varchar(255) NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `napthe`
---
-
-LOCK TABLES `napthe` WRITE;
-/*!40000 ALTER TABLE `napthe` DISABLE KEYS */;
-/*!40000 ALTER TABLE `napthe` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `notify`
 --
 
 DROP TABLE IF EXISTS `notify`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `notify` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
@@ -7082,7 +7277,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `npc_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `npc_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(50) NOT NULL,
@@ -7203,7 +7398,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `part`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `part` (
   `id` int(11) NOT NULL,
   `TYPE` int(11) NOT NULL,
@@ -9327,202 +9522,12 @@ INSERT INTO `part` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `payments`
---
-
-DROP TABLE IF EXISTS `payments`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `payments` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `refNo` varchar(255) NOT NULL,
-  `date` datetime NOT NULL,
-  `card_serial` varchar(255) DEFAULT NULL,
-  `card_pin` varchar(255) DEFAULT NULL,
-  `declared_amount` int(11) NOT NULL,
-  `api_declared_value` int(11) DEFAULT NULL,
-  `detected_value` int(11) DEFAULT NULL,
-  `received_amount_from_api` int(11) DEFAULT NULL,
-  `final_credited_amount` int(11) DEFAULT 0,
-  `status_text` varchar(255) NOT NULL,
-  `api_status_code` varchar(50) NOT NULL,
-  `api_message` text DEFAULT NULL,
-  `card_telco` varchar(50) DEFAULT NULL,
-  `is_credited` tinyint(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `refNo` (`refNo`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `payments`
---
-
-LOCK TABLES `payments` WRITE;
-/*!40000 ALTER TABLE `payments` DISABLE KEYS */;
-/*!40000 ALTER TABLE `payments` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `phongchat`
---
-
-DROP TABLE IF EXISTS `phongchat`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `phongchat` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_user` int(11) DEFAULT NULL,
-  `noidung` text NOT NULL,
-  `ngaytao` datetime NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `phongchat`
---
-
-LOCK TABLES `phongchat` WRITE;
-/*!40000 ALTER TABLE `phongchat` DISABLE KEYS */;
-/*!40000 ALTER TABLE `phongchat` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `player`
---
-
-DROP TABLE IF EXISTS `player`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `player` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `account_id` int(11) DEFAULT NULL,
-  `name` varchar(20) NOT NULL,
-  `head` int(11) NOT NULL DEFAULT 102,
-  `gender` int(11) NOT NULL,
-  `have_tennis_space_ship` tinyint(1) DEFAULT 0,
-  `clan_id` int(11) NOT NULL DEFAULT -1,
-  `data_inventory` text NOT NULL,
-  `data_location` text NOT NULL,
-  `data_point` text NOT NULL,
-  `data_magic_tree` text NOT NULL,
-  `items_body` text NOT NULL,
-  `items_bag` text NOT NULL,
-  `items_box` text NOT NULL,
-  `items_box_lucky_round` text NOT NULL,
-  `items_daban` text NOT NULL,
-  `friends` text NOT NULL,
-  `enemies` text NOT NULL,
-  `data_intrinsic` text NOT NULL,
-  `data_item_time` text NOT NULL,
-  `data_task` text NOT NULL,
-  `data_mabu_egg` text NOT NULL,
-  `data_charm` text NOT NULL,
-  `skills` text NOT NULL,
-  `skills_shortcut` text NOT NULL,
-  `pet` text NOT NULL,
-  `data_black_ball` text NOT NULL,
-  `data_side_task` text NOT NULL,
-  `create_time` timestamp NOT NULL DEFAULT current_timestamp(),
-  `notify` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `baovetaikhoan` varchar(1000) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '[]',
-  `captcha` varchar(1000) NOT NULL DEFAULT '[]',
-  `data_card` varchar(10000) NOT NULL DEFAULT '[]',
-  `lasttimepkcommeson` bigint(20) NOT NULL DEFAULT 0,
-  `bandokhobau` varchar(250) NOT NULL DEFAULT '[]',
-  `doanhtrai` bigint(20) NOT NULL DEFAULT 0,
-  `conduongrandoc` varchar(255) NOT NULL DEFAULT '[]',
-  `masterDoesNotAttack` text NOT NULL,
-  `nhanthoivang` varchar(200) NOT NULL DEFAULT '[]',
-  `ruonggo` varchar(255) NOT NULL DEFAULT '[]',
-  `sieuthanthuy` varchar(255) NOT NULL DEFAULT '[]',
-  `vodaisinhtu` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '[]',
-  `rongxuong` bigint(20) NOT NULL DEFAULT 0,
-  `data_item_event` varchar(1000) NOT NULL DEFAULT '[]',
-  `data_luyentap` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `data_clan_task` varchar(255) NOT NULL DEFAULT '[]',
-  `data_vip` text DEFAULT NULL,
-  `rank` int(11) NOT NULL DEFAULT 0,
-  `data_achievement` text NOT NULL,
-  `giftcode` text NOT NULL,
-  `event_point` int(11) NOT NULL DEFAULT 0,
-  `data_event` text DEFAULT NULL,
-  `dataBadges` text DEFAULT NULL,
-  `dataTaskBadges` text DEFAULT NULL,
-  `firstTimeLogin` timestamp NOT NULL DEFAULT current_timestamp(),
-  `BoughtSkill` text DEFAULT NULL,
-  `LearnSkill` text DEFAULT NULL,
-  `dailyGift` text NOT NULL,
-  `point_sukien` int(11) NOT NULL DEFAULT 0,
-  `thachdauwhis` int(11) NOT NULL DEFAULT 0,
-  `point_sukien1` int(11) NOT NULL DEFAULT 0,
-  `point_maydam` int(11) NOT NULL DEFAULT 0,
-  `total_damage_maydam` bigint(20) NOT NULL,
-  `data_duahau_egg` text NOT NULL,
-  `checkNhanQua` varchar(255) NOT NULL DEFAULT '[1,1,"1970-01-01T00:00:00"]',
-  `thanhTichBang` varchar(255) NOT NULL DEFAULT '[0,0,0,0]',
-  `thanhTichKhiGas` varchar(255) NOT NULL DEFAULT '[0,0,0,0]',
-  `thanhTichCDRD` varchar(255) NOT NULL DEFAULT '[0,0,0,0]',
-  `nhiem_vu_kol` text NOT NULL,
-  `point_sukien2` int(11) NOT NULL DEFAULT 0,
-  `data_skh_collection` text NOT NULL DEFAULT '[]',
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `account_id` (`account_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `player`
---
-
-LOCK TABLES `player` WRITE;
-/*!40000 ALTER TABLE `player` DISABLE KEYS */;
-INSERT INTO `player` VALUES
-(1,2,'gohan',30,0,0,-1,'[14221183396,41471,10629,0,0]','[5,1159,408]','[0,54186100,42209800,1000,1000,2600,8100,440,0,0,0,0,3207,8125]','[7,3,0,1794290981407,1794234119687]','[\"[0,1,\\\"[\\\\\\\"[47,2]\\\\\\\",\\\\\\\"[233,0]\\\\\\\",\\\\\\\"[234,0]\\\\\\\"]\\\",1794234654293]\",\"[35,1,\\\"[\\\\\\\"[6,150]\\\\\\\",\\\\\\\"[27,12]\\\\\\\",\\\\\\\"[233,0]\\\\\\\",\\\\\\\"[234,0]\\\\\\\"]\\\",1794234604544]\",\"[21,1,\\\"[\\\\\\\"[0,4]\\\\\\\",\\\\\\\"[233,0]\\\\\\\",\\\\\\\"[234,0]\\\\\\\"]\\\",1794234647757]\",\"[30,1,\\\"[\\\\\\\"[7,25]\\\\\\\",\\\\\\\"[28,5]\\\\\\\",\\\\\\\"[233,0]\\\\\\\",\\\\\\\"[234,0]\\\\\\\"]\\\",1794231240682]\",\"[12,1,\\\"[\\\\\\\"[14,1]\\\\\\\",\\\\\\\"[233,0]\\\\\\\",\\\\\\\"[234,0]\\\\\\\"]\\\",1794229662594]\",\"[-1,0,\\\"[]\\\",1794290514662]\",\"[-1,0,\\\"[]\\\",1794290514662]\",\"[-1,0,\\\"[]\\\",1794290514662]\",\"[-1,0,\\\"[]\\\",1794290514662]\",\"[-1,0,\\\"[]\\\",1794290514662]\",\"[-1,0,\\\"[]\\\",1794290514662]\"]','[\"[457,231,\\\"[\\\\\\\"[30,0]\\\\\\\"]\\\",1794229138032]\",\"[194,1,\\\"[\\\\\\\"[30,0]\\\\\\\"]\\\",1794229138032]\",\"[20,227,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794229228298]\",\"[19,190,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794229239820]\",\"[17,36,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794229241994]\",\"[446,4,\\\"[\\\\\\\"[100,5]\\\\\\\"]\\\",1794229347927]\",\"[18,38,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794229395906]\",\"[441,6,\\\"[\\\\\\\"[95,5]\\\\\\\"]\\\",1794229431318]\",\"[447,12,\\\"[\\\\\\\"[101,5]\\\\\\\"]\\\",1794229734104]\",\"[445,4,\\\"[\\\\\\\"[98,3]\\\\\\\"]\\\",1794229936081]\",\"[443,3,\\\"[\\\\\\\"[97,5]\\\\\\\"]\\\",1794231061566]\",\"[65,61,\\\"[\\\\\\\"[2,32]\\\\\\\"]\\\",1794234123143]\",\"[1635,1,\\\"[\\\\\\\"[30,0]\\\\\\\"]\\\",1794234478263]\",\"[1787,2,\\\"[\\\\\\\"[30,0]\\\\\\\",\\\\\\\"[93,3]\\\\\\\"]\\\",1794234478957]\",\"[1656,24,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794246582870]\",\"[1990,2,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794241331644]\",\"[442,3,\\\"[\\\\\\\"[96,5]\\\\\\\"]\\\",1794242130543]\",\"[16,314,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794243880513]\",\"[24,1,\\\"[\\\\\\\"[0,7]\\\\\\\",\\\\\\\"[233,0]\\\\\\\",\\\\\\\"[234,0]\\\\\\\"]\\\",1794246712500]\",\"[0,1,\\\"[\\\\\\\"[47,2]\\\\\\\",\\\\\\\"[245,0]\\\\\\\",\\\\\\\"[246,0]\\\\\\\",\\\\\\\"[247,0]\\\\\\\",\\\\\\\"[248,0]\\\\\\\"]\\\",1794246814430]\",\"[6,1,\\\"[\\\\\\\"[6,30]\\\\\\\",\\\\\\\"[127,0]\\\\\\\",\\\\\\\"[139,0]\\\\\\\"]\\\",1794246862332]\",\"[30,1,\\\"[\\\\\\\"[7,25]\\\\\\\",\\\\\\\"[28,5]\\\\\\\",\\\\\\\"[128,0]\\\\\\\",\\\\\\\"[140,0]\\\\\\\"]\\\",1794246939662]\",\"[0,1,\\\"[\\\\\\\"[47,2]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\"]\\\",1794247047745]\",\"[30,1,\\\"[\\\\\\\"[7,25]\\\\\\\",\\\\\\\"[28,5]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\"]\\\",1794247061837]\",\"[30,1,\\\"[\\\\\\\"[7,25]\\\\\\\",\\\\\\\"[28,5]\\\\\\\",\\\\\\\"[127,0]\\\\\\\",\\\\\\\"[139,0]\\\\\\\"]\\\",1794247136998]\",\"[444,2,\\\"[\\\\\\\"[99,3]\\\\\\\"]\\\",1794247267717]\",\"[21,1,\\\"[\\\\\\\"[0,4]\\\\\\\",\\\\\\\"[233,0]\\\\\\\",\\\\\\\"[234,0]\\\\\\\"]\\\",1794247334212]\",\"[30,1,\\\"[\\\\\\\"[7,25]\\\\\\\",\\\\\\\"[28,5]\\\\\\\",\\\\\\\"[127,0]\\\\\\\",\\\\\\\"[139,0]\\\\\\\"]\\\",1794247368972]\",\"[12,1,\\\"[\\\\\\\"[14,1]\\\\\\\",\\\\\\\"[127,0]\\\\\\\",\\\\\\\"[139,0]\\\\\\\"]\\\",1794247502493]\",\"[30,1,\\\"[\\\\\\\"[7,25]\\\\\\\",\\\\\\\"[28,5]\\\\\\\",\\\\\\\"[127,0]\\\\\\\",\\\\\\\"[139,0]\\\\\\\"]\\\",1794247509208]\",\"[6,1,\\\"[\\\\\\\"[6,30]\\\\\\\",\\\\\\\"[128,0]\\\\\\\",\\\\\\\"[140,0]\\\\\\\"]\\\",1794247635451]\",\"[27,1,\\\"[\\\\\\\"[7,10]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\"]\\\",1794247640079]\",\"[35,1,\\\"[\\\\\\\"[6,150]\\\\\\\",\\\\\\\"[27,12]\\\\\\\",\\\\\\\"[128,0]\\\\\\\",\\\\\\\"[140,0]\\\\\\\"]\\\",1794247643342]\",\"[457,9,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794289833331]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\"]','[\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\",\"[-1,0,\\\"[]\\\",1794290514663]\"]','[]','[\"[30,1,\\\"[\\\\\\\"[7,25]\\\\\\\",\\\\\\\"[28,5]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\"]\\\",1794234618670]\",\"[57,1,\\\"[\\\\\\\"[14,2]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\"]\\\",1794234619759]\",\"[0,1,\\\"[\\\\\\\"[47,2]\\\\\\\",\\\\\\\"[128,0]\\\\\\\",\\\\\\\"[140,0]\\\\\\\"]\\\",1794234621393]\",\"[27,1,\\\"[\\\\\\\"[7,10]\\\\\\\",\\\\\\\"[128,0]\\\\\\\",\\\\\\\"[140,0]\\\\\\\"]\\\",1794234624650]\",\"[30,1,\\\"[\\\\\\\"[7,25]\\\\\\\",\\\\\\\"[28,5]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\"]\\\",1794234625735]\",\"[30,1,\\\"[\\\\\\\"[7,25]\\\\\\\",\\\\\\\"[28,5]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\"]\\\",1794234628464]\",\"[24,1,\\\"[\\\\\\\"[0,7]\\\\\\\",\\\\\\\"[127,0]\\\\\\\",\\\\\\\"[139,0]\\\\\\\"]\\\",1794234629539]\",\"[27,1,\\\"[\\\\\\\"[7,10]\\\\\\\",\\\\\\\"[127,0]\\\\\\\",\\\\\\\"[139,0]\\\\\\\"]\\\",1794234631722]\",\"[27,1,\\\"[\\\\\\\"[7,10]\\\\\\\",\\\\\\\"[128,0]\\\\\\\",\\\\\\\"[140,0]\\\\\\\"]\\\",1794234639069]\",\"[27,1,\\\"[\\\\\\\"[7,10]\\\\\\\",\\\\\\\"[245,0]\\\\\\\",\\\\\\\"[246,0]\\\\\\\",\\\\\\\"[247,0]\\\\\\\",\\\\\\\"[248,0]\\\\\\\"]\\\",1794234632807]\"]','[]','[]','[0,0,0,0,false,0,0,0]','[0,0,0,0,0,0,0,0,0,0,0,0,0,0,28924527,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]','[4,1,0,0]','[]','[1796821205338,1796821205972,1796821206632,1796821207407,1794229138033,1796821209128,1796821210074,1796821215060,1796821211242,1796821216567]','[\"[0,1,1794289920237,0]\",\"[1,0,0,0]\",\"[6,0,0,0]\",\"[9,0,0,0]\",\"[10,0,0,0]\",\"[20,0,0,0]\",\"[22,0,0,0]\",\"[19,0,0,0]\"]','[0,-1,-1,-1,-1,-1,-1,-1,-1,-1]','[]','[\"[0,0,0]\",\"[0,0,0]\",\"[0,0,0]\",\"[0,0,0]\",\"[0,0,0]\",\"[0,0,0]\",\"[0,0,0]\"]','[51,1794289773698,0,63,9,2]','2026-11-09 12:58:58','null','[0,false,1794229138069]','[]','[]',0,'[0,1794229138069]',0,'[false,0,false,false]','0','[false,0]','[0,50000000,100,1794229138069,0]','[false,0,false]','[false,0,0,0]',0,'[0,0,0,0,0,0]','[0,false,-1,555800,1794291189089,0,0,0,0,0]','[-1,0,0,0,5,0]','[0,0,false,false,false,0,0,0]',1,'[\"[54186100,true]\",\"[54186100,true]\",\"[7,true]\",\"[0,false]\",\"[0,false]\",\"[5249,false]\",\"[1489,true]\",\"[5,false]\",\"[21328000,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[5,false]\",\"[0,false]\",\"[254,false]\",\"[54186100,true]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[4,true]\",\"[4,true]\",\"[4,true]\",\"[4,true]\",\"[4,false]\"]','[]',0,'[0,0,0,0,0,0,false,false,false,false]','[{\"idBadGes\":\"224\",\"timeofUseBadges\":\"1796821846005\",\"isUse\":\"false\"},{\"idBadGes\":\"224\",\"timeofUseBadges\":\"1796821846005\",\"isUse\":\"false\"},{\"idBadGes\":\"222\",\"timeofUseBadges\":\"1796835738572\",\"isUse\":\"true\"},{\"idBadGes\":\"222\",\"timeofUseBadges\":\"1796835738572\",\"isUse\":\"true\"}]','[{\"id\":\"1\",\"count\":\"0\",\"countMax\":\"1000000\",\"idBadgesReward\":\"218\"},{\"id\":\"2\",\"count\":\"2\",\"countMax\":\"100\",\"idBadgesReward\":\"219\"},{\"id\":\"3\",\"count\":\"0\",\"countMax\":\"300\",\"idBadgesReward\":\"220\"},{\"id\":\"4\",\"count\":\"0\",\"countMax\":\"5\",\"idBadgesReward\":\"221\"},{\"id\":\"5\",\"count\":\"0\",\"countMax\":\"1\",\"idBadgesReward\":\"222\"},{\"id\":\"6\",\"count\":\"0\",\"countMax\":\"10\",\"idBadgesReward\":\"223\"},{\"id\":\"7\",\"count\":\"0\",\"countMax\":\"20\",\"idBadgesReward\":\"1286\"},{\"id\":\"8\",\"count\":\"0\",\"countMax\":\"5\",\"idBadgesReward\":\"1287\"},{\"id\":\"9\",\"count\":\"500\",\"countMax\":\"500\",\"idBadgesReward\":\"224\"},{\"id\":\"10\",\"count\":\"0\",\"countMax\":\"30\",\"idBadgesReward\":\"225\"},{\"id\":\"11\",\"count\":\"0\",\"countMax\":\"30\",\"idBadgesReward\":\"1300\"},{\"id\":\"12\",\"count\":\"0\",\"countMax\":\"10\",\"idBadgesReward\":\"240\"},{\"id\":\"13\",\"count\":\"0\",\"countMax\":\"20\",\"idBadgesReward\":\"242\"},{\"id\":\"14\",\"count\":\"0\",\"countMax\":\"30\",\"idBadgesReward\":\"243\"},{\"id\":\"15\",\"count\":\"0\",\"countMax\":\"500\",\"idBadgesReward\":\"247\"},{\"id\":\"16\",\"count\":\"0\",\"countMax\":\"2000000\",\"idBadgesReward\":\"253\"},{\"id\":\"17\",\"count\":\"0\",\"countMax\":\"7\",\"idBadgesReward\":\"256\"},{\"id\":\"18\",\"count\":\"0\",\"countMax\":\"1\",\"idBadgesReward\":\"226\"}]','2026-11-09 17:02:18','[0]','[-1,-1,0]','[{\"id\":\"0\",\"daNhan\":\"false\"},{\"id\":\"1\",\"daNhan\":\"false\"}]',0,0,0,0,2009944,'[]','[0,1,\"2026-11-10T12:48:53.935473700\"]','[0,0,0,0]','[0,0,0,0]','[0,0,0,0]','{\"kolQuestStage\":0,\"kolVIPQuestStage\":0,\"destronGas70CompletionCount\":0,\"martialArtsTournamentWins\":0,\"dailySuperHardQuestCompletionCount\":0,\"bossBabyDefeatParticipationCount\":0,\"monsterKillCountAutoTrain\":0}',0,'[\"[\\\"[0,1,\\\\\\\"[\\\\\\\\\\\\\\\"[47,2]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[129,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[141,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234620849]\\\",\\\"[6,1,\\\\\\\"[\\\\\\\\\\\\\\\"[6,30]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[129,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[141,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234607807]\\\",\\\"[24,1,\\\\\\\"[\\\\\\\\\\\\\\\"[0,7]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[129,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[141,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234635806]\\\",\\\"[27,1,\\\\\\\"[\\\\\\\\\\\\\\\"[7,10]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[129,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[141,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234602914]\\\",\\\"[12,1,\\\\\\\"[\\\\\\\\\\\\\\\"[14,1]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[129,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[141,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234598974]\\\"]\",\"[\\\"[0,1,\\\\\\\"[\\\\\\\\\\\\\\\"[47,2]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[128,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[140,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794230796241]\\\",\\\"[6,1,\\\\\\\"[\\\\\\\\\\\\\\\"[6,30]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[128,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[140,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794230579584]\\\",\\\"[24,1,\\\\\\\"[\\\\\\\\\\\\\\\"[0,7]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[128,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[140,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794230114905]\\\",\\\"[27,1,\\\\\\\"[\\\\\\\\\\\\\\\"[7,10]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[128,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[140,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794230378698]\\\",\\\"[57,1,\\\\\\\"[\\\\\\\\\\\\\\\"[14,2]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[128,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[140,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234640148]\\\"]\",\"[\\\"[0,1,\\\\\\\"[\\\\\\\\\\\\\\\"[47,2]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[127,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[139,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794230147295]\\\",\\\"[35,1,\\\\\\\"[\\\\\\\\\\\\\\\"[6,150]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[27,12]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[127,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[139,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794246722179]\\\",\\\"[21,1,\\\\\\\"[\\\\\\\\\\\\\\\"[0,4]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[127,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[139,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234613779]\\\",\\\"[30,1,\\\\\\\"[\\\\\\\\\\\\\\\"[7,25]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[28,5]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[127,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[139,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234595709]\\\",\\\"[12,1,\\\\\\\"[\\\\\\\\\\\\\\\"[14,1]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[127,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[139,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234626831]\\\"]\",\"[\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[21,1,\\\\\\\"[\\\\\\\\\\\\\\\"[0,4]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[233,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[234,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234600606]\\\",\\\"[30,1,\\\\\\\"[\\\\\\\\\\\\\\\"[7,25]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[28,5]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[233,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[234,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234645585]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\"]\",\"[\\\"[0,1,\\\\\\\"[\\\\\\\\\\\\\\\"[47,2]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[245,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[246,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[247,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[248,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234617586]\\\",\\\"[35,1,\\\\\\\"[\\\\\\\\\\\\\\\"[6,150]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[27,12]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[245,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[246,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[247,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[248,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794229565146]\\\",\\\"[24,1,\\\\\\\"[\\\\\\\\\\\\\\\"[0,7]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[245,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[246,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[247,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[248,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794230055556]\\\",\\\"[27,1,\\\\\\\"[\\\\\\\\\\\\\\\"[7,10]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[245,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[246,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[247,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[248,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794229402678]\\\",\\\"[12,1,\\\\\\\"[\\\\\\\\\\\\\\\"[14,1]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[245,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[246,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[247,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[248,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794230009701]\\\"]\",0]');
-/*!40000 ALTER TABLE `player` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `posts`
---
-
-DROP TABLE IF EXISTS `posts`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `posts` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `tieude` varchar(75) NOT NULL,
-  `noidung` text NOT NULL,
-  `username` varchar(50) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `theloai` int(11) NOT NULL DEFAULT 0,
-  `ghimbai` int(11) NOT NULL DEFAULT 0,
-  `image` varchar(255) DEFAULT NULL,
-  `trangthai` int(11) NOT NULL DEFAULT 0,
-  `tinhtrang` int(11) NOT NULL DEFAULT 0,
-  `like` int(11) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `posts`
---
-
-LOCK TABLES `posts` WRITE;
-/*!40000 ALTER TABLE `posts` DISABLE KEYS */;
-/*!40000 ALTER TABLE `posts` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `radar`
 --
 
 DROP TABLE IF EXISTS `radar`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `radar` (
   `id` int(11) NOT NULL,
   `iconId` int(11) DEFAULT 0,
@@ -9577,7 +9582,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `settings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `settings` (
   `Title` varchar(100) DEFAULT 'Nguyen Duc Kien',
   `Description` longtext DEFAULT NULL,
@@ -9615,7 +9620,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `shop`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `shop` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `npc_id` int(11) NOT NULL,
@@ -9662,43 +9667,12 @@ INSERT INTO `shop` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `shop_ky_gui`
---
-
-DROP TABLE IF EXISTS `shop_ky_gui`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `shop_ky_gui` (
-  `id` int(11) NOT NULL,
-  `player_id` int(11) NOT NULL,
-  `tab` int(11) NOT NULL,
-  `item_id` int(11) NOT NULL,
-  `gold` int(11) NOT NULL,
-  `gem` int(11) NOT NULL,
-  `quantity` int(11) NOT NULL,
-  `itemOption` text NOT NULL,
-  `isUpTop` int(11) NOT NULL,
-  `isBuy` int(11) NOT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `shop_ky_gui`
---
-
-LOCK TABLES `shop_ky_gui` WRITE;
-/*!40000 ALTER TABLE `shop_ky_gui` DISABLE KEYS */;
-/*!40000 ALTER TABLE `shop_ky_gui` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `side_task_template`
 --
 
 DROP TABLE IF EXISTS `side_task_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `side_task_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -9786,7 +9760,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `skill_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `skill_template` (
   `nclass_id` int(11) NOT NULL,
   `id` int(11) NOT NULL,
@@ -9840,46 +9814,12 @@ INSERT INTO `skill_template` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `super_rank`
---
-
-DROP TABLE IF EXISTS `super_rank`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `super_rank` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `player_id` int(11) NOT NULL,
-  `name` text NOT NULL,
-  `rank` int(11) NOT NULL,
-  `last_pk_time` bigint(20) NOT NULL,
-  `last_reward_time` bigint(20) NOT NULL,
-  `ticket` int(11) NOT NULL,
-  `win` int(11) NOT NULL,
-  `lose` int(11) NOT NULL,
-  `history` text NOT NULL,
-  `info` text NOT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `super_rank`
---
-
-LOCK TABLES `super_rank` WRITE;
-/*!40000 ALTER TABLE `super_rank` DISABLE KEYS */;
-INSERT INTO `super_rank` VALUES
-(1,1,'gohan',1,1794243738039,1794243738374,3,0,0,'[]','{\"head\":30,\"def\":2,\"hp\":3207,\"dame\":444,\"body\":14,\"leg\":15}');
-/*!40000 ALTER TABLE `super_rank` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `tab_shop`
 --
 
 DROP TABLE IF EXISTS `tab_shop`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tab_shop` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `shop_id` int(11) NOT NULL,
@@ -9953,7 +9893,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `task_badges_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `task_badges_template` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `NAME` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
@@ -9997,7 +9937,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `task_main_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `task_main_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -10052,7 +9992,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `task_sub_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `task_sub_template` (
   `task_main_id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -10200,14 +10140,6 @@ INSERT INTO `task_sub_template` VALUES
 (29,'bạn đã xong nhiệm vụ rồi',-1,'.....',-1,-1,125);
 /*!40000 ALTER TABLE `task_sub_template` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Dumping events for database 'nro_newgen'
---
-
---
--- Dumping routines for database 'nro_newgen'
---
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -10216,6 +10148,6 @@ UNLOCK TABLES;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-11-10 13:17:09
+-- Dump completed

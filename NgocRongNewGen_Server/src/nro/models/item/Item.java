@@ -45,6 +45,9 @@ public class Item {
     }
 
     public Item(short itemId) {
+        if (itemId == 1441) {
+            itemId = 1423;
+        }
         this.template = ItemService.gI().getTemplate(itemId);
         this.itemOptions = new ArrayList<>();
         this.createTime = System.currentTimeMillis();
@@ -179,6 +182,9 @@ public class Item {
     }
 
     public boolean hasCannotTradeOrExpiry() {
+        if (this.template != null && this.template.id == 1423) {
+            return false;
+        }
         if (this.itemOptions != null) {
             for (ItemOption io : this.itemOptions) {
                 if (io != null && io.optionTemplate != null) {

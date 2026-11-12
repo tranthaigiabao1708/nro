@@ -9,7 +9,10 @@ set "JAVA_EXE=C:\Users\giaba\.antigravity-ide\extensions\redhat.java-1.58.0-win3
 if exist "%ROOT_DIR%runtime\jdk21\bin\java.exe" set "JAVA_EXE=%ROOT_DIR%runtime\jdk21\bin\java.exe"
 if not exist "%JAVA_EXE%" set "JAVA_EXE=java"
 set "MYSQL_EXE=%ROOT_DIR%runtime\mariadb\bin\mysql.exe"
+if not exist "%MYSQL_EXE%" set "MYSQL_EXE=%ROOT_DIR%runtime\mariadb\bin\mariadb.exe"
 set "NEWGEN_SQL=%ROOT_DIR%Database_NgocRongNewGen\nro_newgen.sql"
+set "CONFIG_SQL=%ROOT_DIR%Database_NgocRongNewGen\data_cau_hinh_shop_item.sql"
+set "SYNC_HASH_FILE=%ROOT_DIR%runtime\mariadb_data\.shop_sync_md5"
 
 REM Đọc cổng game & cổng Admin Panel từ Config.properties
 set "GAME_PORT=14445"
@@ -50,7 +53,25 @@ if exist "%MYSQL_EXE%" (
         echo       Chưa có database nro_newgen, đang nạp từ nro_newgen.sql...
         "%MYSQL_EXE%" -u root -P 3306 -h 127.0.0.1 -e "CREATE DATABASE IF NOT EXISTS nro_newgen CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
         "%MYSQL_EXE%" -u root -P 3306 -h 127.0.0.1 --default-character-set=utf8mb4 nro_newgen < "%NEWGEN_SQL%"
+        if exist "%CONFIG_SQL%" (
+            set "CUR_MD5="
+            for /f "skip=1 tokens=1" %%h in ('certutil -hashfile "%CONFIG_SQL%" MD5') do if not defined CUR_MD5 set "CUR_MD5=%%h"
+            if defined CUR_MD5 >"%SYNC_HASH_FILE%" echo !CUR_MD5!
+        )
         echo       [OK] Đã nạp database nro_newgen.
+    ) else if exist "%CONFIG_SQL%" (
+        set "CUR_MD5="
+        set "OLD_MD5="
+        for /f "skip=1 tokens=1" %%h in ('certutil -hashfile "%CONFIG_SQL%" MD5') do if not defined CUR_MD5 set "CUR_MD5=%%h"
+        if exist "%SYNC_HASH_FILE%" set /p OLD_MD5=<"%SYNC_HASH_FILE%"
+        if /I not "!CUR_MD5!"=="!OLD_MD5!" (
+            echo       Phát hiện cập nhật Shop / Vật phẩm mới từ Git, đang đồng bộ an toàn ^(giữ nguyên nhân vật^)...
+            "%MYSQL_EXE%" -u root -P 3306 -h 127.0.0.1 --default-character-set=utf8mb4 nro_newgen < "%CONFIG_SQL%"
+            if not errorlevel 1 (
+                >"%SYNC_HASH_FILE%" echo !CUR_MD5!
+                echo       [OK] Đã cập nhật Shop / Vật phẩm mới nhất từ Git!
+            )
+        )
     )
 )
 

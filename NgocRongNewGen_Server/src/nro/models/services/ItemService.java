@@ -76,6 +76,9 @@ public class ItemService {
     }
 
     public Item createNewItem(short tempId, int quantity) {
+        if (tempId == 1441) {
+            tempId = 1423;
+        }
         Item item = new Item();
         item.template = getTemplate(tempId);
         item.quantity = quantity;
@@ -742,9 +745,12 @@ public class ItemService {
         if (item.itemOptions == null) {
             item.itemOptions = new ArrayList<>();
         }
+        if (item.template.id == 1441) {
+            item.template = getTemplate(1423);
+        }
         if (item.template.id == 1423) {
             item.itemOptions.removeIf(io -> io == null || io.optionTemplate == null
-                    || io.optionTemplate.id == 30 || io.optionTemplate.id == 73
+                    || io.optionTemplate.id == 30 || io.optionTemplate.id == 93 || io.optionTemplate.id == 73
                     || io.optionTemplate.id == 167 || io.optionTemplate.id == 168);
             item.itemOptions.add(0, new Item.ItemOption(167, 0));
             item.itemOptions.add(1, new Item.ItemOption(168, 0));
