@@ -75,8 +75,13 @@ public class ShopDAO {
 
     private static void loadItemShop(Connection con, TabShop tabShop) {
         try {
+            boolean sortByPriceDesc = tabShop.shop != null
+                    && (tabShop.shop.id == 9 || tabShop.shop.id == 23 || tabShop.shop.id == 30);
+            String orderClause = sortByPriceDesc
+                    ? "order by (case when icon_spec = 4028 then 3 when type_sell = 1 then 2 else 1 end) desc, cost desc, id asc"
+                    : "order by create_time desc";
             PreparedStatement ps = con.prepareStatement("select * from item_shop where is_sell = 1 and tab_id = ? "
-                    + "order by create_time desc");
+                    + orderClause);
             int id = tabShop.id;
             if (id >= 41 && id <= 43){//10,11,12
                 id -= 31;

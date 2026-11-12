@@ -1,0 +1,55 @@
+[21:40:36] ===== KIỂM THỬ 100 NGƯỜI CHƠI MẶC TRANG BỊ MỚI & SAO PHA LÊ MỚI (90s) =====
+[21:40:36] Trạng thái server ban đầu: {"uptimeSec":510,"maxPlayer":1000,"memMaxMB":2048,"dbOk":true,"memUsedMB":140,"gamePort":14445,"serverName":"Ngọc Rồng NewGen","online":0,"threads":125,"ok":true,"maintenance":false}
+[21:40:36] A. Tạo nhân vật: đã có 0, cần tạo thêm 110
+[21:40:44] A. Đã tạo mới 110/110 nhân vật. Chờ lưu...
+[21:40:48] Đã trang bị Cải trang Hành Tinh mới (1781/1817/2015) + SKH 9 sao + Phụ kiện SPL Đa dụng cho toàn bộ 110 nhân vật.
+[21:40:57] Đã đưa toàn bộ 100 người chơi mặc trang bị mới vào game sau 9s
+[21:41:07] t=19s on=99 ram=84MB thr=435 api=2ms | kill=591 splDrop=5 bossHit=308 bossKill=14 combo(TD/NM/XD)=15/15/15 kieuHanh=44 | combineOK=146 khoaKheOK=20 shopBuy=60 pvp=162 gd=3 overflow=0
+[21:41:17] t=29s on=99 ram=139MB thr=436 api=1ms | kill=941 splDrop=15 bossHit=529 bossKill=33 combo(TD/NM/XD)=25/25/25 kieuHanh=54 | combineOK=252 khoaKheOK=40 shopBuy=99 pvp=288 gd=6 overflow=0
+[21:41:27] t=39s on=100 ram=212MB thr=439 api=1ms | kill=1249 splDrop=15 bossHit=769 bossKill=38 combo(TD/NM/XD)=36/36/35 kieuHanh=54 | combineOK=360 khoaKheOK=60 shopBuy=130 pvp=427 gd=9 overflow=0
+[21:41:37] t=49s on=100 ram=229MB thr=439 api=2ms | kill=1588 splDrop=21 bossHit=936 bossKill=57 combo(TD/NM/XD)=44/45/45 kieuHanh=54 | combineOK=460 khoaKheOK=80 shopBuy=149 pvp=571 gd=12 overflow=0
+[21:41:37] C. Kiểm thử đăng nhập 2 phiên cùng lúc cho 10 tài khoản ltdup00..09
+[21:41:43] C. Kết quả chống đăng nhập kép: 0 tài khoản online, 0 nhân bản, 0 cặp cả 2 phiên còn kết nối
+[21:41:47] t=59s on=100 ram=318MB thr=449 api=2ms | kill=1919 splDrop=21 bossHit=1064 bossKill=59 combo(TD/NM/XD)=53/52/52 kieuHanh=54 | combineOK=547 khoaKheOK=101 shopBuy=169 pvp=703 gd=15 overflow=0
+[21:41:57] t=69s on=100 ram=303MB thr=441 api=2ms | kill=2240 splDrop=24 bossHit=1202 bossKill=64 combo(TD/NM/XD)=61/60/59 kieuHanh=54 | combineOK=605 khoaKheOK=122 shopBuy=190 pvp=853 gd=18 overflow=0
+[21:42:07] t=79s on=100 ram=290MB thr=440 api=1ms | kill=2562 splDrop=27 bossHit=1401 bossKill=64 combo(TD/NM/XD)=70/70/67 kieuHanh=54 | combineOK=661 khoaKheOK=143 shopBuy=212 pvp=980 gd=21 overflow=0
+[21:42:17] t=89s on=99 ram=264MB thr=436 api=1ms | kill=2882 splDrop=31 bossHit=1542 bossKill=64 combo(TD/NM/XD)=77/76/75 kieuHanh=54 | combineOK=711 khoaKheOK=166 shopBuy=234 pvp=1125 gd=24 overflow=0
+[21:42:27] t=99s on=100 ram=248MB thr=439 api=1ms | kill=3221 splDrop=31 bossHit=1702 bossKill=69 combo(TD/NM/XD)=86/83/84 kieuHanh=54 | combineOK=752 khoaKheOK=188 shopBuy=256 pvp=1257 gd=26 overflow=0
+[21:42:27] Dừng mọi hành động, chờ 4s cho dữ liệu ổn định...
+[21:42:31] Chụp dữ liệu RAM của 100 nhân vật, ngắt kết nối đồng loạt 100 bot...
+[21:42:32] Tất cả đã thoát sau 1s (online=0)
+[21:42:34] D. Đối chiếu RAM vs DB: kiểm tra 100 nhân vật, lệch 0, thiếu 0 | Xác thực gộp dòng Áo 8-9 sao DB = 10 | Xác thực option 167/168 Đá Hematite DB = 22
+[21:42:34] 
+[21:42:34] ================= TỔNG KẾT KIỂM THỬ 100 NGƯỜI CHƠI & TRANG BỊ MỚI =================
+[21:42:34] Đăng nhập thành công: 218 | thất bại: 0 | lỗi kết nối: 0
+[21:42:34] Mất kết nối ngoài ý muốn: 0 | thoát-vào lại chủ động: 8
+[21:42:34] Gói tin nhận: 271134 (23 MB) | gửi: 63428 | lỗi giải mã: 0
+[21:42:34] Kiểm tra tràn số chỉ số (cmd -42): Đã kiểm tra 1833 bản tin chỉ số | Lỗi âm/tràn 32-bit = 0
+[21:42:34] Đỉnh chỉ số ghi nhận thực tế (dưới trần 2.147B): SĐ Trái Đất = 40428222 | HP Trái Đất = 2317756 | KI Namếc = 132680032 | HP Xayda = 689936160
+[21:42:34] Farm & Nhặt đồ: Quái bị hạ = 3221 | SPL Cấp 1 (441..447) rơi = 31 | Nhặt đồ thành công = 825/906
+[21:42:34] Nhiệm vụ, NPC & Mở rương: Tiến độ NV tăng = 20333 | Tương tác NPC = 1801 | Dùng vật phẩm/Mở Rương SPL (1440/1453) = 438
+[21:42:34] Săn Boss & Nuke 3 Hành Tinh: Đòn đánh Boss = 1702 | Boss bị hạ = 69 | Nguyên liệu Boss rơi (1423/1438/1439/2011/2013) = 23 | Combo TD(DCTT+Kame)=86, NM(Socola+Laze)=83, XD(Khỉ+HuýtSáo+Nổ)=84 | Nội tại Kiêu Hãnh Xayda kích hoạt = 54
+[21:42:34] Shop Santa & Bà Hạt Mít: Lượt mua Shop Santa = 257 | Chế tạo/Đánh bóng/Ép sao thành công = 755 | Chặn đúng ép NR/HP/KI vào Phụ kiện = 188 | Lọt lỗi khóa khe Phụ kiện = 0
+[21:42:34] Tương tác người chơi (PvP/Chat/Kết bạn/Giao dịch): Đòn PK = 1261 | Chat = 171 | Kết bạn = 93 | GD 2 chiều thành công = 26 | Chặn exploit GD 1 chiều = 36 | Lọt exploit GD 1 chiều = 0
+[21:42:34] Thông báo server ghi nhận nhiều nhất:
+[21:42:34]    221 x  Hôm nay bạn sẽ nhận được từ 1 đến 2 viên ngọc khi tiêu diệt 1 con quái
+[21:42:34]    109 x  Thử lại sau 5 giây
+[21:42:34]    108 x  Thử lại sau 8 giây
+[21:42:34]    108 x  Thử lại sau 3 giây
+[21:42:34]    103 x  Thử lại sau 7 giây
+[21:42:34]    101 x  Thử lại sau 6 giây
+[21:42:34]    100 x  Thử lại sau 1 giây
+[21:42:34]    99 x  Thử lại sau 2 giây
+[21:42:34]    97 x  Thử lại sau 4 giây
+[21:42:34]    91 x  Thử lại sau 9 giây
+[21:42:34]    63 x  Thử lại sau 10 giây
+[21:42:34]    62 x  Không thể nhặt vật phẩm của người khác
+[21:42:34]    55 x  Bạn đã đến tương lai, khi chết ở đây bạn sẽ bị giảm sức mạnh và tiềm năng
+[21:42:34]    52 x  Giao dịch thành công
+[21:42:34]    49 x  Bạn đã mở Rương Sao Pha Lê nhận được Sao pha lê hồng!
+[21:42:34]    41 x  Không thể thực hiện
+[21:42:34]    36 x  Giao dịch bị hủy bỏ
+[21:42:34]    36 x  Cả hai bên cần khóa giao dịch trước khi đồng ý!
+[21:42:34] 
+[21:42:34] PHÁT HIỆN LỖI (0):
+[21:42:34]    0 LỖI — Toàn bộ 100 người chơi & hệ thống SPL/Trang bị mới vượt qua kiểm thử an toàn tuyệt đối!

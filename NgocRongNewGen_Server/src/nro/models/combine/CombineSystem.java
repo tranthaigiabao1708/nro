@@ -12,12 +12,27 @@ import nro.models.utils.Util;
 public class CombineSystem {
 
     public static boolean isTrangBiPhaLeHoa(Item item) {
-        if (item != null && item.isNotNullItem()) {
+        return isTrangBiCotLoi(item) || isPhuKienMoRong(item);
+    }
+
+    public static boolean isTrangBiCotLoi(Item item) {
+        if (item != null && item.isNotNullItem() && item.template != null) {
             int t = item.template.type;
-            return t <= 5 || t == 11 || t == 23 || t == 24 || t == 25 || t == 32 || item.isLinhThu();
-        } else {
-            return false;
+            return t >= 0 && t <= 5;
         }
+        return false;
+    }
+
+    public static boolean isPhuKienMoRong(Item item) {
+        if (item != null && item.isNotNullItem() && item.template != null) {
+            int t = item.template.type;
+            return t == 11 || t == 23 || t == 24 || t == 25 || t == 32 || item.isLinhThu();
+        }
+        return false;
+    }
+
+    public static boolean isSplDaDungChoPhuKien(int optionId) {
+        return (optionId >= 95 && optionId <= 101) || optionId == 153 || optionId == 160;
     }
 
     public static boolean isDaPhaLe(Item item) {
@@ -97,10 +112,14 @@ public class CombineSystem {
                 100;
             case 447, 1422, 1432 ->
                 101;
-            case 1433 ->
+            case 964, 1433 ->
                 153;
-            case 1434 ->
+            case 965, 1434 ->
                 160;
+            case 2011, 2012 ->
+                77;
+            case 2013, 2014 ->
+                103;
             default ->
                 -1;
         };
@@ -143,10 +162,16 @@ public class CombineSystem {
                 5;
             case 447, 1422 ->
                 5;
+            case 964, 965 ->
+                5;
             case 1426, 1427, 1428, 1431, 1432, 1433, 1434 ->
                 10;
             case 1429, 1430 ->
                 6;
+            case 2011, 2013 ->
+                8;
+            case 2012, 2014 ->
+                11;
             default ->
                 -1;
         };

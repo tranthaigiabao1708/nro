@@ -734,13 +734,13 @@ public class CombineService {
                 return "Vào hành trang\nChọn bông tai Porata Cấp 3\nChọn mảnh hồn porata số lượng 199"
                         + "\ncái và đá xanh lam để nâng cấp.\nSau đó chọn 'Nâng cấp chỉ số'";    
             case NANG_CAP_SAO_PHA_LE:
-                return "Vào hành trang\nChọn đá Hematite\nChọn loại sao pha lê (cấp 1)\nSau đó chọn 'Nâng cấp'";
+                return "Vào hành trang\nChọn đá Hematite\nChọn sao pha lê cấp 1 (hoặc x20 Ngọc Rồng 6s/7s)\nSau đó chọn 'Nâng cấp'";
             case DANH_BONG_SAO_PHA_LE:
                 return "Vào hành trang\nChọn loại sao pha lê cấp 2 có từ 2 viên trở lên\nChọn 1 đá mài\nSau đó chọn 'Đánh bóng'";
             case CUONG_HOA_LO_SAO_PHA_LE:
                 return "Vào hành trang\nChọn trang bị có Ô sao thứ 8 trở lên chưa cường hóa\nChọn đá Hematite\nChọn dùi đục\nSau đó chọn 'Cường hóa'";
             case TAO_DA_HEMATITE:
-                return "Vào hành trang\nChọn 5 sao pha lê cấp 1 cùng màu\nChọn 'Tạo đá Hematite'";
+                return "Vào hành trang\nChọn 20 sao pha lê cấp 1 cùng loại\nPhí: 50 Tr vàng\nChọn 'Tạo đá Hematite'";
             case DUI_DUC:
                 return "Vào hành trang\nChọn 5 viên đá Hematite\nChọn 'Tạo dùi đục'";
             case DA_MAI:

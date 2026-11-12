@@ -452,7 +452,7 @@ public class InventoryService {
                 index = 7;
                 break;
             case 25:
-                index = player.isPet ? 8 : 10;
+                index = player.isPet ? 8 : 11;
                 break;
             case 35:
                 index = 10;
@@ -979,6 +979,9 @@ public class InventoryService {
         }
         if (itemAdd.template.isUpToUp) {
             for (Item it : items) {
+                if (it.isNotNullItem() && it.template.id == 1423) {
+                    ItemService.gI().ensureDefaultOptions(it);
+                }
                 if (!it.isNotNullItem() || it.template.id != itemAdd.template.id || (!checkListsEqual(it.itemOptions, itemAdd.itemOptions) && itemAdd.template.id != 2074 && !itemAdd.isDaNangCap() && !itemAdd.isManhTS()) || it.quantity >= 100_000_000) {
                     continue;
                 }

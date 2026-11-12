@@ -713,14 +713,24 @@ public class ItemService {
             case 1430 -> list.add(new Item.ItemOption(99, 6));
             case 1431 -> list.add(new Item.ItemOption(100, 10));
             case 1432 -> list.add(new Item.ItemOption(101, 10));
+            case 964 -> list.add(new Item.ItemOption(153, 5));
+            case 965 -> list.add(new Item.ItemOption(160, 5));
             case 1433 -> list.add(new Item.ItemOption(153, 10));
             case 1434 -> list.add(new Item.ItemOption(160, 10));
+            case 2011 -> list.add(new Item.ItemOption(77, 8));
+            case 2012 -> list.add(new Item.ItemOption(77, 11));
+            case 2013 -> list.add(new Item.ItemOption(103, 8));
+            case 2014 -> list.add(new Item.ItemOption(103, 11));
             case 220 -> list.add(new Item.ItemOption(71, 0));
             case 221 -> list.add(new Item.ItemOption(70, 0));
             case 222 -> list.add(new Item.ItemOption(69, 0));
             case 223 -> list.add(new Item.ItemOption(68, 0));
             case 224 -> list.add(new Item.ItemOption(67, 0));
-            case 568, 611, 702, 703, 704, 705, 706, 707, 708, 1423, 1438, 1439, 2010 -> list.add(new Item.ItemOption(73, 0));
+            case 1423 -> {
+                list.add(new Item.ItemOption(167, 0));
+                list.add(new Item.ItemOption(168, 0));
+            }
+            case 568, 611, 702, 703, 704, 705, 706, 707, 708, 1438, 1439, 2010 -> list.add(new Item.ItemOption(73, 0));
         }
         return list;
     }
@@ -732,7 +742,15 @@ public class ItemService {
         if (item.itemOptions == null) {
             item.itemOptions = new ArrayList<>();
         }
-        if (item.template.id == 1423 || item.template.id == 1438 || item.template.id == 1439) {
+        if (item.template.id == 1423) {
+            item.itemOptions.removeIf(io -> io == null || io.optionTemplate == null
+                    || io.optionTemplate.id == 30 || io.optionTemplate.id == 73
+                    || io.optionTemplate.id == 167 || io.optionTemplate.id == 168);
+            item.itemOptions.add(0, new Item.ItemOption(167, 0));
+            item.itemOptions.add(1, new Item.ItemOption(168, 0));
+            return;
+        }
+        if (item.template.id == 1438 || item.template.id == 1439) {
             item.itemOptions.removeIf(io -> io == null || io.optionTemplate == null || io.optionTemplate.id == 30);
             if (item.itemOptions.isEmpty()) {
                 item.itemOptions.add(new Item.ItemOption(73, 0));

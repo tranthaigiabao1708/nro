@@ -104,15 +104,6 @@ public class ItemTimeService {
                 sendItemTime(player, ICON_VE_KHU_SKH, secondsLeft);
             }
         }
-        if (player.itemTime.isUseNuocMia1) {
-            sendItemTime(player, 13462, (int) ((TIME_NUOC_MIA1 - (System.currentTimeMillis() - player.itemTime.lastTimeUseNuocMia1)) / 1000));
-        }
-        if (player.itemTime.isUseNuocMia2) {
-            sendItemTime(player, 13463, (int) ((TIME_NUOC_MIA2 - (System.currentTimeMillis() - player.itemTime.lastTimeUseNuocMia2)) / 1000));
-        }
-        if (player.itemTime.isUseNuocMia2) {
-            sendItemTime(player, 13464, (int) ((TIME_NUOC_MIA3 - (System.currentTimeMillis() - player.itemTime.lastTimeUseNuocMia3)) / 1000));
-        }
         if (player.itemTime.isUseKilis) {
             long remainingTime = (player.itemTime.lastTimeUseKilis + player.itemTime.timeLengthKilis) - System.currentTimeMillis();
             if (remainingTime > 0) {

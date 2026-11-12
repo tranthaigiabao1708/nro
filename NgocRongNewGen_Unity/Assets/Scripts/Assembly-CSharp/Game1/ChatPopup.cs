@@ -352,12 +352,22 @@ namespace Game1
 					{
 						st = array[2];
 					}
-					if (array.Length == 4)
+					else if (array.Length >= 4)
 					{
-						st = array[3];
-						num8 = int.Parse(array[2]);
+						if (int.TryParse(array[2], out int parsedAlign))
+						{
+							num8 = parsedAlign;
+							st = string.Join("|", array, 3, array.Length - 3);
+						}
+						else
+						{
+							st = string.Join("|", array, 2, array.Length - 2);
+						}
 					}
-					num9 = int.Parse(array[1]);
+					if (!int.TryParse(array[1], out num9))
+					{
+						num9 = num7;
+					}
 					num7 = num9;
 				}
 				else
@@ -567,12 +577,22 @@ namespace Game1
 					{
 						st = array[2];
 					}
-					if (array.Length == 4)
+					else if (array.Length >= 4)
 					{
-						st = array[3];
-						num5 = int.Parse(array[2]);
+						if (int.TryParse(array[2], out int parsedAlign))
+						{
+							num5 = parsedAlign;
+							st = string.Join("|", array, 3, array.Length - 3);
+						}
+						else
+						{
+							st = string.Join("|", array, 2, array.Length - 2);
+						}
 					}
-					num6 = int.Parse(array[1]);
+					if (!int.TryParse(array[1], out num6))
+					{
+						num6 = num4;
+					}
 					num4 = num6;
 				}
 				else

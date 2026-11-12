@@ -4990,7 +4990,9 @@ else
                                             }
                                         }
                                     }
+                                    SkhSlotEffect.PaintSlotBg(g, item, num6, num7, num8, num9);
                                     SmallImage.drawSmallImage(g, (int)item.template.iconID, num6 + num8 / 2, num7 + num9 / 2, 0, 3);
+                                    SkhSlotEffect.PaintSlotBorder(g, item, num6, num7, num8, num9);
                                     if (item.quantity > 1)
                                     {
                                         mFont.tahoma_7_yellow.drawString(g, string.Empty + item.quantity, num6 + num8, num7 + num9 - mFont.tahoma_7_yellow.getHeight(), 1);

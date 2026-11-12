@@ -240,7 +240,8 @@ public class EffectSkillService {
         player.effectSkill.timeMonkey = timeMonkey;
         player.effectSkill.lastTimeUpMonkey = System.currentTimeMillis();
         player.effectSkill.levelMonkey = (byte) player.playerSkill.skillSelect.point;
-        player.nPoint.setHp(((int) player.nPoint.hp * 2));
+        player.nPoint.calPoint();
+        player.nPoint.setHp(Math.min((long) player.nPoint.hpMax, (long) player.nPoint.hp * 2L));
         Service.gI().Send_Caitrang(player);
         if (!player.isPet) {
             PlayerService.gI().sendInfoHpMp(player);
@@ -343,7 +344,7 @@ public class EffectSkillService {
                 }
             }
             for (Mob mobMap : player.newSkill.mobsTaget) {
-                mobMap.effectSkill.setBinh(player, System.currentTimeMillis(), 11000 * (player.effectSkill.typeBinh == 0 ? 1 : 2));
+                mobMap.effectSkill.setBinh(player, System.currentTimeMillis(), 11000 * (player.newSkill.typeItem == 0 ? 1 : 2));
             }
         }
     }

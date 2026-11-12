@@ -1453,6 +1453,9 @@ public class Service {
     }
 
     public void attackPlayer(Player pl, int idPlAnPem) {
+        if (pl == null || pl.zone == null) {
+            return;
+        }
         Player player;
         if (MapService.gI().isMapOffline(pl.zone.map.mapId)) {
             player = pl.zone.getPlayerInMapOffline(pl, idPlAnPem);

@@ -55,6 +55,8 @@ import nro.models.npc_list.DauThan;
 import nro.models.npc_list.OngMoori;
 import nro.models.npc_list.DaiThienSu;
 import nro.models.npc_list.GokuSSJ2;
+import nro.models.npc_list.DuongTang;
+import nro.models.npc_list.NgoKhong;
 import nro.models.services.ClanService;
 import nro.models.services.Service;
 import nro.models.services.ItemService;
@@ -211,6 +213,10 @@ public class NpcFactory {
                     new ToSuKaio(mapId, status, cx, cy, tempId, avatar);
                 case ConstNpc.BARDOCK ->
                     new Bardock(mapId, status, cx, cy, tempId, avatar);
+                case ConstNpc.DUONG_TANG ->
+                    new DuongTang(mapId, status, cx, cy, tempId, avatar);
+                case ConstNpc.NGO_KHONG ->
+                    new NgoKhong(mapId, status, cx, cy, tempId, avatar);
                 default ->
                     new Npc(mapId, status, cx, cy, tempId, avatar) {
                         @Override

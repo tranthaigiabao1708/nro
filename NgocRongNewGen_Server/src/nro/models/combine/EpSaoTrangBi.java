@@ -29,6 +29,15 @@ public class EpSaoTrangBi {
             int star = 0;
             int starEmpty = 0;
             if (trangBi != null && daPhaLe != null) {
+                int optionIdCheck = CombineSystem.getOptionDaPhaLe(daPhaLe);
+                if (CombineSystem.isPhuKienMoRong(trangBi) && !CombineSystem.isSplDaDungChoPhuKien(optionIdCheck)) {
+                    CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
+                            "|7|Phụ kiện mở rộng (Đeo lưng, Thú cưỡi, Linh thú, Giáp tập luyện, Sách tuyệt kỹ) chỉ được ép Sao Pha Lê Đa Dụng:\n"
+                            + "|2|- Hút HP / Hút KI\n- Phản sát thương\n- Xuyên giáp chưởng / cận chiến\n- % Vàng / % Tiềm năng sức mạnh\n"
+                            + "|1|(Ngọc Rồng & SPL % SĐ, % HP, % KI chỉ ép vào 6 Trang bị chính: Áo, Quần, Găng, Giày, Rada, Cải trang)",
+                            "Đóng");
+                    return;
+                }
                 for (ItemOption io : trangBi.itemOptions) {
                     if (io.optionTemplate.id == 102) {
                         star = io.param;
@@ -104,6 +113,17 @@ public class EpSaoTrangBi {
                 return;
             }
 
+            int optionId = CombineSystem.getOptionDaPhaLe(daPhaLe);
+            int param = CombineSystem.getParamDaPhaLe(daPhaLe);
+            if (optionId == -1 || param <= 0) {
+                Service.gI().sendThongBao(player, "Đá pha lê không hợp lệ");
+                return;
+            }
+            if (CombineSystem.isPhuKienMoRong(trangBi) && !CombineSystem.isSplDaDungChoPhuKien(optionId)) {
+                Service.gI().sendThongBao(player, "Phụ kiện mở rộng chỉ được ép Sao Pha Lê Đa Dụng (% TNSM, Vàng, Hút HP/KI, Xuyên giáp, Phản ST)!");
+                return;
+            }
+
             int star = 0;
             int starEmpty = 0;
             ItemOption optionStar = null;
@@ -130,31 +150,17 @@ public class EpSaoTrangBi {
 
             player.inventory.subGem(gem);
 
-            int optionId = CombineSystem.getOptionDaPhaLe(daPhaLe);
-            int param = CombineSystem.getParamDaPhaLe(daPhaLe);
-            int currentSlot = star + 1;
-            boolean shouldSplitOption;
-
-            if (currentSlot == 8 || currentSlot == 9) {
-                shouldSplitOption = true;
-            } else {
-                shouldSplitOption = false;
+            // Gộp tất cả các ô từ 1 đến 9 vào chung 1 dòng % trên từng món trang bị
+            boolean merged = false;
+            for (ItemOption io : trangBi.itemOptions) {
+                if (io.optionTemplate.id == optionId) {
+                    io.param += param;
+                    merged = true;
+                    break;
+                }
             }
-
-            if (shouldSplitOption) {
+            if (!merged) {
                 trangBi.itemOptions.add(new ItemOption(optionId, param));
-            } else {
-                boolean merged = false;
-                for (ItemOption io : trangBi.itemOptions) {
-                    if (io.optionTemplate.id == optionId) {
-                        io.param += param;
-                        merged = true;
-                        break;
-                    }
-                }
-                if (!merged) {
-                    trangBi.itemOptions.add(new ItemOption(optionId, param));
-                }
             }
 
             if (optionStar != null) {

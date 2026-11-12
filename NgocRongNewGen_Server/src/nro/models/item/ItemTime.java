@@ -268,24 +268,9 @@ public class ItemTime {
                 isUseKilis = false;
             }
         }
-        if (isUseNuocMia1) {
-            if (Util.canDoWithTime(lastTimeUseNuocMia1, TIME_NUOC_MIA1)) {
-                isUseNuocMia1 = false;
-                Service.gI().point(player);
-            }
-        }
-        if (isUseNuocMia2) {
-            if (Util.canDoWithTime(lastTimeUseNuocMia1, TIME_NUOC_MIA2)) {
-                isUseNuocMia2 = false;
-                Service.gI().point(player);
-            }
-        }
-        if (isUseNuocMia3) {
-            if (Util.canDoWithTime(lastTimeUseNuocMia1, TIME_NUOC_MIA3)) {
-                isUseNuocMia3 = false;
-                Service.gI().point(player);
-            }
-        }
+        isUseNuocMia1 = false;
+        isUseNuocMia2 = false;
+        isUseNuocMia3 = false;
         if (isUseBuaSanta) {
             if (Util.canDoWithTime(lastTimeBuaSanta, TIME_BUA_SANTA)) {
                 isUseBuaSanta = false;

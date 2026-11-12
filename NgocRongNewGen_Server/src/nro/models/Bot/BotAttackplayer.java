@@ -250,8 +250,8 @@ public class BotAttackplayer extends Bot {
         int tiLeHutHp = player.nPoint.getTileHutHp(mob != null);
         int tiLeHutMp = player.nPoint.getTiLeHutMp();
 
-        int hpHoi = (int) (dame * tiLeHutHp / 100);
-        int mpHoi = (int) (dame * tiLeHutMp / 100);
+        int hpHoi = (int) Math.min(2_147_483_647L, Math.max(0L, dame * tiLeHutHp / 100L));
+        int mpHoi = (int) Math.min(2_147_483_647L, Math.max(0L, dame * tiLeHutMp / 100L));
 
         if (hpHoi > 0 || mpHoi > 0) {
             int x = -1, y = -1;

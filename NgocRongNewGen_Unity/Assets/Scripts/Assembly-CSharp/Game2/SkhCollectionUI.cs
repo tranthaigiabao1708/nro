@@ -186,9 +186,56 @@ namespace Game2
 			}
 		}
 
+		public static bool PaintDragonBallSlotBg(mGraphics g, Item item, int x, int y, int w, int h)
+		{
+			if (item == null || item.template == null)
+			{
+				return false;
+			}
+			switch (item.template.id)
+			{
+			case 20: // Ngọc Rồng 7 sao: Nền đỏ nhạt
+				g.setColor(0xFF9AA2, 0.42f);
+				g.fillRect(x + 1, y + 1, w - 2, h - 2);
+				g.setColor(0xFFCDD2, 0.50f);
+				g.drawRect(x + 1, y + 1, w - 3, h - 3);
+				return true;
+			case 19: // Ngọc Rồng 6 sao: Nền xanh dương nhạt
+				g.setColor(0x82CFFF, 0.42f);
+				g.fillRect(x + 1, y + 1, w - 2, h - 2);
+				g.setColor(0xBBDEFB, 0.50f);
+				g.drawRect(x + 1, y + 1, w - 3, h - 3);
+				return true;
+			case 16: // Ngọc Rồng 3 sao: Nền vàng
+				g.setColor(0xFFE033, 0.42f);
+				g.fillRect(x + 1, y + 1, w - 2, h - 2);
+				g.setColor(0xFFD54F, 0.60f);
+				g.drawRect(x + 1, y + 1, w - 3, h - 3);
+				return true;
+			case 15: // Ngọc Rồng 2 sao: Nền cam
+				g.setColor(0xFF7700, 0.46f);
+				g.fillRect(x + 1, y + 1, w - 2, h - 2);
+				g.setColor(0xFF9800, 0.65f);
+				g.drawRect(x + 1, y + 1, w - 3, h - 3);
+				return true;
+			case 14: // Ngọc Rồng 1 sao: Nền đỏ
+				g.setColor(0xDC0019, 0.54f);
+				g.fillRect(x + 1, y + 1, w - 2, h - 2);
+				g.setColor(0xFF1744, 0.75f);
+				g.drawRect(x + 1, y + 1, w - 3, h - 3);
+				return true;
+			default:
+				return false;
+			}
+		}
+
 		public static void PaintSlotBg(mGraphics g, Item item, int x, int y, int w, int h)
 		{
 			if (item == null || w <= 4 || h <= 4)
+			{
+				return;
+			}
+			if (PaintDragonBallSlotBg(g, item, x, y, w, h))
 			{
 				return;
 			}

@@ -1111,8 +1111,8 @@ public class Mob {
                 list.add(nroIt);
             }
 
-            // Sao pha lê gốc ~0.333% (1/300), nhân May mắn chung
-            if (Util.isTrue(scalePerMillion(3_333.0 * dropMult, generalLuckWithClover), 1_000_000L)) {
+            // Sao pha lê gốc 1% (1/100), nhân May mắn chung & Cỏ bốn lá
+            if (Util.isTrue(scalePerMillion(10_000.0 * dropMult, generalLuckWithClover), 1_000_000L)) {
                 list.add(new ItemMap(Util.spl(zone, Util.nextInt(441, 447), 1, x, yEnd, owner.id)));
             }
         }

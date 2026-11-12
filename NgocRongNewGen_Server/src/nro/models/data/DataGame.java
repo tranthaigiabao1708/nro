@@ -33,8 +33,8 @@ public class DataGame {
 
     public static byte vsData = 11;
     public static byte vsMap = 2;
-    public static byte vsSkill = 1;
-    public static byte vsItem = 29;
+    public static byte vsSkill = 2;
+    public static byte vsItem = 41;
     public static int vsRes = 1;
     public static short maxSmallVersion = 32767;
 

@@ -795,14 +795,39 @@ public class ShopService {
         }
         // Đổi bằng điểm Capsule Bang
         if (is.tabShop.id == 60 || is.tabShop.id == 61 || is.tabShop.id == 62) {
+            if (is.temp.id == 1423) {
+                Service.gI().sendThongBaoOK(player,
+                        "Hematite là vật phẩm giới thiệu (Không bán tại Shop Bang).\n"
+                        + "Nguồn săn, chế tạo & mua:\n"
+                        + "- Hạ Boss bất kỳ: 30% rơi x5 viên\n"
+                        + "- Bà Hạt Mít: Ghép x20 Sao Pha Lê cấp 1 cùng loại + 50Tr vàng nhận 1 viên đá Hematite (tỉ lệ 100%)\n"
+                        + "- Shop Santa (Cửa hàng): Mua với giá 100 Thỏi vàng");
+                return;
+            }
+            if (is.temp.id == 1438) {
+                Service.gI().sendThongBaoOK(player,
+                        "Dùi đục là vật phẩm giới thiệu (Không bán tại Shop Bang).\n"
+                        + "Nguồn săn, chế tạo & mua:\n"
+                        + "- Hạ Boss bất kỳ: 10% rơi x5 viên\n"
+                        + "- Bà Hạt Mít: Chế tạo từ x5 đá Hematite + 50Tr vàng\n"
+                        + "- Shop Santa (Cửa hàng): Mua với giá 500 Thỏi vàng");
+                return;
+            }
+            if (is.temp.id == 1439) {
+                Service.gI().sendThongBaoOK(player,
+                        "Đá mài là vật phẩm giới thiệu (Không bán tại Shop Bang).\n"
+                        + "Nguồn săn, chế tạo & mua:\n"
+                        + "- Hạ Boss bất kỳ: 10% rơi x5 viên\n"
+                        + "- Bà Hạt Mít: Chế tạo từ x5 Dùi đục + 50Tr vàng\n"
+                        + "- Shop Santa (Cửa hàng): Mua với giá 500 Thỏi vàng");
+                return;
+            }
+
             int capsuleClanPointPrice = 0;
 
             switch (is.temp.id) {
                 case 1794:
                 case 1204:
-                case 1423:
-                case 1438:
-                case 1439:
                 case 987:
                 case 1635:
                     capsuleClanPointPrice = 1;

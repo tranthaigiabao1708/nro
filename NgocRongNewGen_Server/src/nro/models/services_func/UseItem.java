@@ -804,6 +804,8 @@ public class UseItem {
                             case 1614:
                             case 1615:
                             case 1616:
+                                Service.gI().sendThongBao(pl, "Vật phẩm này đã ngừng sử dụng!");
+                                break;
                             case 381: //cuồng nộ
                             case 382: //bổ huyết
                             case 383: //bổ khí
@@ -899,6 +901,35 @@ public class UseItem {
                             case 987:
                                 Service.gI().sendThongBao(pl, "Bảo vệ trang bị không bị rớt cấp"); //đá bảo vệ
                                 break;
+                            case 1440: { // Rương sao pha lê (mở ngẫu nhiên 1 Sao Pha Lê Cấp 1)
+                                if (InventoryService.gI().getCountEmptyBag(pl) <= 0 && item.quantity > 1) {
+                                    Service.gI().sendThongBao(pl, "Cần ít nhất 1 ô trống trong hành trang!");
+                                    break;
+                                }
+                                short splId = (short) Util.nextInt(441, 447);
+                                Item spl = ItemService.gI().createNewItem(splId, 1);
+                                ItemService.gI().ensureDefaultOptions(spl);
+                                InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+                                InventoryService.gI().addItemBag(pl, spl);
+                                InventoryService.gI().sendItemBags(pl);
+                                Service.gI().sendThongBao(pl, "Bạn đã mở Rương Sao Pha Lê nhận được " + spl.template.name + "!");
+                                break;
+                            }
+                            case 1453: { // Rương sao pha lê VIP (mở ngẫu nhiên 1 Sao Pha Lê Cấp 2)
+                                if (InventoryService.gI().getCountEmptyBag(pl) <= 0 && item.quantity > 1) {
+                                    Service.gI().sendThongBao(pl, "Cần ít nhất 1 ô trống trong hành trang!");
+                                    break;
+                                }
+                                short[] splCap2Pool = {1416, 1417, 1418, 1419, 1420, 1421, 1422, 964, 965, 2011, 2013};
+                                short splId = splCap2Pool[Util.nextInt(splCap2Pool.length)];
+                                Item spl = ItemService.gI().createNewItem(splId, 1);
+                                ItemService.gI().ensureDefaultOptions(spl);
+                                InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+                                InventoryService.gI().addItemBag(pl, spl);
+                                InventoryService.gI().sendItemBags(pl);
+                                Service.gI().sendThongBao(pl, "Bạn đã mở Rương Sao Pha Lê VIP nhận được " + spl.template.name + "!");
+                                break;
+                            }
                             case 568: // Trứng Mabư thường (hợp thể 60% chỉ số)
                                 if (pl.mabuEgg == null) {
                                     MabuEgg.createMabuEgg(pl, 0);
@@ -1585,33 +1616,11 @@ public class UseItem {
                 pl.itemTime.lastTimeUseCoBonLa = System.currentTimeMillis();
                 pl.itemTime.isUseCoBonLa = true;
                 break;
-            case 1614: // nuoc mia 1
-                if (pl.itemTime.isUseNuocMia2 || pl.itemTime.isUseNuocMia3) {
-                    Service.gI().sendThongBao(pl, "Chỉ có thể sự dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
-                    return;
-                }
-                pl.itemTime.lastTimeUseNuocMia1 = System.currentTimeMillis();
-                pl.itemTime.isUseNuocMia1 = true;
-                Service.gI().point(pl);
-                break;
-            case 1615: // nuoc mia 1
-                if (pl.itemTime.isUseNuocMia1 || pl.itemTime.isUseNuocMia3) {
-                    Service.gI().sendThongBao(pl, "Chỉ có thể sự dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
-                    return;
-                }
-                pl.itemTime.lastTimeUseNuocMia2 = System.currentTimeMillis();
-                pl.itemTime.isUseNuocMia2 = true;
-                Service.gI().point(pl);
-                break;
-            case 1616: // nuoc mia 1
-                if (pl.itemTime.isUseNuocMia1 || pl.itemTime.isUseNuocMia2) {
-                    Service.gI().sendThongBao(pl, "Chỉ có thể sự dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
-                    return;
-                }
-                pl.itemTime.lastTimeUseNuocMia3 = System.currentTimeMillis();
-                pl.itemTime.isUseNuocMia3 = true;
-                Service.gI().point(pl);
-                break;
+            case 1614:
+            case 1615:
+            case 1616:
+                Service.gI().sendThongBao(pl, "Vật phẩm này đã ngừng sử dụng!");
+                return;
             case 381: // cuồng nộ
                 if (pl.itemTime.isUseCuongNo2) {
                     Service.gI().sendThongBao(pl, "Chỉ có thể sự dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");

@@ -385,7 +385,8 @@ public class MapService {
                 && pl.mapBeforeCapsule.map.mapId != 21
                 && pl.mapBeforeCapsule.map.mapId != 22
                 && pl.mapBeforeCapsule.map.mapId != 23
-                && !isMapTuongLai(pl.mapBeforeCapsule.map.mapId)) {
+                && !isMapTuongLai(pl.mapBeforeCapsule.map.mapId)
+                && !isMapNguHanhSon(pl.mapBeforeCapsule.map.mapId)) {
             addListMapCapsule(pl, list, pl.mapBeforeCapsule);
         }
         addListMapCapsule(pl, list, getMapCanJoin(pl, 21 + pl.gender, 0));

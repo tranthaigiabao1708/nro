@@ -1140,7 +1140,7 @@ public class Player implements Runnable {
                 switch (plAtt.playerSkill.skillSelect.template.id) {
                     case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC -> {
                         if (this.nPoint.voHieuChuong > 0) {
-                            PlayerService.gI().hoiPhuc(this, 0, (int) (damage * this.nPoint.voHieuChuong / 100));
+                            PlayerService.gI().hoiPhuc(this, 0, (int) Math.min(2_147_483_647L, Math.max(0L, damage * this.nPoint.voHieuChuong / 100L)));
                             return 0;
                         }
                     }
@@ -1160,7 +1160,7 @@ public class Player implements Runnable {
                 }
 
                 switch (plAtt.playerSkill.skillSelect.template.id) {
-                    case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC -> {
+                    case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC, Skill.MAKANKOSAPPO, Skill.QUA_CAU_KENH_KHI, Skill.SUPER_KAME, Skill.LIEN_HOAN_CHUONG -> {
                         if (tlGiap - plAtt.nPoint.tlxgc >= 0) {
                             tlGiap -= plAtt.nPoint.tlxgc;
                         } else {

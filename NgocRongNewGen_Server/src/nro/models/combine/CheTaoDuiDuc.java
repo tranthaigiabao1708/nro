@@ -23,6 +23,7 @@ public class CheTaoDuiDuc {
             Item Hematite = player.combineNew.itemsCombine.get(0);
             if (Hematite.template.id == 1423 && Hematite.quantity >= 5) {
                 player.combineNew.goldCombine = GOLD_TAO_DA;
+                player.combineNew.gemCombine = 0;
                 player.combineNew.ratioCombine = RATIO_TAO_DA;
 
                 String npcSay = "|2|Tạo Dùi Đục từ Đá Hematite\n";
@@ -60,6 +61,12 @@ public class CheTaoDuiDuc {
 
             Item Hematite = player.combineNew.itemsCombine.get(0);
             if (Hematite.template.id == 1423 && Hematite.quantity >= 5) {
+                if (InventoryService.gI().getCountEmptyBag(player) <= 0
+                        && InventoryService.gI().findItemBag(player, 1438) == null
+                        && Hematite.quantity > 5) {
+                    Service.gI().sendThongBao(player, "Cần ít nhất 1 ô trống trong hành trang!");
+                    return;
+                }
                 player.inventory.gold -= gold;
                 InventoryService.gI().subQuantityItemsBag(player, Hematite, 5);
                 if (Util.isTrue(player.combineNew.ratioCombine, 100)) {
@@ -67,6 +74,7 @@ public class CheTaoDuiDuc {
                     Item DuiDuc = new Item();
                     DuiDuc.template = hematiteTemplate;
                     DuiDuc.quantity = 1;
+                    ItemService.gI().ensureDefaultOptions(DuiDuc);
                     InventoryService.gI().addItemBag(player, DuiDuc);
                     CombineService.gI().sendEffectSuccessCombine(player);
                 } else {

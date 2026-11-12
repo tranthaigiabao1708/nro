@@ -42,12 +42,15 @@ public class TabShopSanta extends TabShop {
     }
 
     public int idDauCanBuy(Player player) {
+        if (player == null || player.magicTree == null || player.magicTree.level <= 0) {
+            return listDauThan[1];
+        }
         int level = player.magicTree.level;
-        if (level == 10) {
+        if (level >= 10) {
             return listDauThan[9];
         } else if (level >= 1 && level <= 9) {
             return listDauThan[level];
         }
-        throw new IllegalArgumentException("Invalid magic tree level: " + level);
+        return listDauThan[1];
     }
 }

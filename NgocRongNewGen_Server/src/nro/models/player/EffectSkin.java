@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Setter;
 import nro.models.services.EffectSkillService;
+import nro.models.services.SkillService;
 import nro.models.skill.Skill;
 
 /**
@@ -160,13 +161,15 @@ public class EffectSkin {
                         int hpHut = 0;
                         int mpHut = 0;
                         List<Player> players = new ArrayList<>();
-                        List<Player> playersMap = this.player.zone.getNotBosses();
-                        for (Player pl : playersMap) {
-                            if (!this.player.equals(pl) && !pl.isBoss && !pl.isDie()
-                                    && Util.getDistance(this.player, pl) <= 200) {
-                                players.add(pl);
+                        if (!MapService.gI().isMapOffline(this.player.zone.map.mapId)) {
+                            List<Player> playersMap = this.player.zone.getNotBosses();
+                            for (Player pl : playersMap) {
+                                if (!this.player.equals(pl) && !pl.isBoss && !pl.isDie()
+                                        && SkillService.gI().canAttackPlayer(this.player, pl)
+                                        && Util.getDistance(this.player, pl) <= 200) {
+                                    players.add(pl);
+                                }
                             }
-
                         }
                         for (Mob mob : this.player.zone.mobs) {
                             if (mob.point.gethp() > 1) {
@@ -407,14 +410,19 @@ public class EffectSkin {
         try {
             if (this.player.effectSkill != null && this.player.effectSkill.isBinh && this.player.effectSkill.playerUseMafuba != null) {
                 if (Util.canDoWithTime(lastTimeMaPhongBa, 500) && this.player.effectSkill.playerUseMafuba.playerSkill != null) {
-                    double param = this.player.effectSkill.playerUseMafuba.playerSkill.getSkillbyId(Skill.MA_PHONG_BA).point * (this.player.effectSkill.typeBinh == 0 ? 1 : 2);
-                    int subHp = (int) ((long) this.player.effectSkill.playerUseMafuba.nPoint.hpMax * param / 100);
+                    Player caster = this.player.effectSkill.playerUseMafuba;
+                    double param = caster.playerSkill.getSkillbyId(Skill.MA_PHONG_BA).point * (this.player.effectSkill.typeBinh == 0 ? 1 : 2);
+                    long subHpLong = (long) (caster.nPoint.hpMax * param / 100);
+                    if (caster.nPoint != null && caster.nPoint.tlDameTuyetKy > 0) {
+                        subHpLong += subHpLong * caster.nPoint.tlDameTuyetKy / 100L;
+                    }
+                    int subHp = (int) Math.min(2_147_483_647L, subHpLong);
                     if (subHp >= this.player.nPoint.hp) {
                         subHp = Math.abs(this.player.nPoint.hp - 100);
                     }
                     PlayerService.gI().sendInfoHpMpMoney(this.player);
                     Service.gI().Send_Info_NV(this.player);
-                    this.player.injured(this.player.effectSkill.playerUseMafuba, subHp, true, false);
+                    this.player.injured(caster, subHp, true, false);
                     this.lastTimeMaPhongBa = System.currentTimeMillis();
                 }
             }

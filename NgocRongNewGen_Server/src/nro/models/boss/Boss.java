@@ -646,17 +646,34 @@ public class Boss extends Player implements IBoss {
                 if (owner == null) {
                     return;
                 }
-                int[] materialIds = {1423, 1438, 1439}; // Đá Hematite, Dùi đục, Đá mài
+                int[] materialIds = {1423, 1438, 1439}; // Đá Hematite (30%), Dùi đục (10%), Đá mài (10%)
                 int offset = -12;
                 for (int matId : materialIds) {
-                    if (Util.isTrue(10, 100)) {
+                    int dropRate = (matId == 1423) ? 30 : 10;
+                    if (Util.isTrue(dropRate, 100)) {
                         int xDrop = Math.max(24, Math.min(this.zone.map.mapWidth - 24, this.location.x + offset));
                         int yDrop = this.zone.map.yPhysicInTop(xDrop, this.location.y - 24);
                         nro.models.map.ItemMap matItem = new nro.models.map.ItemMap(this.zone, matId, 5, xDrop, yDrop, owner.id);
-                        matItem.options.add(new nro.models.item.Item.ItemOption(73, 0));
+                        if (matId == 1423) {
+                            matItem.options.add(new nro.models.item.Item.ItemOption(167, 0));
+                            matItem.options.add(new nro.models.item.Item.ItemOption(168, 0));
+                        } else {
+                            matItem.options.add(new nro.models.item.Item.ItemOption(73, 0));
+                        }
                         Service.gI().dropItemMap(this.zone, matItem);
                         offset += 12;
                     }
+                }
+                if (isHighTierBoss() && Util.isTrue(8, 100)) {
+                    boolean dropHuyet = Util.isTrue(50, 100);
+                    int splId = dropHuyet ? 2011 : 2013;
+                    int optId = dropHuyet ? 77 : 103;
+                    int optParam = 8;
+                    int xDrop = Math.max(24, Math.min(this.zone.map.mapWidth - 24, this.location.x + offset));
+                    int yDrop = this.zone.map.yPhysicInTop(xDrop, this.location.y - 24);
+                    nro.models.map.ItemMap splItem = new nro.models.map.ItemMap(this.zone, splId, 1, xDrop, yDrop, owner.id);
+                    splItem.options.add(new nro.models.item.Item.ItemOption(optId, optParam));
+                    Service.gI().dropItemMap(this.zone, splItem);
                 }
             }
         } catch (Exception e) {
@@ -783,7 +800,7 @@ public class Boss extends Player implements IBoss {
                 die(plAtt);
             }
 
-            return (int) damage;
+            return (int) Math.min(2_147_483_647L, Math.max(0L, damage));
         } else {
             return 0;
         }

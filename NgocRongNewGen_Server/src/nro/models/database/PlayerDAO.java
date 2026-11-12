@@ -112,7 +112,7 @@ public class PlayerDAO {
             JSONArray item = new JSONArray();
             JSONArray options = new JSONArray();
             JSONArray opt = new JSONArray();
-            for (int i = 0; i < 11; i++) {
+            for (int i = 0; i < 12; i++) {
                 switch (i) {
                     case 0:
                         //áo
@@ -594,9 +594,9 @@ public class PlayerDAO {
                 dataArray.add(player.itemTime.iconMeal2);
                 dataArray.add(0);
                 dataArray.add((player.itemTime.isUseNCD ? (ItemTime.TIME_NCD - (System.currentTimeMillis() - player.itemTime.lastTimeUseNCD)) : 0));
-                dataArray.add((player.itemTime.isUseNuocMia1 ? (ItemTime.TIME_NUOC_MIA1 - (System.currentTimeMillis() - player.itemTime.lastTimeUseNuocMia1)) : 0));
-                dataArray.add((player.itemTime.isUseNuocMia2 ? (ItemTime.TIME_NUOC_MIA2 - (System.currentTimeMillis() - player.itemTime.lastTimeUseNuocMia2)) : 0));
-                dataArray.add((player.itemTime.isUseNuocMia3 ? (ItemTime.TIME_NUOC_MIA3 - (System.currentTimeMillis() - player.itemTime.lastTimeUseNuocMia3)) : 0));
+                dataArray.add(0);
+                dataArray.add(0);
+                dataArray.add(0);
                 dataArray.add((player.itemTime.isUseKilis ? (ItemTime.TIME_KILIS - (System.currentTimeMillis() - player.itemTime.lastTimeUseKilis)) : 0));
                 dataArray.add((player.itemTime.isUseLuckDragon ? Math.max(0L, ItemTime.TIME_LUCK_DRAGON - (System.currentTimeMillis() - player.itemTime.lastTimeUseLuckDragon)) : 0));
                 dataArray.add((player.itemTime.isUseVeKhuSkh ? Math.max(0L, ItemTime.TIME_VE_KHU_SKH - (System.currentTimeMillis() - player.itemTime.lastTimeUseVeKhuSkh)) : 0));

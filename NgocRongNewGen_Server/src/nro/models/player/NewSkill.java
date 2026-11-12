@@ -55,7 +55,7 @@ public class NewSkill {
     public long lastTimeSkillSpecial;
 
     public byte getTypePaint() {
-        int index = player.isPet ? 8 : 10;
+        int index = player.isPet ? 8 : 11;
         if (player.inventory.itemsBody.size() > index) {
             Item item = player.inventory.itemsBody.get(index);
             if (item != null && item.isNotNullItem()) {
@@ -72,7 +72,7 @@ public class NewSkill {
     }
 
     public byte getTypeItem() {
-        int index = player.isPet ? 8 : 10;
+        int index = player.isPet ? 8 : 11;
         if (player.inventory.itemsBody.size() > index) {
             Item item = player.inventory.itemsBody.get(index);
             if (item != null && item.isNotNullItem()) {
@@ -92,10 +92,11 @@ public class NewSkill {
     }
 
     public void setSkillSpecial(byte dir, short _xPlayer, short _yPlayer, short _xObjTaget, short _yObjTaget) {
+        this.typePaint = this.getTypePaint();
         if (player.itemTime != null && player.itemTime.isUseNCD) {
             typeItem = 2;
         } else {
-            typeItem = 0;
+            typeItem = this.getTypeItem();
         }
         this.skillSelect = this.player.playerSkill.skillSelect;
         if (this.player.isPl() && skillSelect.currLevel < 1000) {
@@ -107,7 +108,8 @@ public class NewSkill {
         this._yPlayer = _yPlayer;
 
         int length = _xObjTaget - _xPlayer;
-        int dx = dir * (skillSelect.point + 400);
+        int rangeBonus = (this.player.nPoint != null) ? this.player.nPoint.tlRangeTuyetKy : 0;
+        int dx = dir * ((skillSelect.point + 400) * (100 + rangeBonus) / 100);
         if (skillSelect.template.id != Skill.MA_PHONG_BA) {
             if (Math.abs(dx) < Math.abs(length) || Math.abs(length) < 100) {
                 this._xObjTaget = (short) dx;
@@ -118,7 +120,7 @@ public class NewSkill {
             this._xObjTaget = 75;
         }
         this._xObjTaget = (short) Math.abs(this._xObjTaget);
-        this._yObjTaget = (short) Math.abs(_yObjTaget);
+        this._yObjTaget = (short) (Math.abs(_yObjTaget) * (100 + rangeBonus) / 100);
         this.isStartSkillSpecial = true;
         this.stepSkillSpecial = 0;
         this.lastTimeSkillSpecial = System.currentTimeMillis();

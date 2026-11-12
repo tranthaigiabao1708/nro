@@ -399,8 +399,15 @@ public class MrBlue {
                 }
                 player.inventory.itemsBody.add(item);
             }
-            if (player.inventory.itemsBody.size() == 10) {
+            while (player.inventory.itemsBody.size() < 12) {
                 player.inventory.itemsBody.add(ItemService.gI().createItemNull());
+            }
+            Item slot10 = player.inventory.itemsBody.get(10);
+            Item slot11 = player.inventory.itemsBody.get(11);
+            if (slot10 != null && slot10.isNotNullItem() && slot10.template != null
+                    && slot10.template.type == 25 && (slot11 == null || !slot11.isNotNullItem())) {
+                player.inventory.itemsBody.set(11, slot10);
+                player.inventory.itemsBody.set(10, ItemService.gI().createItemNull());
             }
             dataArray.clear();
 
@@ -738,9 +745,9 @@ public class MrBlue {
             player.itemTime.isEatMeal2 = timeMeal2 != 0;
             player.itemTime.isUseNCD = timeUseNCD != 0;
             player.itemTime.isUseKilis = timeKilis != 0;
-            player.itemTime.isUseNuocMia1 = timeNuocMia1 != 0;
-            player.itemTime.isUseNuocMia2 = timeNuocMia2 != 0;
-            player.itemTime.isUseNuocMia3 = timeNuocMia3 != 0;
+            player.itemTime.isUseNuocMia1 = false;
+            player.itemTime.isUseNuocMia2 = false;
+            player.itemTime.isUseNuocMia3 = false;
             player.itemTime.isUseLuckDragon = timeLuckDragon > 0;
             player.nPoint.luckDragon = player.itemTime.isUseLuckDragon ? 20 : 0;
             player.itemTime.isUseVeKhuSkh = timeVeKhuSkh > 0;

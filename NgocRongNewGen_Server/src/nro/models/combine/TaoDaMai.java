@@ -24,9 +24,10 @@ public class TaoDaMai {
             Item DuiDuc = player.combineNew.itemsCombine.get(0);
             if (DuiDuc.template.id == 1438 && DuiDuc.quantity >= 5) {
                 player.combineNew.goldCombine = GOLD_TAO_DA;
+                player.combineNew.gemCombine = 0;
                 player.combineNew.ratioCombine = RATIO_TAO_DA;
 
-                String npcSay = "|2|Tạo Dùi Đục từ Đá Mài\n";
+                String npcSay = "|2|Tạo Đá Mài từ Dùi Đục\n";
                 npcSay += "|2|Cần 5 Dùi Đục\n";
                 npcSay += "|2|Tỉ lệ thành công: " + player.combineNew.ratioCombine + "%\n";
                 npcSay += "|2|Cần: " + Util.numberToMoney(player.combineNew.goldCombine) + " vàng\n";
@@ -59,6 +60,12 @@ public class TaoDaMai {
 
             Item DuiDuc = player.combineNew.itemsCombine.get(0);
             if (DuiDuc.template.id == 1438 && DuiDuc.quantity >= 5) {
+                if (InventoryService.gI().getCountEmptyBag(player) <= 0
+                        && InventoryService.gI().findItemBag(player, 1439) == null
+                        && DuiDuc.quantity > 5) {
+                    Service.gI().sendThongBao(player, "Cần ít nhất 1 ô trống trong hành trang!");
+                    return;
+                }
                 player.inventory.gold -= gold;
                 InventoryService.gI().subQuantityItemsBag(player, DuiDuc, 5);
                 if (Util.isTrue(player.combineNew.ratioCombine, 100)) {
@@ -66,6 +73,7 @@ public class TaoDaMai {
                     Item DaMai = new Item();
                     DaMai.template = hematiteTemplate;
                     DaMai.quantity = 1;
+                    ItemService.gI().ensureDefaultOptions(DaMai);
                     InventoryService.gI().addItemBag(player, DaMai);
                     CombineService.gI().sendEffectSuccessCombine(player);
                 } else {

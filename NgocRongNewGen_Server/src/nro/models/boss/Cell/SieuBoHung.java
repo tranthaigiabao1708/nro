@@ -178,7 +178,7 @@ public class SieuBoHung extends Boss {
                 return 0;
             }
 
-            return (int) damage;
+            return (int) Math.min(2_147_483_647L, Math.max(0L, damage));
         }
         return 0;
     }
