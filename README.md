@@ -4,8 +4,10 @@ Kho mã nguồn chính thức của dự án **Ngọc Rồng NewGen**, bao gồm
 
 ## Cấu trúc thư mục
 - `Database_NgocRongNewGen/` : **Database độc lập chính thức của Ngọc Rồng NewGen**:
-  - `nro_newgen.sql` : File SQL chính thức (chuẩn `UTF-8`, đã làm sạch 100% dữ liệu rác của bản mẫu, giữ nguyên các cơ chế riêng của Ngọc Rồng NewGen).
-  - `Xuat_SQL_NewGen.bat` : Công cụ 1-click xuất lại `nro_newgen` từ MariaDB ra file `nro_newgen.sql` sau khi chỉnh sửa trong game/Navicat.
+  - `nro_newgen.sql` : File SQL chính thức (chuẩn `UTF-8`, đã làm sạch 100% dữ liệu rác của bản mẫu, không chứa dữ liệu nhân vật cá nhân).
+  - `data_cau_hinh_shop_item.sql` & `CapNhat_Shop_Item_Tu_Git.bat` : Bộ dữ liệu **27 bảng cấu hình tĩnh** (Shop, Vật phẩm, Map, Quái, NPC, Hào quang...) giúp đồng bộ cập nhật Store/Item sang máy khác mà **giữ nguyên 100% dữ liệu nhân vật**.
+  - `Xuat_SQL_NewGen.bat` : Công cụ 1-click xuất lại cấu hình Shop/Item từ MariaDB ra `data_cau_hinh_shop_item.sql` và `nro_newgen.sql` (an toàn không xuất dữ liệu `player`/`account`).
+  - `NHAT_KY_CAP_NHAT_SHOP_ITEM_VA_TINH_NANG.md` : **Tài liệu chi tiết toàn bộ Vật phẩm mới, bảng giá/chỉ số Store (Shop Chi Chi, Trọng Tài VT6, Bill, Whis) và các tính năng Giai đoạn 1 & 2 đã triển khai**.
   - `SO_TAY_TRA_CUU_2_BAN_MAU.md` : Sổ tay quản trị & bảng tra cứu vật phẩm, giới hạn sức mạnh và mẫu SQL tham khảo từ 2 bản mẫu (`Teamobi2026` & `SRC NRO NEW 01`).
 - `NgocRongNewGen_Server/` : Mã nguồn Server Java đang vận hành của **Ngọc Rồng NewGen** (`Config.properties` kết nối trực tiếp tới `database.name=nro_newgen`, bản build `dist/NgocRongNewGen.jar`, full `21.043` icon x4).
 - `NgocRongNewGen_Unity/` : Mã nguồn Unity Client 2 Tab - Hành Trang Lưới (tự đọc IP từ `server_ip.txt`, hỗ trợ `Tàn sát tất cả`, menu `NRO Admin -> Build Client PC Ngoc Rong NewGen`, build bằng `5_Build_Client_NgocRongNewGen_Unity.bat`).

@@ -475,7 +475,12 @@ public class MapService {
     }
     
     public boolean isMapCadic(int mapId) {
-        return mapId >= 165;
+        return mapId == 165 || mapId == 166;
+    }
+
+    public boolean isMapVuTru6(int mapId) {
+        return mapId == 145 || mapId == 169 || mapId == 170
+                || mapId == 173 || mapId == 174 || mapId == 176 || mapId == 177;
     }
 
     public boolean isMapBossFinal(int mapId) {
@@ -597,7 +602,7 @@ public class MapService {
     }
 
     public boolean isMapEventHalloween(int mapId) {
-        return mapId == 174 || mapId == 179 || mapId == 180 || mapId == 181 || mapId == 168;
+        return mapId == 179 || mapId == 180 || mapId == 181 || mapId == 168;
     }
 
     public boolean isMapEvent1(int mapId) {

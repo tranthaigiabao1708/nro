@@ -967,7 +967,10 @@ public class SkillService {
         if (plInjure.effectSkill.anTroi) {
             plAtt.nPoint.isCrit100 = true;
         }
-        long dameAttack = plAtt.nPoint.getDameAttack(false);
+        boolean targetIsU6Boss = plInjure instanceof nro.models.boss.vodai_vt6.Universe6Boss;
+        long dameAttack = targetIsU6Boss
+                ? plAtt.nPoint.getDameAttackLong(false)
+                : plAtt.nPoint.getDameAttack(false);
         if (plAtt.isPl() && plAtt.effectSkin != null && plAtt.effectSkin.isXDame) {
             plAtt.effectSkin.isXDame = false;
             if (plInjure.isBoss) {
@@ -979,10 +982,14 @@ public class SkillService {
                 && plAtt.playerSkill.skillSelect.template != null
                 && plAtt.playerSkill.skillSelect.template.id == Skill.MAKANKOSAPPO
                 && plInjure.effectSkill != null && plInjure.effectSkill.isSocola) {
-            dameAttack = Math.min(2_147_483_647L, dameAttack + dameAttack * 10L / 100L);
-            isPiercing = true;
+            if (targetIsU6Boss) {
+                dameAttack += dameAttack * 15L / 100L;
+            } else {
+                dameAttack = Math.min(2_147_483_647L, dameAttack + dameAttack * 10L / 100L);
+                isPiercing = true;
+            }
         }
-        int hpBefore = plInjure.nPoint.hp;
+        long hpBefore = plInjure.nPoint.getActualHp();
         int dameHit = plInjure.injured(plAtt, miss ? 0 : dameAttack, isPiercing, false);
         if (plAtt.playerSkill == null) {
             return;
@@ -1000,7 +1007,7 @@ public class SkillService {
         }
         int damePST = plInjure.effectSkill != null && plInjure.effectSkill.isShielding && plInjure.idMark != null ? plInjure.idMark.getDamePST() : dameHit;
         phanSatThuong(plAtt, plInjure, miss ? 0 : damePST);
-        long actualDameDealt = miss ? 0L : Math.max(0L, Math.min((long) dameHit, (long) Math.max(0, hpBefore - plInjure.nPoint.hp)));
+        long actualDameDealt = miss ? 0L : Math.max(0L, Math.min((long) dameHit, Math.max(0L, hpBefore - plInjure.nPoint.getActualHp())));
         hutHPMP(plAtt, actualDameDealt, plInjure, null);
         Message msg = null;
         try {

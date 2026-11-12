@@ -25,6 +25,10 @@ public class ItemTime {
     public static final int ICON_LUCK_DRAGON = 419;
     public static final long TIME_VE_KHU_SKH = 30 * 60 * 1000L;
     public static final int ICON_VE_KHU_SKH = 13948;
+    public static final long TIME_THUOC_GIAI_VT6 = 30 * 60 * 1000L;
+    public static final int ICON_THUOC_GIAI_VT6 = 11473;
+    public static final long TIME_AN_PHA_THOI_GIAN = 30 * 60 * 1000L;
+    public static final int ICON_AN_PHA_THOI_GIAN = 11474;
     public static final int TIME_KILIS = 3600000;
     public static final int TIME_NUOC_MIA1 = 600_000;
     public static final int TIME_NUOC_MIA2 = 600_000;
@@ -76,6 +80,11 @@ public class ItemTime {
 
     public long lastTimeUseVeKhuSkh;
     public boolean isUseVeKhuSkh;
+    public long lastTimeUseThuocGiaiVt6;
+    public boolean isUseThuocGiaiVt6;
+    public long lastTimeUseAnPhaThoiGian;
+    public boolean isUseAnPhaThoiGian;
+    public long lastTimeEnvHazardVt6;
 
     public boolean isUseKilis;
     public long lastTimeUseKilis;
@@ -296,6 +305,38 @@ public class ItemTime {
         if (isUseLuckRX) {
             if (Util.canDoWithTime(lastTimeUseLuckRX, timeLuckRX)) {
                 isUseLuckRX = false;
+            }
+        }
+        if (isUseThuocGiaiVt6) {
+            if (Util.canDoWithTime(lastTimeUseThuocGiaiVt6, TIME_THUOC_GIAI_VT6)) {
+                isUseThuocGiaiVt6 = false;
+                ItemTimeService.gI().removeItemTime(player, ICON_THUOC_GIAI_VT6);
+            }
+        }
+        if (isUseAnPhaThoiGian) {
+            if (Util.canDoWithTime(lastTimeUseAnPhaThoiGian, TIME_AN_PHA_THOI_GIAN)) {
+                isUseAnPhaThoiGian = false;
+                ItemTimeService.gI().removeItemTime(player, ICON_AN_PHA_THOI_GIAN);
+            }
+        }
+        if (player != null && player.isPl() && !player.isDie() && player.zone != null && player.zone.map != null && player.nPoint != null) {
+            int curMap = player.zone.map.mapId;
+            if ((curMap == 173 || curMap == 174) && !isUseThuocGiaiVt6 && Util.canDoWithTime(lastTimeEnvHazardVt6, 5000)) {
+                lastTimeEnvHazardVt6 = System.currentTimeMillis();
+                if (curMap == 173) {
+                    long hpDrain = Math.max(1L, (long) player.nPoint.hpMax * 5L / 100L);
+                    int nextHp = (int) Math.max(1L, player.nPoint.hp - hpDrain);
+                    player.nPoint.setHp(nextHp);
+                    nro.models.services.PlayerService.gI().sendInfoHpMpMoney(player);
+                    Service.gI().Send_Info_NV(player);
+                } else {
+                    long hpDrain = Math.max(1L, (long) player.nPoint.hpMax * 8L / 100L);
+                    long mpDrain = Math.max(1L, (long) player.nPoint.mpMax * 8L / 100L);
+                    player.nPoint.setHp((int) Math.max(1L, player.nPoint.hp - hpDrain));
+                    player.nPoint.setMp((int) Math.max(0L, player.nPoint.mp - mpDrain));
+                    nro.models.services.PlayerService.gI().sendInfoHpMpMoney(player);
+                    Service.gI().Send_Info_NV(player);
+                }
             }
         }
     }

@@ -186,16 +186,40 @@ public class Boss extends Player implements IBoss {
         }
     }
 
+    public static final int ITEM_HON_BOSS_LAM = 2016;
+    public static final int ITEM_HON_BOSS_LUC = 2017;
+    public static final int ITEM_HON_BOSS_TIM = 2018;
+    public static final int ITEM_MA_HON_HUY_DIET = 2019;
+
+    protected boolean soulDroppedForCurrentLife;
+
     @Override
     public void initBase() {
+        this.soulDroppedForCurrentLife = false;
         BossData data = this.data[this.currentLevel];
         this.name = String.format(data.getName(), Util.nextInt(0, 100));
         this.gender = data.getGender();
         this.nPoint.mpg = 31_07_2002;
         this.nPoint.dameg = data.getDame();
-        this.nPoint.hpg = data.getHp()[Util.nextInt(0, data.getHp().length - 1)];
-        this.nPoint.hp = nPoint.hpg;
+        long baseHp = data.getHp()[Util.nextInt(0, data.getHp().length - 1)];
+        if (isHighTierBoss()) {
+            baseHp *= 3L;
+        }
+        if (baseHp > 2_147_483_647L) {
+            this.nPoint.bossRealHpMax = baseHp;
+            this.nPoint.bossRealHp = baseHp;
+            this.nPoint.hpg = 2_000_000_000;
+        } else {
+            this.nPoint.bossRealHpMax = 0L;
+            this.nPoint.bossRealHp = 0L;
+            this.nPoint.hpg = (int) baseHp;
+        }
+        this.nPoint.hp = this.nPoint.hpg;
         this.nPoint.calPoint();
+        if (this.nPoint.bossRealHpMax > 2_147_483_647L) {
+            this.nPoint.bossRealHp = this.nPoint.bossRealHpMax;
+            this.nPoint.syncDisplayHpFromBossReal();
+        }
         this.initSkill();
         this.resetBase();
     }
@@ -487,6 +511,7 @@ public class Boss extends Player implements IBoss {
     }
 
     public void joinMapByZone(Zone zone) {
+        this.soulDroppedForCurrentLife = false;
         if (zone != null) {
             this.zone = zone;
             int x = this.zone.map.mapWidth > 100 ? Util.nextInt(100, this.zone.map.mapWidth - 100) : Util.nextInt(100);
@@ -615,6 +640,129 @@ public class Boss extends Player implements IBoss {
         return 500;
     }
 
+    protected boolean useLegacyDefaultBossDrops() {
+        return switch ((int) this.id) {
+            case BossID.TAU_PAY_PAY_DONG_NAM_KARIN,
+                 BossID.O_DO1,
+                 BossID.XEN_CON_1,
+                 BossID.XEN_CON_2,
+                 BossID.XEN_CON_3,
+                 BossID.XEN_CON_4,
+                 BossID.XEN_CON_5,
+                 BossID.XEN_CON_6,
+                 BossID.XEN_CON_7 -> true;
+            default -> false;
+        };
+    }
+
+    public int getBossSoulItemId() {
+        return switch ((int) this.id) {
+            // Ma Hồn Hủy Diệt (2019) - Độc quyền Dàn Boss Giải Đấu Vũ Trụ 6
+            case BossID.FROST_VT6,
+                 BossID.AUTA_MAGETTA,
+                 BossID.CABBA_VT6,
+                 BossID.CAULIFLA_VT6,
+                 BossID.HIT_VT6,
+                 BossID.CHAMPA_VT6 -> ITEM_MA_HON_HUY_DIET;
+            // Hồn Boss Tím (2018) - Dàn Boss Cấp Cao
+            case BossID.COOLER,
+                 BossID.BLACK_GOKU,
+                 BossID.CUMBER,
+                 BossID.BABY,
+                 BossID.GOLDEN_FRIEZA -> ITEM_HON_BOSS_TIM;
+            // Hồn Boss Lục (2017) - Boss Sự Kiện Khung Giờ & BigBoss
+            case BossID.DRABURA,
+                 BossID.BUI_BUI,
+                 BossID.BUI_BUI_2,
+                 BossID.YA_CON,
+                 BossID.DRABURA_2,
+                 BossID.GOKU,
+                 BossID.CADIC,
+                 BossID.DRABURA_3,
+                 BossID.MABU_12H,
+                 BossID.MABU,
+                 BossID.SUPERBU,
+                 BossID.GAU_TUONG_CUOP -> ITEM_HON_BOSS_LUC;
+            // Hồn Boss Lam (2016) - Boss Thường, Tầm Trung & Phó Bản Bang Hội
+            case BossID.KUKU,
+                 BossID.MAP_DAU_DINH,
+                 BossID.RAMBO,
+                 BossID.SO_4,
+                 BossID.SO_3,
+                 BossID.SO_2,
+                 BossID.SO_1,
+                 BossID.TIEU_DOI_TRUONG,
+                 BossID.TDST,
+                 BossID.FIDE,
+                 BossID.ANDROID_19,
+                 BossID.DR_KORE,
+                 BossID.ANDROID_13,
+                 BossID.ANDROID_14,
+                 BossID.ANDROID_15,
+                 BossID.PIC,
+                 BossID.POC,
+                 BossID.KING_KONG,
+                 BossID.SO_4_NM,
+                 BossID.SO_3_NM,
+                 BossID.SO_2_NM,
+                 BossID.SO_1_NM,
+                 BossID.TIEU_DOI_TRUONG_NM,
+                 BossID.BUJIN,
+                 BossID.KOGU,
+                 BossID.ZANGYA,
+                 BossID.BIDO,
+                 BossID.BOJACK,
+                 BossID.SUPER_BOJACK,
+                 BossID.SUPER_BROLY,
+                 BossID.XEN_BO_HUNG,
+                 BossID.SIEU_BO_HUNG,
+                 BossID.XEN_CON_1,
+                 BossID.XEN_CON_2,
+                 BossID.XEN_CON_3,
+                 BossID.XEN_CON_4,
+                 BossID.XEN_CON_5,
+                 BossID.XEN_CON_6,
+                 BossID.XEN_CON_7,
+                 BossID.TRUNG_UY_TRANG,
+                 BossID.TRUNG_UY_THEP,
+                 BossID.TRUNG_UY_XANH_LO,
+                 BossID.NINJA_AO_TIM,
+                 BossID.ROBOT_VE_SI,
+                 BossID.DR_LYCHEE,
+                 BossID.HATCHIYACK -> ITEM_HON_BOSS_LAM;
+            default -> -1;
+        };
+    }
+
+    public static void dropBossSoulStatic(Zone targetZone, int baseX, int baseY, Player plKill, int soulItemId) {
+        try {
+            if (soulItemId <= 0 || targetZone == null || targetZone.map == null || plKill == null || plKill.isBot) {
+                return;
+            }
+            Player owner = resolveRewardOwner(plKill);
+            long ownerId = (owner != null) ? owner.id : plKill.id;
+            int xDrop = clampDropX(targetZone, baseX + 8);
+            int yDrop = targetZone.map.yPhysicInTop(xDrop, baseY - 24);
+            nro.models.map.ItemMap soulMap = new nro.models.map.ItemMap(targetZone, soulItemId, 1, xDrop, yDrop, ownerId);
+            soulMap.options.add(new nro.models.item.Item.ItemOption(73, 0));
+            Service.gI().dropItemMap(targetZone, soulMap);
+        } catch (Exception e) {
+            Logger.logException(Boss.class, e);
+        }
+    }
+
+    public void dropBossSoul(Zone targetZone, int baseX, int baseY, Player plKill) {
+        if (this.soulDroppedForCurrentLife) {
+            return;
+        }
+        int soulId = getBossSoulItemId();
+        if (soulId <= 0 || targetZone == null || targetZone.map == null || plKill == null || plKill.isBot) {
+            return;
+        }
+        this.soulDroppedForCurrentLife = true;
+        dropBossSoulStatic(targetZone, baseX, baseY, plKill, soulId);
+    }
+
     @Override
     public void die(Player plKill) {
 
@@ -624,56 +772,104 @@ public class Boss extends Player implements IBoss {
                 || !MapService.gI().isMapBanDoKhoBau(this.zone.map.mapId))) {
             if (!plKill.isBot) {
                 reward(plKill);
-                dropThoiVangBoss(plKill);
-                dropMaterialBoss(plKill);
+                dropBossSoul(this.zone, this.location.x, this.location.y, plKill);
+                if (useLegacyDefaultBossDrops()) {
+                    dropThoiVangBoss(plKill);
+                    dropMaterialBoss(plKill);
+                }
             }
             ServerNotify.gI().notify(plKill.name + ": Đã tiêu diệt được " + this.name + " mọi người đều ngưỡng mộ.");
             this.changeStatus(BossStatus.DIE);
         } else {
             if (plKill != null && !plKill.isBot) {
                 reward(plKill);
-                dropThoiVangBoss(plKill);
-                dropMaterialBoss(plKill);
+                dropBossSoul(this.zone, this.location.x, this.location.y, plKill);
+                if (useLegacyDefaultBossDrops()) {
+                    dropThoiVangBoss(plKill);
+                    dropMaterialBoss(plKill);
+                }
             }
             this.changeStatus(BossStatus.DIE);
         }
     }
 
-    public void dropMaterialBoss(Player plKill) {
+    public static Player resolveRewardOwner(Player plKill) {
+        if (plKill == null) {
+            return null;
+        }
+        return (plKill.isPet && ((Pet) plKill).master != null) ? ((Pet) plKill).master : plKill;
+    }
+
+    private static int clampDropX(Zone targetZone, int x) {
+        if (targetZone == null || targetZone.map == null) {
+            return x;
+        }
+        return Math.max(24, Math.min(targetZone.map.mapWidth - 24, x));
+    }
+
+    /**
+     * Rơi Thỏi vàng [457] cố định (KHÔNG bị ảnh hưởng bởi chỉ số buff thêm vàng).
+     * Nếu highTierWingJackpot = true: kiểm tra riêng nội tại Cánh (Opt 251 -> 20% rơi thêm 100 Thỏi vàng),
+     * tuyệt đối KHÔNG stack với chỉ số May mắn.
+     */
+    public static void dropGoldBarsStatic(Zone targetZone, int baseX, int baseY, Player plKill, int baseCount, boolean highTierWingJackpot) {
         try {
-            if (plKill != null && !plKill.isBot && this.zone != null) {
-                Player owner = (plKill.isPet && ((Pet) plKill).master != null) ? ((Pet) plKill).master : plKill;
-                if (owner == null) {
-                    return;
-                }
-                int[] materialIds = {1423, 1438, 1439}; // Đá Hematite (30%), Dùi đục (10%), Đá mài (10%)
-                int offset = -12;
-                for (int matId : materialIds) {
-                    int dropRate = (matId == 1423) ? 30 : 10;
-                    if (Util.isTrue(dropRate, 100)) {
-                        int xDrop = Math.max(24, Math.min(this.zone.map.mapWidth - 24, this.location.x + offset));
-                        int yDrop = this.zone.map.yPhysicInTop(xDrop, this.location.y - 24);
-                        nro.models.map.ItemMap matItem = new nro.models.map.ItemMap(this.zone, matId, 5, xDrop, yDrop, owner.id);
-                        if (matId == 1423) {
-                            matItem.options.add(new nro.models.item.Item.ItemOption(167, 0));
-                            matItem.options.add(new nro.models.item.Item.ItemOption(168, 0));
-                        } else {
-                            matItem.options.add(new nro.models.item.Item.ItemOption(73, 0));
-                        }
-                        Service.gI().dropItemMap(this.zone, matItem);
-                        offset += 12;
-                    }
-                }
-                if (isHighTierBoss() && Util.isTrue(8, 100)) {
-                    boolean dropHuyet = Util.isTrue(50, 100);
-                    int splId = dropHuyet ? 2011 : 2013;
-                    int optId = dropHuyet ? 77 : 103;
-                    int optParam = 8;
-                    int xDrop = Math.max(24, Math.min(this.zone.map.mapWidth - 24, this.location.x + offset));
-                    int yDrop = this.zone.map.yPhysicInTop(xDrop, this.location.y - 24);
-                    nro.models.map.ItemMap splItem = new nro.models.map.ItemMap(this.zone, splId, 1, xDrop, yDrop, owner.id);
-                    splItem.options.add(new nro.models.item.Item.ItemOption(optId, optParam));
-                    Service.gI().dropItemMap(this.zone, splItem);
+            if (targetZone == null || targetZone.map == null) {
+                return;
+            }
+            Player owner = resolveRewardOwner(plKill);
+            long ownerId = (owner != null) ? owner.id : -1L;
+            if (baseCount > 0) {
+                int xDrop = clampDropX(targetZone, baseX);
+                int yDrop = targetZone.map.yPhysicInTop(xDrop, baseY - 24);
+                nro.models.map.ItemMap tv = new nro.models.map.ItemMap(targetZone, 457, baseCount, xDrop, yDrop, ownerId);
+                tv.options.add(new nro.models.item.Item.ItemOption(73, 0));
+                Service.gI().dropItemMap(targetZone, tv);
+            }
+            if (highTierWingJackpot && owner != null && !owner.isPet && owner.nPoint != null
+                    && owner.nPoint.tlJackpotThoiVangBoss > 0
+                    && Util.isTrue(Math.min(100, owner.nPoint.tlJackpotThoiVangBoss), 100)) {
+                int xJackpot = clampDropX(targetZone, baseX + 16);
+                int yJackpot = targetZone.map.yPhysicInTop(xJackpot, baseY - 24);
+                nro.models.map.ItemMap jackpotTV = new nro.models.map.ItemMap(targetZone, 457, 100, xJackpot, yJackpot, ownerId);
+                jackpotTV.options.add(new nro.models.item.Item.ItemOption(73, 0));
+                Service.gI().dropItemMap(targetZone, jackpotTV);
+                Service.gI().sendThongBao(owner, "Nội tại Cánh kích hoạt: Rơi thêm 100 Thỏi vàng từ Boss!");
+            }
+        } catch (Exception e) {
+            Logger.logException(Boss.class, e);
+        }
+    }
+
+    /**
+     * Rơi Đồ Thần Linh từ Boss.
+     * - highTierWingBonus: cộng nội tại Cánh (+20% từ Opt 252), KHÔNG nhân May mắn.
+     * - allowLuckNonStacking (riêng Cooler): có bị ảnh hưởng bởi chỉ số May mắn nhưng KHÔNG stack với Cánh
+     *   (lấy Math.max giữa tỉ lệ có Cánh và tỉ lệ có May mắn).
+     */
+    public static void tryDropGodItemStatic(Zone targetZone, int baseX, int baseY, Player plKill, int basePercent, boolean highTierWingBonus, boolean allowLuckNonStacking) {
+        try {
+            if (targetZone == null || targetZone.map == null || basePercent <= 0) {
+                return;
+            }
+            Player owner = resolveRewardOwner(plKill);
+            long ownerId = (owner != null) ? owner.id : -1L;
+            long basePerMillion = Math.max(0L, basePercent) * 10_000L;
+            int wingBonusPct = (highTierWingBonus && owner != null && !owner.isPet && owner.nPoint != null)
+                    ? Math.max(0, owner.nPoint.tlRoiDoThanBoss)
+                    : 0;
+            long wingChance = Math.min(1_000_000L, basePerMillion + wingBonusPct * 10_000L);
+            long finalChance = wingChance;
+            if (allowLuckNonStacking && owner != null) {
+                long luckChance = Mob.scalePerMillion(basePerMillion, Mob.getPlayerTotalLuckPercent(owner));
+                finalChance = Math.max(wingChance, luckChance);
+            }
+            if (Util.isTrue(finalChance, 1_000_000L)) {
+                int xDrop = clampDropX(targetZone, baseX - 16);
+                int yDrop = targetZone.map.yPhysicInTop(xDrop, baseY - 24);
+                nro.models.map.ItemMap it = nro.models.services.ItemService.gI().randDoTLBoss(targetZone, 1, xDrop, yDrop, ownerId);
+                if (it != null) {
+                    Service.gI().dropItemMap(targetZone, it);
                 }
             }
         } catch (Exception e) {
@@ -681,16 +877,270 @@ public class Boss extends Player implements IBoss {
         }
     }
 
+    /**
+     * Gói nguyên liệu pha lê tiêu chuẩn:
+     * 30% 5x Hematite [1423] (không khóa), 10% 5x Dùi đục [1438], 10% 5x Đá mài [1439].
+     */
+    public static void dropStandardCrystalMaterialsStatic(Zone targetZone, int baseX, int baseY, Player plKill) {
+        try {
+            if (targetZone == null || targetZone.map == null || plKill == null || plKill.isBot) {
+                return;
+            }
+            Player owner = resolveRewardOwner(plKill);
+            if (owner == null) {
+                return;
+            }
+            int[] materialIds = {1423, 1438, 1439};
+            int offset = -24;
+            for (int matId : materialIds) {
+                int dropRate = (matId == 1423) ? 30 : 10;
+                if (Util.isTrue(dropRate, 100)) {
+                    int xDrop = clampDropX(targetZone, baseX + offset);
+                    int yDrop = targetZone.map.yPhysicInTop(xDrop, baseY - 24);
+                    nro.models.map.ItemMap matItem = new nro.models.map.ItemMap(targetZone, matId, 5, xDrop, yDrop, owner.id);
+                    if (matId == 1423) {
+                        matItem.options.add(new nro.models.item.Item.ItemOption(167, 0));
+                        matItem.options.add(new nro.models.item.Item.ItemOption(168, 0));
+                    } else {
+                        matItem.options.add(new nro.models.item.Item.ItemOption(73, 0));
+                    }
+                    Service.gI().dropItemMap(targetZone, matItem);
+                    offset += 14;
+                }
+            }
+        } catch (Exception e) {
+            Logger.logException(Boss.class, e);
+        }
+    }
+
+    public static void dropLv12GearStatic(Zone targetZone, int baseX, int baseY, Player plKill) {
+        try {
+            if (targetZone == null || targetZone.map == null || plKill == null) {
+                return;
+            }
+            Player owner = resolveRewardOwner(plKill);
+            long ownerId = (owner != null) ? owner.id : plKill.id;
+            int group = Util.nextInt(1, 100) <= 70 ? 0 : 1;
+            int[][] drops = {
+                {230, 231, 232, 234, 235, 236, 238, 239, 240, 242, 243, 244, 246, 247, 248, 250, 251, 252, 266, 267, 268, 270, 271, 272, 274, 275, 276},
+                {254, 255, 256, 258, 259, 260, 262, 263, 264, 278, 279, 280}
+            };
+            int dropOptional = drops[group][Util.nextInt(0, drops[group].length - 1)];
+            int xDrop = clampDropX(targetZone, baseX + 20);
+            int yDrop = targetZone.map.yPhysicInTop(xDrop, baseY - 24);
+            nro.models.map.ItemMap optionalItemMap = new nro.models.map.ItemMap(targetZone, dropOptional, 1, xDrop, yDrop, ownerId);
+            List<nro.models.item.Item.ItemOption> optionalOps = nro.models.services.ItemService.gI().getListOptionItemShop((short) dropOptional);
+            optionalOps.forEach(option -> option.param = (int) (option.param * Util.nextInt(100, 115) / 100.0));
+            optionalItemMap.options.addAll(optionalOps);
+            int rand = Util.nextInt(1, 100);
+            int value = (rand <= 80) ? Util.nextInt(1, 3) : (rand <= 97 ? Util.nextInt(4, 5) : 6);
+            optionalItemMap.options.add(new nro.models.item.Item.ItemOption(107, value));
+            Service.gI().dropItemMap(targetZone, optionalItemMap);
+        } catch (Exception e) {
+            Logger.logException(Boss.class, e);
+        }
+    }
+
+    /**
+     * Nhóm 1: Kuku, Mập Đầu Đinh, Rambo, TĐST Fide, Fide Đại Ca, Android 19 & Dr.Kôrê, Android 13-14-15, Pic-Poc-King Kong
+     * -> 100% 5 Thỏi vàng [457], 80% 1x NR 2 sao [15], 50% 1x Đá Hematite [1423] (không khóa).
+     */
+    protected void rewardGroupBasic5TV(Player plKill) {
+        TaskService.gI().checkDoneTaskKillBoss(plKill, this);
+        if (plKill == null || this.zone == null) {
+            return;
+        }
+        Player owner = resolveRewardOwner(plKill);
+        long ownerId = (owner != null) ? owner.id : plKill.id;
+        dropGoldBarsStatic(this.zone, this.location.x, this.location.y, plKill, 5, false);
+        if (Util.isTrue(80, 100)) {
+            int xNr = clampDropX(this.zone, this.location.x - 14);
+            int yNr = this.zone.map.yPhysicInTop(xNr, this.location.y - 24);
+            nro.models.map.ItemMap nr2s = new nro.models.map.ItemMap(this.zone, 15, 1, xNr, yNr, ownerId);
+            nr2s.options.add(new nro.models.item.Item.ItemOption(73, 0));
+            Service.gI().dropItemMap(this.zone, nr2s);
+        }
+        if (Util.isTrue(50, 100)) {
+            int xHema = clampDropX(this.zone, this.location.x + 14);
+            int yHema = this.zone.map.yPhysicInTop(xHema, this.location.y - 24);
+            nro.models.map.ItemMap hema = new nro.models.map.ItemMap(this.zone, 1423, 1, xHema, yHema, ownerId);
+            hema.options.add(new nro.models.item.Item.ItemOption(167, 0));
+            hema.options.add(new nro.models.item.Item.ItemOption(168, 0));
+            Service.gI().dropItemMap(this.zone, hema);
+        }
+    }
+
+    /**
+     * Nhóm 2: Tiểu Đội Sát Thủ Namek (mỗi thành viên)
+     * -> 100% 5 Thỏi vàng [457], 80% 1x NR 2 sao [15], 50% 1x Hematite [1423], 20% 1x Dùi đục [1438], 20% 1x Đá mài [1439].
+     */
+    protected void rewardGroupTdstNamek(Player plKill) {
+        rewardGroupBasic5TV(plKill);
+        if (plKill == null || this.zone == null) {
+            return;
+        }
+        Player owner = resolveRewardOwner(plKill);
+        long ownerId = (owner != null) ? owner.id : plKill.id;
+        if (Util.isTrue(20, 100)) {
+            int xDui = clampDropX(this.zone, this.location.x - 26);
+            int yDui = this.zone.map.yPhysicInTop(xDui, this.location.y - 24);
+            nro.models.map.ItemMap duiDuc = new nro.models.map.ItemMap(this.zone, 1438, 1, xDui, yDui, ownerId);
+            duiDuc.options.add(new nro.models.item.Item.ItemOption(73, 0));
+            Service.gI().dropItemMap(this.zone, duiDuc);
+        }
+        if (Util.isTrue(20, 100)) {
+            int xDa = clampDropX(this.zone, this.location.x + 26);
+            int yDa = this.zone.map.yPhysicInTop(xDa, this.location.y - 24);
+            nro.models.map.ItemMap daMai = new nro.models.map.ItemMap(this.zone, 1439, 1, xDa, yDa, ownerId);
+            daMai.options.add(new nro.models.item.Item.ItemOption(73, 0));
+            Service.gI().dropItemMap(this.zone, daMai);
+        }
+    }
+
+    /**
+     * Nhóm 3: Băng Bojack (mỗi thành viên), Siêu Bojack, Super Broly
+     * -> 100% 10 Thỏi vàng [457], 50% trọn 1 bộ NR Bí Ngô 1-7 sao [702..708],
+     *    30% 5x Hematite [1423], 10% 5x Dùi đục [1438], 10% 5x Đá mài [1439].
+     */
+    protected void rewardGroupBojackBroly(Player plKill) {
+        TaskService.gI().checkDoneTaskKillBoss(plKill, this);
+        if (plKill == null || this.zone == null) {
+            return;
+        }
+        Player owner = resolveRewardOwner(plKill);
+        long ownerId = (owner != null) ? owner.id : plKill.id;
+        dropGoldBarsStatic(this.zone, this.location.x, this.location.y, plKill, 10, false);
+        if (Util.isTrue(50, 100)) {
+            for (int i = 0; i < 7; i++) {
+                int xBall = clampDropX(this.zone, this.location.x + (i - 3) * 14);
+                int yBall = this.zone.map.yPhysicInTop(xBall, this.location.y - 24);
+                nro.models.map.ItemMap ball = new nro.models.map.ItemMap(this.zone, 702 + i, 1, xBall, yBall, ownerId);
+                ball.options.add(new nro.models.item.Item.ItemOption(73, 0));
+                Service.gI().dropItemMap(this.zone, ball);
+            }
+        }
+        dropStandardCrystalMaterialsStatic(this.zone, this.location.x, this.location.y, plKill);
+    }
+
+    /**
+     * Nhóm 4: Xên Bọ Hung cấp 1-2-3 & Siêu Bọ Hung (không tính Boss cấp cao)
+     * -> 100% 20 Thỏi vàng [457], 50% 1x NR 1 sao [14],
+     *    30% 5x Hematite [1423], 10% 5x Dùi đục [1438], 10% 5x Đá mài [1439].
+     */
+    protected void rewardGroupCell20TV(Player plKill) {
+        nro.models.task.BadgesTaskService.updateCountBagesTask(plKill, nro.models.consts.ConstTaskBadges.TRUM_SAN_BOSS, 1);
+        TaskService.gI().checkDoneTaskKillBoss(plKill, this);
+        if (plKill == null || this.zone == null) {
+            return;
+        }
+        Player owner = resolveRewardOwner(plKill);
+        long ownerId = (owner != null) ? owner.id : plKill.id;
+        dropGoldBarsStatic(this.zone, this.location.x, this.location.y, plKill, 20, false);
+        if (Util.isTrue(50, 100)) {
+            int xNr = clampDropX(this.zone, this.location.x + 14);
+            int yNr = this.zone.map.yPhysicInTop(xNr, this.location.y - 24);
+            nro.models.map.ItemMap nr1s = new nro.models.map.ItemMap(this.zone, 14, 1, xNr, yNr, ownerId);
+            nr1s.options.add(new nro.models.item.Item.ItemOption(73, 0));
+            Service.gI().dropItemMap(this.zone, nr1s);
+        }
+        dropStandardCrystalMaterialsStatic(this.zone, this.location.x, this.location.y, plKill);
+    }
+
+    /**
+     * Nhóm Boss cấp cao chuẩn (Black Goku, Super Black Goku, Cumber, Baby, Fide Vàng, Mabư 14h):
+     * -> 100% 20 Thỏi vàng (+ Cánh 20% 100 TV), godPercent% Đồ Thần (+ Cánh 20%, không stack May mắn),
+     *    tùy chọn 30% Nhẫn thời không sai lệch [992],
+     *    10% trọn 1 bộ 7 viên NR Bí Ngô [702..708] cho Black Goku / Super Black Goku / Cumber / Baby / Fide Vàng (không nhân May mắn),
+     *    và bộ nguyên liệu pha lê 30%/10%/10%.
+     */
+    protected void rewardHighTier20TVWithMaterials(Zone targetZone, int baseX, int baseY, Player plKill, int godPercent, boolean dropTimeRing30Pct, boolean updateSanBossBadge) {
+        if (updateSanBossBadge) {
+            nro.models.task.BadgesTaskService.updateCountBagesTask(plKill, nro.models.consts.ConstTaskBadges.TRUM_SAN_BOSS, 1);
+        }
+        TaskService.gI().checkDoneTaskKillBoss(plKill, this);
+        if (plKill == null || targetZone == null) {
+            return;
+        }
+        Player owner = resolveRewardOwner(plKill);
+        long ownerId = (owner != null) ? owner.id : plKill.id;
+        dropGoldBarsStatic(targetZone, baseX, baseY, plKill, 20, true);
+        tryDropGodItemStatic(targetZone, baseX, baseY, plKill, godPercent, true, false);
+        if (dropTimeRing30Pct && Util.isTrue(30, 100)) {
+            int xRing = clampDropX(targetZone, baseX + 26);
+            int yRing = targetZone.map.yPhysicInTop(xRing, baseY - 24);
+            nro.models.map.ItemMap ring = new nro.models.map.ItemMap(targetZone, 992, 1, xRing, yRing, ownerId);
+            List<nro.models.item.Item.ItemOption> ops = nro.models.services.ItemService.gI().getListOptionItemShop((short) 992);
+            if (ops != null && !ops.isEmpty()) {
+                ring.options = ops;
+            }
+            Service.gI().dropItemMap(targetZone, ring);
+        }
+        if ((this.id == BossID.BLACK_GOKU || this.id == BossID.CUMBER
+                || this.id == BossID.BABY || this.id == BossID.GOLDEN_FRIEZA)
+                && Util.isTrue(10, 100)) {
+            for (int i = 0; i < 7; i++) {
+                int xBall = clampDropX(targetZone, baseX + (i - 3) * 14);
+                int yBall = targetZone.map.yPhysicInTop(xBall, baseY - 24);
+                nro.models.map.ItemMap ball = new nro.models.map.ItemMap(targetZone, 702 + i, 1, xBall, yBall, ownerId);
+                ball.options.add(new nro.models.item.Item.ItemOption(73, 0));
+                Service.gI().dropItemMap(targetZone, ball);
+            }
+        }
+        dropStandardCrystalMaterialsStatic(targetZone, baseX, baseY, plKill);
+        dropBossSoul(targetZone, baseX, baseY, plKill);
+    }
+
+    /**
+     * Các Boss phụ Sự kiện Mabư 12h (Drabura, Bui Bui, Bui Bui 2, Yacon, Goku, Cadic, Drabura 3):
+     * -> 100% 20 Thỏi vàng (+ Cánh 20% 100 TV), 5% Đồ Thần (+ Cánh 20%), 5% Đồ Cấp 12,
+     *    30% 5x Hematite [1423], 10% 5x Dùi đục [1438], 10% 5x Đá mài [1439].
+     */
+    protected void rewardMabu12hSubBoss(Player plKill, byte mabuPoints) {
+        if (plKill != null && plKill.fightMabu != null && mabuPoints > 0) {
+            plKill.fightMabu.changePoint(mabuPoints);
+        }
+        TaskService.gI().checkDoneTaskKillBoss(plKill, this);
+        if (plKill == null || this.zone == null) {
+            return;
+        }
+        dropGoldBarsStatic(this.zone, this.location.x, this.location.y, plKill, 20, true);
+        tryDropGodItemStatic(this.zone, this.location.x, this.location.y, plKill, 5, true, false);
+        if (Util.isTrue(5, 100)) {
+            dropLv12GearStatic(this.zone, this.location.x, this.location.y, plKill);
+        }
+        dropStandardCrystalMaterialsStatic(this.zone, this.location.x, this.location.y, plKill);
+        dropBossSoul(this.zone, this.location.x, this.location.y, plKill);
+    }
+
+    public void dropMaterialBoss(Player plKill) {
+        dropStandardCrystalMaterialsStatic(this.zone, this.location.x, this.location.y, plKill);
+        dropBossSoul(this.zone, this.location.x, this.location.y, plKill);
+    }
+
     public boolean isHighTierBoss() {
         return switch ((int) this.id) {
-            case BossID.BLACK_GOKU,
+            case BossID.FROST_VT6,
+                 BossID.AUTA_MAGETTA,
+                 BossID.CABBA_VT6,
+                 BossID.CAULIFLA_VT6,
+                 BossID.HIT_VT6,
+                 BossID.CHAMPA_VT6,
                  BossID.COOLER,
+                 BossID.BLACK_GOKU,
                  BossID.CUMBER,
-                 BossID.SIEU_BO_HUNG,
                  BossID.BABY,
                  BossID.GOLDEN_FRIEZA,
-                 BossID.MABU_12H -> true;
-            case BossID.XEN_BO_HUNG -> this.currentLevel >= 1; // Chỉ áp dụng cho Xên hoàn thiện (dạng 2 & 3), không tính Xên bọ hung cấp 1
+                 BossID.DRABURA,
+                 BossID.BUI_BUI,
+                 BossID.BUI_BUI_2,
+                 BossID.YA_CON,
+                 BossID.DRABURA_2,
+                 BossID.GOKU,
+                 BossID.CADIC,
+                 BossID.DRABURA_3,
+                 BossID.MABU_12H,
+                 BossID.MABU,
+                 BossID.SUPERBU -> true;
             default -> false;
         };
     }

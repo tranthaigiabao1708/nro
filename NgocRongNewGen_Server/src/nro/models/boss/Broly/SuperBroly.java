@@ -50,9 +50,11 @@ public class SuperBroly extends Boss {
 
     @Override
     public void reward(Player plKill) {
-        if (plKill.pet == null) {
-            PetService.gI().createNormalPet(plKill);
+        Player owner = resolveRewardOwner(plKill);
+        if (owner != null && !owner.isPet && owner.pet == null) {
+            PetService.gI().createNormalPet(owner);
         }
+        rewardGroupBojackBroly(plKill);
     }
 
     @Override

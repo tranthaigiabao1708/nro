@@ -73,6 +73,7 @@ public class NPoint {
     public long tiemNang;
 
     public int hp, hpMax, hpg;
+    public long bossRealHp, bossRealHpMax;
     public int mp, mpMax, mpg;
     public int dame, dameg;
     public int def, defg;
@@ -219,6 +220,8 @@ public class NPoint {
     public int tlRangeTuyetKy;
     public boolean hasMountFlyRegen;
     public long lastTimeMountRegen;
+    public long frostPoisonUntil;
+    public long hakaiNoPeaUntil;
 
     /*-------------------------------------------------------------------------*/
     /**
@@ -518,6 +521,17 @@ public class NPoint {
             }
         }
         setDameTrainArmor();
+        if (this.player.isPet && ((Pet) this.player).master != null
+                && ((Pet) this.player).master.inventory != null
+                && ((Pet) this.player).master.inventory.itemsBody != null
+                && ((Pet) this.player).master.inventory.itemsBody.size() > 7) {
+            Item masterPetSlot = ((Pet) this.player).master.inventory.itemsBody.get(7);
+            if (masterPetSlot != null && masterPetSlot.isNotNullItem()
+                    && masterPetSlot.template != null && masterPetSlot.template.id == 1654
+                    && masterPetSlot.isHaveOption(106)) {
+                this.isKhongLanh = true;
+            }
+        }
         setBasePoint();
         setOutfitFusion();
         setSpeed();
@@ -1002,6 +1016,11 @@ public class NPoint {
             }
         }
 
+        if (this.bossRealHpMax > 2_147_483_647L) {
+            this.hpMax = 2_000_000_000;
+            return;
+        }
+
         if (hpMax > 2_147_483_647) {
             hpMax = 2_147_483_647;
         }
@@ -1010,7 +1029,36 @@ public class NPoint {
     }
 
     private void setHp() {
+        if (this.bossRealHpMax > 2_147_483_647L) {
+            syncDisplayHpFromBossReal();
+            return;
+        }
         this.hp = Math.min(this.hp, this.hpMax);
+    }
+
+    public long getActualHp() {
+        return this.bossRealHpMax > 2_147_483_647L ? this.bossRealHp : this.hp;
+    }
+
+    public long getActualHpMax() {
+        return this.bossRealHpMax > 2_147_483_647L ? this.bossRealHpMax : this.hpMax;
+    }
+
+    public void syncDisplayHpFromBossReal() {
+        if (this.bossRealHpMax <= 2_147_483_647L) {
+            return;
+        }
+        this.hpMax = 2_000_000_000;
+        if (this.bossRealHp <= 0L) {
+            this.bossRealHp = 0L;
+            this.hp = 0;
+        } else if (this.bossRealHp >= this.bossRealHpMax) {
+            this.bossRealHp = this.bossRealHpMax;
+            this.hp = this.hpMax;
+        } else {
+            long scaled = (this.bossRealHp * (long) this.hpMax + this.bossRealHpMax - 1L) / this.bossRealHpMax;
+            this.hp = (int) Math.max(1L, Math.min((long) this.hpMax, scaled));
+        }
     }
 
     private void setMpMax() {
@@ -1393,6 +1441,13 @@ public class NPoint {
     }
 
     public void addHp(long hp) {
+        if (this.bossRealHpMax > 2_147_483_647L) {
+            if (hp > 0) {
+                this.bossRealHp = Math.min(this.bossRealHpMax, this.bossRealHp + hp);
+                syncDisplayHpFromBossReal();
+            }
+            return;
+        }
         if (hp > 0) {
             long potentialHp = (long) this.hp + hp;
             if (potentialHp > this.hpMax) {
@@ -1416,6 +1471,11 @@ public class NPoint {
     }
 
     public void setHp(long hp) {
+        if (this.bossRealHpMax > 2_147_483_647L) {
+            this.bossRealHp = Math.max(0L, Math.min(this.bossRealHpMax, hp));
+            syncDisplayHpFromBossReal();
+            return;
+        }
         if (hp < 0) {
             this.hp = 0;
         } else {
@@ -1444,8 +1504,20 @@ public class NPoint {
     }
 
     public int getDameAttack(boolean isAttackMob) {
+        long dame = getDameAttackLong(isAttackMob);
+        if (dame > 2_147_483_647L) {
+            return 2_147_483_647;
+        }
+        return (int) Math.max(0L, dame);
+    }
+
+    public long getDameAttackLong(boolean isAttackMob) {
         setIsCrit();
         long dameAttack = this.dame;
+        if (this.frostPoisonUntil > System.currentTimeMillis()
+                && (this.player.itemTime == null || !this.player.itemTime.isUseThuocGiaiVt6)) {
+            dameAttack = dameAttack * 70L / 100L;
+        }
         intrinsic = this.player.playerIntrinsic.intrinsic;
         percentDameIntrinsic = 0;
         int percentDameSkill = 0;
@@ -1541,8 +1613,9 @@ public class NPoint {
             case Skill.DICH_CHUYEN_TUC_THOI:
                 isCrit = true;
                 isCritTele = true;
-                dameAttack = Util.nextInt((int) (int) Math.min(2_147_483_647L, (dameAttack - (dameAttack / 100 * 5))),
-                        (int) (int) Math.min(2_147_483_647L, (dameAttack + (dameAttack / 100 * 5))));
+                long spread = Math.max(1L, dameAttack / 20L);
+                int randSpread = Util.nextInt((int) Math.min(1_000_000_000L, spread));
+                dameAttack += Util.getOne(-1, 1) * (long) randSpread;
                 break;
             case Skill.MAKANKOSAPPO:
                 percentDameSkill = skillSelect.damage;
@@ -1550,7 +1623,7 @@ public class NPoint {
                 if (this.player.setClothes.picolo == 5) {
                     dameSkill *= 2L;
                 }
-                return (int) Math.min(2_147_483_647L, dameSkill);
+                return dameSkill;
             case Skill.QUA_CAU_KENH_KHI:
                 long hpmob = 0;
                 long hppl = 0;
@@ -1568,69 +1641,59 @@ public class NPoint {
                     }
                 }
 
-                long dameqckk = (hpmob * 10 / 100) + (hppl * 10 / 100) + this.dame * 10;
+                long dameqckk = (hpmob * 10 / 100) + (hppl * 10 / 100) + (long) this.dame * 10L;
 
                 if (this.player.setClothes.kirin == 5) {
-                    dameqckk *= 2;
+                    dameqckk *= 2L;
                 }
 
-                dameqckk = dameqckk + (Util.nextInt(-5, 5) * dameqckk / 100);
-                if (dameqckk > 2_147_483_647) {
-                    dameqckk = 2_147_483_647;
-                }
-                return (int) dameqckk;
+                dameqckk = dameqckk + (Util.nextInt(-5, 5) * dameqckk / 100L);
+                return dameqckk;
             case Skill.DE_TRUNG:
                 if (player.setClothes.pikkoroDaimao == 5) {
-                    dameAttack *= 4;
+                    dameAttack *= 4L;
                 }
-                if (dameAttack > 2_147_483_647) {
-                    dameAttack = 2_147_483_647;
-                }
-                return (int) dameAttack;
+                return dameAttack;
         }
 
         if (intrinsic != null && intrinsic.id == 18 && this.player.effectSkill.isMonkey) {
             percentDameIntrinsic = intrinsic.param1;
         }
 
-        if (percentDameSkill
-                != 0) {
-            dameAttack = dameAttack * percentDameSkill / 100;
+        if (percentDameSkill != 0) {
+            dameAttack = dameAttack * percentDameSkill / 100L;
         }
 
-        dameAttack += (dameAttack * percentDameIntrinsic / 100);
-        dameAttack += (dameAttack * dameAfter / 100);
-        if (this.player.effectSkill != null && this.player.effectSkill.isDameBuff && tlSexyDame
-                == 0) {
+        dameAttack += (dameAttack * percentDameIntrinsic / 100L);
+        dameAttack += (dameAttack * dameAfter / 100L);
+        if (this.player.effectSkill != null && this.player.effectSkill.isDameBuff && tlSexyDame == 0) {
             int tiLeDame = this.player.effectSkill.tileDameBuff;
             dameAttack += (dameAttack * tiLeDame / 100L);
         }
         if (isAttackMob) {
             for (Integer tl : this.tlDameAttMob) {
-                dameAttack += (dameAttack * tl / 100);
+                dameAttack += (dameAttack * tl / 100L);
             }
             if (this.player.isPet && ((Pet) this.player).master.charms.tdDeTu > System.currentTimeMillis()) {
-                dameAttack *= 2;
+                dameAttack *= 2L;
             }
         }
 
         dameAfter = 0;
 
         if (isCrit) {
-            dameAttack *= 2;
-            dameAttack += (dameAttack * tlSDCM / 100);
+            dameAttack *= 2L;
+            dameAttack += (dameAttack * tlSDCM / 100L);
         }
 
-        dameAttack += ((long) dameAttack * percentXDame / 100);
+        dameAttack += (dameAttack * percentXDame / 100L);
 
-        long tempDameAttack = (long) (dameAttack / 100L * 5L);
-        if (tempDameAttack
-                <= 0) {
+        long tempDameAttack = dameAttack / 100L * 5L;
+        if (tempDameAttack <= 0) {
             tempDameAttack = 1;
         }
-        dameAttack += (long) (Util.getOne(
-                -1, 1) * Util.nextInt((int) tempDameAttack
-                ) + 1);
+        int jitter = Util.nextInt((int) Math.min(1_000_000_000L, tempDameAttack));
+        dameAttack += (long) Util.getOne(-1, 1) * jitter + 1L;
 
         if (player.effectSkin != null && player.effectSkin.isXChuong && (player.playerSkill.skillSelect.template.id == Skill.KAMEJOKO || player.playerSkill.skillSelect.template.id == Skill.ANTOMIC || player.playerSkill.skillSelect.template.id == Skill.MASENKO)) {
             dameAttack *= xChuong;
@@ -1639,14 +1702,13 @@ public class NPoint {
             player.effectSkin.lastTimeXChuong = System.currentTimeMillis();
         }
 
-        if (dameAttack
-                > 2_147_483_647) {
-            dameAttack = 2_147_483_647;
-        }
-        return (int) dameAttack;
+        return Math.max(1L, dameAttack);
     }
 
     public int getCurrPercentHP() {
+        if (this.bossRealHpMax > 2_147_483_647L) {
+            return (int) (this.bossRealHp * 100L / this.bossRealHpMax);
+        }
         if (this.hpMax == 0) {
             return 100;
         }
@@ -1658,15 +1720,30 @@ public class NPoint {
     }
 
     public void setFullHpMp() {
+        if (this.bossRealHpMax > 2_147_483_647L) {
+            this.bossRealHp = this.bossRealHpMax;
+            syncDisplayHpFromBossReal();
+            this.mp = this.mpMax;
+            return;
+        }
         this.hp = this.hpMax;
         this.mp = this.mpMax;
     }
 
     public void subHP(long sub) {
-        this.hp -= sub;
-        if (this.hp <= 0) {
+        if (this.bossRealHpMax > 2_147_483_647L) {
+            if (sub > 0) {
+                this.bossRealHp = Math.max(0L, this.bossRealHp - sub);
+            }
+            syncDisplayHpFromBossReal();
+            return;
+        }
+        long nextHp = (long) this.hp - sub;
+        if (nextHp <= 0) {
             this.hp = 0;
             this.setHp(0);
+        } else {
+            this.hp = (int) Math.min(nextHp, 2_147_483_647L);
         }
     }
 
@@ -2112,13 +2189,15 @@ public class NPoint {
         if (player != null && player.effectSkill != null) {
             if (player.effectSkill.isCharging && player.effectSkill.countCharging < 10) {
                 int tiLeHoiPhuc = SkillUtil.getPercentCharge(player.playerSkill.skillSelect.point);
+                long curActualHp = getActualHp();
+                long maxActualHp = getActualHpMax();
                 if (player.effectSkill.isCharging && !player.isDie() && !player.effectSkill.isHaveEffectSkill()
-                        && (hp < hpMax || mp < mpMax)) {
-                    long hpRecovered = hpMax / 100 * tiLeHoiPhuc;
-                    long mpRecovered = mpMax / 100 * tiLeHoiPhuc;
+                        && (curActualHp < maxActualHp || mp < mpMax)) {
+                    long hpRecovered = maxActualHp / 100L * tiLeHoiPhuc;
+                    long mpRecovered = mpMax / 100L * tiLeHoiPhuc;
 
-                    if (hp + hpRecovered > 2_147_483_647) {
-                        hpRecovered = 2_147_483_647 - hp;
+                    if (curActualHp + hpRecovered > maxActualHp) {
+                        hpRecovered = maxActualHp - curActualHp;
                     }
                     if (mp + mpRecovered > 2_147_483_647) {
                         mpRecovered = 2_147_483_647 - mp;

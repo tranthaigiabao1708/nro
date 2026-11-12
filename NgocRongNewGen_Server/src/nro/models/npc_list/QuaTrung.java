@@ -21,7 +21,7 @@ public class QuaTrung extends Npc {
             if (this.mapId == (21 + player.gender)) {
                 player.mabuEgg.sendMabuEgg();
                 String eggLabel = (player.mabuEgg.eggType == 1)
-                        ? "Bư bư bư... (Trứng Mabư Vip)"
+                        ? "Bư bư bư... (Trứng Mabư Vip - Hợp thể 100% chỉ số, tiến hóa được đệ cấp cuối)"
                         : "Bư bư bư... (Trứng Mabư thường - Hợp thể 60% chỉ số)";
                 if (player.mabuEgg.getSecondDone() != 0) {
                     this.createOtherMenu(player, ConstNpc.CAN_NOT_OPEN_EGG, eggLabel,

@@ -75,8 +75,11 @@ public class SuperBu extends Boss {
 
     @Override
     public void reward(Player plKill) {
-        int diem = 5;
-        TaskService.gI().checkDoneTaskKillBoss(plKill, this);
+        Player owner = resolveRewardOwner(plKill);
+        nro.models.map.Zone targetZone = (owner != null && owner.zone != null) ? owner.zone : (plKill != null && plKill.zone != null ? plKill.zone : this.zone);
+        int baseX = (owner != null && owner.zone == targetZone) ? owner.location.x : this.location.x;
+        int baseY = (owner != null && owner.zone == targetZone) ? owner.location.y : this.location.y;
+        rewardHighTier20TVWithMaterials(targetZone, baseX, baseY, plKill, 5, false, false);
     }
 
     @Override
@@ -125,7 +128,6 @@ public class SuperBu extends Boss {
                 players.clear();
             }
             reward(plKill);
-            dropMaterialBoss(plKill);
             ServerNotify.gI().notify(plKill.name + ": Đã tiêu diệt được " + this.name + " mọi người đều ngưỡng mộ.");
         }
         this.changeStatus(BossStatus.DIE);

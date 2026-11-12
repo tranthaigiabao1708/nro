@@ -196,4 +196,12 @@ public class BossID {
     public static final int CADIC_M = -924;
     public static final int BABY = -925;
     public static final int GAU_TUONG_CUOP = -926;
+
+    //========================GIAI DAU VU TRU 6 & 7========================
+    public static final int FROST_VT6 = -930;
+    public static final int AUTA_MAGETTA = -931;
+    public static final int CABBA_VT6 = -932;
+    public static final int CAULIFLA_VT6 = -933;
+    public static final int HIT_VT6 = -934;
+    public static final int CHAMPA_VT6 = -935;
 }

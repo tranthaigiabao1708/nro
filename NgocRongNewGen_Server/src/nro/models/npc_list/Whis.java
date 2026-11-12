@@ -41,6 +41,11 @@ public class Whis extends Npc {
             case 164 ->
                 createOtherMenu(player, ConstNpc.BASE_MENU,
                         "Ta có thể giúp gì cho ngươi?", "Quay về", "Từ chối");
+            case 145 ->
+                createOtherMenu(player, ConstNpc.BASE_MENU,
+                        "|7|Ngài Beerus đang theo dõi sát sao từng trận đấu trên khán đài!\n"
+                        + "|2|Hãy cẩn thận Bước Nhảy Thời Gian của Hit và cơn thịnh nộ của Ngài Champa!",
+                        "Về Hành Tinh\nBill", "Về Đảo Kamê", "Đóng");
             case 48 ->
                 createOtherMenu(player, ConstNpc.BASE_MENU, "Coming Soon");
         }
@@ -70,6 +75,13 @@ public class Whis extends Npc {
     }
 
     private void handleBaseMenu(Player player, int select) {
+        if (this.mapId == 145) {
+            switch (select) {
+                case 0 -> ChangeMapService.gI().changeMapBySpaceShip(player, 154, -1, 456);
+                case 1 -> ChangeMapService.gI().changeMapNonSpaceship(player, 5, 220, 408);
+            }
+            return;
+        }
         Item biKiepTuyetKy = InventoryService.gI().findItem(player.inventory.itemsBag, 1229);
 
         switch (select) {

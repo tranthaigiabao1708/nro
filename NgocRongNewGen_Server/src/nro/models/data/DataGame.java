@@ -32,9 +32,9 @@ import nro.models.player_system.Template.BgItem;
 public class DataGame {
 
     public static byte vsData = 11;
-    public static byte vsMap = 2;
+    public static byte vsMap = 4;
     public static byte vsSkill = 2;
-    public static byte vsItem = 44;
+    public static byte vsItem = 50;
     public static int vsRes = 1;
     public static short maxSmallVersion = 32767;
 

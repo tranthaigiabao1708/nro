@@ -305,9 +305,45 @@ public class UseItem {
                                         "Đổi Vàng\n(500 Tr/Thỏi)", "Đổi ngọc xanh\n1 TV = 1k ngọc", "Đóng");
                                 break;
                             case 992: // Nhan thoi khong
+                                if (pl.idMark != null) {
+                                    pl.idMark.setTargetSpacePortalMapId(-1);
+                                }
                                 pl.type = 2;
                                 pl.maxTime = 5;
                                 Service.gI().Transport(pl);
+                                break;
+                            case 2016:
+                            case 2017:
+                            case 2018:
+                            case 2019:
+                                Service.gI().sendThongBao(pl, "Hãy mang Hồn Boss tới gặp NPC Chi Chi tại Đảo Kamê để đổi báu vật hoặc Luyện Hồn!");
+                                break;
+                            case 2020: // La Bàn Tinh Vân VT6 (Bảo vật vĩnh viễn)
+                            case 2021: // Hải Đồ Hành Tinh Sadala (Bảo vật vĩnh viễn)
+                            case 2022: // Lệnh Bài Võ Đài Champa (Bảo vật vĩnh viễn)
+                                useUniverse6Relic(pl, item.template.id);
+                                break;
+                            case 2024: // Thuốc Giải & Cách Nhiệt (30 phút)
+                                pl.itemTime.isUseThuocGiaiVt6 = true;
+                                pl.itemTime.lastTimeUseThuocGiaiVt6 = System.currentTimeMillis();
+                                if (pl.nPoint != null) {
+                                    pl.nPoint.frostPoisonUntil = 0L;
+                                }
+                                ItemTimeService.gI().sendItemTime(pl, ItemTime.ICON_THUOC_GIAI_VT6, (int) (ItemTime.TIME_THUOC_GIAI_VT6 / 1000));
+                                InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+                                InventoryService.gI().sendItemBags(pl);
+                                Service.gI().sendThongBao(pl, "Đã kích hoạt Thuốc Giải & Cách Nhiệt trong 30 phút!");
+                                break;
+                            case 2025: // Ấn Phá Thời Gian (30 phút)
+                                pl.itemTime.isUseAnPhaThoiGian = true;
+                                pl.itemTime.lastTimeUseAnPhaThoiGian = System.currentTimeMillis();
+                                ItemTimeService.gI().sendItemTime(pl, ItemTime.ICON_AN_PHA_THOI_GIAN, (int) (ItemTime.TIME_AN_PHA_THOI_GIAN / 1000));
+                                InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+                                InventoryService.gI().sendItemBags(pl);
+                                Service.gI().sendThongBao(pl, "Đã kích hoạt Ấn Phá Thời Gian trong 30 phút: Miễn nhiễm Time-Skip của Hit!");
+                                break;
+                            case 2029: // Ấn Triệu Tập Zeno (Cầu nối duy nhất sang Phase 3)
+                                Service.gI().sendThongBao(pl, "Ấn Triệu Tập Zeno đang cộng hưởng năng lượng! Chiến trường Đại Chiến Bang Hội tranh đoạt Ngọc Rồng Siêu Cấp sẽ khai mở tại Phase 3!");
                                 break;
                             case 361:
                                 pl.idGo = (short) Util.nextInt(0, 6);
@@ -1358,8 +1394,13 @@ public class UseItem {
             return;
         }
 
-        if (player.pet == null || (player.pet.typePet != 1 && player.pet.typePet != 6) || player.pet.nPoint.power < 40_000_000_000L) {
-            Service.gI().sendThongBao(player, "Cần có đệ Mabư đạt 40 tỷ sức mạnh để thực hiện!");
+        if (player.pet != null && player.pet.typePet == 6) {
+            Service.gI().sendThongBao(player, "Đệ Mabư thường không thể tiến hóa! Chỉ đệ Mabư Vip đạt 40 tỷ sức mạnh mới được phép nâng cấp!");
+            return;
+        }
+
+        if (player.pet == null || player.pet.typePet != 1 || player.pet.nPoint.power < 40_000_000_000L) {
+            Service.gI().sendThongBao(player, "Cần có đệ Mabư Vip đạt 40 tỷ sức mạnh để thực hiện!");
             return;
         }
 
@@ -1907,7 +1948,8 @@ public class UseItem {
         if (zoneChose.getNumOfPlayers() > 25
                 || MapService.gI().isMapDoanhTrai(zoneChose.map.mapId)
                 || MapService.gI().isMapMaBu(zoneChose.map.mapId)
-                || MapService.gI().isMapHuyDiet(zoneChose.map.mapId)) {
+                || MapService.gI().isMapHuyDiet(zoneChose.map.mapId)
+                || MapService.gI().isMapVuTru6(zoneChose.map.mapId)) {
             Service.gI().sendThongBao(pl, "Hiện tại không thể vào được khu!");
             return;
         }
@@ -1925,6 +1967,10 @@ public class UseItem {
 
     public void eatPea(Player player) {
         if (!Util.canDoWithTime(player.lastTimeEatPea, 1000)) {
+            return;
+        }
+        if (player.nPoint != null && player.nPoint.hakaiNoPeaUntil > System.currentTimeMillis()) {
+            Service.gI().sendThongBao(player, "Uy áp Hủy Diệt Hakai đang phong ấn khả năng dùng Đậu Thần!");
             return;
         }
         player.lastTimeEatPea = System.currentTimeMillis();
@@ -2930,6 +2976,47 @@ public class UseItem {
         } else {
             Service.gI().sendThongBao(pl, "Hàng trang đã đầy");
         }
+    }
+
+    private void useUniverse6Relic(Player pl, int itemId) {
+        if (pl == null || pl.zone == null || pl.zone.map == null || pl.idMark == null) {
+            return;
+        }
+        int curMapId = pl.zone.map.mapId;
+        if (pl.isPKDHVT
+                || pl.idMark.isHoldBlackBall()
+                || pl.idMark.isHoldNamecBall()
+                || MapService.gI().isMapBlackBallWar(curMapId)
+                || MapService.gI().isMapMaBu(curMapId)
+                || MapService.gI().isMapMabu2H(curMapId)
+                || MapService.gI().isMapPhoBan(curMapId)
+                || MapService.gI().isMapOffline(curMapId)
+                || MapService.gI().isMapSieuThanhThuy(curMapId)) {
+            Service.gI().sendThongBao(pl, "Không thể mở cổng không gian tại khu vực đặc biệt này!");
+            return;
+        }
+        int destMapId;
+        switch (itemId) {
+            case 2020: // La Bàn Tinh Vân VT6
+                destMapId = (curMapId == 169 || curMapId == 170 || curMapId == 173 || curMapId == 174) ? 5 : 169;
+                break;
+            case 2021: // Hải Đồ Hành Tinh Sadala
+                destMapId = (curMapId == 176 || curMapId == 177) ? 5 : 176;
+                break;
+            case 2022: // Lệnh Bài Võ Đài Champa
+                destMapId = (curMapId == 145) ? 5 : 145;
+                break;
+            default:
+                return;
+        }
+        if (MapService.gI().getMapCanJoin(pl, destMapId, -1) == null) {
+            Service.gI().sendThongBao(pl, "Cổng không gian sang khu vực Vũ Trụ 6 này đang hội tụ năng lượng (khai mở tại Giai đoạn 2)!");
+            return;
+        }
+        pl.idMark.setTargetSpacePortalMapId(destMapId);
+        pl.type = 2;
+        pl.maxTime = 5;
+        Service.gI().Transport(pl);
     }
 
 }

@@ -279,6 +279,8 @@ public class ConstNpc {
     public static final int QUA_TAN_THU = 500;
     public static final int MENU_PHAN_THUONG = 501;
     public static final int NAP_THE = 502;
+    public static final int MENU_NHAN_DE_TU = 503;
+    public static final int MENU_HUONG_DAN_DE_TU = 504;
 
     //index menu quốc vương
     public static final int OPEN_POWER_MYSEFT = 500;
@@ -339,6 +341,7 @@ public class ConstNpc {
     public static final int MENU_BA_HAT_MIT_NANG_CAP_SKH = 16554;
     public static final int MENU_BULK_BUY_SHOP = 16560;
     public static final int MENU_DOI_THOI_VANG = 16561;
+    public static final int MENU_CHICHI_LUYEN_HON = 16562;
     public static final int VE_TANG_NGOC = 718;
     public static final int DANG_SINH_LE = 197882;
     public static final int DANG_SINH_LE_VIP = 197827;

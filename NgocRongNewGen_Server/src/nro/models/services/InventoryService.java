@@ -982,7 +982,7 @@ public class InventoryService {
                 if (it.isNotNullItem() && it.template.id == 1423) {
                     ItemService.gI().ensureDefaultOptions(it);
                 }
-                if (!it.isNotNullItem() || it.template.id != itemAdd.template.id || (!checkListsEqual(it.itemOptions, itemAdd.itemOptions) && itemAdd.template.id != 2074 && !itemAdd.isDaNangCap() && !itemAdd.isManhTS()) || it.quantity >= 100_000_000) {
+                if (!it.isNotNullItem() || it.template.id != itemAdd.template.id || (!checkListsEqual(it.itemOptions, itemAdd.itemOptions) && itemAdd.template.id != 2074 && !(itemAdd.template.id >= 663 && itemAdd.template.id <= 667) && !itemAdd.isDaNangCap() && !itemAdd.isManhTS()) || it.quantity >= 100_000_000) {
                     continue;
                 }
 

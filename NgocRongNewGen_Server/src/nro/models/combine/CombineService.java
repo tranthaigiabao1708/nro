@@ -255,7 +255,7 @@ public class CombineService {
                 PhanRaSach.phanRaSach(player);
                 break;
             case CHE_TAO_TRANG_BI_THIEN_SU:
-                CheTaoTrangBiThienSu.CheTaoTS(player);
+                CheTaoTrangBiThienSu.cheTaoTrangBiThienSu(player);
                 break;
             case DUI_DUC:
                 CheTaoDuiDuc.CheTaoDuiDuc(player);
@@ -718,9 +718,13 @@ public class CombineService {
                 return "vào hành trang\nChọn trang bị\n(Áo, quần, găng, giày hoặc rađa)\nChọn loại đá để phân rã\n"
                         + "Sau đó chọn 'Phân Rã'";
             case CHE_TAO_TRANG_BI_THIEN_SU:
-                return "vào hành trang\nChọn 1 công thức và công thức Vip\nkèm 1 đá nâng, 1 đá may mắn\n và 999 mảnh thiên sứ\n "
-                        + "Ta sẽ cho ra đồ thiên sứ từ 0-15% chỉ số\n"
-                        + "Sau đó chọn 'Nâng Cấp'";
+                return "Vào hành trang chọn:\n"
+                        + "- 1 Công thức Thường (25%) hoặc VIP (35%)\n"
+                        + "- 999 Mảnh Thiên Sứ cùng loại\n"
+                        + "- (Tùy chọn) 1 Đá nâng cấp (+10%..+50% tỉ lệ)\n"
+                        + "- (Tùy chọn) 1 Đá may mắn (+10%..+50% dòng thưởng)\n"
+                        + "Chỉ số gốc tăng +0% đến +35%, phí 200 Tr vàng\n"
+                        + "Xem thông tin rồi chọn 'Chế tạo'";
             case NANG_CAP_BONG_TAI:
                 return "Vào hành trang\nChọn bông tai Porata\nChọn mảnh bông tai để nâng cấp, Số lượng 9999 cái"
                         + "\nSau đó chọn 'Nâng cấp'";

@@ -10,6 +10,7 @@ import nro.models.npc_list.DocNhan;
 import nro.models.npc_list.TruongLaoGuru;
 import nro.models.npc_list.Rong5Sao;
 import nro.models.npc_list.Santa;
+import nro.models.npc_list.ChiChi;
 import nro.models.npc_list.Cui;
 import nro.models.npc_list.ToSuKaio;
 import nro.models.npc_list.Kibit;
@@ -217,6 +218,8 @@ public class NpcFactory {
                     new DuongTang(mapId, status, cx, cy, tempId, avatar);
                 case ConstNpc.NGO_KHONG ->
                     new NgoKhong(mapId, status, cx, cy, tempId, avatar);
+                case ConstNpc.CHI_CHI ->
+                    new ChiChi(mapId, status, cx, cy, tempId, avatar);
                 default ->
                     new Npc(mapId, status, cx, cy, tempId, avatar) {
                         @Override

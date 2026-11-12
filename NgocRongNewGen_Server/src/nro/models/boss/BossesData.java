@@ -2720,4 +2720,249 @@ public class BossesData {
             }, //text chat 3
             AppearType.ANOTHER_LEVEL
     );
+
+    //************************************************************************** Giải Đấu Liên Vũ Trụ 6 & 7
+    public static final BossData FROST_VT6_1 = new BossData(
+            "Frost Dạng 1",
+            ConstPlayer.XAYDA,
+            new short[]{493, 494, 495, -1, -1, -1},
+            180000,
+            new int[]{2000000000},
+            new int[]{173},
+            new int[][]{
+                {Skill.GALICK, 7, 600},
+                {Skill.ANTOMIC, 7, 1200},
+                {Skill.MASENKO, 7, 1200}
+            },
+            new String[]{
+                "|-1|Chào mừng các chiến binh Vũ Trụ 7 đến Đế Chế Hòa Bình của ta!",
+                "|-1|Ta rất ghét bạo lực vô nghĩa, hãy giao nộp vật phẩm rồi rút lui đi."
+            },
+            new String[]{
+                "|-1|Độc khí ở hành tinh này sẽ bào mòn thể lực các ngươi!",
+                "|-1|Cẩn thận kim độc bí mật trên cổ tay ta đấy nhé haha!",
+                "|-1|Kẻ cản đường đế chế của Frost đều phải gục ngã!"
+            },
+            new String[]{
+                "|-1|Khá lắm... ngươi buộc ta phải lột bỏ lớp mặt nạ lịch thiệp rồi!"
+            },
+            REST_15_M
+    );
+
+    public static final BossData FROST_VT6_2 = new BossData(
+            "Frost Xung Kích",
+            ConstPlayer.XAYDA,
+            new short[]{496, 497, 498, -1, -1, -1},
+            220000,
+            new int[]{2000000000},
+            new int[]{173},
+            new int[][]{
+                {Skill.GALICK, 7, 500},
+                {Skill.LIEN_HOAN, 7, 1500},
+                {Skill.ANTOMIC, 7, 1200}
+            },
+            new String[]{
+                "|-1|Dạng Xung Kích! Chưa kẻ nào sống sót để kể lại hình dạng này đâu!"
+            },
+            new String[]{
+                "|-1|Trúng kim độc của Frost thì sức đánh của ngươi cũng hóa tro bụi!",
+                "|-1|Không có Thuốc Giải Vũ Trụ 6 thì đừng mơ chạm vào ta!"
+            },
+            new String[]{
+                "|-1|Chết tiệt! Ta sẽ tung toàn bộ 100 phần trăm công lực cuối cùng!"
+            },
+            AppearType.ANOTHER_LEVEL
+    );
+
+    public static final BossData FROST_VT6_3 = new BossData(
+            "Frost Hoàn Thiện",
+            ConstPlayer.XAYDA,
+            new short[]{499, 500, 501, -1, -1, -1},
+            260000,
+            new int[]{2000000000},
+            new int[]{173},
+            new int[][]{
+                {Skill.GALICK, 7, 400},
+                {Skill.LIEN_HOAN, 7, 1200},
+                {Skill.KAMEJOKO, 7, 1000},
+                {Skill.ANTOMIC, 7, 1000}
+            },
+            new String[]{
+                "|-1|Chiêm ngưỡng hình thái Hoàn Thiện tối thượng của Hoàng Đế Vũ Trụ 6!"
+            },
+            new String[]{
+                "|-1|Haha cả hành tinh này đều nằm dưới tay ta!",
+                "|-1|Kim độc tê liệt! Chết đi đồ sâu bọ Vũ Trụ 7!",
+                "|-1|Ngài Champa đã hứa xóa hết tội trạng cho ta nếu nghiền nát các ngươi!"
+            },
+            new String[]{
+                "|-1|Không thể nào... Đế chế của Frost lại thất thủ sao?!"
+            },
+            AppearType.ANOTHER_LEVEL
+    );
+
+    public static final BossData AUTA_MAGETTA = new BossData(
+            "Auta Magetta",
+            ConstPlayer.XAYDA,
+            new short[]{514, 515, 516, -1, -1, -1},
+            280000,
+            new int[]{2000000000},
+            new int[]{174},
+            new int[][]{
+                {Skill.DEMON, 7, 600},
+                {Skill.GALICK, 7, 600},
+                {Skill.MASENKO, 7, 1200},
+                {Skill.ANTOMIC, 7, 1500}
+            },
+            new String[]{
+                "|-1|Chugga chugga... Bốp bốp! Chiến binh tộc Metalman xuất kích!",
+                "|-1|Nhiệt độ lò dung nham đang tăng vọt lên mức cực đại!"
+            },
+            new String[]{
+                "|-1|Bốp bốp! Vỏ hợp kim siêu cứng kháng mọi khống chế!",
+                "|-1|Phun trào dung nham! Thiêu rụi toàn bộ KI của các ngươi!",
+                "|-1|Chugga chugga... Đừng hòng xuyên thủng lớp giáp thép Vũ Trụ 6!"
+            },
+            new String[]{
+                "|-1|Hức... các ngươi dám chê bai ngoại hình của tộc Metalman..."
+            },
+            REST_15_M
+    );
+
+    public static final BossData CABBA_VT6 = new BossData(
+            "Saiyan Cabba",
+            ConstPlayer.XAYDA,
+            new short[]{517, 518, 519, -1, -1, -1},
+            300000,
+            new int[]{2000000000},
+            new int[]{176},
+            new int[][]{
+                {Skill.GALICK, 7, 400},
+                {Skill.LIEN_HOAN, 7, 1200},
+                {Skill.ANTOMIC, 7, 900}
+            },
+            new String[]{
+                "|-1|Tôi là Cabba thuộc Đội Phòng Vệ Hành Tinh Sadala!",
+                "|-1|Xin được lĩnh giáo sức mạnh của những chiến binh Saiyan Vũ Trụ 7!"
+            },
+            new String[]{
+                "|-1|Galick Pháo Sadala! Toàn lực nghênh chiến!",
+                "|-1|Vì danh dự của Hành tinh Sadala và sư phụ Vegeta, tôi sẽ không lùi bước!",
+                "|-1|Đòn công phá này sẽ xuyên nát mọi lớp phòng thủ!"
+            },
+            new String[]{
+                "|-1|Cảm ơn tiền bối vì một trận đấu tuyệt vời..."
+            },
+            1200
+    );
+
+    public static final BossData CAULIFLA_VT6_1 = new BossData(
+            "Caulifla",
+            ConstPlayer.XAYDA,
+            new short[]{690, 691, 692, -1, -1, -1},
+            310000,
+            new int[]{2000000000},
+            new int[]{177},
+            new int[][]{
+                {Skill.DRAGON, 7, 450},
+                {Skill.LIEN_HOAN, 7, 1200},
+                {Skill.MASENKO, 7, 1000}
+            },
+            new String[]{
+                "|-1|Hả?! Mấy tên Vũ Trụ 7 dám mò tới tận Đỉnh Sadala của chị đại Caulifla này à?!",
+                "|-1|Ngon thì nhào vô đây làm nóng người coi nào!"
+            },
+            new String[]{
+                "|-1|Chậm rì! Đánh kiểu đó gãi ngứa cho bổn cô nương à?!",
+                "|-1|Xem tuyệt kỹ Crush Cannon của chị đại đây!"
+            },
+            new String[]{
+                "|-1|Thú vị rồi đó! Chị sẽ cho ngươi thấy tia chớp Super Saiyan 2 thực thụ!"
+            },
+            1200
+    );
+
+    public static final BossData CAULIFLA_VT6_2 = new BossData(
+            "SSJ2 Caulifla",
+            ConstPlayer.XAYDA,
+            new short[]{757, 758, 759, -1, -1, -1},
+            350000,
+            new int[]{2000000000},
+            new int[]{177},
+            new int[][]{
+                {Skill.DRAGON, 7, 350},
+                {Skill.LIEN_HOAN, 7, 900},
+                {Skill.KAMEJOKO, 7, 900},
+                {Skill.SUPER_KAME, 5, 12000}
+            },
+            new String[]{
+                "|-1|Hây aaaaa! Tia chớp Super Saiyan 2 bùng nổ! Chuẩn bị đo ván đi!"
+            },
+            new String[]{
+                "|-1|Tốc độ của SSJ2 nhanh tới mức mắt thường không kịp nhìn đâu!",
+                "|-1|Crush Cannon liên hoàn pháo! Nát vụn đi!",
+                "|-1|Chưa đủ đô! Chị sẽ còn vượt lên Super Saiyan 3 nữa!"
+            },
+            new String[]{
+                "|-1|Hừ... Lần sau tái đấu chị nhất định sẽ nghiền bẹp các ngươi!"
+            },
+            AppearType.ANOTHER_LEVEL
+    );
+
+    public static final BossData HIT_VT6 = new BossData(
+            "Sát Thủ Hit",
+            ConstPlayer.XAYDA,
+            new short[]{520, 521, 522, -1, -1, -1},
+            400000,
+            new int[]{2000000000},
+            new int[]{145},
+            new int[][]{
+                {Skill.DRAGON, 7, 350},
+                {Skill.DEMON, 7, 400},
+                {Skill.LIEN_HOAN, 7, 800},
+                {Skill.DICH_CHUYEN_TUC_THOI, 7, 15000}
+            },
+            new String[]{
+                "|-1|0.1 giây Bước Nhảy Thời Gian là quá đủ để định đoạt sinh tử.",
+                "|-1|Đầu hàng đi. Trên võ đài không luật sát sinh, ta không muốn phế bỏ ngươi."
+            },
+            new String[]{
+                "|-1|Tokitobashi! Ngươi đang nhìn đi đâu vậy?",
+                "|-1|Bước Nhảy Thời Gian của ta vừa tiến hóa lên 0.5 giây rồi.",
+                "|-1|Mọi sơ hở điểm huyệt sinh tử đều đã bị khóa chặt."
+            },
+            new String[]{
+                "|-1|Ấn tượng đấy... Lần đầu tiên ta phải vượt qua giới hạn của chính mình."
+            },
+            1500
+    );
+
+    public static final BossData CHAMPA_VT6 = new BossData(
+            "Thần Hủy Diệt Champa",
+            ConstPlayer.XAYDA,
+            new short[]{511, 512, 513, -1, -1, -1},
+            460000,
+            new int[]{2000000000},
+            new int[]{145},
+            new int[][]{
+                {Skill.DEMON, 7, 350},
+                {Skill.GALICK, 7, 350},
+                {Skill.LIEN_HOAN, 7, 800},
+                {Skill.ANTOMIC, 7, 800},
+                {Skill.SUPER_KAME, 7, 10000}
+            },
+            new String[]{
+                "|-1|LÁO XƯỢC! Cả Hit cũng chịu thua lũ sâu bọ Vũ Trụ 7 sao?!",
+                "|-1|Mặc xác luật giải đấu! Đích thân Thần Hủy Diệt Champa sẽ xóa sổ tất cả!"
+            },
+            new String[]{
+                "|-1|Beerus đâu rồi?! Nhìn ta nghiền nát đám tuyển thủ của ngươi đây!",
+                "|-1|Năng lượng Hủy Diệt Hakai! Quỳ xuống trước uy quyền Thần Hủy Diệt!",
+                "|-1|Vados im miệng đi! Ta đang cực kỳ nóng máu đấy!"
+            },
+            new String[]{
+                "|-1|Hự... Đợi đấy Beerus! Lần tới trước mặt Ngài Zeno ta sẽ đòi lại cả vốn lẫn lãi!"
+            },
+            AppearType.CALL_BY_ANOTHER
+    );
 }

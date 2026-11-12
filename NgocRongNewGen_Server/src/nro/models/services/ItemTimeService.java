@@ -104,6 +104,18 @@ public class ItemTimeService {
                 sendItemTime(player, ICON_VE_KHU_SKH, secondsLeft);
             }
         }
+        if (player.itemTime.isUseThuocGiaiVt6) {
+            int secondsLeft = (int) ((TIME_THUOC_GIAI_VT6 - (System.currentTimeMillis() - player.itemTime.lastTimeUseThuocGiaiVt6)) / 1000);
+            if (secondsLeft > 0) {
+                sendItemTime(player, ICON_THUOC_GIAI_VT6, secondsLeft);
+            }
+        }
+        if (player.itemTime.isUseAnPhaThoiGian) {
+            int secondsLeft = (int) ((TIME_AN_PHA_THOI_GIAN - (System.currentTimeMillis() - player.itemTime.lastTimeUseAnPhaThoiGian)) / 1000);
+            if (secondsLeft > 0) {
+                sendItemTime(player, ICON_AN_PHA_THOI_GIAN, secondsLeft);
+            }
+        }
         if (player.itemTime.isUseKilis) {
             long remainingTime = (player.itemTime.lastTimeUseKilis + player.itemTime.timeLengthKilis) - System.currentTimeMillis();
             if (remainingTime > 0) {

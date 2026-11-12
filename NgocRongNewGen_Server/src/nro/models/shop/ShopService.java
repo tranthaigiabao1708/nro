@@ -353,10 +353,15 @@ public class ShopService {
                         msg.writer().writeShort(itemShop.temp.id);
                         msg.writer().writeShort(resolveSpecIcon(itemShop));
                         msg.writer().writeInt(itemShop.cost);
-                        msg.writer().writeByte(itemShop.options.size());
+                        int packMultDisplay = getPackMultiplier(shop, itemShop);
+                        msg.writer().writeByte(itemShop.options.size() + (packMultDisplay > 1 ? 1 : 0));
                         for (Item.ItemOption option : itemShop.options) {
                             msg.writer().writeByte(option.optionTemplate.id);
                             msg.writer().writeShort(option.param);
+                        }
+                        if (packMultDisplay > 1) {
+                            msg.writer().writeByte(31);
+                            msg.writer().writeShort(packMultDisplay);
                         }
                         msg.writer().writeByte(itemShop.isNew ? 1 : 0);
                         if (itemShop.temp.type == 5) {
@@ -897,26 +902,10 @@ public class ShopService {
             return;
         }
 
-        // Mua số lượng lớn (x1 / x10 / x100 / x1000 / Nhập số) cho vật phẩm xếp chồng
+        // Mua trực tiếp x1 khi bấm "Mua bằng X" (và tương thích mượt với nút Mua 20 / 50 / 100 lần của Client, không bật hộp thoại hỏi lại)
         if (shouldOpenBulkBuyMenu(shop, is, listDauThan)) {
-            long now = System.currentTimeMillis();
-            if (now - player.lastBulkMenuTime <= 450 && player.lastBulkMenuTempId == itemTempId) {
-                // Tương thích với nút Auto mua (200ms/lần) của Client: mua trực tiếp từng cái
-                player.lastBulkMenuTime = now;
-                player.pendingBulkItemShop = is;
-                if (player.pendingBulkAutoCatchup) {
-                    player.pendingBulkAutoCatchup = false;
-                    executeBulkBuy(player, 2);
-                } else {
-                    executeBulkBuy(player, 1);
-                }
-                return;
-            }
-            player.lastBulkMenuTime = now;
-            player.lastBulkMenuTempId = itemTempId;
-            player.pendingBulkAutoCatchup = true;
             player.pendingBulkItemShop = is;
-            openBulkBuyMenu(player, shop, is);
+            executeBulkBuy(player, 1);
             return;
         }
 
@@ -1369,25 +1358,28 @@ public class ShopService {
             Service.gI().sendThongBao(player, "Hành trang đã đầy, không thể chứa thêm.");
             return;
         }
+        if (!InventoryService.gI().fullSetThan(player)) {
+            Service.gI().sendThongBao(player, "Bạn cần mặc đủ bộ 5 món Đồ Thần Linh trên người!");
+            return;
+        }
+        Item doAn = null;
+        if (item.template.level == 14) {
+            doAn = player.inventory.itemsBag.stream()
+                    .filter(it -> it != null && it.template != null
+                    && (it.template.id >= 663 && it.template.id <= 667) && it.quantity >= 99)
+                    .findFirst().orElse(null);
+            if (doAn == null) {
+                Service.gI().sendThongBao(player, "Không có đủ 99 phần thức ăn cùng loại!");
+                return;
+            }
+        }
         if (!subMoneyByItemShopV2(player, is)) {
             return;
         }
-        if (item.template.level == 14) {
-            Item doAn = player.inventory.itemsBag.stream().filter(it -> it != null && it.template != null && (it.template.id == 663 || it.template.id == 664 || it.template.id == 665 || it.template.id == 666 || it.template.id == 667) && it.quantity >= 99).findFirst().orElse(null);
-            if (doAn != null) {
-                InventoryService.gI().subQuantityItemsBag(player, doAn, 99);
-            } else {
-                Service.gI().sendThongBao(player, "Không có đủ thức ăn");
-                return;
-            }
+        if (doAn != null) {
+            InventoryService.gI().subQuantityItemsBag(player, doAn, 99);
         }
-        if (player.inventory.itemsBody.get(0) != null || player.inventory.itemsBody.get(1) != null || player.inventory.itemsBody.get(2) != null || player.inventory.itemsBody.get(3) != null || player.inventory.itemsBody.get(4) != null || player.inventory.itemsBody.get(5) != null) {
-            Item dothan = player.inventory.itemsBody.stream().filter(it -> it != null && it.template != null && it.template.level == 13).findFirst().orElse(null);
-            if (dothan == null) {
-                Service.gI().sendThongBao(player, "Không có đủ set thần");
-                return;
-            }
-        }
+        Service.gI().sendMoney(player);
         int param = 0;
         if (item.template.level == 14) {
             int random = Util.nextInt(1, 100); // Số ngẫu nhiên từ 1 đến 100
@@ -1496,14 +1488,24 @@ public class ShopService {
         };
     }
 
+    private int getPackMultiplier(Shop shop, ItemShop is) {
+        if (shop != null && "CHICHI_SOUL".equals(shop.tagName)
+                && is != null && is.temp != null && is.temp.type == 14) {
+            return 100;
+        }
+        return 1;
+    }
+
     private void openBulkBuyMenu(Player player, Shop shop, ItemShop is) {
         String currencyName = getShopCurrencyUnitName(shop, is);
+        int packMult = getPackMultiplier(shop, is);
+        String unitLabel = packMult > 1 ? ("gói x" + packMult + " viên") : "1 cái";
         String unitPriceText = Util.numberToMoney(is.cost) + " " + currencyName;
         String npcSay = "|7|" + is.temp.name
-                + "\n|2|Đơn giá: " + unitPriceText + " / 1 cái"
-                + "\n|1|x10: " + Util.numberToMoney((long) is.cost * 10) + " " + currencyName
-                + "\nx100: " + Util.numberToMoney((long) is.cost * 100) + " " + currencyName
-                + "\nx1.000: " + Util.numberToMoney((long) is.cost * 1000) + " " + currencyName;
+                + "\n|2|Đơn giá: " + unitPriceText + " / " + unitLabel
+                + "\n|0|x10" + (packMult > 1 ? " (" + Util.numberToMoney(10L * packMult) + " viên)" : "") + ": " + Util.numberToMoney((long) is.cost * 10) + " " + currencyName
+                + "\n|0|x100" + (packMult > 1 ? " (" + Util.numberToMoney(100L * packMult) + " viên)" : "") + ": " + Util.numberToMoney((long) is.cost * 100) + " " + currencyName
+                + "\n|0|x1.000" + (packMult > 1 ? " (" + Util.numberToMoney(1000L * packMult) + " viên)" : "") + ": " + Util.numberToMoney((long) is.cost * 1000) + " " + currencyName;
         NpcService.gI().createMenuConMeo(player, ConstNpc.MENU_BULK_BUY_SHOP, -1, npcSay,
                 "Mua x1", "Mua x10", "Mua x100", "Mua x1.000", "Nhập số\nlượng", "Đóng");
     }
@@ -1575,6 +1577,8 @@ public class ShopService {
                 return;
             }
         } else {
+            int packMult = getPackMultiplier(shop, is);
+            long totalDeliver = (long) quantity * packMult;
             int maxPerSlot = ((proto.template.id >= 1066 && proto.template.id <= 1070)
                     || proto.template.id == 457 || proto.template.id == 610 || proto.template.type == 14
                     || proto.template.id == 2048 || (proto.template.id > 2049 && proto.template.id < 2056)
@@ -1588,9 +1592,9 @@ public class ShopService {
                     availableCapacity += (maxPerSlot - it.quantity);
                 }
             }
-            if (availableCapacity < quantity) {
+            if (availableCapacity < totalDeliver) {
                 Service.gI().sendThongBao(player, "Hành trang không đủ chỗ trống để chứa x"
-                        + Util.numberToMoney(quantity) + " " + is.temp.name + "!");
+                        + Util.numberToMoney(totalDeliver) + " " + is.temp.name + "!");
                 return;
             }
         }
@@ -1700,10 +1704,12 @@ public class ShopService {
             proto.quantity = 1;
             InventoryService.gI().addItemBag(player, proto);
         } else {
-            int remaining = quantity;
+            int packMult = getPackMultiplier(shop, is);
+            long remaining = (long) quantity * packMult;
+            int chunkMax = proto.template.type == 14 ? 100_000_000 : 99_999;
             while (remaining > 0) {
                 Item chunk = ItemService.gI().createItemFromItemShop(is);
-                int addQty = Math.min(remaining, 99_999);
+                int addQty = (int) Math.min(remaining, chunkMax);
                 chunk.quantity = addQty;
                 if (usedLockedGoldBar && chunk.isPhuKien() && !chunk.isHaveOption(30)) {
                     chunk.itemOptions.add(new ItemOption(30, 0));
@@ -1713,9 +1719,10 @@ public class ShopService {
             }
         }
 
+        int finalDisplayQty = quantity * getPackMultiplier(shop, is);
         InventoryService.gI().sendItemBags(player);
         Service.gI().sendMoney(player);
-        Service.gI().sendThongBao(player, "Đã mua x" + Util.numberToMoney(quantity) + " " + is.temp.name
+        Service.gI().sendThongBao(player, "Đã mua x" + Util.numberToMoney(finalDisplayQty) + " " + is.temp.name
                 + " (-" + Util.numberToMoney(totalCost) + " " + currencyName + ")");
         nro.models.database.PlayerDAO.savePlayerAsync(player);
     }

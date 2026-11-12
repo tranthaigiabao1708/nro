@@ -89,6 +89,12 @@ import java.util.ArrayList;
 import java.util.List;
 import nro.models.boss.Baby.Baby;
 import nro.models.boss.cumber.Cumber;
+import nro.models.boss.vodai_vt6.AutaMagetta;
+import nro.models.boss.vodai_vt6.CabbaVt6;
+import nro.models.boss.vodai_vt6.CauliflaVt6;
+import nro.models.boss.vodai_vt6.ChampaVt6;
+import nro.models.boss.vodai_vt6.FrostVt6;
+import nro.models.boss.vodai_vt6.HitVt6;
 import nro.models.map.Zone;
 import nro.models.mob_bigboss.GauTuongCuop;
 import nro.models.server.Maintenance;
@@ -148,6 +154,12 @@ public class BossManager implements Runnable {
         this.createBoss(BossID.AN_TROM, 5);
         this.createBoss(BossID.O_DO1, 5);
         this.createBoss(BossID.BABY, 2);
+        // Dàn Boss Giải Đấu Liên Vũ Trụ 6 & 7 (Champa giáng lâm tự động khi hạ Hit)
+        this.createBoss(BossID.FROST_VT6, 1);
+        this.createBoss(BossID.AUTA_MAGETTA, 1);
+        this.createBoss(BossID.CABBA_VT6, 1);
+        this.createBoss(BossID.CAULIFLA_VT6, 1);
+        this.createBoss(BossID.HIT_VT6, 1);
     }
 
     public void createBoss(int bossID, int total) {
@@ -323,6 +335,18 @@ public class BossManager implements Runnable {
                     new RongNhi();
                 case BossID.BABY ->
                     new Baby();
+                case BossID.FROST_VT6 ->
+                    new FrostVt6();
+                case BossID.AUTA_MAGETTA ->
+                    new AutaMagetta();
+                case BossID.CABBA_VT6 ->
+                    new CabbaVt6();
+                case BossID.CAULIFLA_VT6 ->
+                    new CauliflaVt6();
+                case BossID.HIT_VT6 ->
+                    new HitVt6();
+                case BossID.CHAMPA_VT6 ->
+                    new ChampaVt6();
                 default ->
                     null;
             };

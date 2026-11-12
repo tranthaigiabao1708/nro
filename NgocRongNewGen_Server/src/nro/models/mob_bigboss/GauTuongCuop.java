@@ -17,12 +17,16 @@ public class GauTuongCuop extends Mob {
 
     private long lastAttackTime;
     private final Map<Player, Long> damageMap = new HashMap<>();
+    private final long realMaxHp;
+    private long realHp;
 
     public GauTuongCuop(Mob mob) {
         super(mob);
         this.zone = mob.zone;
         this.name = "Gấu Tướng Cướp";
         this.type = 5;
+        this.realMaxHp = Math.max(1L, (long) mob.point.getHpFull() * 3L);
+        this.realHp = this.realMaxHp;
     }
 
     @Override
@@ -96,13 +100,20 @@ public class GauTuongCuop extends Mob {
 
     @Override
     public synchronized void injured(Player plAtt, long damage, boolean dieWhenHpFull) {
-        damage = Math.max((long) (damage * 0.05), 1);
+        long effectiveDamage = Math.max((long) (damage * 0.05), 1L);
 
         if (plAtt != null) {
-            damageMap.put(plAtt, damageMap.getOrDefault(plAtt, 0L) + damage);
+            damageMap.put(plAtt, damageMap.getOrDefault(plAtt, 0L) + effectiveDamage);
         }
 
-        super.injured(plAtt, damage, dieWhenHpFull);
+        this.realHp = Math.max(0L, this.realHp - effectiveDamage);
+        int maxDisplayHp = this.point.getHpFull();
+        int targetDisplayHp = (this.realHp <= 0L)
+                ? 0
+                : (int) Math.max(1L, Math.min((long) maxDisplayHp,
+                        (this.realHp * (long) maxDisplayHp + this.realMaxHp - 1L) / this.realMaxHp));
+        long displaySub = Math.max(0L, (long) this.point.gethp() - targetDisplayHp);
+        super.injured(plAtt, displaySub, dieWhenHpFull);
     }
 
     @Override
@@ -143,6 +154,11 @@ public class GauTuongCuop extends Mob {
         long totalDamage = damageMap.values().stream().mapToLong(Long::longValue).sum();
         if (totalDamage == 0) {
             return;
+        }
+
+        Player topContributor = Collections.max(damageMap.entrySet(), Map.Entry.comparingByValue()).getKey();
+        if (topContributor != null) {
+            nro.models.boss.Boss.dropBossSoulStatic(this.zone, this.location.x, this.location.y, topContributor, nro.models.boss.Boss.ITEM_HON_BOSS_LUC);
         }
 
         Map<Clan, Integer> clanCapsuleMap = new HashMap<>();

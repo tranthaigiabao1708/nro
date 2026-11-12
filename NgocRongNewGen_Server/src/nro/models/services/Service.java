@@ -703,6 +703,10 @@ public class Service {
                 Logger.logException(Service.class, e);
             }
         }
+        if (player != null && player.isPl() && player.zone != null
+                && player.zone.map != null && player.zone.map.mapId == 174) {
+            nro.models.boss.vodai_vt6.AutaMagetta.checkPlayerInsult(player, text);
+        }
     }
 
     public void chatJustForMe(Player me, Player plChat, String text) {

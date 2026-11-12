@@ -118,6 +118,9 @@ public class Mob {
 
     public synchronized void injured(Player plAtt, long damage, boolean dieWhenHpFull) {
         if (!this.isDie()) {
+            if (this.zone != null && this.zone.map != null && this.zone.map.mapId == 174) {
+                damage = Math.max(1L, damage * 65L / 100L);
+            }
             if (damage >= this.point.hp) {
                 damage = this.point.hp;
             }
@@ -400,6 +403,15 @@ public class Mob {
         }
 
         int dameMob = this.point.getDameAttack();
+        if (this.zone != null && this.zone.map != null && MapService.gI().isMapVuTru6(this.zone.map.mapId)) {
+            int mapId = this.zone.map.mapId;
+            int pctHp = (mapId == 145) ? 8 : (mapId == 176 || mapId == 177 ? 7 : 5);
+            long u6Dame = Math.max((long) dameMob, 180_000L) + ((long) player.nPoint.hpMax * pctHp / 100L);
+            if ((mapId == 176 || mapId == 177) && this.point.maxHp > 0 && this.point.hp < this.point.maxHp * 3 / 10) {
+                u6Dame = u6Dame * 150L / 100L;
+            }
+            dameMob = (int) Math.min(2_000_000_000L, u6Dame);
+        }
 
         if (player.charms != null && player.charms.tdDaTrau > System.currentTimeMillis()) {
             dameMob /= 2;
@@ -603,11 +615,11 @@ public class Mob {
         return itemReward;
     }
 
-    private boolean isUsingCoBonLa(Player owner) {
+    public static boolean isUsingCoBonLa(Player owner) {
         return owner != null && !owner.isPet && owner.itemTime != null && owner.itemTime.isUseCoBonLa;
     }
 
-    private boolean isUsingLuckDragon(Player owner) {
+    public static boolean isUsingLuckDragon(Player owner) {
         return owner != null && !owner.isPet && owner.itemTime != null && owner.itemTime.isUseLuckDragon;
     }
 
@@ -711,7 +723,7 @@ public class Mob {
      * Tính % May mắn chung CHỈ trên nhân vật chính (owner).
      * Đệ tử (Pet) mặc đồ/phụ kiện May mắn hoặc Set Gohan đều KHÔNG được tính (bỏ phí 100%).
      */
-    private double getGeneralLuckPercent(Player owner) {
+    public static double getGeneralLuckPercent(Player owner) {
         if (owner == null || owner.isPet) {
             return 0.0;
         }
@@ -743,12 +755,66 @@ public class Mob {
         return percentFromOption236 + luckDragon + luckRX + gohanLuck;
     }
 
-    private long scalePerMillion(double basePerMillion, double luckPercent) {
+    public static double getPlayerTotalLuckPercent(Player owner) {
+        return getGeneralLuckPercent(owner) + (isUsingCoBonLa(owner) ? 20.0 : 0.0);
+    }
+
+    public static long scalePerMillion(double basePerMillion, double luckPercent) {
         long scaled = Math.round(basePerMillion * (1.0 + luckPercent / 100.0));
         if (scaled <= 0) {
             return 0;
         }
         return Math.min(1_000_000L, scaled);
+    }
+
+    public static int getBdkbLevel(Player owner, Zone zone) {
+        if (owner != null && owner.clan != null && owner.clan.BanDoKhoBau != null) {
+            return Math.max(1, Math.min(110, owner.clan.BanDoKhoBau.level));
+        }
+        if (zone != null) {
+            for (nro.models.map.phoban.BanDoKhoBau bdkb : nro.models.services_dungeon.TreasureUnderSeaService.gI().banDoKhoBaus) {
+                if (bdkb != null && bdkb.isOpened && bdkb.zones != null && bdkb.zones.contains(zone)) {
+                    return Math.max(1, Math.min(110, bdkb.level));
+                }
+            }
+        }
+        return 1;
+    }
+
+    /**
+     * Tỉ lệ rơi Ngọc Rồng Bí Ngô trong Bản Đồ Kho Báu từ 0,1% (cấp 1) -> 10,0% (cấp 110),
+     * có nhân thêm buff May mắn của nhân vật chính.
+     */
+    public static long getBdkbPumpkinChancePerMillion(Player owner, Zone zone) {
+        int lv = getBdkbLevel(owner, zone);
+        double basePercent = 0.1 + (lv - 1) * (9.9 / 109.0);
+        return scalePerMillion(basePercent * 10_000.0, getPlayerTotalLuckPercent(owner));
+    }
+
+    public static int rollBdkbMobPumpkinId() {
+        int roll = Util.nextInt(100);
+        if (roll < 30) {
+            return 708; // 30%: Bí ngô 7 sao
+        } else if (roll < 55) {
+            return 707; // 25%: Bí ngô 6 sao
+        } else if (roll < 75) {
+            return 706; // 20%: Bí ngô 5 sao
+        } else if (roll < 90) {
+            return 705; // 15%: Bí ngô 4 sao
+        } else {
+            return 704; // 10%: Bí ngô 3 sao
+        }
+    }
+
+    public static int rollBdkbBossPumpkinId() {
+        int roll = Util.nextInt(100);
+        if (roll < 50) {
+            return 704; // 50%: Bí ngô 3 sao
+        } else if (roll < 80) {
+            return 703; // 30%: Bí ngô 2 sao
+        } else {
+            return 702; // 20%: Bí ngô 1 sao
+        }
     }
 
     public List<ItemMap> getItemMobReward(Player player, int x, int yEnd) {
@@ -757,10 +823,22 @@ public class Mob {
             return list;
         }
 
-        if (this.tempId == 0) {
+        if (this.tempId == 0 || this.tempId == ConstMob.HIRUDEGARN) {
             return list;
         }
         Player owner = (player.isPet && ((Pet) player).master != null) ? ((Pet) player).master : player;
+        if (this.tempId == ConstMob.VUA_BACH_TUOC || this.tempId == ConstMob.ROBOT_BAO_VE) {
+            ItemMap tv = new ItemMap(zone, 457, 5, x, yEnd, owner.id);
+            tv.options.add(new Item.ItemOption(73, 0));
+            list.add(tv);
+            if (Util.isTrue(getBdkbPumpkinChancePerMillion(owner, this.zone), 1_000_000L)) {
+                int xBiNgo = Math.max(24, Math.min(this.zone.map.mapWidth - 24, x + 15));
+                ItemMap biNgo = new ItemMap(zone, rollBdkbBossPumpkinId(), 1, xBiNgo, yEnd, owner.id);
+                biNgo.options.add(new Item.ItemOption(73, 0));
+                list.add(biNgo);
+            }
+            return list;
+        }
         boolean hasCoBonLa = isUsingCoBonLa(owner);
         double generalLuckNoClover = getGeneralLuckPercent(owner);
         double generalLuckWithClover = generalLuckNoClover + (hasCoBonLa ? 20.0 : 0.0);
@@ -858,6 +936,32 @@ public class Mob {
                 } else {
                     list.add(new ItemMap(zone, 190, vang, x, yEnd, owner.id));
                 }
+            }
+        }
+        if (MapService.gI().isMapVuTru6(mapid)) {
+            if (Util.isTrue(scalePerMillion(350_000.0 * dropMult, 0.0), 1_000_000L)) {
+                int vang = Util.nextInt(250_000, 450_000) * CustomConfig.DROP_GOLD_MULT;
+                vang += (int) ((long) vang * goldBonusPercent / 100);
+                list.add(new ItemMap(zone, 190, Math.max(10_000, vang), x, yEnd, owner.id));
+            }
+            double tvRatePerMillion = 8_000.0 * dropMult * getMountGoldBarMult(owner);
+            if (Util.isTrue(Math.round(tvRatePerMillion), 1_000_000L)) {
+                ItemMap tv = new ItemMap(zone, 457, 1, x, yEnd, owner.id);
+                tv.options.add(new Item.ItemOption(73, 0));
+                list.add(tv);
+            }
+            double hemaBase = (hasCoBonLa ? 15_000.0 : 12_000.0) * dropMult * upgradeMatMult;
+            if (Util.isTrue(scalePerMillion(hemaBase, generalLuckNoClover), 1_000_000L)) {
+                ItemMap hema = new ItemMap(zone, 1423, 1, x, yEnd, owner.id);
+                hema.options.add(new Item.ItemOption(167, 0));
+                hema.options.add(new Item.ItemOption(168, 0));
+                list.add(hema);
+            }
+            double foodBase = 50_000.0 * dropMult * upgradeMatMult;
+            if (Util.isTrue(scalePerMillion(foodBase, generalLuckWithClover), 1_000_000L)) {
+                int foodId = Util.nextInt(663, 667);
+                ItemMap food = new ItemMap(zone, foodId, 1, x, yEnd, owner.id);
+                list.add(food);
             }
         }
         if (MapService.gI().isMapTuongLai(mapid)) {
@@ -1010,19 +1114,13 @@ public class Mob {
 
         boolean hasGodSet = (player.setClothes != null && player.setClothes.checkSetGod())
                 || (owner.setClothes != null && owner.setClothes.checkSetGod());
-        if (hasGodSet && Util.isTrue(scalePerMillion(9_009.0 * dropMult * upgradeMatMult, generalLuckWithClover), 1_000_000L)) {
+        if (!MapService.gI().isMapVuTru6(mapid) && hasGodSet
+                && Util.isTrue(scalePerMillion(20_000.0 * dropMult * upgradeMatMult, generalLuckWithClover), 1_000_000L)) {
             ItemMap it = new ItemMap(zone, Util.nextInt(663, 667), 1, x, yEnd, owner.id);
             list.add(it);
         }
 
-        if (MapService.gI().isMapCold(mapid)) {
-            if (Util.isTrue(scalePerMillion(200_000.0 * dropMult * upgradeMatMult, generalLuckWithClover), 1_000_000L)) {
-                int rand = Util.nextInt(0, 4);
-                ItemMap it = new ItemMap(zone, 220 + rand, 1, x, yEnd, owner.id);
-                it.options.add(new Item.ItemOption(71 - rand, 0));
-                list.add(it);
-            }
-        }
+        // Đá nâng cấp (220 - 224) không còn rơi khi farm quái (đổi tại Shop Hồn Boss Chi Chi)
 
         if (MapService.gI().isMapDoanhTrai(mapid)
                 && Util.isTrue(scalePerMillion(30_000.0 * dropMult * upgradeMatMult, generalLuckWithClover), 1_000_000L)) {
@@ -1031,29 +1129,10 @@ public class Mob {
             list.add(it);
         }
 
-        //======================== Ngọc Rồng Bí Ngô (702 - 708) - Bản Đồ Kho Báu ========================
+        //======================== Ngọc Rồng Bí Ngô (704 - 708: 7-3 sao) - Quái lẻ Bản Đồ Kho Báu ========================
         if (MapService.gI().isMapBanDoKhoBau(mapid)) {
-            double eliteMult = (this.lvMob > 0) ? 2.0 : 1.0;
-            double baseBiNgo = 80_000.0 * eliteMult * dropMult * getMountSubDragonBallMult(owner);
-            if (Util.isTrue(scalePerMillion(baseBiNgo, generalLuckWithClover), 1_000_000L)) {
-                int roll = Util.nextInt(100);
-                int biNgoId;
-                if (roll < 25) {
-                    biNgoId = 708; // 25%: Bí ngô 7 sao
-                } else if (roll < 47) {
-                    biNgoId = 707; // 22%: Bí ngô 6 sao
-                } else if (roll < 67) {
-                    biNgoId = 706; // 20%: Bí ngô 5 sao
-                } else if (roll < 92) {
-                    biNgoId = 705; // 25%: Bí ngô 4 sao
-                } else if (roll < 97) {
-                    biNgoId = 704; // 5%: Bí ngô 3 sao
-                } else if (roll < 99) {
-                    biNgoId = 703; // 2%: Bí ngô 2 sao
-                } else {
-                    biNgoId = 702; // 1%: Bí ngô 1 sao
-                }
-                ItemMap biNgoIt = new ItemMap(zone, biNgoId, 1, x, yEnd, owner.id);
+            if (Util.isTrue(getBdkbPumpkinChancePerMillion(owner, this.zone), 1_000_000L)) {
+                ItemMap biNgoIt = new ItemMap(zone, rollBdkbMobPumpkinId(), 1, x, yEnd, owner.id);
                 biNgoIt.options.add(new Item.ItemOption(73, 0));
                 list.add(biNgoIt);
             }

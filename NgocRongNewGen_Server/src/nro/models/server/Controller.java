@@ -176,7 +176,24 @@ public class Controller implements IMessageHandler {
                                 player.idMark.setGoToBDKB(false);
                             }
                         } else if (player.type == 2 && player.maxTime == 5) {
-                            if (MapService.gI().isMapHanhTinhThucVat(player.zone.map.mapId)) {
+                            int customPortalMap = player.idMark != null ? player.idMark.getTargetSpacePortalMapId() : -1;
+                            if (customPortalMap >= 0) {
+                                player.idMark.setTargetSpacePortalMapId(-1);
+                                nro.models.map.Zone targetZone = MapService.gI().getMapCanJoin(player, customPortalMap, -1);
+                                if (targetZone != null) {
+                                    int destX = switch (customPortalMap) {
+                                        case 5 -> 296;
+                                        case 145 -> 792;
+                                        case 169 -> 168;
+                                        case 176 -> 168;
+                                        default -> Math.max(120, targetZone.map.mapWidth / 2);
+                                    };
+                                    int destY = targetZone.map.yPhysicInTop(destX, 100);
+                                    ChangeMapService.gI().changeMap(player, targetZone, destX, destY);
+                                } else {
+                                    Service.gI().sendThongBao(player, "Cổng không gian sang khu vực Vũ Trụ 6 này sẽ chính thức khai mở tại Giai đoạn 2!");
+                                }
+                            } else if (MapService.gI().isMapHanhTinhThucVat(player.zone.map.mapId)) {
                                 ChangeMapService.gI().changeMap(player, 80, -1, -1, 5);
                             } else {
                                 ChangeMapService.gI().changeMap(player, 160, -1, -1, 5);

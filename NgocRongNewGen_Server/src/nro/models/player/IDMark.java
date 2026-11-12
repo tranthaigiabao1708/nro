@@ -97,6 +97,8 @@ public class IDMark {
     private long lastTimeGoToBDKB;
     private long lastTimeAnXienTrapBDKB;
 
+    private int targetSpacePortalMapId = -1;
+
     private int shenronType = -1;
 
     private Npc npcChose; //npc mở
@@ -146,5 +148,6 @@ public class IDMark {
         this.npcTX = null;
         this.npcBC = null;
         this.zoneKhiGasHuyDiet = null;
+        this.targetSpacePortalMapId = -1;
     }
 }

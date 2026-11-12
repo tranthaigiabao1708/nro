@@ -13,6 +13,7 @@ import nro.models.utils.Util;
 public class Hirudegarn extends BigBoss {
 
     private int errors;
+    private Player lastAttacker;
 
     public Hirudegarn(Mob mob) {
         super(mob);
@@ -20,7 +21,10 @@ public class Hirudegarn extends BigBoss {
 
     @Override
     public synchronized void injured(Player plAtt, long damage, boolean dieWhenHpFull) {
-        damage = this.point.hp / 100 > 0 ? this.point.hp / 100 : 1;
+        if (plAtt != null && !plAtt.isBot) {
+            this.lastAttacker = plAtt;
+        }
+        damage = this.point.hp / 300 > 0 ? this.point.hp / 300 : 1;
         super.injured(plAtt, damage, false);
     }
 
@@ -67,49 +71,18 @@ public class Hirudegarn extends BigBoss {
                 }
             }
 
-            int trai = 0;
-            int phai = 1;
-            int next = 0;
-            for (int i = 0; i < 30; i++) {
-                int X = next == 0 ? -5 * trai : 5 * phai;
-                if (next == 0) {
-                    trai++;
-                } else {
-                    phai++;
-                }
-                next = next == 0 ? 1 : 0;
-                if (trai > 10) {
-                    trai = 0;
-                }
-                if (phai > 10) {
-                    phai = 1;
-                }
-                Service.gI().dropItemMap(
-                        this.zone,
-                        new ItemMap(zone, 190, 32000, this.location.x + X, this.location.y, -1)
-                );
-            }
+            Player owner = nro.models.boss.Boss.resolveRewardOwner(this.lastAttacker);
+            long ownerId = (owner != null) ? owner.id : -1L;
+            nro.models.boss.Boss.dropGoldBarsStatic(this.zone, this.location.x, this.location.y, this.lastAttacker, 20, true);
+            nro.models.boss.Boss.dropBossSoulStatic(this.zone, this.location.x, this.location.y, this.lastAttacker, nro.models.boss.Boss.ITEM_HON_BOSS_LUC);
             if (Util.isTrue(20, 100)) {
-                ItemMap it = new ItemMap(this.zone, 1795, 1, this.location.x,
-                        this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24), -1);
-
+                int xBinh = Math.max(24, Math.min(this.zone.map.mapWidth - 24, this.location.x));
+                ItemMap it = new ItemMap(this.zone, 1795, 1, xBinh,
+                        this.zone.map.yPhysicInTop(xBinh, this.location.y - 24), ownerId);
                 it.options.add(new ItemOption(250, 0));
-
                 Service.gI().dropItemMap(this.zone, it);
             }
-
-            if (Util.isTrue(1, 40)) {
-                short[] possibleIds = {555, 557, 559};
-                short idItem = possibleIds[Util.nextInt(possibleIds.length)];
-                ItemMap it = new ItemMap(this.zone, idItem, 1, this.location.x,
-                        this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24), -1);
-                ItemMap itemWithOptions = ItemService.gI().randDoTL(this.zone, 1, this.location.x,
-                        this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24), -1);
-                it.options.clear();
-                it.options.addAll(itemWithOptions.options);
-                Service.gI().dropItemMap(this.zone, it);
-
-            }
+            nro.models.boss.Boss.tryDropGodItemStatic(this.zone, this.location.x, this.location.y, this.lastAttacker, 2, true, false);
             Service.gI().sendBigBoss2(this.zone, action, this);
             if (lvMob <= 2) {
                 Message msg = null;

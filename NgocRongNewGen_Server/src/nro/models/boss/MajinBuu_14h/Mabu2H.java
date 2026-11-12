@@ -117,8 +117,7 @@ public class Mabu2H extends Boss {
 
     @Override
     public void reward(Player plKill) {
-        int diem = 5;
-        TaskService.gI().checkDoneTaskKillBoss(plKill, this);
+        rewardHighTier20TVWithMaterials(this.zone, this.location.x, this.location.y, plKill, 5, false, false);
     }
 
     @Override
@@ -131,11 +130,6 @@ public class Mabu2H extends Boss {
 
             if (plAtt.isPl() && Util.isTrue(1, 5)) {
                 plAtt.fightMabu.changePercentPoint((byte) 1);
-            }
-            if (this.currentLevel == this.data.length - 1) {
-                if (plAtt.playerSkill.skillSelect.template.id != Skill.QUA_CAU_KENH_KHI) {
-                    damage = damage >= this.nPoint.hp ? 0 : damage;
-                }
             }
 
             if (damage >= 30000000) {
@@ -174,7 +168,6 @@ public class Mabu2H extends Boss {
             }
             players.clear();
             reward(plKill);
-            dropMaterialBoss(plKill);
             ServerNotify.gI().notify(plKill.name + ": Đã tiêu diệt được " + this.name + " mọi người đều ngưỡng mộ.");
         }
         this.changeStatus(BossStatus.DIE);

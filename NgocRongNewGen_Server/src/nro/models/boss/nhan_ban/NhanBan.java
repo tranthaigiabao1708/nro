@@ -32,11 +32,36 @@ public class NhanBan extends Boss {
 
     @Override
     public void reward(Player plKill) {
-        ItemMap it = new ItemMap(zone, 638, 1, this.location.x, this.location.y, plKill.id);
+        if (this.zone == null || this.zone.map == null) {
+            return;
+        }
+        Player owner = resolveRewardOwner(plKill);
+        long ownerId = (owner != null) ? owner.id : (plKill != null ? plKill.id : -1L);
+        int xBinh = Math.max(24, Math.min(this.zone.map.mapWidth - 24, this.location.x));
+        int yBinh = this.zone.map.yPhysicInTop(xBinh, this.location.y - 24);
+        ItemMap it = new ItemMap(this.zone, 638, 1, xBinh, yBinh, ownerId);
         it.options.clear();
         it.options.add(new Item.ItemOption(93, 30));
         it.options.add(new Item.ItemOption(30, 0));
         Service.gI().dropItemMap(this.zone, it);
+
+        int[] superBuffIds = {1152, 1151, 1150}; // Siêu bổ huyết, Siêu bổ khí, Siêu cuồng nộ
+        int offset = -18;
+        for (int buffId : superBuffIds) {
+            if (Util.isTrue(33, 100)) {
+                int xDrop = Math.max(24, Math.min(this.zone.map.mapWidth - 24, this.location.x + offset));
+                int yDrop = this.zone.map.yPhysicInTop(xDrop, this.location.y - 24);
+                ItemMap buffItem = new ItemMap(this.zone, buffId, 1, xDrop, yDrop, ownerId);
+                java.util.List<Item.ItemOption> shopOpts = nro.models.services.ItemService.gI().getListOptionItemShop((short) buffId);
+                if (shopOpts != null && !shopOpts.isEmpty()) {
+                    buffItem.options.addAll(shopOpts);
+                } else {
+                    buffItem.options.add(new Item.ItemOption(73, 0));
+                }
+                Service.gI().dropItemMap(this.zone, buffItem);
+                offset += 18;
+            }
+        }
     }
 
     @Override
@@ -114,7 +139,7 @@ public class NhanBan extends Boss {
             return;
         }
         if (!playerAtt.effectSkill.isPKCommeson) {
-            Service.gI().sendThongBao(playerAtt, "Bạn đã thất bại, ngày mai hãy thử sức tiếp");
+            Service.gI().sendThongBao(playerAtt, "Bạn đã thất bại, hãy gặp Potage để thử sức lại!");
             this.leaveMap();
         }
     }

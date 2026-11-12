@@ -32,6 +32,20 @@ public class ItemService {
     }
 
     public short getItemIdByIcon(short IconID) {
+        switch (IconID) {
+            case 11471 -> {
+                return 2016; // Hồn Boss Lam
+            }
+            case 11476 -> {
+                return 2017; // Hồn Boss Lục
+            }
+            case 11475 -> {
+                return 2018; // Hồn Boss Tím
+            }
+            case 16187 -> {
+                return 2019; // Ma Hồn Hủy Diệt
+            }
+        }
         for (int i = 0; i < Manager.ITEM_TEMPLATES.size(); i++) {
             if (Manager.ITEM_TEMPLATES.get(i).iconID == IconID) {
                 return Manager.ITEM_TEMPLATES.get(i).id;

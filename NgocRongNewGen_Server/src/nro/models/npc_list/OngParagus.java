@@ -18,7 +18,7 @@ public class OngParagus extends OngGohan {
                         "Con cố gắng theo Vua Vegeta học thành tài, đừng lo lắng cho ta.\n"
                         + "Ta có dựng sẵn Bảng Sưu Tập Set Kích Hoạt trong nhà cho con đây!",
                         "Đổi ngọc xanh\n1 TV = 1k ngọc",
-                        "Nhận đệ tử\n(hợp thể 40%\nchỉ số)",
+                        "Nhận đệ tử",
                         "Bảng Sưu Tập\nSet Kích Hoạt",
                         "Nhận Hào Quang\n(Đủ 5 Set)",
                         "Hướng dẫn\nSet Kích Hoạt",
