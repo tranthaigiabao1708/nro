@@ -31,13 +31,13 @@ public class CADICH extends Boss {
     private boolean gongBienKhi;
     private boolean bienKhi;
 
-    public CADICH(Zone zone, Clan clan, int dame, int hp) throws Exception {
+    public CADICH(Zone zone, Clan clan, long dame, long hp) throws Exception {
         super(PHOBANCDRD, BossID.CADICH, new BossData(
                 "Cađích",
                 ConstPlayer.XAYDA,
                 new short[]{645, 646, 647, -1, -1, -1},
-                ((10000 + dame)),
-                new int[]{((500000 + hp))},
+                (10000L + dame),
+                new long[]{500000L + hp},
                 new int[]{144},
                 new int[][]{
                     {Skill.GALICK, 7, 1000},
@@ -107,7 +107,7 @@ public class CADICH extends Boss {
     }
 
     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
             if (!piercing && Util.isTrue(this.nPoint.tlNeDon, 1000)) {
                 this.chat("Xí hụt");
@@ -129,7 +129,7 @@ public class CADICH extends Boss {
                 return 0;
             }
             this.nPoint.subHP(damage);
-            return (int) damage;
+            return Math.max(0L, damage);
         } else {
             return 0;
         }
@@ -157,9 +157,8 @@ public class CADICH extends Boss {
                     this.effectSkill.timeMonkey = timeMonkey;
                     this.effectSkill.lastTimeUpMonkey = System.currentTimeMillis();
                     this.effectSkill.levelMonkey = 1;
-                    long hpmax = (long) this.nPoint.hpMax * 2L;
-                    this.nPoint.hpMax = (int) Math.min(hpmax, 2_000_000_000);
-                    this.nPoint.setHp(((int) this.nPoint.hpMax));
+                    this.nPoint.hpMax = this.nPoint.hpMax * 2L;
+                    this.nPoint.setHp(this.nPoint.hpMax);
                     EffectSkillService.gI().sendEffectMonkey(this);
                     Service.gI().Send_Caitrang(this);
                     Service.gI().point(this);

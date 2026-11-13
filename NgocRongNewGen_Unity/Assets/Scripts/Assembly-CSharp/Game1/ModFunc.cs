@@ -38,7 +38,7 @@ namespace Game1
 
 		public static bool ModNotLogoGif = true;
 
-		public static bool isReadInt = true;
+		public static bool isReadInt = false;
 
 		public static bool isVietnamese = false;
 
@@ -226,7 +226,7 @@ namespace Game1
 
 		public static int indexAutoPoint = -1;
 
-		public static int pointIncrease = 0;
+		public static long pointIncrease = 0L;
 
 		public bool showInfoMe;
 
@@ -2000,7 +2000,7 @@ namespace Game1
 
 		public void SetIncreasePoint(string strPoint)
 		{
-			if (int.TryParse(strPoint, out var result) && indexAutoPoint != -1 && result > 0)
+			if (long.TryParse(strPoint, out var result) && indexAutoPoint != -1 && result > 0)
 			{
 				pointIncrease = result;
 				new Thread(DoAutoIncreasePoint).Start();

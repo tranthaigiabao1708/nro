@@ -67,11 +67,11 @@ public abstract class Universe6Boss extends Boss {
     public void initBase() {
         super.initBase();
         long realHp = Math.max(2_200_000_000L, getRealHpForCurrentStage());
+        this.nPoint.hpg = realHp;
+        this.nPoint.hpMax = realHp;
+        this.nPoint.hp = realHp;
         this.nPoint.bossRealHpMax = realHp;
         this.nPoint.bossRealHp = realHp;
-        this.nPoint.hpg = 2_000_000_000;
-        this.nPoint.hpMax = 2_000_000_000;
-        this.nPoint.syncDisplayHpFromBossReal();
         configureStageStats();
     }
 
@@ -218,7 +218,7 @@ public abstract class Universe6Boss extends Boss {
     }
 
     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (this.isDie()) {
             return 0;
         }
@@ -260,7 +260,7 @@ public abstract class Universe6Boss extends Boss {
             this.setDie(plAtt);
             die(plAtt);
         }
-        return (int) Math.min(2_147_483_647L, finalDamage);
+        return finalDamage;
     }
 
     protected boolean isFinalStage() {

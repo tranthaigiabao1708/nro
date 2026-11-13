@@ -17,7 +17,7 @@ public class TaoPaiPai extends Boss {
     }
 
     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
             if (!piercing && Util.isTrue(this.nPoint.tlNeDon, 1)) {
                 this.chat("Xí hụt");
@@ -33,7 +33,7 @@ public class TaoPaiPai extends Boss {
             if (damage >= 100) {
                 damage = 100;
             }
-            this.nPoint.dame = (int) damage / Util.nextInt(500, 1000);
+            this.nPoint.dame = damage / Util.nextInt(500, 1000);
             this.nPoint.subHP(damage);
             long tnSm = damage * Util.nextInt(20, 50);
             if (tnSm > 10000000) {
@@ -47,7 +47,7 @@ public class TaoPaiPai extends Boss {
                 this.setDie(plAtt);
                 die(plAtt);
             }
-            return (int) Math.min(2_147_483_647L, Math.max(0L, damage));
+            return Math.max(0L, damage);
         } else {
             return 0;
         }

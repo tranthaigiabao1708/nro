@@ -189,7 +189,7 @@ public class Map implements Runnable {
         }, 0, 5000, TimeUnit.MILLISECONDS);  // Cập nhật mỗi 1 giây
     }
 
-    public void initMob(byte[] mobTemp, byte[] mobLevel, int[] mobHp, short[] mobX, short[] mobY) {
+    public void initMob(byte[] mobTemp, byte[] mobLevel, long[] mobHp, short[] mobX, short[] mobY) {
         for (int i = 0; i < mobTemp.length; i++) {
             int mobTempId = mobTemp[i];
             Template.MobTemplate temp = Manager.getMobTemplateByTemp(mobTempId);

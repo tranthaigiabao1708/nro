@@ -5383,10 +5383,12 @@ namespace Game2
 
 		public void paintImageBarRight(mGraphics g, Char c)
 		{
-			int num = (int)(c.cHP * hpBarW / c.cHPFull);
-			int num2 = (int)c.cMP * mpBarW;
-			int num3 = (int)(dHP * hpBarW / c.cHPFull);
-			int num4 = (int)dMP * mpBarW;
+			long hpFull = System.Math.Max(1L, c.cHPFull);
+			long mpFull = System.Math.Max(1L, c.cMPFull);
+			int num = System.Math.Clamp((int)((double)c.cHP * hpBarW / hpFull), 0, (int)hpBarW);
+			int num2 = System.Math.Clamp((int)((double)c.cMP * mpBarW / mpFull), 0, mpBarW);
+			int num3 = System.Math.Clamp((int)((double)dHP * hpBarW / hpFull), 0, (int)hpBarW);
+			int num4 = System.Math.Clamp((int)((double)dMP * mpBarW / mpFull), 0, mpBarW);
 			g.setClip(GameCanvas.w / 2 + 58 - mGraphics.getImageWidth(imgPanel), 0, 95, 100);
 			g.drawRegion(imgPanel, 0, 0, mGraphics.getImageWidth(imgPanel), mGraphics.getImageHeight(imgPanel), 2, GameCanvas.w / 2 + 60, 0, mGraphics.RIGHT | mGraphics.TOP);
 			g.setClip((int)(GameCanvas.w / 2 + 60 - 83 - hpBarW + hpBarW - num3), 5, num3, 10);
@@ -5415,63 +5417,20 @@ namespace Game2
 			int num8;
 			if (c.charID == Char.myCharz().charID)
 			{
-				if (!ModFunc.isReadInt)
-				{
-					long num = dHP * hpBarW / c.cHPFull;
-					long num2 = dMP * mpBarW / c.cMPFull;
-					long num3 = c.cHP * hpBarW / c.cHPFull;
-					int num4 = (int)(c.cMP * mpBarW / c.cMPFull);
-					num5 = (int)num;
-					num6 = (int)num2;
-					num7 = (int)num3;
-					num8 = num4;
-					if (num5 <= 0)
-					{
-						num5 = 1;
-					}
-					if (num5 > hpBarW)
-					{
-						num5 = (int)hpBarW;
-					}
-					if (num6 <= 0)
-					{
-						num6 = 1;
-					}
-					if (num6 > mpBarW)
-					{
-						num6 = mpBarW;
-					}
-					if (num7 <= 0)
-					{
-						num7 = 1;
-					}
-					if (num7 > hpBarW)
-					{
-						num7 = (int)hpBarW;
-					}
-					if (num8 <= 0)
-					{
-						num8 = 1;
-					}
-					if (num8 > mpBarW)
-					{
-						num8 = mpBarW;
-					}
-				}
-				else
-				{
-					num5 = (int)(dHP * hpBarW / c.cHPFull);
-					num6 = (int)(dMP * mpBarW / c.cMPFull);
-					num7 = (int)(c.cHP * hpBarW / c.cHPFull);
-					num8 = (int)(c.cMP * mpBarW / c.cMPFull);
-				}
+				long hpFull = System.Math.Max(1L, c.cHPFull);
+				long mpFull = System.Math.Max(1L, c.cMPFull);
+				num5 = System.Math.Clamp((int)((double)dHP * hpBarW / hpFull), (c.cHP > 0) ? 1 : 0, (int)hpBarW);
+				num6 = System.Math.Clamp((int)((double)dMP * mpBarW / mpFull), (c.cMP > 0) ? 1 : 0, mpBarW);
+				num7 = System.Math.Clamp((int)((double)c.cHP * hpBarW / hpFull), (c.cHP > 0) ? 1 : 0, (int)hpBarW);
+				num8 = System.Math.Clamp((int)((double)c.cMP * mpBarW / mpFull), (c.cMP > 0) ? 1 : 0, mpBarW);
 			}
 			else
 			{
-				num5 = (int)(c.dHP * hpBarW / c.cHPFull);
-				num6 = c.perCentMp * mpBarW / 100;
-				num7 = (int)(c.cHP * hpBarW / c.cHPFull);
-				num8 = c.perCentMp * mpBarW / 100;
+				long hpFull = System.Math.Max(1L, c.cHPFull);
+				num5 = System.Math.Clamp((int)((double)c.dHP * hpBarW / hpFull), (c.cHP > 0) ? 1 : 0, (int)hpBarW);
+				num6 = System.Math.Clamp(c.perCentMp * mpBarW / 100, 0, mpBarW);
+				num7 = System.Math.Clamp((int)((double)c.cHP * hpBarW / hpFull), (c.cHP > 0) ? 1 : 0, (int)hpBarW);
+				num8 = System.Math.Clamp(c.perCentMp * mpBarW / 100, 0, mpBarW);
 			}
 			if (Char.myCharz().secondPower > 0)
 			{
@@ -5519,7 +5478,7 @@ namespace Game2
 			g.setClip(0, 0, GameCanvas.w, GameCanvas.h);
 			if (isLeft)
 			{
-				g.setClip(83, 20, num6, 6);
+				g.setClip(83, 20, num8, 6);
 			}
 			else
 			{
@@ -6981,25 +6940,11 @@ namespace Game2
 			int num = y + 19;
 			int width = imgHP_NEW.getWidth();
 			int num2 = imgHP_NEW.getHeight() / 2;
-			int num3 = (int)(c.cHP * width / c.cHPFull);
-			if (num3 <= 0)
-			{
-				num3 = 1;
-			}
-			else if (num3 > width)
-			{
-				num3 = width;
-			}
+			long hpFull = System.Math.Max(1L, c.cHPFull);
+			long mpFull = System.Math.Max(1L, c.cMPFull);
+			int num3 = System.Math.Clamp((int)((double)c.cHP * width / hpFull), (c.cHP > 0) ? 1 : 0, width);
 			g.drawRegion(imgHP_NEW, 0, num2, num3, num2, 0, x2, num, 0);
-			int num4 = (int)(c.cMP * width / c.cMPFull);
-			if (num4 <= 0)
-			{
-				num4 = 1;
-			}
-			else if (num4 > width)
-			{
-				num4 = width;
-			}
+			int num4 = System.Math.Clamp((int)((double)c.cMP * width / mpFull), (c.cMP > 0) ? 1 : 0, width);
 			g.drawRegion(imgHP_NEW, 0, 0, num4, num2, 0, x2, num + 6, 0);
 			int x3 = x + imgKhung.getWidth() / 2 + 1;
 			int y2 = num + 13;

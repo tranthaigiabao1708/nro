@@ -169,7 +169,7 @@ public class Command {
         // dmg <value>
 parameterizedCommands.put("dm", (player, text) -> {
     try {
-        int dmg = Integer.parseInt(text.replace("dm", "").trim());
+        long dmg = Long.parseLong(text.replace("dm", "").trim());
         player.nPoint.dameg = dmg;
         Service.gI().point(player);
         Service.gI().sendThongBao(player, "SET DAMAGE = " + dmg);
@@ -181,7 +181,7 @@ parameterizedCommands.put("dm", (player, text) -> {
 // hpg <value>
 parameterizedCommands.put("hp", (player, text) -> {
     try {
-        int hpg = Integer.parseInt(text.replace("hp", "").trim());
+        long hpg = Long.parseLong(text.replace("hp", "").trim());
         player.nPoint.hpg = hpg;
         Service.gI().point(player);
         Service.gI().sendThongBao(player, "SET HP GỐC = " + hpg);
@@ -193,7 +193,7 @@ parameterizedCommands.put("hp", (player, text) -> {
 // ki <value>
 parameterizedCommands.put("ki", (player, text) -> {
     try {
-        int ki = Integer.parseInt(text.replace("ki", "").trim());
+        long ki = Long.parseLong(text.replace("ki", "").trim());
         player.nPoint.mpg = ki;
         Service.gI().point(player);
         Service.gI().sendThongBao(player, "SET KI GỐC = " + ki);

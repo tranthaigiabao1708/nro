@@ -152,7 +152,7 @@ public class BotAttackplayer extends Bot {
         }
 
         boolean isMiss = false;
-        int realDame = targetPlayer.injured(this, isMiss ? 0 : damage, false, false);
+        long realDame = targetPlayer.injured(this, isMiss ? 0 : damage, false, false);
 
         Skill skill = playerSkill.skillSelect;
 
@@ -164,7 +164,7 @@ public class BotAttackplayer extends Bot {
             msg.writer().writeInt((int) targetPlayer.id);
             msg.writer().writeByte(1);
             msg.writer().writeByte(0);
-            msg.writer().writeInt(realDame);
+            msg.writer().writeLong(realDame);
             msg.writer().writeBoolean(targetPlayer.isDie());
             msg.writer().writeBoolean(nPoint.isCrit);
             Service.gI().sendMessAllPlayerInMap(this, msg);
@@ -222,7 +222,7 @@ public class BotAttackplayer extends Bot {
             return;
         }
 
-        int damePST = (int) (dame * percentPST / 100L);
+        long damePST = dame / 100L * percentPST;
         if (damePST >= attacker.nPoint.hp) {
             damePST = attacker.nPoint.hp - 1;
         }
@@ -232,8 +232,8 @@ public class BotAttackplayer extends Bot {
             msg = new Message(56);
             msg.writer().writeInt((int) attacker.id);
             damePST = attacker.injured(attacker, damePST, true, false);
-            msg.writer().writeInt(attacker.nPoint.hp);
-            msg.writer().writeInt(damePST);
+            msg.writer().writeLong(attacker.nPoint.hp);
+            msg.writer().writeLong(damePST);
             msg.writer().writeBoolean(false);
             msg.writer().writeByte(36);
             Service.gI().sendMessAllPlayerInMap(attacker, msg);
@@ -250,8 +250,8 @@ public class BotAttackplayer extends Bot {
         int tiLeHutHp = player.nPoint.getTileHutHp(mob != null);
         int tiLeHutMp = player.nPoint.getTiLeHutMp();
 
-        int hpHoi = (int) Math.min(2_147_483_647L, Math.max(0L, dame * tiLeHutHp / 100L));
-        int mpHoi = (int) Math.min(2_147_483_647L, Math.max(0L, dame * tiLeHutMp / 100L));
+        long hpHoi = Math.max(0L, dame / 100L * tiLeHutHp);
+        long mpHoi = Math.max(0L, dame / 100L * tiLeHutMp);
 
         if (hpHoi > 0 || mpHoi > 0) {
             int x = -1, y = -1;

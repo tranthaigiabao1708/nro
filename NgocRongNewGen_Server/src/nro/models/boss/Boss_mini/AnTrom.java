@@ -56,7 +56,7 @@ public class AnTrom extends Boss {
     }
 
     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
             damage = 1;
             this.nPoint.subHP(damage);
@@ -66,7 +66,7 @@ public class AnTrom extends Boss {
             }
             this.playerSkill.skillSelect = this.playerSkill.skills.get(Util.nextInt(0, this.playerSkill.skills.size() - 1));
             SkillService.gI().useSkill(this, plAtt, null, -1, null);
-            return (int) Math.min(2_147_483_647L, Math.max(0L, damage));
+            return Math.max(0L, damage);
         } else {
             return 0;
         }

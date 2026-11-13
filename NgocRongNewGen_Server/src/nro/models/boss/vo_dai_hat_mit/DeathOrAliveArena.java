@@ -138,7 +138,7 @@ public abstract class DeathOrAliveArena extends Boss {
     }
 
     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
             int neDon = 100;
             if (plAtt != null && plAtt.nPoint != null) {
@@ -163,7 +163,7 @@ public abstract class DeathOrAliveArena extends Boss {
                 die(plAtt);
             }
 
-            return (int) Math.min(2_147_483_647L, Math.max(0L, damage));
+            return Math.max(0L, damage);
         } else {
             return 0;
         }

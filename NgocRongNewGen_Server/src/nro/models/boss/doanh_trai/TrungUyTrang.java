@@ -23,13 +23,13 @@ import nro.models.utils.Util;
 
 public class TrungUyTrang extends Boss {
 
-    public TrungUyTrang(Zone zone, int dame, int hp) throws Exception {
+    public TrungUyTrang(Zone zone, long dame, long hp) throws Exception {
         super(PHOBANDT, BossID.TRUNG_UY_TRANG, new BossData(
                 "Trung uý Trắng", //name
                 ConstPlayer.TRAI_DAT, //gender
                 new short[]{141, 142, 143, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
-                (dame), //dame
-                new int[]{(hp)}, //hp
+                dame, //dame
+                new long[]{hp}, //hp
                 new int[]{59}, //map join
                 new int[][]{
                     {Skill.DEMON, 3, 1}, {Skill.DEMON, 6, 2}, {Skill.DRAGON, 7, 3}, {Skill.DRAGON, 1, 4}, {Skill.GALICK, 5, 5},
@@ -128,7 +128,7 @@ public class TrungUyTrang extends Boss {
     }
 
     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie() && !this.zone.isbulon1Alive && !this.zone.isbulon2Alive) {
             if (!piercing && Util.isTrue(20, 100)) {
                 this.chat("Xí hụt");
@@ -146,7 +146,7 @@ public class TrungUyTrang extends Boss {
                 this.setDie(plAtt);
                 die(plAtt);
             }
-            return (int) Math.min(2_147_483_647L, Math.max(0L, damage));
+            return Math.max(0L, damage);
         } else {
             return 0;
         }

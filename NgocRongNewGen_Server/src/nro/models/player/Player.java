@@ -1108,7 +1108,7 @@ public class Player implements Runnable {
         }
     }
 
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
             if (plAtt != null && !plAtt.equals(this)) {
                 setTemporaryEnemies(plAtt);
@@ -1147,7 +1147,7 @@ public class Player implements Runnable {
                 switch (plAtt.playerSkill.skillSelect.template.id) {
                     case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC -> {
                         if (this.nPoint.voHieuChuong > 0) {
-                            PlayerService.gI().hoiPhuc(this, 0, (int) Math.min(2_147_483_647L, Math.max(0L, damage * this.nPoint.voHieuChuong / 100L)));
+                            PlayerService.gI().hoiPhuc(this, 0, Math.max(0L, damage / 100L * this.nPoint.voHieuChuong));
                             return 0;
                         }
                     }
@@ -1244,7 +1244,7 @@ public class Player implements Runnable {
 
             if (!piercing && effectSkill.isShielding && !isMobAttack) {
                 if (this.idMark != null) {
-                    this.idMark.setDamePST((int) Math.min(damage, 2_147_483_647L));
+                    this.idMark.setDamePST(damage);
                 }
                 if (damage > nPoint.hpMax) {
                     EffectSkillService.gI().breakShield(this);
@@ -1254,7 +1254,7 @@ public class Player implements Runnable {
                     damage = 10;
                 }
             }
-            damage = Math.min(damage, 2_147_483_647);
+            damage = Math.max(0L, damage);
             if (isMobAttack && this.charms.tdBatTu > System.currentTimeMillis() && damage >= this.nPoint.hp) {
                 damage = this.nPoint.hp - 1;
             }
@@ -1297,7 +1297,7 @@ public class Player implements Runnable {
                 }
             }
 
-            return (int) damage;
+            return damage;
         } else {
             return 0;
         }
@@ -1346,7 +1346,7 @@ public class Player implements Runnable {
             PhanTramSucManhBiTru = 0.001;
         }
         if (PhanTramSucManhBiTru > 0) {
-            int dieukien = (int) (this.nPoint.power * PhanTramSucManhBiTru);
+            long dieukien = (long) (this.nPoint.power * PhanTramSucManhBiTru);
             dieukien = dieukien < 1 ? 1 : dieukien;
             if (this.nPoint.power >= dieukien) {
                 this.nPoint.power -= dieukien;

@@ -8535,8 +8535,8 @@ else
                 MyVector myVector2 = new MyVector(string.Empty);
                 if (cTiemNang >= 10 * (2 * (cMPGoc + num) + 180) / 2 && cTiemNang < 100 * (2 * (cMPGoc + num) + 1980) / 2)
                 {
-                    myVector2.addElement(new Command(mResources.increase_upper + "\n" + Char.myCharz().mpFrom1000TiemNang + mResources.KI + "\n-" + Res.formatNumber2(cHPGoc + num), this, 9000, true));
-                    myVector2.addElement(new Command(mResources.increase_upper + "\n" + 10 * Char.myCharz().mpFrom1000TiemNang + mResources.KI + "\n-" + Res.formatNumber2(10 * (2 * (cHPGoc + num) + 180) / 2), this, 9006, true));
+                    myVector2.addElement(new Command(mResources.increase_upper + "\n" + Char.myCharz().mpFrom1000TiemNang + mResources.KI + "\n-" + Res.formatNumber2(cMPGoc + num), this, 9000, true));
+                    myVector2.addElement(new Command(mResources.increase_upper + "\n" + 10 * Char.myCharz().mpFrom1000TiemNang + mResources.KI + "\n-" + Res.formatNumber2(10 * (2 * (cMPGoc + num) + 180) / 2), this, 9006, true));
                 }
                 else if (cTiemNang >= 100 * (2 * (cMPGoc + num) + 1980) / 2)
                 {
@@ -10028,8 +10028,8 @@ else
                 MyVector myVector3 = new MyVector(string.Empty);
                 if (cTiemNang >= 10 * (2 * (cMPGoc + num3) + 180) / 2 && cTiemNang < 100 * (2 * (cMPGoc + num3) + 1980) / 2)
                 {
-                    myVector3.addElement(new Command(mResources.increase_upper + "\n" + Char.myCharz().mpFrom1000TiemNang + mResources.KI + "\n-" + Res.formatNumber2(cHPGoc + num3), this, 9000, null));
-                    myVector3.addElement(new Command(mResources.increase_upper + "\n" + 10 * Char.myCharz().mpFrom1000TiemNang + mResources.KI + "\n-" + Res.formatNumber2(10 * (2 * (cHPGoc + num3) + 180) / 2), this, 9006, null));
+                    myVector3.addElement(new Command(mResources.increase_upper + "\n" + Char.myCharz().mpFrom1000TiemNang + mResources.KI + "\n-" + Res.formatNumber2(cMPGoc + num3), this, 9000, null));
+                    myVector3.addElement(new Command(mResources.increase_upper + "\n" + 10 * Char.myCharz().mpFrom1000TiemNang + mResources.KI + "\n-" + Res.formatNumber2(10 * (2 * (cMPGoc + num3) + 180) / 2), this, 9006, null));
                 }
                 else if (cTiemNang >= 100 * (2 * (cMPGoc + num3) + 1980) / 2)
                 {

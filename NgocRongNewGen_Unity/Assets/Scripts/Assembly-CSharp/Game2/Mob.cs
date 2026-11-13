@@ -284,7 +284,7 @@ namespace Game2
 			maxHp = maxp;
 			this.levelBoss = levelBoss;
 			updateHp_bar();
-			per_tem = (int)(hp * 100 / maxHp);
+			per_tem = per;
 			isDie = false;
 			xSd = pointx;
 			ySd = pointy;
@@ -1354,8 +1354,10 @@ namespace Game2
 
 		public void updateHp_bar()
 		{
-			len = (int)(hp * 100 / maxHp * w_hp_bar) / 100;
-			per = (int)(hp * 100 / maxHp);
+			long full = System.Math.Max(1L, maxHp);
+			double ratio = System.Math.Clamp((double)hp / full, 0.0, 1.0);
+			len = System.Math.Clamp((int)(ratio * w_hp_bar), (hp > 0) ? 1 : 0, w_hp_bar);
+			per = System.Math.Clamp((int)(ratio * 100.0), (hp > 0) ? 1 : 0, 100);
 			if (per == 100)
 			{
 				per_tem = per;

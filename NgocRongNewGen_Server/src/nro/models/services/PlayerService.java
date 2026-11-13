@@ -50,7 +50,7 @@ public class PlayerService {
             try {
                 msg = new Message(-3);
                 msg.writer().writeByte(type);
-                msg.writer().writeInt((int) param);
+                msg.writer().writeLong(param);
                 player.sendMessage(msg);
                 msg.cleanup();
             } catch (Exception e) {
@@ -80,7 +80,7 @@ public class PlayerService {
         Message msg;
         try {
             msg = Service.gI().messageSubCommand((byte) 5);
-            msg.writer().writeInt(player.nPoint.hp);
+            msg.writer().writeLong(player.nPoint.hp);
             player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
@@ -92,7 +92,7 @@ public class PlayerService {
         Message msg;
         try {
             msg = Service.gI().messageSubCommand((byte) 6);
-            msg.writer().writeInt(player.nPoint.mp);
+            msg.writer().writeLong(player.nPoint.mp);
             player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
@@ -136,8 +136,8 @@ public class PlayerService {
                 msg.writer().writeInt((int) player.inventory.gold);
             }
             msg.writer().writeInt(player.inventory.gem);//luong
-            msg.writer().writeInt(player.nPoint.hp);//chp
-            msg.writer().writeInt(player.nPoint.mp);//cmp
+            msg.writer().writeLong(player.nPoint.hp);//chp
+            msg.writer().writeLong(player.nPoint.mp);//cmp
             msg.writer().writeInt(player.inventory.ruby);//ruby
             player.sendMessage(msg);
         } catch (Exception e) {
@@ -195,7 +195,7 @@ public class PlayerService {
                 } catch (Exception e) {
                 }
                 if (player.isFly && player.getMount() == -1) {
-                    int mp = player.nPoint.mpg / (100 * (player.effectSkill.isMonkey ? 2 : 1));
+                    long mp = player.nPoint.mpg / (100L * (player.effectSkill.isMonkey ? 2L : 1L));
                     hoiPhuc(player, 0, -mp);
                 } else if (player.isFly && player.getMount() != -1 && player.nPoint != null && player.nPoint.hasMountFlyRegen) {
                     if (!player.isDie() && Util.canDoWithTime(player.nPoint.lastTimeMountRegen, 2000)) {

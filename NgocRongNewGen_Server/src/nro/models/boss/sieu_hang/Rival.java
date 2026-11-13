@@ -38,7 +38,7 @@ public class Rival extends SuperRank {
                 player.gender,
                 new short[]{player.getHead(), player.getBody(), player.getLeg(), player.getFlagBag(), player.getAura(), player.getEffFront()},
                 player.nPoint.dameg,
-                new int[]{player.nPoint.hpg},
+                new long[]{player.nPoint.hpg},
                 new int[]{113},
                 skillTemp,
                 new String[]{}, //text chat 1

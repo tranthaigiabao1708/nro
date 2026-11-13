@@ -804,7 +804,7 @@ namespace Game1
 					}
 					if (mob8 != null)
 					{
-						mob8.maxHp = msg.reader().readInt();
+						mob8.maxHp = msg.readLong();
 					}
 					break;
 				}
@@ -4276,7 +4276,7 @@ namespace Game1
 					}
 					if (mob16 != null)
 					{
-						mob16.hp = msg.reader().readInt();
+						mob16.hp = msg.readLong();
 						mob16.updateHp_bar();
 						GameScr.startFlyText(mResources.miss, mob16.x, mob16.y - mob16.h, 0, -2, mFont.MISS);
 					}
@@ -4495,7 +4495,7 @@ namespace Game1
 				Mob.arrMobTemplate[b2].mobTemplateId = b2;
 				Mob.arrMobTemplate[b2].type = d.readByte();
 				Mob.arrMobTemplate[b2].name = d.readUTF();
-				Mob.arrMobTemplate[b2].hp = d.readInt();
+				Mob.arrMobTemplate[b2].hp = (ModFunc.isReadInt ? d.readInt() : d.readLong());
 				Mob.arrMobTemplate[b2].rangeMove = d.readByte();
 				Mob.arrMobTemplate[b2].speed = d.readByte();
 				Mob.arrMobTemplate[b2].dartType = d.readByte();

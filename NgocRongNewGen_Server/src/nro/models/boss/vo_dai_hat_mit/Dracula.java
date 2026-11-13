@@ -25,7 +25,7 @@ public class Dracula extends DeathOrAliveArena {
     public void hutMau() {
         try {
             if (Util.canDoWithTime(lastTimeHutMau, 15000) && this.nPoint.hp > this.nPoint.hpMax / 30) {
-                int hp = playerAtt.injured(this, Math.max(1000, this.nPoint.dame), false, false);
+                long hp = playerAtt.injured(this, Math.max(1000L, this.nPoint.dame), false, false);
                 if (hp > 0) {
                     this.nPoint.addHp(hp);
                     Service.gI().Send_Info_NV(this);

@@ -7264,7 +7264,7 @@ CREATE TABLE `mob_template` (
   `id` int(11) NOT NULL,
   `TYPE` int(11) NOT NULL,
   `NAME` varchar(50) NOT NULL,
-  `hp` int(11) NOT NULL,
+  `hp` bigint(20) NOT NULL,
   `range_move` smallint(6) NOT NULL,
   `speed` smallint(6) NOT NULL,
   `dart_Type` smallint(6) NOT NULL,

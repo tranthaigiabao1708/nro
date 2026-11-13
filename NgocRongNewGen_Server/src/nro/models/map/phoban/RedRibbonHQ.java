@@ -130,8 +130,8 @@ public class RedRibbonHQ implements Runnable {
         for (Zone zone : this.zones) {
             for (Mob mob : zone.mobs) {
                 long mobTempId = mob.tempId;
-                mob.point.dame = (int) ((mobTempId != 0) ? Math.min(totalHp / mobTempId, 2_147_483_647L) : 0);
-                mob.point.maxHp = (int) ((mobTempId != 0) ? Math.min(totalDamage * mobTempId, 2_147_483_647) : 0);
+                mob.point.dame = (mobTempId != 0) ? (totalHp / mobTempId) : 0L;
+                mob.point.maxHp = (mobTempId != 0) ? (totalDamage * mobTempId) : 0L;
                 mob.lvMob = 0;
                 mob.hoiSinh();
                 mob.hoiSinhMobPhoBan();
@@ -142,49 +142,41 @@ public class RedRibbonHQ implements Runnable {
 
             if (zone.map.mapId == 59) {
                 try {
-                    long bossDamage = Math.min(dame, 200_000_000L);
-                    long bossMaxHealth = Math.min(hp, 2_147_483_647L);
                     bosses.add(new TrungUyTrang(
                             zone,
-                            (int) bossDamage,
-                            (int) bossMaxHealth
+                            dame,
+                            hp
                     ));
                 } catch (Exception e) {
                 }
             }
             if (zone.map.mapId == 62) {
                 try {
-                    long bossDamage = Math.min((long) (dame * 1.1), 200_000_000L);
-                    long bossMaxHealth = Math.min((long) (hp * 1.1), 2_147_483_647);
                     bosses.add(new TrungUyXanhLo(
                             zone,
-                            (int) bossDamage,
-                            (int) bossMaxHealth
+                            dame / 10L * 11L,
+                            hp / 10L * 11L
                     ));
                 } catch (Exception e) {
                 }
             }
             if (zone.map.mapId == 55) {
                 try {
-                    long bossDamage = Math.min((long) (dame * 1.15), 200_000_000L);
-                    long bossMaxHealth = Math.min((long) (hp * 1.15), 2_147_483_647L);
                     bosses.add(new TrungUyThep(
                             zone,
-                            (int) bossDamage,
-                            (int) bossMaxHealth
+                            dame / 20L * 23L,
+                            hp / 20L * 23L
                     ));
                 } catch (Exception e) {
                 }
             }
             if (zone.map.mapId == 54) {
                 try {
-                    long bossDamage = Math.min((long) (dame * 1.2), 200_000_000L);
-                    long bossMaxHealth = Math.min((long) (hp * 1.2), 2_147_483_647);
                     bosses.add(new NinjaAoTim(
                             zone,
                             clan,
-                            (int) bossDamage,
-                            (int) bossMaxHealth
+                            dame / 5L * 6L,
+                            hp / 5L * 6L
                     ));
                 } catch (Exception e) {
                 }
@@ -192,14 +184,14 @@ public class RedRibbonHQ implements Runnable {
 
             if (zone.map.mapId == 57) {
                 try {
-                    long bossDamage = Math.min((long) (dame * 1.3), 200_000_000L);
-                    long bossMaxHealth = Math.min((long) (hp * 1.3), 2_147_483_647);
+                    long bossDamage = dame / 10L * 13L;
+                    long bossMaxHealth = hp / 10L * 13L;
                     for (int i = 0; i < 4; i++) {
                         bosses.add(new RobotVeSi(
                                 zone,
                                 i,
-                                (int) bossDamage,
-                                (int) bossMaxHealth
+                                bossDamage,
+                                bossMaxHealth
                         ));
                     }
                 } catch (Exception e) {
@@ -327,8 +319,8 @@ public class RedRibbonHQ implements Runnable {
                 if (mob.isDie()) {
                     continue;
                 }
-                mob.point.dame = (int) (totalHp / mob.tempId < 2_147_483_647 ? totalHp / mob.tempId : 2_147_483_647);
-                mob.point.maxHp = (int) (totalDame/3 * mob.tempId < 2_147_483_647 ? totalDame * mob.tempId : 2_147_483_647);
+                mob.point.dame = (mob.tempId != 0) ? (totalHp / mob.tempId) : 0L;
+                mob.point.maxHp = (mob.tempId != 0) ? (totalDame * mob.tempId) : 0L;
                 mob.point.hp = mob.point.maxHp;
                 mob.setTiemNang();
             }
@@ -342,52 +334,38 @@ public class RedRibbonHQ implements Runnable {
             }
             if (boss.zone.map.mapId == 59) {
                 try {
-                    long bossDamage = (dame);
-                    long bossMaxHealth = (hp);
-                    bossDamage = Math.min(bossDamage, 200000000L);
-                    bossMaxHealth = Math.min(bossMaxHealth, 2000000000L);
-                    boss.nPoint.hpMax = (int) bossMaxHealth;
-                    boss.nPoint.dame = (int) bossDamage;
+                    boss.nPoint.hpMax = hp;
+                    boss.nPoint.dame = dame;
                     boss.nPoint.hp = boss.nPoint.hpMax;
                 } catch (Exception exception) {
                 }
             }
             if (boss.zone.map.mapId == 62) {
                 try {
-                    long bossDamage = (long) (dame * 1.1);
-                    long bossMaxHealth = (long) (hp * 1.1);
-                    bossDamage = Math.min(bossDamage, 200000000L);
-                    bossMaxHealth = Math.min(bossMaxHealth, 2000000000L);
-                    boss.nPoint.hpMax = (int) bossMaxHealth;
-                    boss.nPoint.dame = (int) bossDamage;
+                    boss.nPoint.hpMax = hp / 10L * 11L;
+                    boss.nPoint.dame = dame / 10L * 11L;
                     boss.nPoint.hp = boss.nPoint.hpMax;
                 } catch (Exception exception) {
                 }
             }
             if (boss.zone.map.mapId == 55) {
                 try {
-                    long bossDamage = (long) (dame * 1.15);
-                    long bossMaxHealth = (long) (hp * 1.15);
-                    bossDamage = Math.min(bossDamage, 200000000L);
-                    bossMaxHealth = Math.min(bossMaxHealth, 2000000000L);
-                    boss.nPoint.hpMax = (int) bossMaxHealth;
-                    boss.nPoint.dame = (int) bossDamage;
+                    boss.nPoint.hpMax = hp / 20L * 23L;
+                    boss.nPoint.dame = dame / 20L * 23L;
                     boss.nPoint.hp = boss.nPoint.hpMax;
                 } catch (Exception exception) {
                 }
             }
             if (boss.zone.map.mapId == 54) {
                 try {
-                    long bossDamage = (long) (dame * 1.2);
-                    long bossMaxHealth = (long) (hp * 1.2);
-                    bossDamage = Math.min(bossDamage, 200000000L);
-                    bossMaxHealth = Math.min(bossMaxHealth, 2000000000L);
+                    long bossDamage = dame / 5L * 6L;
+                    long bossMaxHealth = hp / 5L * 6L;
                     if (boss.id >= -14 && boss.id <= -9) {
                         bossDamage /= 10;
                         bossMaxHealth /= 10;
                     }
-                    boss.nPoint.hpMax = (int) bossMaxHealth;
-                    boss.nPoint.dame = (int) bossDamage;
+                    boss.nPoint.hpMax = bossMaxHealth;
+                    boss.nPoint.dame = bossDamage;
                     boss.nPoint.hp = boss.nPoint.hpMax;
                 } catch (Exception exception) {
                 }
@@ -395,12 +373,8 @@ public class RedRibbonHQ implements Runnable {
 
             if (boss.zone.map.mapId == 57) {
                 try {
-                    long bossDamage = (long) (dame * 1.3);
-                    long bossMaxHealth = (long) (hp * 1.3);
-                    bossDamage = Math.min(bossDamage, 200000000L);
-                    bossMaxHealth = Math.min(bossMaxHealth, 2000000000L);
-                    boss.nPoint.hpMax = (int) bossMaxHealth;
-                    boss.nPoint.dame = (int) bossDamage;
+                    boss.nPoint.hpMax = hp / 10L * 13L;
+                    boss.nPoint.dame = dame / 10L * 13L;
                     boss.nPoint.hp = boss.nPoint.hpMax;
                 } catch (Exception exception) {
                 }

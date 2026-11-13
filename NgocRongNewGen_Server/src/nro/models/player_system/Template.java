@@ -86,7 +86,7 @@ public class Template {
         public int id;
         public byte type;
         public String name;
-        public int hp;
+        public long hp;
         public byte rangeMove;
         public byte speed;
         public byte dartType;
@@ -121,7 +121,7 @@ public class Template {
 
         public byte[] mobTemp;
         public byte[] mobLevel;
-        public int[] mobHp;
+        public long[] mobHp;
         public short[] mobX;
         public short[] mobY;
 

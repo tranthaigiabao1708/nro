@@ -108,7 +108,7 @@ public class Broly extends Boss {
     private long st;
 
     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
             if (!piercing && Util.isTrue(this.nPoint.tlNeDon, 1000)) {
                 this.chat("Xí hụt");
@@ -128,7 +128,7 @@ public class Broly extends Boss {
                 this.setDie(plAtt);
                 die(plAtt);
             }
-            return (int) Math.min(2_147_483_647L, Math.max(0L, damage));
+            return Math.max(0L, damage);
         } else {
             return 0;
         }
@@ -178,9 +178,9 @@ public class Broly extends Boss {
     }
 
     private void tangChiSo() {
-        int hpMax = this.nPoint.hpMax;
+        long hpMax = this.nPoint.hpMax;
         int rand = Util.nextInt(10, 100);
-        hpMax = hpMax + hpMax / rand < 16_070_777 ? hpMax + hpMax / rand : 16_070_777;
+        hpMax = hpMax + hpMax / rand < 16_070_777L ? hpMax + hpMax / rand : 16_070_777L;
         this.nPoint.hpMax = hpMax;
         this.nPoint.dame = hpMax / 10;
     }

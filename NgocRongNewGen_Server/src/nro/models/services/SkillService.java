@@ -401,7 +401,7 @@ public class SkillService {
         }
         switch (player.playerSkill.skillSelect.template.id) {
             case Skill.KAIOKEN:
-                int hpUse = player.nPoint.hpMax / 100 * 10;
+                long hpUse = player.nPoint.hpMax / 100 * 10;
                 if (player.setClothes.thanVuTruKaio == 4) {
                     hpUse = player.nPoint.hpMax / 100 * 5;
                 } else if (player.setClothes.thanVuTruKaio == 5) {
@@ -477,9 +477,9 @@ public class SkillService {
                         }
                     }
                     for (Mob mob : mobs) {
-                        int hpMobBefore = mob.point.gethp();
+                        long hpMobBefore = mob.point.gethp();
                         mob.injured(player, player.nPoint.getDameAttack(true), true);
-                        long actualSplashDame = Math.max(0L, (long) hpMobBefore - mob.point.gethp());
+                        long actualSplashDame = Math.max(0L, hpMobBefore - mob.point.gethp());
                         hutHPMP(player, actualSplashDame, null, mob);
                     }
                     PlayerService.gI().sendInfoHpMpMoney(player);
@@ -909,7 +909,7 @@ public class SkillService {
         if (plAtt != null) {
             int percentPST = plTarget.nPoint.tlPST;
             if (percentPST != 0) {
-                int damePST = (int) Math.min(2_147_483_647L, Math.max(0L, dame * percentPST / 100L));
+                long damePST = Math.max(0L, dame / 100L * percentPST);
                 Message msg = null;
                 try {
                     msg = new Message(56);
@@ -918,17 +918,17 @@ public class SkillService {
                         damePST = plAtt.nPoint.hp - 1;
                     }
                     if (plAtt.isBoss && !(plAtt instanceof Broly || plAtt instanceof SuperBroly)) {
-                        if (damePST > plAtt.nPoint.hpMax / 100) {
-                            int giamdame = 0;
-                            if (plAtt.nPoint.hpMax / 200 > 1) {
-                                giamdame = Util.nextInt(plAtt.nPoint.hpMax / 200);
+                        if (damePST > plAtt.nPoint.hpMax / 100L) {
+                            long giamdame = 0;
+                            if (plAtt.nPoint.hpMax / 200L > 1L) {
+                                giamdame = Util.nextLong(plAtt.nPoint.hpMax / 200L);
                             }
-                            damePST = plAtt.nPoint.hpMax / 100 - giamdame;
+                            damePST = plAtt.nPoint.hpMax / 100L - giamdame;
                         }
                     }
                     damePST = plAtt.injured(plAtt, damePST, true, false);
-                    msg.writer().writeInt(plAtt.nPoint.hp);
-                    msg.writer().writeInt(damePST);
+                    msg.writer().writeLong(plAtt.nPoint.hp);
+                    msg.writer().writeLong(damePST);
                     msg.writer().writeBoolean(false);
                     msg.writer().writeByte(36);
                     Service.gI().sendMessAllPlayerInMap(plAtt, msg);
@@ -946,8 +946,8 @@ public class SkillService {
     private void hutHPMP(Player player, long dame, Player pl, Mob mob) {
         int tiLeHutHp = player.nPoint.getTileHutHp(mob != null);
         int tiLeHutMp = player.nPoint.getTiLeHutMp();
-        int hpHoi = (int) Math.min(2_147_483_647L, Math.max(0L, dame * tiLeHutHp / 100L));
-        int mpHoi = (int) Math.min(2_147_483_647L, Math.max(0L, dame * tiLeHutMp / 100L));
+        long hpHoi = Math.max(0L, dame / 100L * tiLeHutHp);
+        long mpHoi = Math.max(0L, dame / 100L * tiLeHutMp);
         if (hpHoi > 0 || mpHoi > 0) {
             int x = -1;
             int y = -1;
@@ -968,9 +968,7 @@ public class SkillService {
             plAtt.nPoint.isCrit100 = true;
         }
         boolean targetIsU6Boss = plInjure instanceof nro.models.boss.vodai_vt6.Universe6Boss;
-        long dameAttack = targetIsU6Boss
-                ? plAtt.nPoint.getDameAttackLong(false)
-                : plAtt.nPoint.getDameAttack(false);
+        long dameAttack = plAtt.nPoint.getDameAttack(false);
         if (plAtt.isPl() && plAtt.effectSkin != null && plAtt.effectSkin.isXDame) {
             plAtt.effectSkin.isXDame = false;
             if (plInjure.isBoss) {
@@ -983,15 +981,14 @@ public class SkillService {
                 && plAtt.playerSkill.skillSelect.template.id == Skill.MAKANKOSAPPO
                 && plInjure.effectSkill != null && plInjure.effectSkill.isSocola) {
             if (targetIsU6Boss) {
-                dameAttack += dameAttack * 15L / 100L;
+                dameAttack += dameAttack / 100L * 15L;
             } else {
-                dameAttack = Math.min(2_147_483_647L, dameAttack + dameAttack * 10L / 100L);
+                dameAttack += dameAttack / 100L * 10L;
                 isPiercing = true;
             }
         }
-        int hpDisplayBefore = plInjure.nPoint.hp;
         long hpBefore = plInjure.nPoint.getActualHp();
-        int dameHit = plInjure.injured(plAtt, miss ? 0 : dameAttack, isPiercing, false);
+        long dameHit = plInjure.injured(plAtt, miss ? 0 : dameAttack, isPiercing, false);
         if (plAtt.playerSkill == null) {
             return;
         }
@@ -1006,20 +1003,11 @@ public class SkillService {
                 return;
             }
         }
-        int damePST = plInjure.effectSkill != null && plInjure.effectSkill.isShielding && plInjure.idMark != null ? plInjure.idMark.getDamePST() : dameHit;
+        long damePST = plInjure.effectSkill != null && plInjure.effectSkill.isShielding && plInjure.idMark != null ? plInjure.idMark.getDamePST() : dameHit;
         phanSatThuong(plAtt, plInjure, miss ? 0 : damePST);
-        long actualDameDealt = miss ? 0L : Math.max(0L, Math.min((long) dameHit, Math.max(0L, hpBefore - plInjure.nPoint.getActualHp())));
+        long actualDameDealt = miss ? 0L : Math.max(0L, Math.min(dameHit, Math.max(0L, hpBefore - plInjure.nPoint.getActualHp())));
         hutHPMP(plAtt, actualDameDealt, plInjure, null);
-        int dameShow = dameHit;
-        if (!plInjure.isDie() && dameShow > 0) {
-            if (dameShow == Integer.MAX_VALUE) {
-                dameShow = Integer.MAX_VALUE - 1;
-            }
-            if (dameShow >= hpDisplayBefore) {
-                int cushionHp = (int) Math.min((long) Integer.MAX_VALUE, (long) dameShow + Math.max(1, plInjure.nPoint.hp));
-                Service.gI().reload_HP_NV_Custom(plInjure, cushionHp, Math.max(cushionHp, plInjure.nPoint.hpMax));
-            }
-        }
+        long dameShow = dameHit;
         Message msg = null;
         try {
             msg = new Message(-60);
@@ -1029,7 +1017,7 @@ public class SkillService {
             msg.writer().writeInt((int) plInjure.id); //id ăn pem
             msg.writer().writeByte(1); //read continue
             msg.writer().writeByte(0); //type skill
-            msg.writer().writeInt(dameShow); //dame ăn
+            msg.writer().writeLong(dameShow); //dame ăn
             msg.writer().writeBoolean(plInjure.isDie()); //is die
             msg.writer().writeBoolean(plAtt.nPoint.isCrit); //crit
             Service.gI().sendMessAllPlayerInMap(plAtt, msg);
@@ -1096,12 +1084,10 @@ public class SkillService {
             dameHit = 0;
         }
 
-        dameHit = Math.min(dameHit, 2_147_483_647);
-
-        int hpMobBefore = mob.point.gethp();
+        long hpMobBefore = mob.point.gethp();
         sendPlayerAttackMob(plAtt, mob);
         mob.injured(plAtt, dameHit, dieWhenHpFull);
-        long actualDameDealt = miss ? 0L : Math.max(0L, (long) hpMobBefore - mob.point.gethp());
+        long actualDameDealt = miss ? 0L : Math.max(0L, hpMobBefore - mob.point.gethp());
         hutHPMP(plAtt, actualDameDealt, null, mob);
     }
 
@@ -1173,11 +1159,11 @@ public class SkillService {
                     return player.nPoint.mp >= manaUse;
                 }
                 case 1 -> {
-                    int mpUse = (int) ((long) player.nPoint.mpMax * player.playerSkill.skillSelect.manaUse / 100);
+                    long mpUse = player.nPoint.mpMax / 100L * player.playerSkill.skillSelect.manaUse;
                     if (skillId == Skill.THAI_DUONG_HA_SAN && player.playerIntrinsic != null
                             && player.playerIntrinsic.intrinsic != null
                             && player.playerIntrinsic.intrinsic.id == 3) {
-                        mpUse -= mpUse * player.playerIntrinsic.intrinsic.param2 / 100;
+                        mpUse -= mpUse * player.playerIntrinsic.intrinsic.param2 / 100L;
                     }
                     return player.nPoint.mp >= mpUse;
                 }
@@ -1244,11 +1230,11 @@ public class SkillService {
                     }
                 }
                 case 1 -> {
-                    int mpUse = (int) ((long) player.nPoint.mpMax * player.playerSkill.skillSelect.manaUse / 100);
+                    long mpUse = player.nPoint.mpMax / 100L * player.playerSkill.skillSelect.manaUse;
                     if (skillId == Skill.THAI_DUONG_HA_SAN && player.playerIntrinsic != null
                             && player.playerIntrinsic.intrinsic != null
                             && player.playerIntrinsic.intrinsic.id == 3) {
-                        mpUse -= mpUse * player.playerIntrinsic.intrinsic.param2 / 100;
+                        mpUse -= mpUse * player.playerIntrinsic.intrinsic.param2 / 100L;
                     }
                     if (player.nPoint.mp >= mpUse) {
                         player.nPoint.setMp(player.nPoint.mp - mpUse);

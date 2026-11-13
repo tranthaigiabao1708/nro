@@ -50,7 +50,7 @@ public class CabbaVt6 extends Universe6Boss {
     protected void onSpecialTick() {
         if (!this.awakenedSuperSaiyan && this.nPoint.getCurrPercentHP() <= 50) {
             this.awakenedSuperSaiyan = true;
-            this.nPoint.dameg = (int) Math.min(2_000_000_000L, (long) this.nPoint.dameg * 135L / 100L);
+            this.nPoint.dameg = this.nPoint.dameg / 100L * 135L;
             this.nPoint.calPoint();
             this.nPoint.syncDisplayHpFromBossReal();
             this.chat("Vì niềm kiêu hãnh của Hành Tinh Sadala! Hây aaaaa Super Saiyan!");

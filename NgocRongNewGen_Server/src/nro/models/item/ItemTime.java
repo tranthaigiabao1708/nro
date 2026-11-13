@@ -324,16 +324,16 @@ public class ItemTime {
             if ((curMap == 173 || curMap == 174) && !isUseThuocGiaiVt6 && Util.canDoWithTime(lastTimeEnvHazardVt6, 5000)) {
                 lastTimeEnvHazardVt6 = System.currentTimeMillis();
                 if (curMap == 173) {
-                    long hpDrain = Math.max(1L, (long) player.nPoint.hpMax * 5L / 100L);
-                    int nextHp = (int) Math.max(1L, player.nPoint.hp - hpDrain);
+                    long hpDrain = Math.max(1L, player.nPoint.hpMax / 100L * 5L);
+                    long nextHp = Math.max(1L, player.nPoint.hp - hpDrain);
                     player.nPoint.setHp(nextHp);
                     nro.models.services.PlayerService.gI().sendInfoHpMpMoney(player);
                     Service.gI().Send_Info_NV(player);
                 } else {
-                    long hpDrain = Math.max(1L, (long) player.nPoint.hpMax * 8L / 100L);
-                    long mpDrain = Math.max(1L, (long) player.nPoint.mpMax * 8L / 100L);
-                    player.nPoint.setHp((int) Math.max(1L, player.nPoint.hp - hpDrain));
-                    player.nPoint.setMp((int) Math.max(0L, player.nPoint.mp - mpDrain));
+                    long hpDrain = Math.max(1L, player.nPoint.hpMax / 100L * 8L);
+                    long mpDrain = Math.max(1L, player.nPoint.mpMax / 100L * 8L);
+                    player.nPoint.setHp(Math.max(1L, player.nPoint.hp - hpDrain));
+                    player.nPoint.setMp(Math.max(0L, player.nPoint.mp - mpDrain));
                     nro.models.services.PlayerService.gI().sendInfoHpMpMoney(player);
                     Service.gI().Send_Info_NV(player);
                 }

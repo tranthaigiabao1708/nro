@@ -24,13 +24,13 @@ public class TrungUyThep extends Boss {
 
     private long lastTimeMove;
 
-    public TrungUyThep(Zone zone, int dame, int hp) throws Exception {
+    public TrungUyThep(Zone zone, long dame, long hp) throws Exception {
         super(PHOBANDT, BossID.TRUNG_UY_THEP, new BossData(
                 "Trung uý Thép", //name
                 ConstPlayer.TRAI_DAT, //gender
                 new short[]{129, 130, 131, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
-                ((dame)), //dame
-                new int[]{((hp))}, //hp
+                dame, //dame
+                new long[]{hp}, //hp
                 new int[]{55}, //map join
                 new int[][]{
                     {Skill.DEMON, 3, 1}, {Skill.DEMON, 6, 2}, {Skill.DRAGON, 7, 3}, {Skill.DRAGON, 1, 4}, {Skill.GALICK, 5, 5}, //                    {Skill.KAMEJOKO, 7, 6}, {Skill.KAMEJOKO, 6, 7}, {Skill.KAMEJOKO, 5, 8}, {Skill.KAMEJOKO, 4, 9}, {Skill.KAMEJOKO, 3, 10}, {Skill.KAMEJOKO, 2, 11}, {Skill.KAMEJOKO, 1, 12},
@@ -85,7 +85,7 @@ public class TrungUyThep extends Boss {
     }
 
     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
             if (!piercing && Util.isTrue(20, 100)) {
                 this.chat("Xí hụt");
@@ -103,7 +103,7 @@ public class TrungUyThep extends Boss {
                 this.setDie(plAtt);
                 die(plAtt);
             }
-            return (int) Math.min(2_147_483_647L, Math.max(0L, damage));
+            return Math.max(0L, damage);
         } else {
             return 0;
         }

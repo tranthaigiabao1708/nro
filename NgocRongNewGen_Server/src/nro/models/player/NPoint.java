@@ -72,10 +72,10 @@ public class NPoint {
     public long power;
     public long tiemNang;
 
-    public int hp, hpMax, hpg;
+    public long hp, hpMax, hpg;
     public long bossRealHp, bossRealHpMax;
-    public int mp, mpMax, mpg;
-    public int dame, dameg;
+    public long mp, mpMax, mpg;
+    public long dame, dameg;
     public int def, defg;
     public int crit, critg, critdragon;
     public int luckDragon;
@@ -88,7 +88,8 @@ public class NPoint {
     /**
      * Chỉ số cộng thêm
      */
-    public int hpAdd, mpAdd, dameAdd, defAdd, critAdd, hpHoiAdd, mpHoiAdd;
+    public long hpAdd, mpAdd, dameAdd, hpHoiAdd, mpHoiAdd;
+    public int defAdd, critAdd;
 
     /**
      * //+#% sức đánh chí mạng
@@ -114,7 +115,8 @@ public class NPoint {
     /**
      * Lượng hp, mp hồi mỗi 30s, mp hồi cho người khác
      */
-    public int hpHoi, mpHoi, mpHoiCute;
+    public long hpHoi, mpHoi;
+    public int mpHoiCute;
 
     /**
      * Tỉ lệ hp, mp hồi cộng thêm
@@ -278,8 +280,8 @@ public class NPoint {
                             this.dameAdd += io.param;
                             break;
                         case 2: //HP, KI+#000
-                            this.hpAdd += io.param * 1000;
-                            this.mpAdd += io.param * 1000;
+                            this.hpAdd += io.param * 1000L;
+                            this.mpAdd += io.param * 1000L;
                             break;
                         case 3:// vô hiệu chưởng
                             this.voHieuChuong += io.param;
@@ -312,10 +314,10 @@ public class NPoint {
                             this.tlDameAttMob.add(io.param);
                             break;
                         case 22: //HP+#K
-                            this.hpAdd += io.param * 1000;
+                            this.hpAdd += io.param * 1000L;
                             break;
                         case 23: //MP+#K
-                            this.mpAdd += io.param * 1000;
+                            this.mpAdd += io.param * 1000L;
                             break;
                         case 27: //+# HP/30s
                             this.hpHoiAdd += io.param;
@@ -546,8 +548,8 @@ public class NPoint {
                 this.dameAdd += io.param;
                 break;
             case 2: //HP, KI+#000
-                this.hpAdd += io.param * 1000;
-                this.mpAdd += io.param * 1000;
+                this.hpAdd += io.param * 1000L;
+                this.mpAdd += io.param * 1000L;
                 break;
             case 3:// vô hiệu chưởng
                 this.voHieuChuong += io.param;
@@ -580,10 +582,10 @@ public class NPoint {
                 this.tlDameAttMob.add(io.param);
                 break;
             case 22: //HP+#K
-                this.hpAdd += io.param * 1000;
+                this.hpAdd += io.param * 1000L;
                 break;
             case 23: //MP+#K
-                this.mpAdd += io.param * 1000;
+                this.mpAdd += io.param * 1000L;
                 break;
             case 24: //Làm chậm
                 this.isLamCham = true;
@@ -1027,51 +1029,31 @@ public class NPoint {
             }
         }
 
-        if (this.bossRealHpMax > 2_147_483_647L) {
-            this.hpMax = 2_000_000_000;
-            return;
+        if (hpMax <= 0) {
+            hpMax = 1;
         }
 
-        if (hpMax > 2_147_483_647) {
-            hpMax = 2_147_483_647;
-        }
-
-        this.hpMax = (int) hpMax;
+        this.hpMax = hpMax;
+        this.bossRealHpMax = this.hpMax;
     }
 
     private void setHp() {
-        if (this.bossRealHpMax > 2_147_483_647L) {
-            syncDisplayHpFromBossReal();
-            return;
-        }
         this.hp = Math.min(this.hp, this.hpMax);
+        this.bossRealHp = this.hp;
     }
 
     public long getActualHp() {
-        return this.bossRealHpMax > 2_147_483_647L ? this.bossRealHp : this.hp;
+        return this.hp;
     }
 
     public long getActualHpMax() {
-        return this.bossRealHpMax > 2_147_483_647L ? this.bossRealHpMax : this.hpMax;
+        return this.hpMax;
     }
 
     public void syncDisplayHpFromBossReal() {
-        if (this.bossRealHpMax <= 2_147_483_647L) {
-            return;
-        }
-        this.hpMax = 2_000_000_000;
-        if (this.bossRealHp <= 0L) {
-            this.bossRealHp = 0L;
-            this.hp = 0;
-        } else if (this.bossRealHp >= this.bossRealHpMax) {
-            this.bossRealHp = this.bossRealHpMax;
-            this.hp = this.hpMax;
-        } else {
-            java.math.BigInteger scaled = java.math.BigInteger.valueOf(this.bossRealHp)
-                    .multiply(java.math.BigInteger.valueOf(this.hpMax))
-                    .add(java.math.BigInteger.valueOf(this.bossRealHpMax - 1L))
-                    .divide(java.math.BigInteger.valueOf(this.bossRealHpMax));
-            this.hp = (int) Math.max(1L, Math.min((long) this.hpMax, scaled.longValue()));
+        if (this.bossRealHpMax > 0) {
+            this.hpMax = this.bossRealHpMax;
+            this.hp = Math.max(0L, Math.min(this.hpMax, this.bossRealHp));
         }
     }
 
@@ -1177,37 +1159,39 @@ public class NPoint {
             }
         }
 
-        if (mpMax
-                > 2_147_483_647) {
-            mpMax = 2_147_483_647;
+        if (mpMax <= 0) {
+            mpMax = 1;
         }
 
-        this.mpMax = (int) mpMax;
+        this.mpMax = mpMax;
     }
 
     private void setMp() {
         this.mp = Math.min(this.mp, this.mpMax);
     }
 
-    public int getHP() {
+    public long getHP() {
         return Math.min(this.hp, this.hpMax);
     }
 
     public void setHP(long hp) {
         if (hp > 0) {
-            this.hp = (int) (hp <= this.hpMax ? hp : this.hpMax);
+            this.hp = (hp <= this.hpMax ? hp : this.hpMax);
+            this.bossRealHp = this.hp;
         } else {
+            this.hp = 0;
+            this.bossRealHp = 0;
             player.setDie();
         }
     }
 
-    public int getMP() {
+    public long getMP() {
         return Math.min(this.mp, this.mpMax);
     }
 
     public void setMP(long mp) {
         if (mp > 0) {
-            this.mp = (int) (mp <= this.mpMax ? mp : this.mpMax);
+            this.mp = (mp <= this.mpMax ? mp : this.mpMax);
         } else {
             this.mp = 0;
         }
@@ -1357,16 +1341,16 @@ public class NPoint {
             dame /= 2;
         }
 
-        if (dame > 2_147_483_647) {
-            dame = 2_147_483_647;
+        if (dame <= 0) {
+            dame = 1;
         }
 
-        this.dame = (int) dame;
+        this.dame = dame;
     }
 
     public void setDame(long dame) {
         if (dame > 0) {
-            this.dame = (int) (dame <= this.dame ? dame : this.dame);
+            this.dame = dame;
         } else {
             this.dame = 0;
         }
@@ -1396,6 +1380,8 @@ public class NPoint {
         this.hpAdd = 0;
         this.mpAdd = 0;
         this.dameAdd = 0;
+        this.hpHoiAdd = 0;
+        this.mpHoiAdd = 0;
         this.defAdd = 0;
         this.critAdd = 0;
         this.tlHp.clear();
@@ -1455,24 +1441,22 @@ public class NPoint {
     }
 
     public void addHp(long hp) {
-        if (this.bossRealHpMax > 2_147_483_647L) {
-            if (hp > 0) {
-                this.bossRealHp = Math.min(this.bossRealHpMax, this.bossRealHp + hp);
-                syncDisplayHpFromBossReal();
-            }
-            return;
-        }
         if (hp > 0) {
-            long potentialHp = (long) this.hp + hp;
-            if (potentialHp > this.hpMax) {
+            if (this.hp > Long.MAX_VALUE - hp) {
                 this.hp = this.hpMax;
             } else {
-                this.hp = (int) Math.min(potentialHp, 2_147_483_647);
+                long potentialHp = this.hp + hp;
+                this.hp = Math.min(potentialHp, this.hpMax);
             }
+            this.bossRealHp = this.hp;
         }
     }
 
     public void addMp(long mp) {
+        if (mp > 0 && this.mp > Long.MAX_VALUE - mp) {
+            this.mp = this.mpMax;
+            return;
+        }
         long potentialMp = this.mp + mp;
 
         if (potentialMp > this.mpMax) {
@@ -1480,28 +1464,24 @@ public class NPoint {
         } else if (potentialMp < 0) {
             this.mp = 0;
         } else {
-            this.mp = (int) potentialMp;
+            this.mp = potentialMp;
         }
     }
 
     public void setHp(long hp) {
-        if (this.bossRealHpMax > 2_147_483_647L) {
-            this.bossRealHp = Math.max(0L, Math.min(this.bossRealHpMax, hp));
-            syncDisplayHpFromBossReal();
-            return;
-        }
         if (hp < 0) {
             this.hp = 0;
         } else {
-            this.hp = (int) Math.min(hp, 2_147_483_647);
+            this.hp = hp;
         }
+        this.bossRealHp = this.hp;
     }
 
     public void setMp(long mp) {
         if (mp < 0) {
             this.mp = 0;
         } else {
-            this.mp = (int) Math.min(mp, 2_147_483_647);
+            this.mp = mp;
         }
     }
 
@@ -1517,12 +1497,8 @@ public class NPoint {
         }
     }
 
-    public int getDameAttack(boolean isAttackMob) {
-        long dame = getDameAttackLong(isAttackMob);
-        if (dame > 2_147_483_647L) {
-            return 2_147_483_647;
-        }
-        return (int) Math.max(0L, dame);
+    public long getDameAttack(boolean isAttackMob) {
+        return Math.max(0L, getDameAttackLong(isAttackMob));
     }
 
     public long getDameAttackLong(boolean isAttackMob) {
@@ -1628,16 +1604,16 @@ public class NPoint {
                 isCrit = true;
                 isCritTele = true;
                 long spread = Math.max(1L, dameAttack / 20L);
-                int randSpread = Util.nextInt((int) Math.min(1_000_000_000L, spread));
-                dameAttack += Util.getOne(-1, 1) * (long) randSpread;
+                long randSpread = Util.nextLong(spread);
+                dameAttack += Util.getOne(-1, 1) * randSpread;
                 break;
             case Skill.MAKANKOSAPPO:
                 percentDameSkill = skillSelect.damage;
-                long dameSkill = (long) this.mpMax * percentDameSkill / 100L;
+                long dameSkill = this.mpMax / 100L * percentDameSkill + (this.mpMax % 100L) * percentDameSkill / 100L;
                 if (this.player.setClothes.picolo == 5) {
                     dameSkill *= 2L;
                 }
-                return dameSkill;
+                return Math.max(1L, dameSkill);
             case Skill.QUA_CAU_KENH_KHI:
                 long hpmob = 0;
                 long hppl = 0;
@@ -1655,14 +1631,14 @@ public class NPoint {
                     }
                 }
 
-                long dameqckk = (hpmob * 10 / 100) + (hppl * 10 / 100) + (long) this.dame * 10L;
+                long dameqckk = (hpmob / 10L) + (hppl / 10L) + this.dame * 10L;
 
                 if (this.player.setClothes.kirin == 5) {
                     dameqckk *= 2L;
                 }
 
-                dameqckk = dameqckk + (Util.nextInt(-5, 5) * dameqckk / 100L);
-                return dameqckk;
+                dameqckk = dameqckk + (dameqckk / 100L * Util.nextInt(-5, 5));
+                return Math.max(1L, dameqckk);
             case Skill.DE_TRUNG:
                 if (player.setClothes.pikkoroDaimao == 5) {
                     dameAttack *= 4L;
@@ -1706,7 +1682,7 @@ public class NPoint {
         if (tempDameAttack <= 0) {
             tempDameAttack = 1;
         }
-        int jitter = Util.nextInt((int) Math.min(1_000_000_000L, tempDameAttack));
+        long jitter = Util.nextLong(tempDameAttack);
         dameAttack += (long) Util.getOne(-1, 1) * jitter + 1L;
 
         if (player.effectSkin != null && player.effectSkin.isXChuong && (player.playerSkill.skillSelect.template.id == Skill.KAMEJOKO || player.playerSkill.skillSelect.template.id == Skill.ANTOMIC || player.playerSkill.skillSelect.template.id == Skill.MASENKO)) {
@@ -1720,58 +1696,59 @@ public class NPoint {
     }
 
     public int getCurrPercentHP() {
-        if (this.bossRealHpMax > 2_147_483_647L) {
-            return (int) java.math.BigInteger.valueOf(Math.max(0L, this.bossRealHp))
-                    .multiply(java.math.BigInteger.valueOf(100L))
-                    .divide(java.math.BigInteger.valueOf(this.bossRealHpMax))
-                    .longValue();
-        }
-        if (this.hpMax == 0) {
+        if (this.hpMax <= 0) {
             return 100;
         }
-        return (int) ((long) this.hp * 100 / this.hpMax);
+        if (this.hp <= 0) {
+            return 0;
+        }
+        if (this.hp >= this.hpMax) {
+            return 100;
+        }
+        return (int) Math.min(100.0, Math.max(0.0, ((double) this.hp * 100.0) / (double) this.hpMax));
     }
 
     public int getCurrPercentMP() {
-        return (int) ((long) this.mp * 100 / this.mpMax);
+        if (this.mpMax <= 0) {
+            return 100;
+        }
+        if (this.mp <= 0) {
+            return 0;
+        }
+        if (this.mp >= this.mpMax) {
+            return 100;
+        }
+        return (int) Math.min(100.0, Math.max(0.0, ((double) this.mp * 100.0) / (double) this.mpMax));
     }
 
     public void setFullHpMp() {
-        if (this.bossRealHpMax > 2_147_483_647L) {
-            this.bossRealHp = this.bossRealHpMax;
-            syncDisplayHpFromBossReal();
-            this.mp = this.mpMax;
-            return;
-        }
         this.hp = this.hpMax;
+        this.bossRealHp = this.hpMax;
         this.mp = this.mpMax;
     }
 
     public void subHP(long sub) {
-        if (this.bossRealHpMax > 2_147_483_647L) {
-            if (sub > 0) {
-                this.bossRealHp = Math.max(0L, this.bossRealHp - sub);
-            }
-            syncDisplayHpFromBossReal();
+        if (sub <= 0) {
             return;
         }
-        long nextHp = (long) this.hp - sub;
-        if (nextHp <= 0) {
+        if (this.hp <= sub) {
             this.hp = 0;
+            this.bossRealHp = 0;
             this.setHp(0);
         } else {
-            this.hp = (int) Math.min(nextHp, 2_147_483_647L);
+            this.hp -= sub;
+            this.bossRealHp = this.hp;
         }
     }
 
     public void subMP(long sub) {
-        this.mp -= sub;
-        if (this.mp <= 0) {
-            this.mp = 0;
+        if (sub <= 0) {
+            return;
         }
-
-        if (this.mp > 2_147_483_647) {
-            this.mp = 2_147_483_647;
+        if (this.mp <= sub) {
+            this.mp = 0;
+        } else {
+            this.mp -= sub;
         }
     }
 
@@ -1897,11 +1874,11 @@ public class NPoint {
         return this.tlHutMp;
     }
 
-    public int subDameInjureWithDeff(long dame) {
+    public long subDameInjureWithDeff(long dame) {
         return subDameInjureWithDeff(dame, null);
     }
 
-    public int subDameInjureWithDeff(long dame, Player plAtt) {
+    public long subDameInjureWithDeff(long dame, Player plAtt) {
         if (dame <= 0) {
             return 0;
         }
@@ -1935,7 +1912,7 @@ public class NPoint {
         if (dame <= 0) {
             dame = 1;
         }
-        return (int) Math.min(2_147_483_647L, dame);
+        return dame;
     }
 
     /*------------------------------------------------------------------------*/
@@ -2013,7 +1990,7 @@ public class NPoint {
         }
     }
 
-    public int getHpMpLimit() {
+    public long getHpMpLimit() {
         switch (limitPower) {
             case 0:
                 return 220000;
@@ -2048,7 +2025,7 @@ public class NPoint {
         }
     }
 
-    public int getDameLimit() {
+    public long getDameLimit() {
         switch (limitPower) {
             case 0:
                 return 11000;
@@ -2179,7 +2156,7 @@ public class NPoint {
         Player notifyTarget = player.isPet ? ((Pet) player).master : player;
         long tiemNangUse;
         if (type == 0) {
-            int maxPointsAdd = (getHpMpLimit() - this.hpg) / 20;
+            long maxPointsAdd = (getHpMpLimit() - this.hpg) / 20L;
             if (maxPointsAdd <= 0) {
                 if (notifyLimit && notifyTarget != null) {
                     Service.gI().sendThongBaoOK(notifyTarget, "Vui lòng mở giới hạn sức mạnh");
@@ -2192,11 +2169,11 @@ public class NPoint {
             long pointHp = (long) point * 20L;
             tiemNangUse = (long) point * (2L * (this.hpg + 1000L) + pointHp - 20L) / 2L;
             if (doUseTiemNang(tiemNangUse)) {
-                hpg += (int) pointHp;
+                hpg += pointHp;
             }
         }
         if (type == 1) {
-            int maxPointsAdd = (getHpMpLimit() - this.mpg) / 20;
+            long maxPointsAdd = (getHpMpLimit() - this.mpg) / 20L;
             if (maxPointsAdd <= 0) {
                 if (notifyLimit && notifyTarget != null) {
                     Service.gI().sendThongBaoOK(notifyTarget, "Vui lòng mở giới hạn sức mạnh");
@@ -2209,11 +2186,11 @@ public class NPoint {
             long pointMp = (long) point * 20L;
             tiemNangUse = (long) point * (2L * (this.mpg + 1000L) + pointMp - 20L) / 2L;
             if (doUseTiemNang(tiemNangUse)) {
-                mpg += (int) pointMp;
+                mpg += pointMp;
             }
         }
         if (type == 2) {
-            int maxPointsAdd = getDameLimit() - this.dameg;
+            long maxPointsAdd = getDameLimit() - this.dameg;
             if (maxPointsAdd <= 0) {
                 if (notifyLimit && notifyTarget != null) {
                     Service.gI().sendThongBaoOK(notifyTarget, "Vui lòng mở giới hạn sức mạnh");
@@ -2314,8 +2291,8 @@ public class NPoint {
                     if (curActualHp + hpRecovered > maxActualHp) {
                         hpRecovered = maxActualHp - curActualHp;
                     }
-                    if (mp + mpRecovered > 2_147_483_647) {
-                        mpRecovered = 2_147_483_647 - mp;
+                    if (mp + mpRecovered > mpMax) {
+                        mpRecovered = mpMax - mp;
                     }
 
                     PlayerService.gI().hoiPhuc(player, hpRecovered, mpRecovered);

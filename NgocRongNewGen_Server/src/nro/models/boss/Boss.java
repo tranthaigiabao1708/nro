@@ -202,21 +202,12 @@ public class Boss extends Player implements IBoss {
         this.nPoint.mpg = 31_07_2002;
         this.nPoint.dameg = data.getDame();
         long baseHp = data.getHp()[Util.nextInt(0, data.getHp().length - 1)];
-        if (baseHp > 2_147_483_647L) {
-            this.nPoint.bossRealHpMax = baseHp;
-            this.nPoint.bossRealHp = baseHp;
-            this.nPoint.hpg = 2_000_000_000;
-        } else {
-            this.nPoint.bossRealHpMax = 0L;
-            this.nPoint.bossRealHp = 0L;
-            this.nPoint.hpg = (int) baseHp;
-        }
-        this.nPoint.hp = this.nPoint.hpg;
+        this.nPoint.hpg = baseHp;
+        this.nPoint.hp = baseHp;
         this.nPoint.calPoint();
-        if (this.nPoint.bossRealHpMax > 2_147_483_647L) {
-            this.nPoint.bossRealHp = this.nPoint.bossRealHpMax;
-            this.nPoint.syncDisplayHpFromBossReal();
-        }
+        this.nPoint.hp = this.nPoint.hpMax;
+        this.nPoint.bossRealHpMax = this.nPoint.hpMax;
+        this.nPoint.bossRealHp = this.nPoint.hp;
         this.initSkill();
         this.resetBase();
     }
@@ -1228,7 +1219,7 @@ public class Boss extends Player implements IBoss {
     }
 
     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
             int neDon = this.nPoint.tlNeDon;
             if (plAtt != null && plAtt.nPoint != null) {
@@ -1252,7 +1243,7 @@ public class Boss extends Player implements IBoss {
                 die(plAtt);
             }
 
-            return (int) Math.min(2_147_483_647L, Math.max(0L, damage));
+            return Math.max(0L, damage);
         } else {
             return 0;
         }

@@ -51,7 +51,11 @@ public class LoadTest100NewItems {
     static final Set<Integer> SPECIAL = Set.of(-32, -66, -74, 11, -67, -87, 66);
 
     // ======= Thống kê toàn cục
-    static final AtomicLong msgIn = new AtomicLong(), msgOut = new AtomicLong(), bytesIn = new AtomicLong();
+    static final AtomicLong msgIn = new AtomicLong(), msgOut = new AtomicLong(), bytesIn = new AtomicLong(), bytesOut = new AtomicLong();
+    static final ConcurrentLinkedQueue<Long> combatRttUs = new ConcurrentLinkedQueue<>(),
+            npcRttUs = new ConcurrentLinkedQueue<>(),
+            mapRttUs = new ConcurrentLinkedQueue<>(),
+            panelRttUs = new ConcurrentLinkedQueue<>();
     static final AtomicInteger loginOk = new AtomicInteger(), loginFail = new AtomicInteger(), connFail = new AtomicInteger();
     static final AtomicInteger disconnectsUnexpected = new AtomicInteger(), relogs = new AtomicInteger();
     static final AtomicInteger mobKills = new AtomicInteger(), pickOk = new AtomicInteger(), pickReq = new AtomicInteger();
@@ -108,6 +112,7 @@ public class LoadTest100NewItems {
             long t0 = System.nanoTime();
             JSONObject st = panel.get("/api/status");
             long panelMs = (System.nanoTime() - t0) / 1_000_000;
+            panelRttUs.add((System.nanoTime() - t0) / 1_000L);
             String s = String.format(
                     "t=%2ds on=%s ram=%sMB thr=%s api=%dms | kill=%d splDrop=%d bossHit=%d bossKill=%d combo(TD/NM/XD)=%d/%d/%d kieuHanh=%d | combineOK=%d khoaKheOK=%d shopBuy=%d pvp=%d gd=%d overflow=%d",
                     (System.currentTimeMillis() - startLoad) / 1000, st.get("online"), st.get("memUsedMB"), st.get("threads"), panelMs,
@@ -156,9 +161,17 @@ public class LoadTest100NewItems {
         log("================= TỔNG KẾT KIỂM THỬ 100 NGƯỜI CHƠI & TRANG BỊ MỚI =================");
         log("Đăng nhập thành công: " + loginOk.get() + " | thất bại: " + loginFail.get() + " | lỗi kết nối: " + connFail.get());
         log("Mất kết nối ngoài ý muốn: " + disconnectsUnexpected.get() + " | thoát-vào lại chủ động: " + relogs.get());
-        log("Gói tin nhận: " + msgIn.get() + " (" + bytesIn.get() / 1024 / 1024 + " MB) | gửi: " + msgOut.get() + " | lỗi giải mã: " + protoErrors.get());
+        double inKBpsPerBot = bytesIn.get() / 1024.0 / Math.max(1, DURATION) / Math.max(1, N);
+        double outKBpsPerBot = bytesOut.get() / 1024.0 / Math.max(1, DURATION) / Math.max(1, N);
+        log("Gói tin nhận: " + msgIn.get() + " (" + String.format("%.2f", bytesIn.get() / 1024.0 / 1024.0) + " MB) | gửi: "
+                + msgOut.get() + " (" + String.format("%.2f", bytesOut.get() / 1024.0 / 1024.0) + " MB) | lỗi giải mã: " + protoErrors.get());
+        log("Băng thông TB / người chơi: Nhận = " + String.format("%.2f", inKBpsPerBot) + " KB/s | Gửi = " + String.format("%.2f", outKBpsPerBot) + " KB/s");
+        log("Độ trễ Combat (hit/kill):      " + fmtRtt(combatRttUs));
+        log("Độ trễ Mở NPC (menu/say):      " + fmtRtt(npcRttUs));
+        log("Độ trễ Đổi Khu/Dịch chuyển:    " + fmtRtt(mapRttUs));
+        log("Độ trễ Admin API (/status):    " + fmtRtt(panelRttUs));
         log("Kiểm tra tràn số chỉ số (cmd -42): Đã kiểm tra " + pointPacketsChecked.get() + " bản tin chỉ số | Lỗi âm/tràn 32-bit = " + statOverflowErrors.get());
-        log("Đỉnh chỉ số ghi nhận thực tế (dưới trần 2.147B): SĐ Trái Đất = " + maxDameObservedTD.get()
+        log("Đỉnh chỉ số ghi nhận thực tế (64-bit long >2.147B & <2B): SĐ Trái Đất = " + maxDameObservedTD.get()
                 + " | HP Trái Đất = " + maxHpObservedTD.get()
                 + " | KI Namếc = " + maxMpObservedNM.get()
                 + " | HP Xayda = " + maxHpObservedXD.get());
@@ -442,6 +455,10 @@ public class LoadTest100NewItems {
                     dataPoint = "[6,20000000000,20000000000,1000,1000,150000,150000,15000,500,15,0,0,150000,150000]";
                 }
 
+                if (i < N && i % 2 == 0) {
+                    dataPoint = "[9,80000000000,80000000000,1000,1000,15000000000,12000000000,3500000000,3000,25,0,0,15000000000,12000000000]";
+                }
+
                 String itemsBody = buildNewEquipmentBody(g, now);
                 String itemsBag = buildBagForBot(i, g, now);
                 String skills = buildFullSkillsJson(g);
@@ -649,6 +666,18 @@ public class LoadTest100NewItems {
         if (mem != db) diff.add(label + " RAM=" + mem + " DB=" + db);
     }
 
+    static String fmtRtt(Collection<Long> samplesUs) {
+        if (samplesUs.isEmpty()) return "n=0";
+        List<Long> arr = new ArrayList<>(samplesUs);
+        Collections.sort(arr);
+        int n = arr.size();
+        double p50 = arr.get(Math.min(n - 1, (int) (n * 0.50))) / 1000.0;
+        double p95 = arr.get(Math.min(n - 1, (int) (n * 0.95))) / 1000.0;
+        double p99 = arr.get(Math.min(n - 1, (int) (n * 0.99))) / 1000.0;
+        double max = arr.get(n - 1) / 1000.0;
+        return String.format("n=%d | P50=%.2fms | P95=%.2fms | P99=%.2fms | Max=%.2fms", n, p50, p95, p99, max);
+    }
+
     static class DropInfo {
         final int itemMapId, tempId, x, y, ownerId;
         DropInfo(int itemMapId, int tempId, int x, int y, int ownerId) {
@@ -688,6 +717,7 @@ public class LoadTest100NewItems {
         volatile boolean keyReady, inGame, needCreate, closedByMe;
         volatile boolean tradeOpen, partnerLocked, myLocked, buffsUsed;
         volatile long lastPickSentMs, lastSpecialComboMs;
+        volatile long pendingCombatNs, pendingNpcNs, pendingMapNs;
         volatile int currentMapId = -1;
         volatile int combineStep = 0;
         final Map<Integer, DropInfo> seenDrops = new ConcurrentHashMap<>();
@@ -800,8 +830,7 @@ public class LoadTest100NewItems {
             DataOutputStream d = new DataOutputStream(bo);
             d.writeByte(0);
             d.writeByte(1);
-            d.writeByte(index);
-            d.writeShort(-1);
+            d.writeShort(index);
             send(-43, bo.toByteArray());
         }
 
@@ -1281,8 +1310,8 @@ public class LoadTest100NewItems {
             ByteArrayOutputStream bo = new ByteArrayOutputStream();
             DataOutputStream d = new DataOutputStream(bo);
             d.writeByte(1);
-            d.writeByte(indices.length);
-            for (int ix : indices) d.writeByte(ix);
+            d.writeShort(indices.length);
+            for (int ix : indices) d.writeShort(ix);
             send(-81, bo.toByteArray());
         }
 
@@ -1296,7 +1325,7 @@ public class LoadTest100NewItems {
             ByteArrayOutputStream bo = new ByteArrayOutputStream();
             DataOutputStream d = new DataOutputStream(bo);
             d.writeByte(2);
-            d.writeByte(bagIdx);
+            d.writeShort(bagIdx);
             d.writeInt(qty);
             send(-86, bo.toByteArray());
         }
@@ -1322,6 +1351,11 @@ public class LoadTest100NewItems {
 
         synchronized void send(int cmd, byte[] data) throws IOException {
             if (out == null) throw new IOException("closed");
+            if (inGame) {
+                if (cmd == 54 || cmd == -60) pendingCombatNs = System.nanoTime();
+                else if (cmd == 33) pendingNpcNs = System.nanoTime();
+                else if (cmd == 21 || cmd == -118) pendingMapNs = System.nanoTime();
+            }
             out.writeByte(wk((byte) cmd));
             out.writeByte(wk((byte) (data.length >> 8)));
             out.writeByte(wk((byte) data.length));
@@ -1330,6 +1364,7 @@ public class LoadTest100NewItems {
             out.write(enc);
             out.flush();
             msgOut.incrementAndGet();
+            bytesOut.addAndGet(data.length + 3L);
         }
 
         byte wk(byte b) {
@@ -1382,6 +1417,19 @@ public class LoadTest100NewItems {
             }
         }
 
+        void recordRtt(int type) {
+            long nowNs = System.nanoTime();
+            long t0 = 0;
+            ConcurrentLinkedQueue<Long> q = null;
+            if (type == 0 && pendingCombatNs != 0) { t0 = pendingCombatNs; pendingCombatNs = 0; q = combatRttUs; }
+            else if (type == 1 && pendingNpcNs != 0) { t0 = pendingNpcNs; pendingNpcNs = 0; q = npcRttUs; }
+            else if (type == 2 && pendingMapNs != 0) { t0 = pendingMapNs; pendingMapNs = 0; q = mapRttUs; }
+            if (t0 > 0 && q != null) {
+                long us = (nowNs - t0) / 1000L;
+                if (us >= 0 && us <= 5_000_000L) q.add(us);
+            }
+        }
+
         void handle(byte cmd, byte[] data) {
             try {
                 DataInputStream d = new DataInputStream(new ByteArrayInputStream(data));
@@ -1401,16 +1449,16 @@ public class LoadTest100NewItems {
                     }
                     case 41, 43 -> taskUpdates.incrementAndGet();
                     case -42 -> {
-                        // Kiểm tra trực tiếp từng bản tin chỉ số (Point packet) chống tràn số âm 32-bit int!
-                        int hpg = d.readInt();
-                        int mpg = d.readInt();
-                        int dameg = d.readInt();
-                        int hpMax = d.readInt();
-                        int mpMax = d.readInt();
-                        int hp = d.readInt();
-                        int mp = d.readInt();
+                        // Kiểm tra trực tiếp từng bản tin chỉ số (Point packet) 64-bit long!
+                        long hpg = d.readLong();
+                        long mpg = d.readLong();
+                        long dameg = d.readLong();
+                        long hpMax = d.readLong();
+                        long mpMax = d.readLong();
+                        long hp = d.readLong();
+                        long mp = d.readLong();
                         d.readByte(); d.readByte(); d.readByte(); d.readByte();
-                        int dame = d.readInt();
+                        long dame = d.readLong();
                         pointPacketsChecked.incrementAndGet();
                         if (hpg <= 0 || mpg <= 0 || dameg <= 0 || hpMax <= 0 || mpMax <= 0 || dame <= 0 || hp < 0 || mp < 0) {
                             statOverflowErrors.incrementAndGet();
@@ -1430,20 +1478,20 @@ public class LoadTest100NewItems {
                     case -36 -> {
                         int act = d.readByte();
                         if (act == 0) {
-                            d.readUnsignedByte(); // total bag capacity
+                            int cap = d.readUnsignedShort();
                             List<BagItemSlot> parsed = new ArrayList<>();
-                            int slotIdx = 0;
-                            while (d.available() > 0) {
+                            for (int slotIdx = 0; slotIdx < cap && d.available() > 0; slotIdx++) {
                                 int tempId = d.readShort();
+                                if (tempId == -1) continue;
                                 int qty = d.readInt();
                                 d.readUTF();
                                 d.readUTF();
                                 int optCount = d.readUnsignedByte();
                                 for (int o = 0; o < optCount; o++) {
                                     d.readUnsignedByte();
-                                    d.readShort();
+                                    d.readUnsignedShort();
                                 }
-                                parsed.add(new BagItemSlot(slotIdx++, tempId, qty));
+                                parsed.add(new BagItemSlot(slotIdx, tempId, qty));
                             }
                             liveBag.clear();
                             liveBag.addAll(parsed);
@@ -1456,6 +1504,7 @@ public class LoadTest100NewItems {
                         }
                     }
                     case 32, 38 -> {
+                        recordRtt(1);
                         // createOtherMenu từ NPC (kiểm tra thông báo khóa khe ép sao Phụ kiện!)
                         d.readShort(); // npcId
                         String npcSay = d.readUTF();
@@ -1471,6 +1520,7 @@ public class LoadTest100NewItems {
                         }
                     }
                     case -24 -> {
+                        recordRtt(2);
                         currentMapId = d.readUnsignedByte();
                         seenDrops.clear();
                         bossesInZone.clear();
@@ -1489,8 +1539,8 @@ public class LoadTest100NewItems {
                         d.readByte();
                         d.readShort();
                         String plName = d.readUTF();
-                        int hp = d.readInt();
-                        int hpMax = d.readInt();
+                        long hp = d.readLong();
+                        long hpMax = d.readLong();
                         d.readShort();
                         d.readShort();
                         d.readByte();
@@ -1510,14 +1560,14 @@ public class LoadTest100NewItems {
                     case -7 -> {
                         int pid = d.readInt();
                         int x = d.readShort();
-                        int y = d.readShort();
+                        int y = d.available() >= 2 ? d.readShort() : 0;
                         BossPos bp = bossesInZone.get(pid);
                         if (bp != null) { bp.x = x; bp.y = y; }
                         BossPos pp = playersInZone.get(pid);
                         if (pp != null) { pp.x = x; pp.y = y; }
                     }
                     case -8 -> {
-                        int pid = d.readShort();
+                        int pid = d.readInt();
                         if (pid < 0 && bossesInZone.remove(pid) != null) {
                             bossKills.incrementAndGet();
                         }
@@ -1543,9 +1593,11 @@ public class LoadTest100NewItems {
                         }
                     }
                     case 122 -> notices.computeIfAbsent("[Đợi đăng nhập lại]", x -> new AtomicInteger()).incrementAndGet();
+                    case -9, -60 -> recordRtt(0);
                     case -12 -> {
+                        recordRtt(0);
                         d.readByte();
-                        d.readInt();
+                        d.readLong();
                         d.readBoolean();
                         mobKills.incrementAndGet();
                         int n = d.readByte();

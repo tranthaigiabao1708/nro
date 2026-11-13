@@ -177,12 +177,12 @@ public abstract class Yardart extends Boss {
                             moveToPlayer(pl);
                         }
                     }
-                    this.nPoint.dame = (int) ((long) pl.nPoint.hpMax * Util.nextInt(1, 3) / 100) / (Util.nextInt(10, 30));
+                    this.nPoint.dame = (pl.nPoint.hpMax / 100L * Util.nextInt(1, 3)) / Util.nextInt(10, 30);
                     if (this.playerSkill.skillSelect.template.id == Skill.DICH_CHUYEN_TUC_THOI) {
                         if (Util.isTrue(3, 4)) {
                             this.playerSkill.skillSelect = this.playerSkill.skills.get(0);
                         } else {
-                            this.nPoint.dame = (int) ((long) pl.nPoint.hpMax * Util.nextInt(5, 10) / 100);
+                            this.nPoint.dame = pl.nPoint.hpMax / 100L * Util.nextInt(5, 10);
                         }
                     }
                     SkillService.gI().useSkill(this, pl, null, -1, null);
@@ -228,7 +228,7 @@ public abstract class Yardart extends Boss {
     }
 
     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
             if (!piercing && Util.isTrue(10, 100)) {
                 this.chat("Xí hụt");
@@ -258,7 +258,7 @@ public abstract class Yardart extends Boss {
                 //this.changeStatus(BossStatus.AFK);
                 reward(plAtt);
             }
-            return (int) Math.min(2_147_483_647L, Math.max(0L, damage));
+            return Math.max(0L, damage);
         } else {
             return 0;
         }

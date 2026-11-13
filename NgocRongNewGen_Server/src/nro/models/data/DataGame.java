@@ -32,7 +32,7 @@ import nro.models.player_system.Template.BgItem;
 public class DataGame {
 
     public static byte vsData = 11;
-    public static byte vsMap = 4;
+    public static byte vsMap = 5;
     public static byte vsSkill = 2;
     public static byte vsItem = 55;
     public static int vsRes = 1;
@@ -120,7 +120,7 @@ public class DataGame {
             for (MobTemplate temp : Manager.MOB_TEMPLATES) {
                 msg.writer().writeByte(temp.type);
                 msg.writer().writeUTF(temp.name);
-                msg.writer().writeInt(temp.hp);
+                msg.writer().writeLong(temp.hp);
                 msg.writer().writeByte(temp.rangeMove);
                 msg.writer().writeByte(temp.speed);
                 msg.writer().writeByte(temp.dartType);

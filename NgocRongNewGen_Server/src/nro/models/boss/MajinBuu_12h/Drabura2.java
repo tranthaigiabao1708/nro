@@ -46,7 +46,7 @@ public class Drabura2 extends Boss {
     }
 
     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
             if (!piercing && Util.isTrue(200, 1000)) {
                 this.chat("Xí hụt");
@@ -82,7 +82,7 @@ public class Drabura2 extends Boss {
                 die(plAtt);
             }
 
-            return (int) Math.min(2_147_483_647L, Math.max(0L, damage));
+            return Math.max(0L, damage);
         } else {
             return 0;
         }

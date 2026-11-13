@@ -30,13 +30,13 @@ public class SAIBAMEN extends Boss {
 
     private static final int[][] FULL_GALICK = new int[][]{{Skill.GALICK, 1}, {Skill.GALICK, 2}, {Skill.GALICK, 3}, {Skill.GALICK, 4}, {Skill.GALICK, 5}, {Skill.GALICK, 6}, {Skill.GALICK, 7}};
 
-    public SAIBAMEN(Zone zone, Clan clan, int id, int dame, int hp) throws Exception {
+    public SAIBAMEN(Zone zone, Clan clan, int id, long dame, long hp) throws Exception {
         super(PHOBANCDRD, BossID.SAIBAMEN - id, new BossData(
                 "Số " + id,
                 ConstPlayer.XAYDA,
                 new short[]{642, 643, 644, -1, -1, -1},
-                ((10000 + dame)),
-                new int[]{((500000 + hp))},
+                (10000L + dame),
+                new long[]{500000L + hp},
                 new int[]{144},
                 (int[][]) Util.addArray(FULL_GALICK),
                 new String[]{},
@@ -103,7 +103,7 @@ public class SAIBAMEN extends Boss {
     }
 
     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
             if (!piercing && Util.isTrue(this.nPoint.tlNeDon, 1000)) {
                 this.chat("Xí hụt");
@@ -120,7 +120,7 @@ public class SAIBAMEN extends Boss {
             if (isDie()) {
                 setBom(plAtt);
             }
-            return (int) damage;
+            return Math.max(0L, damage);
         } else {
             return 0;
         }

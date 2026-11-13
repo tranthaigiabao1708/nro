@@ -645,7 +645,7 @@ namespace Game1.Assets.src.f
 					short y2 = msg.reader().readShort();
 					sbyte b11 = msg.reader().readByte();
 					Char[] array8 = new Char[b11];
-					int[] array9 = new int[b11];
+					long[] array9 = new long[b11];
 					for (int num16 = 0; num16 < b11; num16++)
 					{
 						int num17 = msg.reader().readInt();
@@ -659,7 +659,7 @@ namespace Game1.Assets.src.f
 						{
 							array8[num16] = Char.myCharz();
 						}
-						array9[num16] = msg.reader().readInt();
+						array9[num16] = msg.readLong();
 					}
 					mabu.setSkill(id4, x2, y2, array8, array9);
 					break;
@@ -786,7 +786,7 @@ namespace Game1.Assets.src.f
 							sbyte b2 = msg.reader().readByte();
 							Res.outz("CHUONG nChar= " + b2);
 							Char[] array = new Char[b2];
-							int[] array2 = new int[b2];
+							long[] array2 = new long[b2];
 							for (int i = 0; i < b2; i++)
 							{
 								int num5 = msg.reader().readInt();
@@ -800,7 +800,7 @@ namespace Game1.Assets.src.f
 								{
 									array[i] = Char.myCharz();
 								}
-								array2[i] = msg.reader().readInt();
+								array2[i] = msg.readLong();
 							}
 							bigBoss.setAttack(array, array2, b);
 						}
@@ -849,7 +849,7 @@ namespace Game1.Assets.src.f
 						}
 						sbyte b9 = msg.reader().readByte();
 						Char[] array4 = new Char[b9];
-						int[] array5 = new int[b9];
+						long[] array5 = new long[b9];
 						for (int num12 = 0; num12 < b9; num12++)
 						{
 							int num13 = msg.reader().readInt();
@@ -862,7 +862,7 @@ namespace Game1.Assets.src.f
 							{
 								array4[num12] = Char.myCharz();
 							}
-							array5[num12] = msg.reader().readInt();
+							array5[num12] = msg.readLong();
 						}
 						bigBoss2.setAttack(array4, array5, b8);
 					}
@@ -883,7 +883,7 @@ namespace Game1.Assets.src.f
 						{
 							sbyte b10 = msg.reader().readByte();
 							Char[] array6 = new Char[b10];
-							int[] array7 = new int[b10];
+							long[] array7 = new long[b10];
 							for (int num14 = 0; num14 < b10; num14++)
 							{
 								int num15 = msg.reader().readInt();
@@ -896,7 +896,7 @@ namespace Game1.Assets.src.f
 								{
 									array6[num14] = Char.myCharz();
 								}
-								array7[num14] = msg.reader().readInt();
+								array7[num14] = msg.readLong();
 							}
 							bachTuoc.setAttack(array6, array7, b8);
 							break;
@@ -1255,7 +1255,7 @@ namespace Game1.Assets.src.f
 				{
 					sbyte b = msg.reader().readByte();
 					Char[] array = new Char[b];
-					int[] array2 = new int[b];
+					long[] array2 = new long[b];
 					for (int i = 0; i < b; i++)
 					{
 						int num = msg.reader().readInt();
@@ -1268,7 +1268,7 @@ namespace Game1.Assets.src.f
 						{
 							array[i] = Char.myCharz();
 						}
-						array2[i] = msg.reader().readInt();
+						array2[i] = msg.readLong();
 					}
 					sbyte dir = msg.reader().readByte();
 					newBoss.setAttack(array, array2, (sbyte)(actionBoss - 10), dir);

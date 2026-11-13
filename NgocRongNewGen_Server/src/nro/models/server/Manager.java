@@ -772,7 +772,7 @@ public final class Manager {
                 mobTemp.id = rs.getByte("id");
                 mobTemp.type = rs.getByte("type");
                 mobTemp.name = rs.getString("name");
-                mobTemp.hp = rs.getInt("hp");
+                mobTemp.hp = rs.getLong("hp");
                 mobTemp.rangeMove = rs.getByte("range_move");
                 mobTemp.speed = rs.getByte("speed");
                 mobTemp.dartType = rs.getByte("dart_type");
@@ -866,14 +866,14 @@ public final class Manager {
                     dataArray = (JSONArray) JSONValue.parse(rs.getString("mobs").replaceAll("\\\"", ""));
                     mapTemplate.mobTemp = new byte[dataArray.size()];
                     mapTemplate.mobLevel = new byte[dataArray.size()];
-                    mapTemplate.mobHp = new int[dataArray.size()];
+                    mapTemplate.mobHp = new long[dataArray.size()];
                     mapTemplate.mobX = new short[dataArray.size()];
                     mapTemplate.mobY = new short[dataArray.size()];
                     for (int j = 0; j < dataArray.size(); j++) {
                         JSONArray dtm = (JSONArray) JSONValue.parse(String.valueOf(dataArray.get(j)));
                         mapTemplate.mobTemp[j] = Byte.parseByte(String.valueOf(dtm.get(0)));
                         mapTemplate.mobLevel[j] = Byte.parseByte(String.valueOf(dtm.get(1)));
-                        mapTemplate.mobHp[j] = Integer.parseInt(String.valueOf(dtm.get(2)));
+                        mapTemplate.mobHp[j] = Long.parseLong(String.valueOf(dtm.get(2)));
                         mapTemplate.mobX[j] = Short.parseShort(String.valueOf(dtm.get(3)));
                         mapTemplate.mobY[j] = Short.parseShort(String.valueOf(dtm.get(4)));
                         dtm.clear();

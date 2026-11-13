@@ -58,13 +58,13 @@ public class DrKore extends Boss {
     private long st;
 
     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (plAtt != null && plAtt.playerSkill != null && plAtt.playerSkill.skillSelect != null && plAtt.playerSkill.skillSelect.template != null) {
             switch (plAtt.playerSkill.skillSelect.template.id) {
                 case Skill.KAMEJOKO:
                 case Skill.MASENKO:
                 case Skill.ANTOMIC:
-                    PlayerService.gI().hoiPhuc(this, (int) Math.min(Integer.MAX_VALUE, damage), 0);
+                    PlayerService.gI().hoiPhuc(this, damage, 0);
                     if (Util.isTrue(1, 5)) {
                         this.chat("Hấp thụ.. các ngươi nghĩ sao vậy?");
                     }

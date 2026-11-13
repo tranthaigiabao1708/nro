@@ -30,7 +30,7 @@ namespace Game1
 
 		private Char[] charAttack;
 
-		private int[] dameHP;
+		private long[] dameHP;
 
 		private sbyte type;
 
@@ -249,7 +249,7 @@ namespace Game1
 			flyUp = true;
 		}
 
-		public void setAttack(Char[] cAttack, int[] dame, sbyte type, sbyte dir)
+		public void setAttack(Char[] cAttack, long[] dame, sbyte type, sbyte dir)
 		{
 			charAttack = cAttack;
 			dameHP = dame;

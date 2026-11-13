@@ -5225,15 +5225,9 @@ namespace Game2
 
 		public void paintHp(mGraphics g, int x, int y)
 		{
-			long num = cHP * 100 / cHPFull / 10 - 1;
-			if (num < 0)
-			{
-				num = 0L;
-			}
-			if (num > 9)
-			{
-				num = 9L;
-			}
+			long hpFull = System.Math.Max(1L, cHPFull);
+			double ratio = System.Math.Clamp((double)cHP / hpFull, 0.0, 1.0);
+			long num = System.Math.Clamp((long)(ratio * 100.0) / 10L - 1L, 0L, 9L);
 			if (!me)
 			{
 				g.drawRegion(Mob.imgHP, 0, 6 * (9 - (int)num), 9, 6, 0, x, y, 3);
@@ -5242,8 +5236,8 @@ namespace Game2
 			{
 				return;
 			}
-			len = (int)(cHP * 100 / cHPFull * w_hp_bar) / 100;
-			num = (int)(cHP * 100 / cHPFull);
+			len = System.Math.Clamp((int)(ratio * w_hp_bar), (cHP > 0) ? 1 : 0, w_hp_bar);
+			num = System.Math.Clamp((long)(ratio * 100.0), (cHP > 0) ? 1L : 0L, 100L);
 			if (num < 30)
 			{
 				imgHPtem = GameScr.imgHP_tm_do;
@@ -5258,7 +5252,7 @@ namespace Game2
 			}
 			int imageWidth = mGraphics.getImageWidth(GameScr.imgHP_tm_do);
 			int imageHeight = mGraphics.getImageHeight(GameScr.imgHP_tm_do);
-			long num2 = imageWidth * num / 100;
+			long num2 = System.Math.Clamp((long)(ratio * imageWidth), (cHP > 0) ? 1L : 0L, imageWidth);
 			g.drawImage(GameScr.imgHP_tm_xam, x - (imageWidth >> 1), y - 1, mGraphics.TOP | mGraphics.LEFT);
 			if (len < 5)
 			{

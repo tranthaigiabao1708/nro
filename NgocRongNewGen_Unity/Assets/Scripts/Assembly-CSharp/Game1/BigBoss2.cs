@@ -42,7 +42,7 @@ namespace Game1
 
 		private Char[] charAttack;
 
-		private int[] dameHP;
+		private long[] dameHP;
 
 		private sbyte type;
 
@@ -304,7 +304,7 @@ namespace Game1
 			}
 		}
 
-		public void setAttack(Char[] cAttack, int[] dame, sbyte type)
+		public void setAttack(Char[] cAttack, long[] dame, sbyte type)
 		{
 			status = 3;
 			charAttack = cAttack;

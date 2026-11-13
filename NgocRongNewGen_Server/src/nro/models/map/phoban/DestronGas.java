@@ -80,16 +80,14 @@ public class DestronGas implements Runnable {
 
             if (allCharactersDead && !callBoss) {
                 try {
-                    long bossDamage = (1000 * level);
-                    long bossMaxHealth = (15000000 * level);
-                    bossDamage = Math.min(bossDamage, 200000000L);
-                    bossMaxHealth = Math.min(bossMaxHealth, 2000000000L);
+                    long bossDamage = 1000L * level;
+                    long bossMaxHealth = 15_000_000L * level;
                     bosses.add(new DrLychee(
                             getMapById(148),
                             clan,
                             level,
-                            (int) bossDamage,
-                            (int) bossMaxHealth
+                            bossDamage,
+                            bossMaxHealth
                     ));
                     callBoss = true;
                 } catch (Exception exception) {
@@ -178,14 +176,14 @@ public class DestronGas implements Runnable {
                         ((i == 33) && zone.map.mapId == 152)) { // Quái 76 xuất hiện thứ 34 ở Map 152 (Vùng đất băng giá)
 
                     mob.lvMob = 1;
-                    mob.point.dame = (int) Math.min((long) level * 31 * 5 * mob.tempId * 10, 2_147_483_647);
-                    mob.point.maxHp = (int) Math.min((long) level * 3 * 6700 * mob.tempId * 10, 2_147_483_647);
+                    mob.point.dame = (long) level * 31L * 5L * mob.tempId * 10L;
+                    mob.point.maxHp = (long) level * 3L * 6700L * mob.tempId * 10L;
                     mob.hoiSinh();
                     mob.hoiSinhMobPhoBan();
                 } else {
                     mob.lvMob = mob.tempId == 76 ? 1 : 0;
-                    mob.point.dame = (int) Math.min((long) level * 31 * 5 * mob.tempId, 2_147_483_647);
-                    mob.point.maxHp = (int) Math.min((long) level * 5 * 45 * mob.tempId, 2_147_483_647);
+                    mob.point.dame = (long) level * 31L * 5L * mob.tempId;
+                    mob.point.maxHp = (long) level * 5L * 45L * mob.tempId;
                     mob.hoiSinh();
                     mob.hoiSinhMobPhoBan();
                 }

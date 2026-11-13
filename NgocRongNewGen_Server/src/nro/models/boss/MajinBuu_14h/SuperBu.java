@@ -83,7 +83,7 @@ public class SuperBu extends Boss {
     }
 
     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         Boss boss = FinalBossManager.gI().getBossById(BossID.MABU, 127, this.zone.zoneId);
         if (boss != null) {
             boss.injured(plAtt, damage, piercing, isMobAttack);
@@ -104,7 +104,7 @@ public class SuperBu extends Boss {
                 die(plAtt);
             }
 
-            return (int) Math.min(2_147_483_647L, Math.max(0L, damage));
+            return Math.max(0L, damage);
         } else {
             return 0;
         }

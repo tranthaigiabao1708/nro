@@ -295,7 +295,7 @@ public class VoDaiVt6Boss extends Universe6Boss {
             case 4 -> { // Cabba thức tỉnh Super Saiyan
                 if (!this.awakenedSuperSaiyan && this.nPoint.getCurrPercentHP() <= 50) {
                     this.awakenedSuperSaiyan = true;
-                    this.nPoint.dameg = (int) Math.min(2_000_000_000L, (long) this.nPoint.dameg * 135L / 100L);
+                    this.nPoint.dameg = this.nPoint.dameg / 100L * 135L;
                     this.nPoint.calPoint();
                     this.nPoint.syncDisplayHpFromBossReal();
                     Service.gI().Send_Caitrang(this);

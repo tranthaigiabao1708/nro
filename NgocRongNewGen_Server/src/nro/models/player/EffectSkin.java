@@ -158,8 +158,8 @@ public class EffectSkin {
                 int param = this.player.nPoint.tlHutHpMpXQ;
                 if (param > 0) {
                     if (!this.player.isDie() && Util.canDoWithTime(lastTimeXenHutHpKi, 5000)) {
-                        int hpHut = 0;
-                        int mpHut = 0;
+                        long hpHut = 0;
+                        long mpHut = 0;
                         List<Player> players = new ArrayList<>();
                         if (!MapService.gI().isMapOffline(this.player.zone.map.mapId)) {
                             List<Player> playersMap = this.player.zone.getNotBosses();
@@ -174,7 +174,7 @@ public class EffectSkin {
                         for (Mob mob : this.player.zone.mobs) {
                             if (mob.point.gethp() > 1) {
                                 if (Util.getDistance(this.player, mob) <= 200) {
-                                    int subHp = mob.point.getHpFull() * param / 100;
+                                    long subHp = mob.point.getHpFull() / 100L * param;
                                     if (subHp >= mob.point.gethp()) {
                                         subHp = mob.point.gethp() - 1;
                                     }
@@ -184,8 +184,8 @@ public class EffectSkin {
                             }
                         }
                         for (Player pl : players) {
-                            int subHp = (int) ((long) pl.nPoint.hpMax * param / 100);
-                            int subMp = (int) ((long) pl.nPoint.mpMax * param / 100);
+                            long subHp = pl.nPoint.hpMax / 100L * param;
+                            long subMp = pl.nPoint.mpMax / 100L * param;
                             if (subHp >= pl.nPoint.hp) {
                                 subHp = pl.nPoint.hp - 1;
                             }
@@ -222,7 +222,7 @@ public class EffectSkin {
                             Player pl = playersMap.get(i);
                             if (pl != null && pl.nPoint != null && !this.player.equals(pl) && !pl.isBoss && !pl.isDie()
                                     && Util.getDistance(this.player, pl) <= 200) {
-                                int subHp = (int) ((long) pl.nPoint.hpMax * param / 100);
+                                long subHp = pl.nPoint.hpMax / 100L * param;
                                 if (subHp >= pl.nPoint.hp) {
                                     subHp = pl.nPoint.hp - 1;
                                 }
@@ -416,10 +416,10 @@ public class EffectSkin {
                     if (caster.nPoint != null && caster.nPoint.tlDameTuyetKy > 0) {
                         subHpLong += subHpLong * caster.nPoint.tlDameTuyetKy / 100L;
                     }
-                    int subHp = (int) Math.min(2_147_483_647L, subHpLong);
+                    long subHp = subHpLong;
                     long curActualHp = this.player.nPoint.getActualHp();
                     if (subHp >= curActualHp) {
-                        subHp = (int) Math.max(0L, curActualHp - 1L);
+                        subHp = Math.max(0L, curActualHp - 1L);
                     }
                     if (subHp > 0) {
                         this.player.injured(caster, subHp, true, false);

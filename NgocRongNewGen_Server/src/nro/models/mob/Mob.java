@@ -150,16 +150,12 @@ public class Mob {
                 }
             }
             if (!dieWhenHpFull && !isBigBoss() && !MapService.gI().isMapPhoBan(this.zone.map.mapId) && this.lvMob > 0 && plAtt != null && plAtt.charms.tdOaiHung < System.currentTimeMillis()) {
-                damage = (int) ((this.point.maxHp <= 20_000_000 ? this.point.maxHp * 1 : 2) * (10.0 / 100));
+                damage = (long) ((this.point.maxHp <= 20_000_000L ? this.point.maxHp : 2L) * (10.0 / 100));
                 this.mobAttackPlayer(plAtt);
             }
             if (plAtt != null && plAtt.isBoss && this.tempId > 0 && Util.isTrue(1, 2) && Util.canDoWithTime(lastTimeAttackPlayer, 2500)) {
                 this.mobAttackPlayer(plAtt);
                 lastTimeAttackPlayer = System.currentTimeMillis();
-            }
-
-            if (damage > 2_147_483_647) {
-                damage = 2_147_483_647;
             }
 
             this.point.hp -= damage;
@@ -169,7 +165,7 @@ public class Mob {
                 this.setDie();
                 this.temporaryEnemies.clear();
                 if (plAtt != null) {
-                    this.sendMobDieAffterAttacked(plAtt, (int) damage);
+                    this.sendMobDieAffterAttacked(plAtt, damage);
                     TaskService.gI().checkDoneTaskKillMob(plAtt, this);
                     TaskService.gI().checkDoneSideTaskKillMob(plAtt, this);
                     TaskService.gI().checkDoneClanTaskKillMob(plAtt, this);
@@ -182,7 +178,7 @@ public class Mob {
                     this.zone.isbulon2Alive = false;
                 }
             } else {
-                this.sendMobStillAliveAffterAttacked((int) damage, plAtt != null ? (plAtt.nPoint != null && plAtt.nPoint.isCrit) : false);
+                this.sendMobStillAliveAffterAttacked(damage, plAtt != null ? (plAtt.nPoint != null && plAtt.nPoint.isCrit) : false);
             }
             if (plAtt != null) {
                 if (plAtt.isPl() && plAtt.satellite != null && plAtt.satellite.isDefend) {
@@ -247,7 +243,7 @@ public class Mob {
             tiemNang = 1;
         }
         if (pl.nPoint != null) {
-            tiemNang = (int) pl.nPoint.calSucManhTiemNang(tiemNang);
+            tiemNang = pl.nPoint.calSucManhTiemNang(tiemNang);
         } else {
             return 0;
         }
@@ -301,7 +297,7 @@ public class Mob {
                     }
                     if (Util.canDoWithTime(lastTimePhucHoi, 30000) && !isDie()) {
                         lastTimePhucHoi = System.currentTimeMillis();
-                        int hpMax = this.point.maxHp;
+                        long hpMax = this.point.maxHp;
                         if (this.point.hp < hpMax) {
                             hoi_hp(hpMax / 10);
                         } else {
@@ -400,15 +396,15 @@ public class Mob {
             return;
         }
 
-        int dameMob = this.point.getDameAttack();
+        long dameMob = this.point.getDameAttack();
         if (this.zone != null && this.zone.map != null && MapService.gI().isMapVuTru6(this.zone.map.mapId)) {
             int mapId = this.zone.map.mapId;
             int pctHp = (mapId == 145) ? 8 : (mapId == 176 || mapId == 177 ? 7 : 5);
-            long u6Dame = Math.max((long) dameMob, 180_000L) + ((long) player.nPoint.hpMax * pctHp / 100L);
-            if ((mapId == 176 || mapId == 177) && this.point.maxHp > 0 && this.point.hp < this.point.maxHp * 3 / 10) {
-                u6Dame = u6Dame * 150L / 100L;
+            long u6Dame = Math.max(dameMob, 180_000L) + (player.nPoint.hpMax / 100L * pctHp);
+            if ((mapId == 176 || mapId == 177) && this.point.maxHp > 0 && this.point.hp < this.point.maxHp / 10L * 3L) {
+                u6Dame = u6Dame / 100L * 150L;
             }
-            dameMob = (int) Math.min(2_000_000_000L, u6Dame);
+            dameMob = u6Dame;
         }
 
         if (player.charms != null && player.charms.tdDaTrau > System.currentTimeMillis()) {
@@ -423,7 +419,7 @@ public class Mob {
         }
 
         if (this.lvMob > 0 && !MapService.gI().isMapPhoBan(this.zone.map.mapId)) {
-            dameMob = (int) (player.nPoint.hpMax * 0.1);
+            dameMob = player.nPoint.hpMax / 10L;
         }
 
         if (player.satellite != null && player.satellite.isDefend) {
@@ -431,26 +427,26 @@ public class Mob {
         }
 
         if (player.itemTime != null && player.itemTime.isUseCMS) {
-            dameMob = (int) Math.round(dameMob * 0.1);
+            dameMob = dameMob / 10L;
         }
 
         if (this.lvMob > 0 && player.charms != null && player.charms.tdOaiHung > System.currentTimeMillis()) {
             // giữ nguyên dameMob
         }
 
-        int dame = player.injured(null, dameMob, false, true);
+        long dame = player.injured(null, dameMob, false, true);
         this.sendMobAttackMe(player, dame);
         this.sendMobAttackPlayer(player);
         this.phanSatThuong(player, dame);
     }
 
-    private void sendMobAttackMe(Player player, int dame) {
+    private void sendMobAttackMe(Player player, long dame) {
         if (!player.isPet && !player.isBot && !player.isNewPet) {
             Message msg;
             try {
                 msg = new Message(-11);
                 msg.writer().writeByte(this.id);
-                msg.writer().writeInt(dame); //dame
+                msg.writer().writeLong(dame); //dame
                 player.sendMessage(msg);
                 msg.cleanup();
             } catch (Exception e) {
@@ -465,7 +461,7 @@ public class Mob {
             msg = new Message(-10);
             msg.writer().writeByte(this.id);
             msg.writer().writeInt((int) player.id);
-            msg.writer().writeInt(player.nPoint.hp);
+            msg.writer().writeLong(player.nPoint.hp);
             Service.gI().sendMessAnotherNotMeInMap(player, msg);
             msg.cleanup();
         } catch (Exception e) {
@@ -486,7 +482,7 @@ public class Mob {
             }
         }
         this.lvMob = this.tempId > 12 && this.tempId < 34 && !isBigBoss() ? Util.isTrue(0, 10000) ? 1 : 0 : 0;
-        this.point.hp = this.lvMob > 0 ? this.point.maxHp <= 20000000 ? this.point.maxHp * 10 : 2000000000 : this.point.maxHp;
+        this.point.hp = this.lvMob > 0 ? this.point.maxHp * 10L : this.point.maxHp;
         return this.lvMob;
     }
 
@@ -497,7 +493,7 @@ public class Mob {
             msg.writer().writeByte(this.id);
             msg.writer().writeByte(this.tempId);
             msg.writer().writeByte(lvMob());
-            msg.writer().writeInt(this.point.hp);
+            msg.writer().writeLong(this.point.hp);
             Service.gI().sendMessAllPlayerInMap(this.zone, msg);
             this.sendMobMaxHp(this.point.hp);
         } catch (Exception e) {
@@ -509,15 +505,15 @@ public class Mob {
         }
     }
 
-    public void hoi_hp(int hp) {
+    public void hoi_hp(long hp) {
         Message msg = null;
         try {
             this.point.sethp(this.point.gethp() + hp);
-            int HP = hp > 0 ? 1 : Math.abs(hp);
+            long HP = hp > 0 ? 1L : Math.abs(hp);
             msg = new Message(-9);
             msg.writer().writeByte(this.id);
-            msg.writer().writeInt(this.point.gethp());
-            msg.writer().writeInt(HP);
+            msg.writer().writeLong(this.point.gethp());
+            msg.writer().writeLong(HP);
             msg.writer().writeBoolean(false);
             msg.writer().writeByte(-1);
             Service.gI().sendMessAllPlayerInMap(this.zone, msg);
@@ -536,8 +532,8 @@ public class Mob {
         try {
             msg = new Message(-9);
             msg.writer().writeByte(this.id);
-            msg.writer().writeInt(this.point.gethp());
-            msg.writer().writeInt(this.point.gethp());
+            msg.writer().writeLong(this.point.gethp());
+            msg.writer().writeLong(this.point.gethp());
             msg.writer().writeBoolean(false);
             msg.writer().writeByte(Effect);
             Service.gI().sendMessAllPlayerInMap(this.zone, msg);
@@ -551,12 +547,12 @@ public class Mob {
         }
     }
 
-    private void sendMobDieAffterAttacked(Player plKill, int dameHit) {
+    private void sendMobDieAffterAttacked(Player plKill, long dameHit) {
         Message msg;
         try {
             msg = new Message(-12);
             msg.writer().writeByte(this.id);
-            msg.writer().writeInt(dameHit);
+            msg.writer().writeLong(dameHit);
             msg.writer().writeBoolean(plKill.nPoint.isCrit); // crit
             List<ItemMap> items = mobReward(plKill, this.dropItemTask(plKill), msg);
             Service.gI().sendMessAllPlayerInMap(this.zone, msg);
@@ -1267,13 +1263,13 @@ public class Mob {
         return null;
     }
 
-    private void sendMobStillAliveAffterAttacked(int dameHit, boolean crit) {
+    private void sendMobStillAliveAffterAttacked(long dameHit, boolean crit) {
         Message msg;
         try {
             msg = new Message(-9);
             msg.writer().writeByte(this.id);
-            msg.writer().writeInt(this.point.gethp());
-            msg.writer().writeInt(dameHit);
+            msg.writer().writeLong(this.point.gethp());
+            msg.writer().writeLong(dameHit);
             msg.writer().writeBoolean(crit); // chí mạng
             msg.writer().writeInt(-1);
             Service.gI().sendMessAllPlayerInMap(this.zone, msg);
@@ -1292,7 +1288,7 @@ public class Mob {
             msg.writer().writeByte(this.id);
             msg.writer().writeByte(this.tempId);
             msg.writer().writeByte(this.lvMob); //level mob
-            msg.writer().writeInt(this.point.hp);
+            msg.writer().writeLong(this.point.hp);
             Service.gI().sendMessAllPlayerInMap(this.zone, msg);
             msg.cleanup();
         } catch (Exception e) {
@@ -1309,7 +1305,7 @@ public class Mob {
             msg.writer().writeByte(this.id);
             msg.writer().writeByte(this.tempId);
             msg.writer().writeByte(this.lvMob); //level mob
-            msg.writer().writeInt(this.point.hp);
+            msg.writer().writeLong(this.point.hp);
             Service.gI().sendMessAllPlayerInMap(this.zone, msg);
             msg.cleanup();
         } catch (IOException e) {
@@ -1388,12 +1384,12 @@ public class Mob {
         }
     }
 
-    public void sendMobMaxHp(int maxHp) {
+    public void sendMobMaxHp(long maxHp) {
         Message msg;
         try {
-            msg = new Message(87);
+            msg = new Message(-84);
             msg.writer().writeByte(this.id);
-            msg.writer().writeInt(maxHp);
+            msg.writer().writeLong(maxHp);
             Service.gI().sendMessAllPlayerInMap(this.zone, msg);
             msg.cleanup();
         } catch (IOException e) {
@@ -1409,7 +1405,7 @@ public class Mob {
         }
         int percentPST = plTarget.nPoint.tlPST;
         if (percentPST != 0) {
-            int damePST = (int) (long) (dame * percentPST / 100L);
+            long damePST = dame / 100L * percentPST;
             Message msg;
             try {
                 msg = new Message(-9);
@@ -1417,11 +1413,11 @@ public class Mob {
                 if (damePST >= this.point.hp) {
                     damePST = this.point.hp - 1;
                 }
-                int hpMob = this.point.hp;
+                long hpMob = this.point.hp;
                 injured(null, damePST, true);
                 damePST = hpMob - this.point.hp;
-                msg.writer().writeInt(this.point.hp);
-                msg.writer().writeInt(damePST);
+                msg.writer().writeLong(this.point.hp);
+                msg.writer().writeLong(damePST);
                 msg.writer().writeBoolean(false);
                 msg.writer().writeByte(36);
                 Service.gI().sendMessAllPlayerInMap(this.zone, msg);
@@ -1439,6 +1435,9 @@ public class Mob {
             this.status = 0;
             msg = new Message(-12);
             msg.writer().writeByte(this.id);
+            msg.writer().writeLong(0L);
+            msg.writer().writeBoolean(false);
+            msg.writer().writeByte(0);
             Service.gI().sendMessAllPlayerInMap(this.zone, msg);
             msg.cleanup();
         } catch (IOException e) {

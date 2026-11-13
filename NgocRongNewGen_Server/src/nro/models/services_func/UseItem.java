@@ -2116,11 +2116,11 @@ public class UseItem {
             }
         }
         if (pea != null) {
-            int hpKiHoiPhuc = 0;
+            long hpKiHoiPhuc = 0;
             int lvPea = Integer.parseInt(pea.template.name.substring(13));
             for (Item.ItemOption io : pea.itemOptions) {
                 if (io.optionTemplate.id == 2) {
-                    hpKiHoiPhuc = io.param * 1000;
+                    hpKiHoiPhuc = io.param * 1000L;
                     break;
                 }
                 if (io.optionTemplate.id == 48) {

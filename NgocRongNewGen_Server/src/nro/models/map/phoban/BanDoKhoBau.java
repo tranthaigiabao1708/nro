@@ -170,22 +170,22 @@ public class BanDoKhoBau implements Runnable {
                     Mob mob = mobs.get(i);
                     if (((i == 5 || i == 10) && zone.map.mapId == 135) || (i == 5 && zone.map.mapId == 136) || (i == 5 && zone.map.mapId == 137)) {
                         mob.lvMob = 1;
-                        mob.point.dame = (int) Math.min((long) level * 600 * mob.tempId * 10, 2_147_483_647);
-                        mob.point.maxHp = (int) Math.min((long) level * 469799 * mob.tempId, 2_147_483_647);
+                        mob.point.dame = (long) level * 600L * mob.tempId * 10L;
+                        mob.point.maxHp = (long) level * 469799L * mob.tempId;
                         mob.hoiSinh();
                         mob.hoiSinhMobPhoBan();
                     } else {
                         mob.lvMob = 0;
-                        mob.point.dame = (int) Math.min((long) level * 200 * mob.tempId, 2_147_483_647);
-                        mob.point.maxHp = (int) Math.min((long) level * 469799 * mob.tempId, 2_147_483_647);
+                        mob.point.dame = (long) level * 200L * mob.tempId;
+                        mob.point.maxHp = (long) level * 469799L * mob.tempId;
                         mob.hoiSinh();
                         mob.hoiSinhMobPhoBan();
                     }
                 }
             } else {
                 for (Mob mob : zone.mobs) {
-                    mob.point.dame = (int) Math.min((long) level * 31 * 50 * mob.tempId, 2_147_483_647);
-                    mob.point.maxHp = (int) Math.min((long) level * 310799 * 50 * mob.tempId, 2_147_483_647);
+                    mob.point.dame = (long) level * 31L * 50L * mob.tempId;
+                    mob.point.maxHp = (long) level * 310799L * 50L * mob.tempId;
                     mob.hoiSinh();
                     mob.hoiSinhMobPhoBan();
                 }
@@ -193,15 +193,13 @@ public class BanDoKhoBau implements Runnable {
 
             if (zone.map.mapId == 137) {
                 try {
-                    long bossDamage = (200000 * level);
-                    long bossMaxHealth = (20000000 * level);
-                    bossDamage = Math.min(bossDamage, 200000000L);
-                    bossMaxHealth = Math.min(bossMaxHealth, 2000000000L);
+                    long bossDamage = 200_000L * level;
+                    long bossMaxHealth = 20_000_000L * level;
                     boss = new TrungUyXanhLo(
                             zone,
                             level,
-                            (int) bossDamage,
-                            (int) bossMaxHealth
+                            bossDamage,
+                            bossMaxHealth
                     );
                 } catch (Exception exception) {
                 }

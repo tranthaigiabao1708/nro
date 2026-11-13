@@ -37,13 +37,13 @@ public class Pocolo extends Boss {
     private long lastTimeMove;
     private int indexChat = 0;
 
-    public Pocolo(Zone zone, Player player, int dame, int hp) throws Exception {
+    public Pocolo(Zone zone, Player player, long dame, long hp) throws Exception {
         super(PHOBAN, BossID.POCOLO, new BossData(
                 "Ma vương Pôcôlô",
                 ConstPlayer.NAMEC,
                 new short[]{739, 740, 741, -1, -1, -1},
                 dame,
-                new int[]{hp},
+                new long[]{hp},
                 new int[]{146},
                 new int[][]{
                     {Skill.DEMON, 7, 1000},
@@ -79,7 +79,7 @@ public class Pocolo extends Boss {
     }
 
     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
             if (!piercing && Util.isTrue(10, 1000)) {
                 this.chat("Xí hụt");
@@ -108,7 +108,7 @@ public class Pocolo extends Boss {
                 die(plAtt);
             }
 
-            return (int) Math.min(2_147_483_647L, Math.max(0L, damage));
+            return Math.max(0L, damage);
         } else {
             return 0;
         }
@@ -155,7 +155,7 @@ public class Pocolo extends Boss {
                 msg.writer().writeInt((int) playerCall.id); //id ăn pem
                 msg.writer().writeByte(1); //read continue
                 msg.writer().writeByte(1); //type skill
-                msg.writer().writeInt(1_000_000_000); //dame ăn
+                msg.writer().writeLong(1_000_000_000L); //dame ăn
                 msg.writer().writeBoolean(true); //is die
                 msg.writer().writeBoolean(this.nPoint.isCrit); //crit
                 Service.gI().sendMessAllPlayerInMap(this, msg);

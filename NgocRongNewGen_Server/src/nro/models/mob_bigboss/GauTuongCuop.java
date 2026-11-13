@@ -78,9 +78,9 @@ public class GauTuongCuop extends Mob {
                     msg.writer().writeByte(targets.size());
                     int dir = 0;
                     for (Player pl : targets) {
-                        int dame = pl.injured(null, this.getDameAttack(), false, true);
+                        long dame = pl.injured(null, this.getDameAttack(), false, true);
                         msg.writer().writeInt((int) pl.id);
-                        msg.writer().writeInt(dame);
+                        msg.writer().writeLong(dame);
                         dir = pl.location.x < this.location.x ? -1 : 1;
                     }
                     msg.writer().writeByte(dir);
@@ -107,12 +107,12 @@ public class GauTuongCuop extends Mob {
         }
 
         this.realHp = Math.max(0L, this.realHp - effectiveDamage);
-        int maxDisplayHp = this.point.getHpFull();
-        int targetDisplayHp = (this.realHp <= 0L)
-                ? 0
-                : (int) Math.max(1L, Math.min((long) maxDisplayHp,
-                        (this.realHp * (long) maxDisplayHp + this.realMaxHp - 1L) / this.realMaxHp));
-        long displaySub = Math.max(0L, (long) this.point.gethp() - targetDisplayHp);
+        long maxDisplayHp = this.point.getHpFull();
+        long targetDisplayHp = (this.realHp <= 0L)
+                ? 0L
+                : Math.max(1L, Math.min(maxDisplayHp,
+                        (long) Math.ceil((double) this.realHp * maxDisplayHp / Math.max(1L, this.realMaxHp))));
+        long displaySub = Math.max(0L, this.point.gethp() - targetDisplayHp);
         super.injured(plAtt, displaySub, dieWhenHpFull);
     }
 

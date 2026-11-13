@@ -32,7 +32,7 @@ public class Cumber extends Boss {
         rewardHighTier20TVWithMaterials(this.zone, this.location.x, this.location.y, plKill, 10, false, true);
     }
     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
             if (damage <= 0) {
                 return 0;
@@ -67,7 +67,7 @@ public class Cumber extends Boss {
                 this.setDie(plAtt);
                 die(plAtt);
             }
-            return (int) Math.min(2_147_483_647L, Math.max(0L, damage));
+            return Math.max(0L, damage);
         } else {
             return 0;
         }

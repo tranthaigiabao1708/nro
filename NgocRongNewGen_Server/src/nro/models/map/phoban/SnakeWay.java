@@ -148,14 +148,14 @@ public class SnakeWay implements Runnable {
                 Mob mob = mobs.get(i);
                 if (i == 5) {
                     mob.lvMob = 1;
-                    mob.point.dame = (int) level * 100 * mob.tempId * 12;
-                    mob.point.maxHp = (int) level * 1000 * mob.tempId * 12;
+                    mob.point.dame = (long) level * 100L * mob.tempId * 12L;
+                    mob.point.maxHp = (long) level * 1000L * mob.tempId * 12L;
                     mob.hoiSinh();
                     mob.hoiSinhMobPhoBan();
                 } else {
                     mob.lvMob = 0;
-                    mob.point.dame = (int) level * 10 * mob.tempId;
-                    mob.point.maxHp = (int) level * 100 * mob.tempId;
+                    mob.point.dame = (long) level * 10L * mob.tempId;
+                    mob.point.maxHp = (long) level * 100L * mob.tempId;
                     mob.hoiSinh();
                     mob.hoiSinhMobPhoBan();
                 }
@@ -163,34 +163,32 @@ public class SnakeWay implements Runnable {
 
             if (zone.map.mapId == 144) {
                 try {
-                    long bossDamage = (200000 * level);
-                    long bossMaxHealth = (2000000 * level);
+                    long bossDamage = 200_000L * level;
+                    long bossMaxHealth = 2_000_000L * level;
                     for (int i = 6; i > 0; i--) {
-                        bossDamage = Math.min(bossDamage, 200000000L);
-                        bossMaxHealth = Math.min(bossMaxHealth, 2000000000L);
                         bosses.add(new SAIBAMEN(
                                 zone,
                                 clan,
                                 i,
-                                (int) bossDamage,
-                                (int) bossMaxHealth
+                                bossDamage,
+                                bossMaxHealth
                         ));
                     }
-                    bossDamage = Math.min(bossDamage * 5, 200000000L);
-                    bossMaxHealth = Math.min(bossMaxHealth * 5, 2000000000L);
+                    bossDamage = bossDamage * 5L;
+                    bossMaxHealth = bossMaxHealth * 5L;
                     bosses.add(new NADIC(
                             zone,
                             clan,
-                            (int) bossDamage,
-                            (int) bossMaxHealth
+                            bossDamage,
+                            bossMaxHealth
                     ));
-                    bossDamage = Math.min(bossDamage * 10, 200000000L);
-                    bossMaxHealth = Math.min(bossMaxHealth * 10, 2000000000L);
+                    bossDamage = bossDamage * 10L;
+                    bossMaxHealth = bossMaxHealth * 10L;
                     bosses.add(new CADICH(
                             zone,
                             clan,
-                            (int) bossDamage,
-                            (int) bossMaxHealth
+                            bossDamage,
+                            bossMaxHealth
                     ));
                 } catch (Exception exception) {
                 }

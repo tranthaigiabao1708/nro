@@ -835,8 +835,8 @@ public class LoadTest {
                         d.readByte();
                         d.readShort();
                         String plName = d.readUTF();
-                        int hp = d.readInt();
-                        d.readInt(); // hpMax
+                        long hp = d.readLong();
+                        d.readLong(); // hpMax
                         d.readShort();
                         d.readShort();
                         d.readByte();
@@ -880,7 +880,7 @@ public class LoadTest {
                     case 122 -> notices.computeIfAbsent("[Đợi đăng nhập lại]", x -> new AtomicInteger()).incrementAndGet();
                     case -12 -> { // quái chết + đồ rơi
                         int mobId = d.readByte();
-                        d.readInt(); d.readBoolean();
+                        d.readLong(); d.readBoolean();
                         mobKills.incrementAndGet();
                         int n = d.readByte();
                         for (int i = 0; i < n; i++) {

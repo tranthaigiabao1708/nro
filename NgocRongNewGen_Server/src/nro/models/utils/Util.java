@@ -175,10 +175,20 @@ public class Util {
     }
 
     public static long nextLong(long from, long to) {
-        return from + rand.nextLong(to - from + 1);
+        if (from >= to) {
+            return from;
+        }
+        long bound = to - from + 1;
+        if (bound <= 0) {
+            return from;
+        }
+        return from + rand.nextLong(bound);
     }
 
     public static long nextLong(long max) {
+        if (max <= 0) {
+            return 0;
+        }
         return rand.nextLong(max);
     }
 

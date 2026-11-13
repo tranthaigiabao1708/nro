@@ -24,13 +24,13 @@ public class Hatchiyack extends Boss {
 
     private static final int[][] FULL_DEMON = new int[][]{{Skill.DEMON, 1}, {Skill.DEMON, 2}, {Skill.DEMON, 3}, {Skill.DEMON, 4}, {Skill.DEMON, 5}, {Skill.DEMON, 6}, {Skill.DEMON, 7}};
 
-    public Hatchiyack(Zone zone, Clan clan, int level, int dame, int hp) throws Exception {
+    public Hatchiyack(Zone zone, Clan clan, int level, long dame, long hp) throws Exception {
         super(PHOBANKGHD, BossID.HATCHIYACK, new BossData(
                 " ",
                 ConstPlayer.TRAI_DAT,
                 new short[]{639, 640, 641, -1, -1, -1},
-                (dame),
-                new int[]{hp},
+                dame,
+                new long[]{hp},
                 new int[]{148},
                 (int[][]) Util.addArray(FULL_DEMON),
                 new String[]{"|-1|Các ngươi dám hạ sư phụ ta",
@@ -46,7 +46,7 @@ public class Hatchiyack extends Boss {
     }
 
     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
             if (!piercing && Util.isTrue(this.level + 10, 1000)) {
                 this.chat("Xí hụt");
@@ -82,7 +82,7 @@ public class Hatchiyack extends Boss {
                 die(plAtt);
             }
 
-            return (int) Math.min(2_147_483_647L, Math.max(0L, damage));
+            return Math.max(0L, damage);
         } else {
             return 0;
         }

@@ -18,13 +18,13 @@ import nro.models.utils.Util;
 
 public class RobotVeSi extends Boss {
 
-    public RobotVeSi(Zone zone, int id, int dame, int hp) throws Exception {
+    public RobotVeSi(Zone zone, int id, long dame, long hp) throws Exception {
         super(PHOBANDT, BossID.ROBOT_VE_SI - id, new BossData(
                 "Rôbốt Vệ Sĩ 0" + id, //name
                 ConstPlayer.TRAI_DAT, //gender
                 new short[]{138, 139, 140, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
-                ((dame)), //dame
-                new int[]{((hp))}, //hp
+                dame, //dame
+                new long[]{hp}, //hp
                 new int[]{57}, //map join
                 new int[][]{
                     {Skill.DEMON, 3, 1}, {Skill.DEMON, 6, 2}, {Skill.DRAGON, 7, 3}, {Skill.DRAGON, 1, 4}, {Skill.GALICK, 5, 5},
@@ -87,7 +87,7 @@ public class RobotVeSi extends Boss {
     }
 
     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
             if (!piercing && Util.isTrue(this.nPoint.tlNeDon, 1000)) {
                 this.chat("Xí hụt");
@@ -105,7 +105,7 @@ public class RobotVeSi extends Boss {
                 this.setDie(plAtt);
                 die(plAtt);
             }
-            return (int) Math.min(2_147_483_647L, Math.max(0L, damage));
+            return Math.max(0L, damage);
         } else {
             return 0;
         }

@@ -24,13 +24,13 @@ public class DrLychee extends Boss {
 
     private static final int[][] FULL_DEMON = new int[][]{{Skill.DEMON, 1}, {Skill.DEMON, 2}, {Skill.DEMON, 3}, {Skill.DEMON, 4}, {Skill.DEMON, 5}, {Skill.DEMON, 6}, {Skill.DEMON, 7}};
 
-    public DrLychee(Zone zone, Clan clan, int level, int dame, int hp) throws Exception {
+    public DrLychee(Zone zone, Clan clan, int level, long dame, long hp) throws Exception {
         super(PHOBANKGHD, BossID.DR_LYCHEE, new BossData(
                 "Dr Lychee",
                 ConstPlayer.TRAI_DAT,
                 new short[]{742, 743, 744, -1, -1, -1},
-                ((10000 + dame)),
-                new int[]{((1000000 + hp))},
+                (10000L + dame),
+                new long[]{1000000L + hp},
                 new int[]{148},
                 (int[][]) Util.addArray(FULL_DEMON),
                 new String[]{"|-1|Ta đợi các ngươi mãi",
@@ -47,7 +47,7 @@ public class DrLychee extends Boss {
     }
 
     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
             if (!piercing && Util.isTrue(this.level, 1000)) {
                 this.chat("Xí hụt");
@@ -83,7 +83,7 @@ public class DrLychee extends Boss {
                 die(plAtt);
             }
 
-            return (int) Math.min(2_147_483_647L, Math.max(0L, damage));
+            return Math.max(0L, damage);
         } else {
             return 0;
         }
@@ -144,15 +144,15 @@ public class DrLychee extends Boss {
 
     @Override
     public void leaveMap() {
-        long bossDamage = Math.min((long) (this.nPoint.dame * 1.5), 200000000L);
-        long bossMaxHealth = Math.min((long) (this.nPoint.hpMax * 1.5), 2000000000L);
+        long bossDamage = this.nPoint.dame / 2L * 3L;
+        long bossMaxHealth = this.nPoint.hpMax / 2L * 3L;
         try {
             clan.KhiGasHuyDiet.bosses.add(new Hatchiyack(
                     zone,
                     clan,
                     level,
-                    (int) bossDamage,
-                    (int) bossMaxHealth
+                    bossDamage,
+                    bossMaxHealth
             ));
         } catch (Exception ex) {
         }

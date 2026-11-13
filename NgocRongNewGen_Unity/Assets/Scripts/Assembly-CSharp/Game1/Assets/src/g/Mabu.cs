@@ -24,7 +24,7 @@ namespace Game1.Assets.src.g
 
 		private Char[] charAttack;
 
-		private int[] damageAttack;
+		private long[] damageAttack;
 
 		private int dx;
 
@@ -122,7 +122,7 @@ namespace Game1.Assets.src.g
 			}
 		}
 
-		public void setSkill(sbyte id, short x, short y, Char[] charHit, int[] damageHit)
+		public void setSkill(sbyte id, short x, short y, Char[] charHit, long[] damageHit)
 		{
 			skillID = id;
 			xTo = x;

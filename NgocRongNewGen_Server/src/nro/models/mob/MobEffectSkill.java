@@ -44,7 +44,7 @@ public class MobEffectSkill {
                     if (playerUseMafuba.nPoint != null && playerUseMafuba.nPoint.tlDameTuyetKy > 0) {
                         subHpLong += subHpLong * playerUseMafuba.nPoint.tlDameTuyetKy / 100L;
                     }
-                    int subHp = (int) Math.min(2_147_483_647L, subHpLong);
+                    long subHp = subHpLong;
                     if (subHp >= this.mob.point.hp) {
                         subHp = this.mob.point.hp - 1;
                     }

@@ -42,8 +42,8 @@ public class Hirudegarn extends BigBoss {
             try {
                 msg = new Message(-9);
                 msg.writer().writeByte(this.id);
-                msg.writer().writeInt(this.point.gethp());
-                msg.writer().writeInt(1);
+                msg.writer().writeLong(this.point.gethp());
+                msg.writer().writeLong(1L);
                 Service.gI().sendMessAllPlayerInMap(this.zone, msg);
             } catch (Exception e) {
             } finally {
@@ -89,8 +89,8 @@ public class Hirudegarn extends BigBoss {
                 try {
                     msg = new Message(-9);
                     msg.writer().writeByte(this.id);
-                    msg.writer().writeInt(this.point.gethp());
-                    msg.writer().writeInt(1);
+                    msg.writer().writeLong(this.point.gethp());
+                    msg.writer().writeLong(1L);
                     Service.gI().sendMessAllPlayerInMap(this.zone, msg);
                 } catch (Exception e) {
                 } finally {
@@ -114,8 +114,8 @@ public class Hirudegarn extends BigBoss {
             try {
                 msg = new Message(-9);
                 msg.writer().writeByte(this.id);
-                msg.writer().writeInt(this.point.gethp());
-                msg.writer().writeInt(1);
+                msg.writer().writeLong(this.point.gethp());
+                msg.writer().writeLong(1L);
                 Service.gI().sendMessAllPlayerInMap(this.zone, msg);
             } catch (Exception e) {
             } finally {
@@ -154,9 +154,9 @@ public class Hirudegarn extends BigBoss {
                     switch (action) {
                         case 1:
                             msg.writer().writeByte(1);
-                            int dame = player.injured(null, this.point.getDameAttack(), false, true);
+                            long dame = player.injured(null, this.point.getDameAttack(), false, true);
                             msg.writer().writeInt((int) player.id);
-                            msg.writer().writeInt(dame);
+                            msg.writer().writeLong(dame);
                             break;
                         case 3:
                             this.location.x = (short) player.location.x;
@@ -169,7 +169,7 @@ public class Hirudegarn extends BigBoss {
                                 Player pl = this.zone.getPlayers().get(i);
                                 dame = pl.injured(null, this.point.getDameAttack(), false, true);
                                 msg.writer().writeInt((int) pl.id);
-                                msg.writer().writeInt(dame);
+                                msg.writer().writeLong(dame);
                             }
                             break;
                     }

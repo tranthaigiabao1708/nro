@@ -178,7 +178,7 @@ public abstract class SuperRank extends Boss {
     }
 
     @Override
-    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+    public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
             if (plAtt != null && plAtt.effectSkill != null && plAtt.effectSkill.isBinh
                     && !Util.canDoWithTime(plAtt.effectSkill.lastTimeUpBinh, 3000)) {
@@ -199,7 +199,7 @@ public abstract class SuperRank extends Boss {
                     case Skill.MASENKO:
                     case Skill.ANTOMIC:
                         if (this.nPoint.voHieuChuong > 0) {
-                            PlayerService.gI().hoiPhuc(this, 0, (int) (damage * this.nPoint.voHieuChuong / 100));
+                            PlayerService.gI().hoiPhuc(this, 0, damage / 100L * this.nPoint.voHieuChuong);
                             return 0;
                         }
                         break;
@@ -303,20 +303,19 @@ public abstract class SuperRank extends Boss {
 
             if (!piercing && effectSkill.isShielding && !isMobAttack) {
                 if (this.idMark != null) {
-                    this.idMark.setDamePST((int) Math.min(damage, 2_147_483_647L));
+                    this.idMark.setDamePST(damage);
                 }
                 if (damage > nPoint.hpMax) {
                     EffectSkillService.gI().breakShield(this);
                 }
                 damage = 1;
             }
-            damage = Math.min(damage, 2_147_483_647L);
             this.nPoint.subHP(damage);
             if (plAtt != null && isDie()) {
                 setDie(plAtt);
             }
 
-            return (int) Math.min(2_147_483_647L, Math.max(0L, damage));
+            return Math.max(0L, damage);
         } else {
             return 0;
         }
