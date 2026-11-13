@@ -1,20 +1,15 @@
 package nro.models.mob_bigboss;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import nro.models.map.service.MapService;
 import nro.models.mob.BigBoss;
 import nro.models.mob.Mob;
-import nro.models.network.Message;
 import nro.models.player.Player;
 import nro.models.server.Manager;
 import nro.models.services.Service;
-import nro.models.utils.Util;
 
 /**
  *

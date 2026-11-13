@@ -283,7 +283,7 @@ public class VoDaiVt6Boss extends Universe6Boss {
                     if (Util.getDistance(this, this.challenger) <= 450) {
                         this.chat("Chugga chugga! Phun trào dung nham!");
                         if (this.challenger.itemTime == null || !this.challenger.itemTime.isUseThuocGiaiVt6) {
-                            long mpBurn = (long) this.challenger.nPoint.mpMax * 15L / 100L;
+                            long mpBurn = this.challenger.nPoint.mpMax * 15L / 100L;
                             this.challenger.nPoint.subMP(mpBurn);
                             applyPercentMaxHpStrike(this.challenger, 8, true, false);
                             PlayerService.gI().sendInfoHpMp(this.challenger);

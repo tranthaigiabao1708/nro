@@ -157,7 +157,7 @@ public class SAIBAMEN extends Boss {
                 this.playerSkill.prepareTuSat = false;
                 setDie(this);
                 die(plAtt);
-                long dame = (long) this.nPoint.hpMax * 100L;
+                long dame = this.nPoint.hpMax * 100L;
                 List<Player> playersMap = null;
                 playersMap = this.zone.getNotBosses();
                 if (!MapService.gI().isMapOffline(this.zone.map.mapId)) {

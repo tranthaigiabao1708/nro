@@ -5,19 +5,15 @@ import nro.models.boss.BossID;
 import nro.models.consts.BossStatus;
 import nro.models.boss.BossesData;
 import static nro.models.consts.BossType.FINAL;
-import nro.models.item.Item;
 import java.util.ArrayList;
 import java.util.List;
-import nro.models.map.ItemMap;
 import nro.models.player.Player;
 import nro.models.services.EffectSkillService;
 import nro.models.services.Service;
 import nro.models.utils.Util;
 import nro.models.server.ServerNotify;
-import nro.models.services.ItemService;
 import nro.models.services.PlayerService;
 import nro.models.services.SkillService;
-import nro.models.services.TaskService;
 import nro.models.map.service.ChangeMapService;
 
 public class Goku extends Boss {

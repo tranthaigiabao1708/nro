@@ -1,16 +1,10 @@
 package nro.models.boss.trai_dat;
 
-
 import nro.models.boss.Boss;
 import nro.models.boss.BossID;
 import nro.models.consts.BossStatus;
 import nro.models.boss.BossesData;
-import nro.models.item.Item;
-import java.util.List;
-import nro.models.map.ItemMap;
 import nro.models.player.Player;
-import nro.models.services.ItemService;
-import nro.models.services.Service;
 import nro.models.utils.Util;
 
 public class BOJACK extends Boss {

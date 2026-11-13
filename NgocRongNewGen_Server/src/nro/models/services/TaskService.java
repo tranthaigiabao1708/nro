@@ -12,7 +12,6 @@ import nro.models.consts.ConstAchievement;
 import nro.models.consts.ConstTaskBadges;
 import nro.models.item.Item;
 import java.io.IOException;
-import java.net.InetAddress;
 import nro.models.map.ItemMap;
 import nro.models.map.Zone;
 import nro.models.mob.Mob;
@@ -768,6 +767,7 @@ public class TaskService {
                 case ConstTask.TASK_7_3:
                     npcSay(player, ConstTask.NPC_NHA,
                             "Ôi bạn ơi, sức đề kháng bạn yếu là do bạn chưa chơi đồ đấy bạn ạ");
+                    break;
                 //--------------------------------------------------------------
                 case ConstTask.TASK_8_0:
                     break;
@@ -780,6 +780,7 @@ public class TaskService {
                             + "bạn lâu ngày không gặp của ông\n"
                             + "Con hãy tìm đường tới %11 và gửi lời chào của ông tới lão ấy nhé\n"
                             + "Đi đi con...");
+                    break;
                 //--------------------------------------------------------------
                 case ConstTask.TASK_9_0:
                     break;
@@ -975,6 +976,7 @@ public class TaskService {
                     break;
                 case ConstTask.TASK_22_5:
                     npcSay(player, ConstNpc.BUNMA_TL, "Đến Thành Phố Phía Đông tiêu diệt Tokuda à nhầm Dr.Kore và đàn em của hắn.");
+                    break;
                 //--------------------------------------------------------------
                 case ConstTask.TASK_23_0:
                     break;
@@ -1123,9 +1125,10 @@ public class TaskService {
     }
 
     private void addDoneSubTask(Player player, int numDone) {
-        player.playerTask.taskMain.subTasks.get(player.playerTask.taskMain.index).count += numDone;
-        if (player.playerTask.taskMain.subTasks.get(player.playerTask.taskMain.index).count
-                >= player.playerTask.taskMain.subTasks.get(player.playerTask.taskMain.index).maxCount) {
+        var subTask = player.playerTask.taskMain.subTasks.get(player.playerTask.taskMain.index);
+        subTask.count = (short) Math.min((long) Short.MAX_VALUE, (long) subTask.count + numDone);
+        if (subTask.count
+                >= subTask.maxCount) {
             player.playerTask.taskMain.index++;
             if (player.playerTask.taskMain.index >= player.playerTask.taskMain.subTasks.size()) {
                 this.sendNextTaskMain(player);

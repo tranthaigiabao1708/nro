@@ -1,7 +1,4 @@
 package nro.models.matches;
-import nro.models.matches.PVP;
-import nro.models.matches.TYPE_LOSE_PVP;
-import nro.models.matches.TYPE_PVP;
 import nro.models.player.Player;
 import nro.models.services.EffectSkillService;
 import nro.models.services.Service;

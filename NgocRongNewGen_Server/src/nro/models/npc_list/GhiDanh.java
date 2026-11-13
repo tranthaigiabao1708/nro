@@ -84,12 +84,12 @@ public class GhiDanh extends Npc {
                                             if (select == 1) {
                                                 if (player.inventory.gem >= rubychallenge) {
                                                     The23rdMartialArtCongressService.gI().startChallenge(player);
-                                                    player.inventory.gem -= (rubychallenge);
+                                                    player.inventory.gem = (int) Math.max(0L, (long) player.inventory.gem - rubychallenge);
                                                     PlayerService.gI().sendInfoHpMpMoney(player);
                                                     player.goldChallenge *= 2;
                                                     player.rubyChallenge += 2;
                                                 } else {
-                                                    Service.gI().sendThongBao(player, "Bạn không đủ ngọc, còn thiếu " + Util.numberToMoney(rubychallenge - player.inventory.ruby) + " ngọc nữa");
+                                                    Service.gI().sendThongBao(player, "Bạn không đủ ngọc, còn thiếu " + Util.numberToMoney(rubychallenge - player.inventory.gem) + " ngọc nữa");
                                                 }
                                             } else {
                                                 if (player.inventory.gold >= goldchallenge) {
@@ -122,7 +122,7 @@ public class GhiDanh extends Npc {
                                             if (select == 1) {
                                                 if (player.inventory.gem >= rubychallenge) {
                                                     The23rdMartialArtCongressService.gI().startChallenge(player);
-                                                    player.inventory.gem -= (rubychallenge);
+                                                    player.inventory.gem = (int) Math.max(0L, (long) player.inventory.gem - rubychallenge);
                                                     PlayerService.gI().sendInfoHpMpMoney(player);
                                                     player.goldChallenge *= 2;
                                                     player.rubyChallenge += 2;

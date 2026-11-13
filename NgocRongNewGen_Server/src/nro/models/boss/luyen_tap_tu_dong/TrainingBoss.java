@@ -1,6 +1,5 @@
 package nro.models.boss.luyen_tap_tu_dong;
 
-
 import nro.models.consts.ConstRatio;
 import nro.models.boss.Boss;
 import nro.models.boss.BossData;
@@ -12,7 +11,6 @@ import nro.models.consts.ConstPlayer;
 import java.io.IOException;
 import nro.models.services_dungeon.TrainingService;
 import nro.models.player.Player;
-import nro.models.services.EffectSkillService;
 import nro.models.map.service.MapService;
 import nro.models.services.PlayerService;
 import nro.models.services.Service;

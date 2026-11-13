@@ -2,26 +2,17 @@ package nro.models.boss.Cell;
 
 import nro.models.services.EffectSkillService;
 import nro.models.services.Service;
-import nro.models.services.TaskService;
-import nro.models.services.ItemService;
 import nro.models.boss.Boss;
 import nro.models.boss.BossID;
 import nro.models.boss.BossesData;
 import nro.models.consts.BossStatus;
 import nro.models.consts.ConstPlayer;
-import nro.models.item.Item;
-import nro.models.item.Item.ItemOption;
-import nro.models.map.ItemMap;
-import nro.models.mob.Mob;
 import nro.models.player.Player;
 import nro.models.services.PlayerService;
 import nro.models.utils.Util;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import nro.models.consts.ConstTaskBadges;
-import nro.models.task.BadgesTaskService;
 
 public class SieuBoHung extends Boss {
 

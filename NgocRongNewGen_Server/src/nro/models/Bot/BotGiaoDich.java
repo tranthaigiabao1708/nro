@@ -1,7 +1,6 @@
 package nro.models.Bot;
 
 import java.util.Random;
-import java.util.ArrayList;
 import java.util.List;
 import nro.models.item.Item;
 import nro.models.map.Zone;

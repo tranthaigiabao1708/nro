@@ -182,7 +182,7 @@ namespace Game2
 
 		public string reason = string.Empty;
 
-		public int compare;
+		public long compare;
 
 		public sbyte isMe;
 

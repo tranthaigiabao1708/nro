@@ -247,6 +247,15 @@ namespace Game1
 			return -i;
 		}
 
+		public static long abs(long i)
+		{
+			if (i > 0L)
+			{
+				return i;
+			}
+			return -i;
+		}
+
 		public static bool inRect(int x1, int y1, int width, int height, int x2, int y2)
 		{
 			if (x2 >= x1 && x2 <= x1 + width && y2 >= y1)

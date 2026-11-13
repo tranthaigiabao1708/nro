@@ -6,8 +6,6 @@ import java.util.Objects;
 import static nro.models.combine.CombineService.MAX_LEVEL_ITEM;
 import nro.models.consts.ConstTaskBadges;
 import nro.models.player.Player;
-import nro.models.server.ServerNotify;
-import nro.models.services.ChatGlobalService;
 import nro.models.services.InventoryService;
 import nro.models.services.Service;
 import nro.models.task.BadgesTaskService;

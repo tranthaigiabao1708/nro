@@ -412,8 +412,8 @@ namespace Game1.Assets.src.f
 									item.itemOption = new ItemOption[b14];
 									for (int num23 = 0; num23 < item.itemOption.Length; num23++)
 									{
-										int num24 = msg.reader().readUnsignedByte();
-										int param2 = msg.reader().readUnsignedShort();
+										int num24 = msg.reader().readUnsignedShort();
+										int param2 = msg.reader().readInt();
 										if (num24 != -1)
 										{
 											item.itemOption[num23] = new ItemOption(num24, param2);
@@ -531,8 +531,8 @@ namespace Game1.Assets.src.f
 							Char.myCharz().arrItemShop[b3][j].itemOption = new ItemOption[b4];
 							for (int k = 0; k < Char.myCharz().arrItemShop[b3][j].itemOption.Length; k++)
 							{
-								int num8 = msg.reader().readUnsignedByte();
-								int param = msg.reader().readUnsignedShort();
+								int num8 = msg.reader().readUnsignedShort();
+								int param = msg.reader().readInt();
 								if (num8 != -1)
 								{
 									Char.myCharz().arrItemShop[b3][j].itemOption[k] = new ItemOption(num8, param);
@@ -754,9 +754,9 @@ namespace Game1.Assets.src.f
 					item2.itemOption = new ItemOption[b19];
 					for (int num32 = 0; num32 < item2.itemOption.Length; num32++)
 					{
-						int num33 = msg.reader().readUnsignedByte();
+						int num33 = msg.reader().readUnsignedShort();
 						Res.outz("id o= " + num33);
-						int param3 = msg.reader().readUnsignedShort();
+						int param3 = msg.reader().readInt();
 						if (num33 != -1)
 						{
 							item2.itemOption[num32] = new ItemOption(num33, param3);
@@ -1105,8 +1105,8 @@ namespace Game1.Assets.src.f
 							array = new ItemOption[b3];
 							for (int j = 0; j < array.Length; j++)
 							{
-								int num4 = msg.reader().readUnsignedByte();
-								int param = msg.reader().readUnsignedShort();
+								int num4 = msg.reader().readUnsignedShort();
+								int param = msg.reader().readInt();
 								sbyte activeCard = msg.reader().readByte();
 								if (num4 != -1)
 								{

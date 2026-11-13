@@ -4,7 +4,6 @@ import nro.models.boss.BossID;
 import nro.models.boss.BossesData;
 import nro.models.player.Player;
 import nro.models.services.EffectSkillService;
-import nro.models.services.Service;
 import nro.models.utils.Util;
 
 public class CabbaVt6 extends Universe6Boss {

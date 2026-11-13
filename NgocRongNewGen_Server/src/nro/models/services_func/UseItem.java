@@ -16,8 +16,6 @@ import nro.models.consts.ConstNpc;
 import nro.models.consts.ConstPlayer;
 import nro.models.services.shenron.Shenron_Service;
 import nro.models.item.Item.ItemOption;
-import static java.awt.SystemColor.text;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -48,8 +46,6 @@ import nro.models.map.service.MapService;
 import nro.models.services_dungeon.NgocRongNamecService;
 import nro.models.map.service.ItemMapService;
 import nro.models.server.Manager;
-import static nro.models.server.Manager.isTopSukienChanged;
-import nro.models.services.ChatGlobalService;
 import nro.models.task.BadgesTaskService;
 import nro.models.utils.Logger;
 
@@ -904,6 +900,7 @@ public class UseItem {
                             case 193: //gói 10 viên capsule
                                 openCapsuleUI(pl);
                                 InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+                                break;
                             case 194: //capsule đặc biệt
                                 openCapsuleUI(pl);
                                 break;
@@ -1567,7 +1564,7 @@ public class UseItem {
             pl.nPoint.stamina = pl.nPoint.maxStamina;
             Service.gI().sendThongBao(pl, "Thể lực của bạn đã được hồi phục 100%");
         } else if (item.template.id == 212) {
-            pl.nPoint.stamina += (pl.nPoint.maxStamina * 20 / 100);
+            pl.nPoint.stamina = (short) Math.min((int) pl.nPoint.maxStamina, pl.nPoint.stamina + (pl.nPoint.maxStamina * 20 / 100));
             Service.gI().sendThongBao(pl, "Thể lực của bạn đã được hồi phục 20%");
         }
         InventoryService.gI().subQuantityItemsBag(pl, item, 1);
@@ -2134,10 +2131,7 @@ public class UseItem {
             Service.gI().sendInfoPlayerEatPea(player);
             if (player.pet != null && player.zone.equals(player.pet.zone) && !player.pet.isDie()) {
                 int statima = 100 * lvPea;
-                player.pet.nPoint.stamina += statima;
-                if (player.pet.nPoint.stamina > player.pet.nPoint.maxStamina) {
-                    player.pet.nPoint.stamina = player.pet.nPoint.maxStamina;
-                }
+                player.pet.nPoint.stamina = (short) Math.min((int) player.pet.nPoint.maxStamina, player.pet.nPoint.stamina + statima);
                 player.pet.nPoint.setHp(player.pet.nPoint.hp + hpKiHoiPhuc);
                 player.pet.nPoint.setMp(player.pet.nPoint.mp + hpKiHoiPhuc);
                 Service.gI().sendInfoPlayerEatPea(player.pet);

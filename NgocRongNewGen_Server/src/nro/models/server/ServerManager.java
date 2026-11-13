@@ -2,7 +2,6 @@ package nro.models.server;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import nro.models.database.HistoryTransactionDAO;
@@ -42,8 +41,6 @@ import nro.models.minigame.ChonAiDay_Gold;
 import nro.models.minigame.ConSoMayManGem;
 import nro.models.minigame.ConSoMayManGold;
 import nro.models.services.ClanService;
-import nro.models.services.TaskService;
-import nro.models.shop.ShopTab;
 import nro.models.shop_ky_gui.ConsignShopManager;
 
 /**

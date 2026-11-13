@@ -1,6 +1,5 @@
 package nro.models.services.shenron;
 
-import nro.models.services.shenron.SummonDragon;
 import nro.models.network.Message;
 import nro.models.consts.ConstNpc;
 import nro.models.database.MrBlue;

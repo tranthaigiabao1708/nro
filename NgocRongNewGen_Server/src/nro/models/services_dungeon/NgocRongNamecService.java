@@ -130,7 +130,7 @@ public class NgocRongNamecService implements Runnable {
     public void removeStoneNrNamec() {
         for (byte i = 0; i < (byte) 7; i++) {
             Zone zone = Manager.MAPS.get(mapNrNamec[i]).zones.get(zoneNrNamec[i]);
-            int idItem = (int) (i + 353);
+            int idItem = i + 353;
             int idItem2 = 362;
             for (byte j = 0; j < zone.items.size(); j++) {
                 if (zone.items.get(j).itemTemplate.id == idItem

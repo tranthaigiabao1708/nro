@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.StandardOpenOption;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import nro.models.server.Manager;
 import nro.models.network.MySession;
 import nro.models.utils.Logger;
@@ -34,7 +32,7 @@ public class DataGame {
     public static byte vsData = 11;
     public static byte vsMap = 5;
     public static byte vsSkill = 2;
-    public static byte vsItem = 55;
+    public static byte vsItem = 56;
     public static int vsRes = 1;
     public static short maxSmallVersion = 32767;
 

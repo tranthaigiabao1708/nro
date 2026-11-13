@@ -1,12 +1,10 @@
 package nro.models.boss.vo_dai_hat_mit;
 
-
 import nro.models.boss.BossID;
 import nro.models.boss.BossesData;
 import static nro.models.consts.BossType.PHOBAN;
 import nro.models.consts.ConstRatio;
 import nro.models.player.Player;
-import nro.models.services.EffectSkillService;
 import nro.models.services.SkillService;
 import nro.models.utils.SkillUtil;
 import nro.models.utils.Util;
@@ -49,5 +47,4 @@ public class ThoDauBac extends DeathOrAliveArena {
         goToXY(pl.location.x, pl.location.y, isTeleport);
     }
 }
-
 

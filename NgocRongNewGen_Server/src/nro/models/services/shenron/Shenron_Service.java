@@ -1,12 +1,9 @@
 package nro.models.services.shenron;
 
 import nro.models.consts.ConstNpc;
-import nro.models.services.shenron.Shenron_Event;
 import nro.models.item.Item;
 import nro.models.player.Player;
 import nro.models.services.ItemService;
-import nro.models.services.ItemService;
-import nro.models.services.Service;
 import nro.models.services.Service;
 import nro.models.map.service.NpcService;
 import nro.models.services.InventoryService;

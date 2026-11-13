@@ -1,16 +1,11 @@
 package nro.models.boss.Android;
 
-
 import nro.models.boss.Boss;
 import nro.models.boss.BossID;
 import nro.models.boss.BossesData;
-import java.util.Random;
-import nro.models.map.ItemMap;
 import nro.models.player.Player;
 import nro.models.skill.Skill;
 import nro.models.services.PlayerService;
-import nro.models.services.Service;
-import nro.models.services.TaskService;
 import nro.models.utils.Util;
 
 public class Android19 extends Boss {

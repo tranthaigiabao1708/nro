@@ -1,10 +1,8 @@
 package nro.models.task;
 
-import nro.models.task.BadgesTask;
 import nro.models.player.Player;
 import nro.models.player_badges.BadgesData;
 import nro.models.server.Manager;
-import nro.models.task.BadgesTaskTemplate;
 
 /**
  *

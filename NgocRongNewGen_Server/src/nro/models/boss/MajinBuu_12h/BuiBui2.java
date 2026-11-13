@@ -1,23 +1,17 @@
 package nro.models.boss.MajinBuu_12h;
 
-
 import nro.models.boss.Boss;
 import nro.models.boss.BossID;
 import nro.models.consts.BossStatus;
 import nro.models.boss.BossesData;
 import static nro.models.consts.BossType.FINAL;
 import nro.models.consts.ConstPlayer;
-import nro.models.item.Item;
-import java.util.List;
-import nro.models.map.ItemMap;
 import nro.models.player.Player;
 import nro.models.services.Service;
 import nro.models.utils.Util;
 import nro.models.server.ServerNotify;
 import nro.models.services.EffectSkillService;
-import nro.models.services.ItemService;
 import nro.models.services.SkillService;
-import nro.models.services.TaskService;
 import nro.models.skill.Skill;
 import nro.models.utils.SkillUtil;
 

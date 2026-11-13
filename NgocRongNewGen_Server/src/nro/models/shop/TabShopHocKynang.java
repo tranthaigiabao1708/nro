@@ -1,11 +1,7 @@
 package nro.models.shop;
 
 import java.util.ArrayList;
-import java.util.List;
-import nro.models.item.Item;
 import nro.models.player.Player;
-import nro.models.shop.ItemShop;
-import nro.models.shop.TabShop;
 
 /**
  *

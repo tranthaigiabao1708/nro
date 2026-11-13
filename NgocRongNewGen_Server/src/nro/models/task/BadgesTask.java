@@ -1,9 +1,5 @@
 package nro.models.task;
 
-import nro.models.player.Player;
-import nro.models.server.Manager;
-import nro.models.task.ClanTaskTemplate;
-
 /**
  *
  * @author By Mr Blue
@@ -38,8 +34,6 @@ public int getPercentProcess() {
     int percent = (int) ((long) count * 100 / countMax);
     return percent;
 }
-
-
 
     @Override
     public String toString() {

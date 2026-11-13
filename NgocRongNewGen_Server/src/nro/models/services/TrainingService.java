@@ -129,10 +129,8 @@ public class TrainingService {
 
     public void tangTnsmLuyenTap(Player player, long tnsm) {
         if (player.isPl()) {
-            player.tnsmLuyenTap += Math.max(100, tnsm / (100 * (Service.gI().getCurrLevel(player) + 1)));
-            if (player.tnsmLuyenTap > 10_000_000) {
-                player.tnsmLuyenTap = 10_000_000;
-            }
+            long gain = Math.max(100L, tnsm / (100L * (Service.gI().getCurrLevel(player) + 1)));
+            player.tnsmLuyenTap = (int) Math.min(10_000_000L, (long) player.tnsmLuyenTap + gain);
         }
     }
 

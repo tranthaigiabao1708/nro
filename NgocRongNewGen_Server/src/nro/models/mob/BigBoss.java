@@ -1,6 +1,5 @@
 package nro.models.mob;
 
-import nro.models.player.Player;
 import nro.models.utils.TimeUtil;
 
 public class BigBoss extends Mob {

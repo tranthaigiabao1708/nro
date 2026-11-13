@@ -3,11 +3,8 @@ package nro.models.shop;
 import nro.models.item.Item;
 import nro.models.player.Player;
 import nro.models.player_badges.BagesTemplate;
-import nro.models.shop.ItemShop;
-import nro.models.shop.TabShop;
 import nro.models.task.BadgesTaskService;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  *

@@ -3,20 +3,12 @@ import nro.models.consts.ConstPlayer;
 import nro.models.boss.Boss;
 import nro.models.boss.BossesData;
 import nro.models.boss.BossID;
-import nro.models.item.Item;
-import java.util.List;
-import java.util.Random;
-import nro.models.consts.ConstTaskBadges;
-import nro.models.map.ItemMap;
 import nro.models.player.Player;
 import nro.models.services.EffectSkillService;
-import nro.models.services.ItemService;
 import nro.models.services.PlayerService;
 import nro.models.services.Service;
-import nro.models.services.TaskService;
 import nro.models.utils.Util;
 import nro.models.map.service.ChangeMapService;
-import nro.models.task.BadgesTaskService;
 
 public class XenBoHung extends Boss {
 

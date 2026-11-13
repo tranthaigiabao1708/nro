@@ -1,6 +1,5 @@
 package nro.models.boss.vodai_vt6;
 
-import nro.models.boss.Boss;
 import nro.models.boss.BossID;
 import nro.models.boss.Boss_Manager.BossManager;
 import nro.models.boss.BossesData;

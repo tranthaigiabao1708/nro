@@ -1,15 +1,10 @@
 package nro.models.npc_list;
 
 import nro.models.consts.ConstNpc;
-import nro.models.item.Item;
 import nro.models.npc.Npc;
 import nro.models.player.Player;
-import nro.models.services.InventoryService;
-import nro.models.services.ItemService;
-import nro.models.services.Service;
 import nro.models.services.TaskService;
 import nro.models.shop.ShopService;
-import nro.models.utils.Util;
 
 /**
  *

@@ -1,17 +1,11 @@
 package nro.models.boss.Baby;
 
-import java.util.List;
 import nro.models.consts.ConstPlayer;
 import nro.models.boss.Boss;
 import nro.models.boss.BossesData;
 import nro.models.boss.BossID;
-import nro.models.item.Item;
-import nro.models.map.ItemMap;
 import nro.models.player.Player;
 import nro.models.services.EffectSkillService;
-import nro.models.services.ItemService;
-import nro.models.services.Service;
-import nro.models.services.SkillService;
 import nro.models.utils.Util;
 
 public class Baby extends Boss {

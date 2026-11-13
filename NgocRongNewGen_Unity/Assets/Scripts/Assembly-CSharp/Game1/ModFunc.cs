@@ -798,7 +798,7 @@ namespace Game1
 			{
 				if (item.itemOption[i].optionTemplate.id == 107)
 				{
-					return item.itemOption[i].param;
+					return (int)item.itemOption[i].param;
 				}
 			}
 			return 0;

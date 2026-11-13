@@ -116,7 +116,7 @@ public class PetService {
     public void createUubPet(Player player, byte... limitPower) {
         new Thread(() -> {
             try {
-                createNewPet(player, false, true, false, false, (byte) player.gender);
+                createNewPet(player, false, true, false, false, player.gender);
                 if (limitPower != null && limitPower.length == 1) {
                     player.pet.nPoint.limitPower = limitPower[0];
                 }
@@ -130,7 +130,7 @@ public class PetService {
     public void createJirenPet(Player player, byte... limitPower) {
         new Thread(() -> {
             try {
-                createNewPet(player, false, false, false,true, (byte) player.gender);
+                createNewPet(player, false, false, false,true, player.gender);
                 if (limitPower != null && limitPower.length == 1) {
                     player.pet.nPoint.limitPower = limitPower[0];
                 }
@@ -144,7 +144,7 @@ public class PetService {
     public void createKidBeerPet(Player player, byte... limitPower) {
         new Thread(() -> {
             try {
-                createNewPet(player, false, false, true, false, (byte) player.gender);
+                createNewPet(player, false, false, true, false, player.gender);
                 if (limitPower != null && limitPower.length == 1) {
                     player.pet.nPoint.limitPower = limitPower[0];
                 }

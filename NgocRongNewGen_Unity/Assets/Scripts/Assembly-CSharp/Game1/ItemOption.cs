@@ -2,7 +2,7 @@ namespace Game1
 {
 	public class ItemOption
 	{
-		public int param;
+		public long param;
 
 		public sbyte active;
 
@@ -23,20 +23,23 @@ namespace Game1
 			return false;
 		}
 
-		public ItemOption(int optionTemplateId, int param)
+		public ItemOption(int optionTemplateId, long param)
 		{
 			if (optionTemplateId == 22)
 			{
 				optionTemplateId = 6;
-				param *= 1000;
+				param *= 1000L;
 			}
 			if (optionTemplateId == 23)
 			{
 				optionTemplateId = 7;
-				param *= 1000;
+				param *= 1000L;
 			}
 			this.param = param;
-			optionTemplate = GameScr.gI().iOptionTemplates[optionTemplateId];
+			if (GameScr.gI().iOptionTemplates != null && optionTemplateId >= 0 && optionTemplateId < GameScr.gI().iOptionTemplates.Length)
+			{
+				optionTemplate = GameScr.gI().iOptionTemplates[optionTemplateId];
+			}
 		}
 
 		public string getOptionString()

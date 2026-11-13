@@ -1,6 +1,5 @@
 package nro.models.npc_list;
 
-import nro.models.clan.Clan;
 import nro.models.consts.ConstNpc;
 import nro.models.consts.ConstPlayer;
 import java.util.ArrayList;
@@ -8,18 +7,14 @@ import nro.models.npc.Npc;
 import nro.models.player.Player;
 import nro.models.services.ItemService;
 import nro.models.map.service.NpcService;
-import nro.models.services.RewardService;
 import nro.models.services.Service;
 import nro.models.shop.ShopService;
 import nro.models.services.TaskService;
-import nro.models.map.service.ChangeMapService;
-import nro.models.services_func.Input;
 import nro.models.services.PlayerService;
 import nro.models.skill.Skill;
 import nro.models.utils.Logger;
 import nro.models.utils.SkillUtil;
 import nro.models.utils.TimeUtil;
-import nro.models.utils.Util;
 
 public class VuaVegeta extends Npc {
 
@@ -71,7 +66,7 @@ public class VuaVegeta extends Npc {
             var ngoc = 5;
             var time = player.LearnSkill.Time - System.currentTimeMillis();
             if (time / 600_000 >= 2) {
-                ngoc += time / 600_000;
+                ngoc = (int) Math.min((long) Integer.MAX_VALUE, (long) ngoc + (time / 600_000));
             }
             String[] subName = ItemService.gI().getTemplate(player.LearnSkill.ItemTemplateSkillId).name.split("");
             byte level = Byte.parseByte(subName[subName.length - 1]);
@@ -90,7 +85,7 @@ public class VuaVegeta extends Npc {
                 var time = player.LearnSkill.Time - System.currentTimeMillis();
                 var ngoc = 5;
                 if (time / 600_000 >= 2) {
-                    ngoc += time / 600_000;
+                    ngoc = (int) Math.min((long) Integer.MAX_VALUE, (long) ngoc + (time / 600_000));
                 }
                 if (player.inventory.gem < ngoc) {
                     Service.gI().sendThongBao(player, "Bạn không có đủ ngọc");

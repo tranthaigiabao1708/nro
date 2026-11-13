@@ -59,7 +59,7 @@ public final class MobMe extends Mob {
                     msg = new Message(-95);
                     msg.writer().writeByte(3);
                     msg.writer().writeInt(this.id);
-                    msg.writer().writeInt((int) mob.id);
+                    msg.writer().writeInt(mob.id);
                     mob.point.sethp(mob.point.gethp() - this.point.dame);
                     msg.writer().writeLong(mob.point.gethp());
                     msg.writer().writeLong(this.point.dame);

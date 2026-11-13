@@ -1,6 +1,5 @@
 package nro.models.boss.MajinBuu_12h;
 
-
 import nro.models.boss.Boss;
 import nro.models.boss.BossID;
 import nro.models.consts.BossStatus;
@@ -13,15 +12,12 @@ import nro.models.map.ItemMap;
 import nro.models.player.Player;
 import nro.models.services.Service;
 import nro.models.utils.Util;
-import java.util.ArrayList;
-import java.util.List;
 import nro.models.services_dungeon.MajinBuuService;
 import nro.models.services.EffectSkillService;
 import nro.models.services.ItemTimeService;
 import nro.models.services.SkillService;
 import nro.models.services.TaskService;
 import nro.models.map.service.ChangeMapService;
-import nro.models.services.ItemService;
 import nro.models.utils.SkillUtil;
 
 public class Mabu extends Boss {

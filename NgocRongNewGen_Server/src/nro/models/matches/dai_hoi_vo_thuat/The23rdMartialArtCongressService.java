@@ -2,7 +2,6 @@ package nro.models.matches.dai_hoi_vo_thuat;
 import nro.models.matches.giai_dau.The23rdMartialArtCongressManager;
 import nro.models.map.Zone;
 import nro.models.player.Player;
-import nro.models.matches.dai_hoi_vo_thuat.The23rdMartialArtCongress;
 import nro.models.network.Message;
 import nro.models.map.service.MapService;
 import nro.models.services.Service;

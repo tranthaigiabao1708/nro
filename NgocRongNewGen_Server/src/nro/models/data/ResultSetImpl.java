@@ -5,7 +5,6 @@ import java.sql.ResultSetMetaData;
 import java.util.HashMap;
 import java.sql.ResultSet;
 import java.util.Map;
-import nro.models.data.LocalResultSet;
 
 public class ResultSetImpl implements LocalResultSet {
 

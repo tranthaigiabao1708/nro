@@ -9,8 +9,6 @@ import nro.models.network.Message;
 import nro.models.server.Client;
 import nro.models.map.service.MapService;
 import nro.models.map.service.NpcService;
-import nro.models.services.Service;
-import nro.models.services.TaskService;
 import nro.models.map.service.ChangeMapService;
 import nro.models.utils.Logger;
 import nro.models.utils.Util;
@@ -148,7 +146,7 @@ public class FriendAndEnemyService {
                 msg.writer().writeShort(f.leg);
                 msg.writer().writeByte(f.bag);
                 msg.writer().writeUTF(f.name);
-                msg.writer().writeBoolean(Client.gI().getPlayer((int) f.id) != null);
+                msg.writer().writeBoolean(Client.gI().getPlayer(f.id) != null);
                 msg.writer().writeUTF(Util.numberToMoney(f.power));
             }
             player.sendMessage(msg);
@@ -174,7 +172,7 @@ public class FriendAndEnemyService {
                 msg.writer().writeShort(e.bag);
                 msg.writer().writeUTF(e.name);
                 msg.writer().writeUTF(Util.numberToMoney(e.power));
-                msg.writer().writeBoolean(Client.gI().getPlayer((int) e.id) != null);
+                msg.writer().writeBoolean(Client.gI().getPlayer(e.id) != null);
             }
             player.sendMessage(msg);
             msg.cleanup();
@@ -215,7 +213,7 @@ public class FriendAndEnemyService {
                 try {
                     msg = new Message(-80);
                     msg.writer().writeByte(REMOVE_FRIEND);
-                    msg.writer().writeInt((int) player.friends.get(i).id);
+                    msg.writer().writeInt(player.friends.get(i).id);
                     player.sendMessage(msg);
                     msg.cleanup();
                 } catch (Exception e) {

@@ -128,7 +128,7 @@ public class ChatGlobalService implements Runnable {
             msg = new Message(92);
             msg.writer().writeUTF(chat.playerName);
             msg.writer().writeUTF("|5|" + chat.text);
-            msg.writer().writeInt((int) chat.playerId);
+            msg.writer().writeInt(chat.playerId);
             msg.writer().writeShort(chat.head);
             msg.writer().writeShort(-1);
             msg.writer().writeShort(chat.body);

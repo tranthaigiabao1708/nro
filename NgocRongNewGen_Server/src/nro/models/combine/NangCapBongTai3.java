@@ -2,7 +2,6 @@ package nro.models.combine;
 
 import nro.models.consts.ConstNpc;
 import nro.models.item.Item;
-import nro.models.item.Item.ItemOption;
 import nro.models.player.Player;
 import nro.models.services.InventoryService;
 import nro.models.services.ItemService;

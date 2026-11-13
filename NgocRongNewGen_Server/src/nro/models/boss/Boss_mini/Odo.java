@@ -4,41 +4,20 @@ import nro.models.boss.Boss;
 import nro.models.boss.BossData;
 import nro.models.boss.BossID;
 import nro.models.consts.BossStatus;
-import static nro.models.consts.BossType.ANTROM;
 import nro.models.consts.ConstPlayer;
 import nro.models.map.ItemMap;
-import nro.models.map.Zone;
 import nro.models.player.Player;
-import nro.models.services.EffectSkillService;
 import nro.models.services.Service;
 import nro.models.map.service.ChangeMapService;
-import nro.models.map.service.MapService;
 import nro.models.services.PlayerService;
 import nro.models.skill.Skill;
 import nro.models.utils.Util;
-import nro.models.boss.Boss;
-import nro.models.boss.BossData;
-import nro.models.boss.BossID;
-import nro.models.consts.BossStatus;
-import static nro.models.consts.BossType.ANTROM;
-import nro.models.consts.ConstPlayer;
 import nro.models.consts.ConstTaskBadges;
 import java.util.List;
-import nro.models.map.ItemMap;
-import nro.models.map.Zone;
-import nro.models.player.EffectSkin;
 import static nro.models.player.EffectSkin.textOdo;
-import nro.models.player.Player;
-import nro.models.services.EffectSkillService;
-import nro.models.services.Service;
 import nro.models.services.SkillService;
-import nro.models.map.service.ChangeMapService;
-import nro.models.map.service.MapService;
-import nro.models.services.PlayerService;
-import nro.models.skill.Skill;
 import nro.models.task.BadgesTaskService;
 import nro.models.utils.SkillUtil;
-import nro.models.utils.Util;
 
 public class Odo extends Boss {
 
@@ -182,8 +161,6 @@ public class Odo extends Boss {
             }
 
             BadgesTaskService.updateCountBagesTask(plKill, ConstTaskBadges.O_DO, 1);
-            int diem = 5;
-
         } catch (Exception e) {
             e.printStackTrace();
         }

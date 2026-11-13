@@ -1,22 +1,13 @@
 package nro.models.boss.Boss_mini;
 
 import nro.models.boss.Boss;
-import nro.models.boss.BossData;
 import nro.models.boss.BossID;
 import nro.models.boss.BossesData;
 import nro.models.consts.BossStatus;
-import nro.models.consts.ConstPlayer;
 import java.util.Random;
 import nro.models.map.ItemMap;
-import nro.models.map.service.ChangeMapService;
-import nro.models.map.service.MapService;
-import nro.models.map.Zone;
 import nro.models.player.Player;
-import nro.models.services.PlayerService;
 import nro.models.services.Service;
-import nro.models.services.SkillService;
-import nro.models.services.TaskService;
-import nro.models.skill.Skill;
 import nro.models.utils.Util;
 
 /**

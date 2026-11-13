@@ -2,8 +2,6 @@ package nro.models.services_func;
 
 import nro.models.item.Item;
 import nro.models.player.Player;
-import nro.models.services.ItemService;
-import nro.models.shop.ShopService;
 
 /**
  *

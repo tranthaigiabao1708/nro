@@ -53,9 +53,8 @@ namespace Game1
 			{
 				num <<= 8;
 				short num2 = num;
-				short num3 = 255;
 				sbyte[] array = buffer;
-				num = (short)(num2 | (num3 & array[posRead++]));
+				num = (short)((ushort)num2 | (byte)array[posRead++]);
 			}
 			return num;
 		}

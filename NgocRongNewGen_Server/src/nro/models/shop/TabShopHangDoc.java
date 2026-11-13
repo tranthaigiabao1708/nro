@@ -2,7 +2,6 @@ package nro.models.shop;
 
 import nro.models.player.Player;
 import java.util.ArrayList;
-import java.util.List;
 import nro.models.services.InventoryService;
 
 /**

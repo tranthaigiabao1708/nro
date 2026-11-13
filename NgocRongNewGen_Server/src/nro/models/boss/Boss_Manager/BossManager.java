@@ -85,7 +85,6 @@ import nro.models.boss.yardrat.TAPSU4;
 import nro.models.player.Player;
 import nro.models.network.Message;
 import nro.models.map.service.MapService;
-import java.util.ArrayList;
 import java.util.List;
 import nro.models.boss.Baby.Baby;
 import nro.models.boss.cumber.Cumber;
@@ -96,10 +95,7 @@ import nro.models.boss.vodai_vt6.ChampaVt6;
 import nro.models.boss.vodai_vt6.FrostVt6;
 import nro.models.boss.vodai_vt6.HitVt6;
 import nro.models.map.Zone;
-import nro.models.mob_bigboss.GauTuongCuop;
-import nro.models.server.Maintenance;
 import nro.models.server.ServerManager;
-import nro.models.utils.Functions;
 import nro.models.utils.Logger;
 
 public class BossManager implements Runnable {

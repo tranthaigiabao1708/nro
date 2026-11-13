@@ -46,7 +46,6 @@ import nro.models.matches.TOP;
 import nro.models.mob_bigboss.GauTuongCuop;
 import nro.models.npc.NonInteractiveNPC;
 import nro.models.npc.Npc;
-import nro.models.player_system.Template.Part;
 import nro.models.server.Manager;
 
 /**
@@ -870,8 +869,8 @@ public class Service {
                     List<ItemOption> itemOptions = item.itemOptions;
                     msg.writer().writeByte(itemOptions.size());
                     for (ItemOption itemOption : itemOptions) {
-                        msg.writer().writeByte(itemOption.optionTemplate.id);
-                        msg.writer().writeShort(itemOption.param);
+                        msg.writer().writeShort(itemOption.optionTemplate.id);
+                        msg.writer().writeInt(itemOption.param);
                     }
                 }
 
@@ -890,8 +889,8 @@ public class Service {
                     List<ItemOption> itemOptions = item.itemOptions;
                     msg.writer().writeByte(itemOptions.size());
                     for (ItemOption itemOption : itemOptions) {
-                        msg.writer().writeByte(itemOption.optionTemplate.id);
-                        msg.writer().writeShort(itemOption.param);
+                        msg.writer().writeShort(itemOption.optionTemplate.id);
+                        msg.writer().writeInt(itemOption.param);
                     }
                 }
 
@@ -910,8 +909,8 @@ public class Service {
                     List<ItemOption> itemOptions = item.itemOptions;
                     msg.writer().writeByte(itemOptions.size());
                     for (ItemOption itemOption : itemOptions) {
-                        msg.writer().writeByte(itemOption.optionTemplate.id);
-                        msg.writer().writeShort(itemOption.param);
+                        msg.writer().writeShort(itemOption.optionTemplate.id);
+                        msg.writer().writeInt(itemOption.param);
                     }
                 }
             }
@@ -1392,16 +1391,16 @@ public class Service {
                 msg.writer().writeByte(1);
                 switch (flagTempId[i]) {
                     case 363:
-                        msg.writer().writeByte(73);
-                        msg.writer().writeShort(0);
+                        msg.writer().writeShort(73);
+                        msg.writer().writeInt(0);
                         break;
                     case 371:
-                        msg.writer().writeByte(88);
-                        msg.writer().writeShort(10);
+                        msg.writer().writeShort(88);
+                        msg.writer().writeInt(10);
                         break;
                     default:
-                        msg.writer().writeByte(88);
-                        msg.writer().writeShort(5);
+                        msg.writer().writeShort(88);
+                        msg.writer().writeInt(5);
                         break;
                 }
             }
@@ -1620,8 +1619,8 @@ public class Service {
                         int countOption = item.itemOptions.size();
                         msg.writer().writeByte(countOption);
                         for (ItemOption iop : item.itemOptions) {
-                            msg.writer().writeByte(iop.optionTemplate.id);
-                            msg.writer().writeShort(iop.param);
+                            msg.writer().writeShort(iop.optionTemplate.id);
+                            msg.writer().writeInt(iop.param);
                         }
                     }
                 }
@@ -1639,7 +1638,7 @@ public class Service {
                 msg.writer().writeShort(pl.pet.nPoint.stamina); //stamina
                 msg.writer().writeShort(pl.pet.nPoint.maxStamina); //stamina full
                 msg.writer().writeByte(pl.pet.nPoint.crit); //crit
-                msg.writer().writeShort(pl.pet.nPoint.def); //def
+                msg.writer().writeInt(pl.pet.nPoint.def); //def
                 int sizeSkill = pl.pet.playerSkill.skills.size();
                 msg.writer().writeByte(5); //count pet skill
                 for (int i = 0; i < sizeSkill; i++) {

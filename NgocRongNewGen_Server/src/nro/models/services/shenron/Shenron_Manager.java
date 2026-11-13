@@ -1,11 +1,9 @@
 package nro.models.services.shenron;
 
-import nro.models.services.shenron.Shenron_Event;
 import nro.models.utils.Functions;
 import nro.models.utils.Util;
 import java.util.ArrayList;
 import java.util.List;
-import nro.models.server.Maintenance;
 import nro.models.server.Maintenance;
 
 /**

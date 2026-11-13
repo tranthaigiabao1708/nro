@@ -147,7 +147,7 @@ public class QuyLaoKame extends Npc {
                 var time = player.LearnSkill.Time - System.currentTimeMillis();
                 var ngoc = 5;
                 if (time / 600_000 >= 2) {
-                    ngoc += time / 600_000;
+                    ngoc = (int) Math.min((long) Integer.MAX_VALUE, (long) ngoc + (time / 600_000));
                 }
                 if (player.inventory.gem < ngoc) {
                     Service.gI().sendThongBao(player, "Bạn không có đủ ngọc");
@@ -194,7 +194,7 @@ public class QuyLaoKame extends Npc {
             var ngoc = 5;
             var time = player.LearnSkill.Time - System.currentTimeMillis();
             if (time / 600_000 >= 2) {
-                ngoc += time / 600_000;
+                ngoc = (int) Math.min((long) Integer.MAX_VALUE, (long) ngoc + (time / 600_000));
             }
             String[] subName = ItemService.gI().getTemplate(player.LearnSkill.ItemTemplateSkillId).name.split("");
             byte level = Byte.parseByte(subName[subName.length - 1]);

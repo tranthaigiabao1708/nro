@@ -21,7 +21,6 @@ import nro.models.services.EffectSkillService;
 import nro.models.services.PlayerService;
 import nro.models.services.TaskService;
 import nro.models.utils.Logger;
-import nro.models.utils.TimeUtil;
 
 import java.util.List;
 import nro.models.services_dungeon.BlackBallWarService;
@@ -645,7 +644,7 @@ public class ChangeMapService {
             if (player.pet != null && player.pet.mobMe != null) {
                 msg = new Message(-95);
                 msg.writer().writeByte(0);//type
-                msg.writer().writeInt((int) player.pet.mobMe.id);
+                msg.writer().writeInt(player.pet.mobMe.id);
                 msg.writer().writeShort(player.pet.mobMe.tempId);
                 msg.writer().writeLong(player.pet.mobMe.point.gethp());// hp mob
                 Service.gI().sendMessAnotherNotMeInMap(player, msg);

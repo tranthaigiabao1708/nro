@@ -1,6 +1,5 @@
 package nro.models.boss.vo_dai_hat_mit;
 
-
 import nro.models.consts.ConstRatio;
 import nro.models.boss.Boss;
 import nro.models.boss.BossData;
@@ -8,7 +7,6 @@ import nro.models.boss.Boss_Manager.OtherBossManager;
 import nro.models.consts.BossStatus;
 import nro.models.consts.BossType;
 import nro.models.player.Player;
-import nro.models.services.EffectSkillService;
 import nro.models.services.PlayerService;
 import nro.models.services.SkillService;
 import nro.models.map.service.ChangeMapService;

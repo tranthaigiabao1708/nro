@@ -2,7 +2,6 @@ package nro.models.boss.vodai_vt6;
 
 import java.text.Normalizer;
 import java.util.Locale;
-import nro.models.boss.Boss;
 import nro.models.boss.BossID;
 import nro.models.boss.BossesData;
 import nro.models.player.Player;
@@ -97,7 +96,7 @@ public class AutaMagetta extends Universe6Boss {
             if (pl.itemTime != null && pl.itemTime.isUseThuocGiaiVt6) {
                 continue;
             }
-            long mpBurn = (long) pl.nPoint.mpMax * 15L / 100L;
+            long mpBurn = pl.nPoint.mpMax * 15L / 100L;
             pl.nPoint.subMP(mpBurn);
             applyPercentMaxHpStrike(pl, 8, true, false);
             PlayerService.gI().sendInfoHpMp(pl);

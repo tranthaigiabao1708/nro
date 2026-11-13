@@ -54,7 +54,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import nro.models.npc.NonInteractiveNPC;
-import nro.models.player.Player;
 import nro.models.player_badges.BagesTemplate;
 import nro.models.shop_ky_gui.ConsignItem;
 import nro.models.shop_ky_gui.ConsignShopManager;
@@ -1110,8 +1109,7 @@ public final class Manager {
      */
     private int[][] readTileIndexTileType(int tileTypeFocus) {
         int[][] tileIndexTileType = null;
-        try {
-            DataInputStream dis = new DataInputStream(new FileInputStream("data/map/tile_set_info"));
+        try (DataInputStream dis = new DataInputStream(new FileInputStream("data/map/tile_set_info"))) {
             int numTileMap = dis.readByte();
             tileIndexTileType = new int[numTileMap][];
             for (int i = 0; i < numTileMap; i++) {

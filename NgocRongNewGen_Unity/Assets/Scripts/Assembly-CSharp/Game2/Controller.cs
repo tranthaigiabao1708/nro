@@ -67,7 +67,7 @@ namespace Game2
 				{
 					while (true)
 					{
-						item.options.addElement(new ItemOption(msg.reader().readUnsignedByte(), msg.reader().readUnsignedShort()));
+						item.options.addElement(new ItemOption(msg.reader().readUnsignedShort(), msg.reader().readInt()));
 					}
 				}
 				catch (Exception)
@@ -154,8 +154,8 @@ namespace Game2
 								Char.myPetz().arrItemBody[m].itemOption = new ItemOption[num9];
 								for (int n = 0; n < Char.myPetz().arrItemBody[m].itemOption.Length; n++)
 								{
-									int num10 = msg.reader().readUnsignedByte();
-									int param = msg.reader().readUnsignedShort();
+									int num10 = msg.reader().readUnsignedShort();
+									int param = msg.reader().readInt();
 									if (num10 != -1)
 									{
 										Char.myPetz().arrItemBody[m].itemOption[n] = new ItemOption(num10, param);
@@ -185,7 +185,7 @@ namespace Game2
 						Char.myPetz().cStamina = msg.reader().readShort();
 						Char.myPetz().cMaxStamina = msg.reader().readShort();
 						Char.myPetz().cCriticalFull = msg.reader().readByte();
-						Char.myPetz().cDefull = msg.reader().readShort();
+						Char.myPetz().cDefull = msg.reader().readInt();
 						Char.myPetz().arrPetSkill = new Skill[msg.reader().readByte()];
 						for (int num11 = 0; num11 < Char.myPetz().arrPetSkill.Length; num11++)
 						{
@@ -723,8 +723,8 @@ namespace Game2
 								item2.itemOption = new ItemOption[num40];
 								for (int num41 = 0; num41 < item2.itemOption.Length; num41++)
 								{
-									int num42 = msg.reader().readUnsignedByte();
-									int param2 = msg.reader().readUnsignedShort();
+									int num42 = msg.reader().readUnsignedShort();
+									int param2 = msg.reader().readInt();
 									if (num42 != -1)
 									{
 										item2.itemOption[num41] = new ItemOption(num42, param2);
@@ -2205,8 +2205,8 @@ namespace Game2
 								Char.myCharz().arrItemShop[num137][num139].itemOption = new ItemOption[num141];
 								for (int num142 = 0; num142 < Char.myCharz().arrItemShop[num137][num139].itemOption.Length; num142++)
 								{
-									int num143 = msg.reader().readUnsignedByte();
-									int param7 = msg.reader().readUnsignedShort();
+									int num143 = msg.reader().readUnsignedShort();
+									int param7 = msg.reader().readInt();
 									if (num143 != -1)
 									{
 										Char.myCharz().arrItemShop[num137][num139].itemOption[num142] = new ItemOption(num143, param7);
@@ -2344,8 +2344,8 @@ namespace Game2
 							Char.myCharz().arrItemBody[num111].itemOption = new ItemOption[num113];
 							for (int num114 = 0; num114 < Char.myCharz().arrItemBody[num111].itemOption.Length; num114++)
 							{
-								int num115 = msg.reader().readUnsignedByte();
-								int param6 = msg.reader().readUnsignedShort();
+								int num115 = msg.reader().readUnsignedShort();
+								int param6 = msg.reader().readInt();
 								if (num115 != -1)
 								{
 									Char.myCharz().arrItemBody[num111].itemOption[num114] = new ItemOption(num115, param6);
@@ -2393,8 +2393,8 @@ namespace Game2
 								Char.myCharz().arrItemBag[num77].itemOption = new ItemOption[num79];
 								for (int num80 = 0; num80 < Char.myCharz().arrItemBag[num77].itemOption.Length; num80++)
 								{
-									int num81 = msg.reader().readUnsignedByte();
-									int param5 = msg.reader().readUnsignedShort();
+									int num81 = msg.reader().readUnsignedShort();
+									int param5 = msg.reader().readInt();
 									if (num81 != -1)
 									{
 										Char.myCharz().arrItemBag[num77].itemOption[num80] = new ItemOption(num81, param5);
@@ -2453,8 +2453,8 @@ namespace Game2
 								Char.myCharz().arrItemBox[num57].itemOption = new ItemOption[num59];
 								for (int num60 = 0; num60 < Char.myCharz().arrItemBox[num57].itemOption.Length; num60++)
 								{
-									int num61 = msg.reader().readUnsignedByte();
-									int param4 = msg.reader().readUnsignedShort();
+									int num61 = msg.reader().readUnsignedShort();
+									int param4 = msg.reader().readInt();
 									if (num61 != -1)
 									{
 										Char.myCharz().arrItemBox[num57].itemOption[num60] = new ItemOption(num61, param4);
@@ -2994,8 +2994,8 @@ namespace Game2
 							Char.MyPet2z().arrItemBody[num45].itemOption = new ItemOption[num47];
 							for (int num48 = 0; num48 < Char.MyPet2z().arrItemBody[num45].itemOption.Length; num48++)
 							{
-								int num49 = msg.reader().readUnsignedByte();
-								int param3 = msg.reader().readUnsignedShort();
+								int num49 = msg.reader().readUnsignedShort();
+								int param3 = msg.reader().readInt();
 								if (num49 != -1)
 								{
 									Char.MyPet2z().arrItemBody[num45].itemOption[num48] = new ItemOption(num49, param3);
@@ -5436,8 +5436,8 @@ namespace Game2
 								Char.myCharz().arrItemBody[j].itemOption = new ItemOption[num3];
 								for (int k = 0; k < Char.myCharz().arrItemBody[j].itemOption.Length; k++)
 								{
-									int num4 = msg.reader().readUnsignedByte();
-									int param = msg.reader().readUnsignedShort();
+									int num4 = msg.reader().readUnsignedShort();
+									int param = msg.reader().readInt();
 									if (num4 != -1)
 									{
 										Char.myCharz().arrItemBody[j].itemOption[k] = new ItemOption(num4, param);
@@ -5479,8 +5479,8 @@ namespace Game2
 							Char.myCharz().arrItemBag[l].itemOption = new ItemOption[b4];
 							for (int m = 0; m < Char.myCharz().arrItemBag[l].itemOption.Length; m++)
 							{
-								int num6 = msg.reader().readUnsignedByte();
-								int param2 = msg.reader().readUnsignedShort();
+								int num6 = msg.reader().readUnsignedShort();
+								int param2 = msg.reader().readInt();
 								if (num6 != -1)
 								{
 									Char.myCharz().arrItemBag[l].itemOption[m] = new ItemOption(num6, param2);
@@ -5510,8 +5510,8 @@ namespace Game2
 						Char.myCharz().arrItemBox[n].itemOption = new ItemOption[msg.reader().readByte()];
 						for (int num8 = 0; num8 < Char.myCharz().arrItemBox[n].itemOption.Length; num8++)
 						{
-							int num9 = msg.reader().readUnsignedByte();
-							int param3 = msg.reader().readUnsignedShort();
+							int num9 = msg.reader().readUnsignedShort();
+							int param3 = msg.reader().readInt();
 							if (num9 != -1)
 							{
 								Char.myCharz().arrItemBox[n].itemOption[num8] = new ItemOption(num9, param3);
@@ -6090,7 +6090,7 @@ namespace Game2
 				{
 				case 0:
 				{
-					GameScr.gI().iOptionTemplates = new ItemOptionTemplate[d.readUnsignedByte()];
+					GameScr.gI().iOptionTemplates = new ItemOptionTemplate[d.readUnsignedShort()];
 					for (int k = 0; k < GameScr.gI().iOptionTemplates.Length; k++)
 					{
 						GameScr.gI().iOptionTemplates[k] = new ItemOptionTemplate();

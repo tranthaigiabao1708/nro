@@ -16,8 +16,6 @@ import nro.models.services.SkillService;
 import nro.models.map.service.ChangeMapService;
 import nro.models.utils.TimeUtil;
 import java.util.List;
-import nro.models.consts.ConstAchievement;
-import nro.models.services.AchievementService;
 import nro.models.services_func.UseItem;
 
 /**
@@ -579,10 +577,7 @@ public class Pet extends Player {
                 if (!this.isDie()) {
                     int statima = 100 * 10;
                     int hpKiHoiPhuc = 100000;
-                    this.nPoint.stamina += statima;
-                    if (this.nPoint.stamina > this.nPoint.maxStamina) {
-                        this.nPoint.stamina = this.nPoint.maxStamina;
-                    }
+                    this.nPoint.stamina = (short) Math.min((int) this.nPoint.maxStamina, this.nPoint.stamina + statima);
                     this.nPoint.setHp(this.nPoint.hp + hpKiHoiPhuc);
                     this.nPoint.setMp(this.nPoint.mp + hpKiHoiPhuc);
                     Service.gI().sendInfoPlayerEatPea(this);

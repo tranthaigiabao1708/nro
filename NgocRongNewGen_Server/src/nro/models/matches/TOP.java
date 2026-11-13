@@ -2,7 +2,6 @@ package nro.models.matches;
 
 import lombok.Builder;
 import lombok.Data;
-import nro.models.player.Player;
 
 @Data
 @Builder

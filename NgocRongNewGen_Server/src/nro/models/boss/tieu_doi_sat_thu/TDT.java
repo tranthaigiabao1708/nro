@@ -3,12 +3,8 @@ import nro.models.boss.Boss;
 import nro.models.boss.BossID;
 import nro.models.consts.BossStatus;
 import nro.models.boss.BossesData;
-import java.util.Random;
-import nro.models.map.ItemMap;
 import nro.models.player.Player;
 import nro.models.services.EffectSkillService;
-import nro.models.services.Service;
-import nro.models.services.TaskService;
 import nro.models.utils.Util;
 
 public class TDT extends Boss {

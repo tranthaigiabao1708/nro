@@ -17,11 +17,7 @@ import nro.models.skill.Skill;
 import nro.models.utils.Logger;
 import nro.models.utils.SkillUtil;
 
-import java.util.List;
-import java.util.Random;
-import nro.models.map.Map;
 import nro.models.map.Zone;
-import nro.models.map.service.ChangeMapService;
 
 public class BotAttackplayer extends Bot {
 
@@ -217,12 +213,12 @@ public class BotAttackplayer extends Bot {
         if (attacker == null) {
             return;
         }
-        int percentPST = target.nPoint.tlPST;
+        int percentPST = Math.max(0, Math.min(50, target.nPoint.tlPST));
         if (percentPST == 0) {
             return;
         }
 
-        long damePST = dame / 100L * percentPST;
+        long damePST = Math.max(0L, (dame / 100L) * percentPST + (dame % 100L) * percentPST / 100L);
         if (damePST >= attacker.nPoint.hp) {
             damePST = attacker.nPoint.hp - 1;
         }

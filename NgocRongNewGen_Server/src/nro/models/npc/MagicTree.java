@@ -263,7 +263,7 @@ public class MagicTree {
     }
 
     private int getSecondPea() {
-        short secondPerPea = (short) getSecondPerPea();
+        short secondPerPea = getSecondPerPea();
         long timePeaRelease = lastTimeHarvest + secondPerPea * 1000;
         int secondLeft = (int) ((timePeaRelease - System.currentTimeMillis()) / 1000);
         return secondLeft < 0 ? 0 : secondLeft;

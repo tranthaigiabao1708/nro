@@ -1,6 +1,5 @@
 package nro.models.network;
 
-import nro.models.network.Message;
 import java.io.DataOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;

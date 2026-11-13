@@ -145,7 +145,7 @@ public abstract class Universe6Boss extends Boss {
                 return;
             }
         }
-        long strike = (long) target.nPoint.hpMax * pctMaxHp / 100L;
+        long strike = target.nPoint.hpMax * pctMaxHp / 100L;
         if (target.itemTime != null) {
             if (target.itemTime.isUseGiapXen2) {
                 strike = strike * 70L / 100L;

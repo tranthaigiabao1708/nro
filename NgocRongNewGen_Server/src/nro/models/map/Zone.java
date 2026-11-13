@@ -27,7 +27,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import lombok.Getter;
 import lombok.Setter;
 import nro.models.Bot.BotAttackplayer;
-import nro.models.mob_bigboss.GauTuongCuop;
 import nro.models.npc.*;
 import nro.models.player.Pet;
 

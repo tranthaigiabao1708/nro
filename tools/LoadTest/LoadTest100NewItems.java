@@ -1488,8 +1488,8 @@ public class LoadTest100NewItems {
                                 d.readUTF();
                                 int optCount = d.readUnsignedByte();
                                 for (int o = 0; o < optCount; o++) {
-                                    d.readUnsignedByte();
                                     d.readUnsignedShort();
+                                    d.readInt();
                                 }
                                 parsed.add(new BagItemSlot(slotIdx, tempId, qty));
                             }

@@ -1,12 +1,9 @@
 package nro.models.matches.dai_hoi_vo_thuat;
 import nro.models.consts.ConstSuperRank;
 import java.util.List;
-import nro.models.consts.ConstTaskBadges;
 import nro.models.database.MrBlue;
 import nro.models.database.SuperRankDAO;
 import nro.models.managers.SuperRankManager;
-import nro.models.matches.dai_hoi_vo_thuat.SuperRank;
-import nro.models.matches.dai_hoi_vo_thuat.SuperRankBuilder;
 import nro.models.map.Map;
 import nro.models.map.Zone;
 import nro.models.network.Message;
@@ -14,8 +11,6 @@ import nro.models.player.Player;
 import nro.models.server.Client;
 import nro.models.map.service.MapService;
 import nro.models.services.Service;
-import nro.models.task.BadgesTaskService;
-import nro.models.utils.Logger;
 import nro.models.utils.TimeUtil;
 import nro.models.utils.Util;
 

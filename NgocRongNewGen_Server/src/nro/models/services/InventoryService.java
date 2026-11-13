@@ -2,20 +2,14 @@ package nro.models.services;
 
 import nro.models.item.Item;
 import nro.models.item.Item.ItemOption;
-import nro.models.npc.MabuEgg;
 import nro.models.player.Inventory;
 import nro.models.player.Pet;
 import nro.models.player.Player;
 import nro.models.network.Message;
-import nro.models.services.ItemService;
-import nro.models.services.Service;
 import nro.models.services_dungeon.NgocRongNamecService;
 import nro.models.map.service.ChangeMapService;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import nro.models.consts.ConstTaskBadges;
 import nro.models.services_dungeon.BlackBallWarService;
 import nro.models.map.service.ItemMapService;
@@ -713,22 +707,8 @@ public class InventoryService {
                 msg.writer().writeUTF(item.getContent());
                 msg.writer().writeByte(item.itemOptions.size()); //options
                 for (int j = 0; j < item.itemOptions.size(); j++) {
-                    if (item.itemOptions.get(j).optionTemplate.id == 213) {
-                        int opId = 213;
-                        int param = item.itemOptions.get(j).param;
-                        if (param > 1_000_000) {
-                            opId = 223;
-                            param /= 1_000_000;
-                        } else if (param > 1000) {
-                            opId = 222;
-                            param /= 1000;
-                        }
-                        msg.writer().writeByte(opId);
-                        msg.writer().writeShort(param);
-                    } else {
-                        msg.writer().writeByte(item.itemOptions.get(j).optionTemplate.id);
-                        msg.writer().writeShort(item.itemOptions.get(j).param);
-                    }
+                    msg.writer().writeShort(item.itemOptions.get(j).optionTemplate.id);
+                    msg.writer().writeInt(item.itemOptions.get(j).param);
                 }
             }
 
@@ -759,22 +739,8 @@ public class InventoryService {
                     List<Item.ItemOption> itemOptions = item.itemOptions;
                     msg.writer().writeByte(itemOptions.size());
                     for (Item.ItemOption itemOption : itemOptions) {
-                        if (itemOption.optionTemplate.id == 213) {
-                            int opId = 213;
-                            int param = itemOption.param;
-                            if (param > 1_000_000) {
-                                opId = 223;
-                                param /= 1_000_000;
-                            } else if (param > 1000) {
-                                opId = 222;
-                                param /= 1000;
-                            }
-                            msg.writer().writeByte(opId);
-                            msg.writer().writeShort(param);
-                        } else {
-                            msg.writer().writeByte(itemOption.optionTemplate.id);
-                            msg.writer().writeShort(itemOption.param);
-                        }
+                        msg.writer().writeShort(itemOption.optionTemplate.id);
+                        msg.writer().writeInt(itemOption.param);
                     }
                 }
             }
@@ -802,22 +768,8 @@ public class InventoryService {
                     msg.writer().writeUTF(it.getContent());
                     msg.writer().writeByte(it.itemOptions.size());
                     for (Item.ItemOption io : it.itemOptions) {
-                        if (io.optionTemplate.id == 213) {
-                            int opId = 213;
-                            int param = io.param;
-                            if (param > 1_000_000) {
-                                opId = 223;
-                                param /= 1_000_000;
-                            } else if (param > 1000) {
-                                opId = 222;
-                                param /= 1000;
-                            }
-                            msg.writer().writeByte(opId);
-                            msg.writer().writeShort(param);
-                        } else {
-                            msg.writer().writeByte(io.optionTemplate.id);
-                            msg.writer().writeShort(io.param);
-                        }
+                        msg.writer().writeShort(io.optionTemplate.id);
+                        msg.writer().writeInt(io.param);
                     }
                 }
             }

@@ -2,7 +2,6 @@ package nro.models.Bot;
 
 import java.util.Random;
 import nro.models.player_system.Template;
-import nro.models.player_system.Template.ItemTemplate;
 import nro.models.server.Manager;
 import nro.models.services.ItemService;
 

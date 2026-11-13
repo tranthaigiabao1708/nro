@@ -6,8 +6,6 @@ import nro.models.item.Item;
 import java.util.Set;
 import nro.models.player.Player;
 import nro.models.map.service.NpcService;
-import nro.models.shop.ItemShop;
-import nro.models.shop.Shop;
 
 /**
  *

@@ -25,7 +25,7 @@ public class GauTuongCuop extends Mob {
         this.zone = mob.zone;
         this.name = "Gấu Tướng Cướp";
         this.type = 5;
-        this.realMaxHp = Math.max(1L, (long) mob.point.getHpFull() * 3L);
+        this.realMaxHp = Math.max(1L, mob.point.getHpFull() * 3L);
         this.realHp = this.realMaxHp;
     }
 

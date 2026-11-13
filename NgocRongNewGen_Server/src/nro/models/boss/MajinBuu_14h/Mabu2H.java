@@ -1,6 +1,5 @@
 package nro.models.boss.MajinBuu_14h;
 
-
 import nro.models.boss.Boss;
 import nro.models.boss.Boss_Manager.FinalBossManager;
 import nro.models.boss.BossID;
@@ -18,9 +17,7 @@ import nro.models.utils.Util;
 import nro.models.server.ServerNotify;
 import nro.models.services.ItemTimeService;
 import nro.models.services.SkillService;
-import nro.models.services.TaskService;
 import nro.models.map.service.ChangeMapService;
-import nro.models.skill.Skill;
 import nro.models.utils.SkillUtil;
 
 public class Mabu2H extends Boss {

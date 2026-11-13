@@ -5,9 +5,6 @@ import nro.models.consts.ConstNpc;
 import nro.models.item.Item;
 import nro.models.player.Inventory;
 import nro.models.player.Player;
-import nro.models.shop.ItemShop;
-import nro.models.shop.Shop;
-import nro.models.shop.TabShop;
 import nro.models.network.Message;
 import nro.models.item.Item.ItemOption;
 import java.util.ArrayList;
@@ -25,7 +22,6 @@ import nro.models.services.ItemService;
 import nro.models.services.Service;
 import nro.models.services_func.Input;
 import nro.models.services_func.BuyBackService;
-import nro.models.services_func.UseItem;
 import nro.models.map.service.NpcService;
 import nro.models.task.BadgesTaskService;
 import nro.models.utils.SkillUtil;
@@ -196,8 +192,8 @@ public class ShopService {
                         }
                         msg.writer().writeByte(itemShop.options.size());
                         for (Item.ItemOption option : itemShop.options) {
-                            msg.writer().writeByte(option.optionTemplate.id);
-                            msg.writer().writeShort(option.param);
+                            msg.writer().writeShort(option.optionTemplate.id);
+                            msg.writer().writeInt(option.param);
                         }
                         msg.writer().writeByte(itemShop.isNew ? 1 : 0);
                         if (itemShop.temp.type == 5) {
@@ -251,8 +247,8 @@ public class ShopService {
                         }
                         msg.writer().writeByte(itemShop.options.size());
                         for (Item.ItemOption option : itemShop.options) {
-                            msg.writer().writeByte(option.optionTemplate.id);
-                            msg.writer().writeShort(option.param);
+                            msg.writer().writeShort(option.optionTemplate.id);
+                            msg.writer().writeInt(option.param);
                         }
                         msg.writer().writeByte(itemShop.isNew ? 1 : 0);
                         if (itemShop.temp.type == 5) {
@@ -305,8 +301,8 @@ public class ShopService {
 
                         msg.writer().writeByte(itemShop.options.size());
                         for (Item.ItemOption option : itemShop.options) {
-                            msg.writer().writeByte(option.optionTemplate.id);
-                            msg.writer().writeShort(option.param);
+                            msg.writer().writeShort(option.optionTemplate.id);
+                            msg.writer().writeInt(option.param);
                         }
                         msg.writer().writeByte(itemShop.isNew ? 1 : 0);
 
@@ -356,12 +352,12 @@ public class ShopService {
                         int packMultDisplay = getPackMultiplier(shop, itemShop);
                         msg.writer().writeByte(itemShop.options.size() + (packMultDisplay > 1 ? 1 : 0));
                         for (Item.ItemOption option : itemShop.options) {
-                            msg.writer().writeByte(option.optionTemplate.id);
-                            msg.writer().writeShort(option.param);
+                            msg.writer().writeShort(option.optionTemplate.id);
+                            msg.writer().writeInt(option.param);
                         }
                         if (packMultDisplay > 1) {
-                            msg.writer().writeByte(31);
-                            msg.writer().writeShort(packMultDisplay);
+                            msg.writer().writeShort(31);
+                            msg.writer().writeInt(packMultDisplay);
                         }
                         msg.writer().writeByte(itemShop.isNew ? 1 : 0);
                         if (itemShop.temp.type == 5) {
@@ -403,12 +399,12 @@ public class ShopService {
                 msg.writer().writeUTF("|7| LUCKY REWARD");
                 msg.writer().writeByte(item.itemOptions.size() + 1);
                 for (Item.ItemOption io : item.itemOptions) {
-                    msg.writer().writeByte(io.optionTemplate.id);
-                    msg.writer().writeShort(io.param);
+                    msg.writer().writeShort(io.optionTemplate.id);
+                    msg.writer().writeInt(io.param);
                 }
                 //số lượng
-                msg.writer().writeByte(31);
-                msg.writer().writeShort(item.quantity);
+                msg.writer().writeShort(31);
+                msg.writer().writeInt(item.quantity);
                 //
                 msg.writer().writeByte(1);
                 if (item.template.type == 5) {
@@ -445,15 +441,15 @@ public class ShopService {
             msg.writer().writeByte(items.size());
             for (Item item : items) {
                 int giamualaingoc = item.template.gem / 2;
-                int giamualaivang = giamualaingoc == 0 ? (int) item.template.gold / 2 > 0 ? (int) item.template.gold / 2 : item.quantity * 100 : 0;
+                int giamualaivang = giamualaingoc == 0 ? item.template.gold / 2 > 0 ? item.template.gold / 2 : item.quantity * 100 : 0;
                 msg.writer().writeShort(item.template.id);
                 msg.writer().writeInt(giamualaivang);
                 msg.writer().writeInt(giamualaingoc);
                 msg.writer().writeInt(item.quantity);
                 msg.writer().writeByte(item.itemOptions.size());
                 for (Item.ItemOption io : item.itemOptions) {
-                    msg.writer().writeByte(io.optionTemplate.id);
-                    msg.writer().writeShort(io.param);
+                    msg.writer().writeShort(io.optionTemplate.id);
+                    msg.writer().writeInt(io.param);
                 }
                 msg.writer().writeByte(0);
                 if (item.template.type == 5) {
@@ -635,7 +631,7 @@ public class ShopService {
                 return;
             }
         }
-        if (pl.BoughtSkill.contains(is.temp.id)) {
+        if (pl.BoughtSkill.contains((int) is.temp.id)) {
             Service.gI().sendThongBao(pl, "Bạn đã học kỹ năng này rồi");
             return;
         }
@@ -1330,7 +1326,7 @@ public class ShopService {
         }
         Item item = items.get(index);
         int giamualaingoc = item.template.gem / 2;
-        int giamualaivang = giamualaingoc == 0 ? (int) item.template.gold / 2 > 0 ? (int) item.template.gold / 2 : item.quantity * 100 : 0;
+        int giamualaivang = giamualaingoc == 0 ? item.template.gold / 2 > 0 ? item.template.gold / 2 : item.quantity * 100 : 0;
         if (giamualaivang > 0 && player.inventory.gold < giamualaivang) {
             Service.gI().sendThongBao(player, "Bạn không có đủ vàng!");
             return;

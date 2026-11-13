@@ -26,7 +26,6 @@ import java.util.Map;
 import nro.models.consts.ConstTaskBadges;
 import nro.models.services.AchievementService;
 import nro.models.services_dungeon.TrainingService;
-import nro.models.services.ChatGlobalService;
 import nro.models.services.ItemService;
 import nro.models.map.service.MapService;
 import nro.models.skill.Skill;
@@ -98,7 +97,7 @@ public class Mob {
     }
 
     public void setTiemNang() {
-        this.maxTiemNang = (long) this.point.getHpFull() * (long) (this.pTiemNang + Util.nextInt(-2, 2)) / 100L;
+        this.maxTiemNang = this.point.getHpFull() * (this.pTiemNang + Util.nextInt(-2, 2)) / 100L;
     }
 
     public boolean isDie() {
@@ -236,7 +235,7 @@ public class Mob {
             if (checkLevel < 0) {
                 checkLevel = Math.abs(levelMob - levelPlayer);
             } else {
-                tiemNang /= (int) (checkLevel * 0.5) + 1.25;
+                tiemNang = (long) (tiemNang / ((int) (checkLevel * 0.5) + 1.25));
             }
         }
         if (tiemNang < 1) {
@@ -1403,9 +1402,9 @@ public class Mob {
         if (plTarget == null || plTarget.inventory == null) {
             return;
         }
-        int percentPST = plTarget.nPoint.tlPST;
+        int percentPST = Math.max(0, Math.min(80, plTarget.nPoint.tlPST));
         if (percentPST != 0) {
-            long damePST = dame / 100L * percentPST;
+            long damePST = Math.max(0L, (dame / 100L) * percentPST + (dame % 100L) * percentPST / 100L);
             Message msg;
             try {
                 msg = new Message(-9);

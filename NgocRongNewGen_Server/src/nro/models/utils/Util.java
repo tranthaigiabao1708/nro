@@ -17,7 +17,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import nro.models.map.ItemMap;
 import nro.models.map.Zone;
-import nro.models.services.Service;
 
 /**
  *
@@ -250,9 +249,9 @@ public class Util {
         long ss;
         long hh;
         ss = ms / 1000;
-        mm = (long) (ss / 60);
+        mm = ss / 60;
         ss = ss % 60;
-        hh = (long) (mm / 60);
+        hh = mm / 60;
         mm = mm % 60;
         String ssString = String.valueOf(ss);
         String mmString = String.valueOf(mm);

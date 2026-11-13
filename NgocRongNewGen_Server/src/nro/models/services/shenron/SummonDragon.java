@@ -9,7 +9,6 @@ import nro.models.consts.ConstPlayer;
 import nro.models.item.Item.ItemOption;
 import nro.models.map.Zone;
 import nro.models.map.service.NpcService;
-import nro.models.player.Inventory;
 import nro.models.player.Player;
 import nro.models.services.Service;
 import nro.models.utils.Util;

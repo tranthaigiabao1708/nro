@@ -1,0 +1,39 @@
+{
+  "java.server.launchMode": "Standard",
+  "java.import.exclusions": [
+    "**/node_modules/**",
+    "**/.metadata/**",
+    "**/archetype-resources/**",
+    "**/META-INF/maven/**",
+    "**/Teamobi2026/**",
+    "**/Mau_ThamKhao/**",
+    "**/SRC NRO NEW 01/**",
+    "**/NgocRongNewGen_Client/**",
+    "**/NgocRongNewGen_Unity/**",
+    "**/runtime/**",
+    "**/Database_NgocRongNewGen/**"
+  ],
+  "java.project.sourcePaths": [
+    "NgocRongNewGen_Server/src",
+    "tools/LoadTest"
+  ],
+  "java.project.referencedLibraries": [
+    "NgocRongNewGen_Server/lib/**/*.jar"
+  ],
+  "search.exclude": {
+    "**/Teamobi2026/**": true,
+    "**/Mau_ThamKhao/**": true,
+    "**/SRC NRO NEW 01/**": true,
+    "**/NgocRongNewGen_Server/build/**": true,
+    "**/NgocRongNewGen_Server/dist/**": true
+  },
+  "files.watcherExclude": {
+    "**/Teamobi2026/**": true,
+    "**/Mau_ThamKhao/**": true,
+    "**/SRC NRO NEW 01/**": true,
+    "**/NgocRongNewGen_Server/build/**": true,
+    "**/NgocRongNewGen_Server/dist/**": true,
+    "**/runtime/**": true
+  }
+}
+

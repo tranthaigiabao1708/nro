@@ -7,10 +7,8 @@ import nro.models.item.Item;
 import nro.models.player.Player;
 import nro.models.services.InventoryService;
 import nro.models.services.Service;
-import nro.models.services.SkillService;
 import nro.models.skill.Skill;
 import nro.models.utils.SkillUtil;
-import nro.models.utils.Util;
 
 /**
  *

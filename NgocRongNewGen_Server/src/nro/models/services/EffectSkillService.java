@@ -241,7 +241,7 @@ public class EffectSkillService {
         player.effectSkill.lastTimeUpMonkey = System.currentTimeMillis();
         player.effectSkill.levelMonkey = (byte) player.playerSkill.skillSelect.point;
         player.nPoint.calPoint();
-        player.nPoint.setHp(Math.min((long) player.nPoint.hpMax, (long) player.nPoint.hp * 2L));
+        player.nPoint.setHp(Math.min(player.nPoint.hpMax, player.nPoint.hp * 2L));
         Service.gI().Send_Caitrang(player);
         if (!player.isPet) {
             PlayerService.gI().sendInfoHpMp(player);

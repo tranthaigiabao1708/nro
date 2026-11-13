@@ -20,13 +20,9 @@ import nro.models.utils.Logger;
 import nro.models.utils.SkillUtil;
 import nro.models.utils.Util;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import lombok.Setter;
 import nro.models.mob.Mob;
 import nro.models.player_badges.BagesTemplate;
-import static nro.models.player_badges.BagesTemplate.sendListItemOption;
-import nro.models.utils.TimeUtil;
 
 /**
  *
@@ -37,7 +33,6 @@ public class NPoint {
 
     public static final byte MAX_LIMIT = 13;
 
-    @Setter
     private Player player;
     long timeXinbatoBuff;
 
@@ -88,8 +83,8 @@ public class NPoint {
     /**
      * Chỉ số cộng thêm
      */
-    public long hpAdd, mpAdd, dameAdd, hpHoiAdd, mpHoiAdd;
-    public int defAdd, critAdd;
+    public long hpAdd, mpAdd, dameAdd, hpHoiAdd, mpHoiAdd, defAdd;
+    public int critAdd;
 
     /**
      * //+#% sức đánh chí mạng
@@ -121,27 +116,27 @@ public class NPoint {
     /**
      * Tỉ lệ hp, mp hồi cộng thêm
      */
-    public short tlHpHoi, tlMpHoi;
+    public int tlHpHoi, tlMpHoi;
 
     /**
      * Tỉ lệ hp, mp hồi bản thân và đồng đội cộng thêm
      */
-    public short tlHpHoiBanThanVaDongDoi, tlMpHoiBanThanVaDongDoi;
+    public int tlHpHoiBanThanVaDongDoi, tlMpHoiBanThanVaDongDoi;
 
     /**
      * Tỉ lệ hút hp, mp khi đánh, hp khi đánh quái
      */
-    public short tlHutHp, tlHutMp, tlHutHpMob;
+    public int tlHutHp, tlHutMp, tlHutHpMob;
 
     /**
      * Tỉ lệ hút hp, mp xung quanh mỗi 5s
      */
-    public short tlHutHpMpXQ;
+    public int tlHutHpMpXQ;
 
     /**
      * Tỉ lệ phản sát thương
      */
-    public short tlPST;
+    public int tlPST;
 
     /**
      * Tỉ lệ tiềm năng sức mạnh
@@ -151,26 +146,26 @@ public class NPoint {
     /**
      * Tỉ lệ vàng cộng thêm
      */
-    public short tlGold;
+    public int tlGold;
 
     /**
      * Tỉ lệ né đòn
      */
-    public short tlNeDon;
-    public short tlNeDonXinbato;
+    public int tlNeDon;
+    public int tlNeDonXinbato;
 
-    public short tlBom;
+    public int tlBom;
 
-    public short tlGiap;
+    public int tlGiap;
 
-    public short tlxgcc;
+    public int tlxgcc;
 
-    public short tlxgc;
+    public int tlxgc;
 
-    public short tlchinhxac;
+    public int tlchinhxac;
 
-    public short tlTNSMPet;
-    public short xChuong;
+    public int tlTNSMPet;
+    public int xChuong;
 
     public short setltdb;
     public short setTinhAn;
@@ -185,7 +180,7 @@ public class NPoint {
     /**
      * Tỉ lệ giảm sức đánh
      */
-    public short tlSubSD;
+    public int tlSubSD;
 
     public int voHieuChuong;
 
@@ -205,7 +200,7 @@ public class NPoint {
     public boolean isDoSPL;
     public boolean isThoBulma;
 
-    public short tlHpGiamODo;
+    public int tlHpGiamODo;
 
     public boolean isGogeta;
 
@@ -267,7 +262,7 @@ public class NPoint {
 
         for (Item.ItemOption opt : options) {
             if (opt.optionTemplate.id == 108) {
-                tlNeDon += (tlNeDon * opt.param / 100L);
+                tlNeDon = (int) Math.min((long) Integer.MAX_VALUE, (long) tlNeDon + ((long) tlNeDon * opt.param / 100L));
             }
         }
 
@@ -496,9 +491,9 @@ public class NPoint {
                 if (item.template.id >= 592 && item.template.id <= 594) {
                     teleport = true;
                 }
-                int itemOpt50 = 0;
-                int itemOpt77 = 0;
-                int itemOpt103 = 0;
+                long itemOpt50 = 0;
+                long itemOpt77 = 0;
+                long itemOpt103 = 0;
                 for (ItemOption io : item.itemOptions) {
                     if (io == null || io.optionTemplate == null) {
                         continue;
@@ -515,13 +510,13 @@ public class NPoint {
                     }
                 }
                 if (itemOpt50 > 0) {
-                    this.tlDame.add(itemOpt50);
+                    this.tlDame.add((int) Math.min(Integer.MAX_VALUE, itemOpt50));
                 }
                 if (itemOpt77 > 0) {
-                    this.tlHp.add(itemOpt77);
+                    this.tlHp.add((int) Math.min(Integer.MAX_VALUE, itemOpt77));
                 }
                 if (itemOpt103 > 0) {
-                    this.tlMp.add(itemOpt103);
+                    this.tlMp.add((int) Math.min(Integer.MAX_VALUE, itemOpt103));
                 }
             }
         }
@@ -704,7 +699,7 @@ public class NPoint {
                 this.mpHoiCute += io.param;
                 break;
             case 159: // x chưởng
-                this.xChuong = (short) io.param;
+                this.xChuong = io.param;
                 break;
             case 160: // TNSM PET;
                 this.tlTNSMPet += io.param;
@@ -863,7 +858,7 @@ public class NPoint {
             this.tlHpHoi = 0;
         }
 
-        this.hpHoi += ((long) this.hpMax * this.tlHpHoi / 100);
+        this.hpHoi += (this.hpMax * this.tlHpHoi / 100);
 
         if (this.tlHpHoiBanThanVaDongDoi > 100) {
             this.tlHpHoiBanThanVaDongDoi = 100;
@@ -871,7 +866,7 @@ public class NPoint {
             this.tlHpHoiBanThanVaDongDoi = 0;
         }
 
-        this.hpHoi += ((long) this.hpMax * this.tlHpHoiBanThanVaDongDoi / 100);
+        this.hpHoi += (this.hpMax * this.tlHpHoiBanThanVaDongDoi / 100);
     }
 
     private void setMpHoi() {
@@ -884,7 +879,7 @@ public class NPoint {
             this.tlMpHoi = 0;
         }
 
-        this.mpHoi += ((long) this.mpMax * this.tlMpHoi / 100);
+        this.mpHoi += (this.mpMax * this.tlMpHoi / 100);
 
         if (this.tlMpHoiBanThanVaDongDoi > 100) {
             this.tlMpHoiBanThanVaDongDoi = 100;
@@ -892,7 +887,7 @@ public class NPoint {
             this.tlMpHoiBanThanVaDongDoi = 0;
         }
 
-        this.mpHoi += (((long) this.mpMax * this.tlMpHoiBanThanVaDongDoi) / 100);
+        this.mpHoi += ((this.mpMax * this.tlMpHoiBanThanVaDongDoi) / 100);
     }
 
     private void setHpMax() {
@@ -1357,8 +1352,13 @@ public class NPoint {
     }
 
     private void setDef() {
-        this.def = this.defg * 4;
-        this.def += this.defAdd;
+        long totalDef = (long) this.defg * 4L + this.defAdd;
+        if (totalDef > Integer.MAX_VALUE) {
+            totalDef = Integer.MAX_VALUE;
+        } else if (totalDef < 0L) {
+            totalDef = 0L;
+        }
+        this.def = (int) totalDef;
     }
 
     private void setCrit() {
@@ -1757,7 +1757,7 @@ public class NPoint {
             if (this.tlTNSM != null) {
                 for (Integer tl : this.tlTNSM) {
                     if (tl != null) {
-                        tiemNang += ((long) tiemNang * tl / 100);
+                        tiemNang += (tiemNang * tl / 100);
                     }
                 }
             }
@@ -1800,10 +1800,10 @@ public class NPoint {
                 tiemNang += tn / 5;
             }
             if (this.intrinsic != null && this.intrinsic.id == 24) {
-                tiemNang += ((long) tiemNang * this.intrinsic.param1 / 100);
+                tiemNang += (tiemNang * this.intrinsic.param1 / 100);
             }
             if (this.power >= 60_000_000_000L) {
-                tiemNang -= ((long) tiemNang * 80 / 100);
+                tiemNang -= (tiemNang * 80 / 100);
             }
             if (this.player.isPet) {
                 if (((Pet) this.player).master.itemTime.isUseBuaSanta) {
@@ -1821,13 +1821,13 @@ public class NPoint {
                 //  tiemNang *= 10; //x x3 tiềm năng toàn server
             }
             if (MapService.gI().isMapBanDoKhoBau(this.player.zone.map.mapId)) {
-                tiemNang *= 1.5;
+                tiemNang += tiemNang / 2;
             }
             if (this.player.cFlag != 0) {
                 if (this.player.cFlag == 8) {
-                    tiemNang += ((long) tiemNang * 10 / 100);
+                    tiemNang += (tiemNang * 10 / 100);
                 } else {
-                    tiemNang += ((long) tiemNang * 5 / 100);
+                    tiemNang += (tiemNang * 5 / 100);
                 }
             }
             tiemNang *= Manager.RATE_EXP_SERVER;
@@ -1862,16 +1862,16 @@ public class NPoint {
         return tiemNang;
     }
 
-    public short getTileHutHp(boolean isMob) {
+    public int getTileHutHp(boolean isMob) {
         if (isMob) {
-            return (short) (this.tlHutHp + this.tlHutHpMob);
+            return Math.max(0, Math.min(80, this.tlHutHp + this.tlHutHpMob));
         } else {
-            return this.tlHutHp;
+            return Math.max(0, Math.min(50, this.tlHutHp));
         }
     }
 
-    public short getTiLeHutMp() {
-        return this.tlHutMp;
+    public int getTiLeHutMp() {
+        return Math.max(0, Math.min(80, this.tlHutMp));
     }
 
     public long subDameInjureWithDeff(long dame) {

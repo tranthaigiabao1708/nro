@@ -21,7 +21,6 @@ import nro.models.utils.SkillUtil;
 import nro.models.utils.Util;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import nro.models.boss.Boss;
 import nro.models.boss.BossID;
 import nro.models.npc.NonInteractiveNPC;
@@ -306,7 +305,7 @@ public class SkillService {
                 msg.writer().writeByte(typeItem);
             } else if (status == 21) {
                 short pointX = (short) (newSkill._xPlayer + ((newSkill.dir == -1) ? (-newSkill._xObjTaget) : newSkill._xObjTaget));
-                short pointY = (short) newSkill._yPlayer;
+                short pointY = newSkill._yPlayer;
                 short timeDame = NewSkill.TIME_GONG;
                 short rangeDame = newSkill._yObjTaget;
                 byte typePaint = newSkill.getTypePaint();
@@ -708,14 +707,14 @@ public class SkillService {
                                     EffectSkillService.gI().setStartHuytSao(pl, tileHP);
                                     EffectSkillService.gI().sendEffectPlayer(pl, pl, EffectSkillService.TURN_ON_EFFECT, EffectSkillService.HUYT_SAO_EFFECT);
                                     pl.nPoint.calPoint();
-                                    pl.nPoint.setHP((long) pl.nPoint.hp + ((long) pl.nPoint.hp * tileHP / 100L));
+                                    pl.nPoint.setHP(pl.nPoint.hp + (pl.nPoint.hp * tileHP / 100L));
                                     Service.gI().point(pl);
                                     Service.gI().Send_Info_NV(pl);
                                     ItemTimeService.gI().sendItemTime(pl, 3781, 30);
                                     PlayerService.gI().sendInfoHpMp(pl);
                                 } else if (!pl.isBoss && pl.gender == ConstPlayer.NAMEC && player.cFlag == pl.cFlag) {
-                                    long subHpNamec = (long) pl.nPoint.hpMax * 10L / 100L;
-                                    pl.nPoint.setHP((long) pl.nPoint.hp - (subHpNamec < pl.nPoint.hp ? subHpNamec : 0L));
+                                    long subHpNamec = pl.nPoint.hpMax * 10L / 100L;
+                                    pl.nPoint.setHP(pl.nPoint.hp - (subHpNamec < pl.nPoint.hp ? subHpNamec : 0L));
                                     Service.gI().point(pl);
                                     Service.gI().Send_Info_NV(pl);
                                 }
@@ -729,7 +728,7 @@ public class SkillService {
                                 EffectSkillService.gI().setStartHuytSao(pl, tileHP);
                                 EffectSkillService.gI().sendEffectPlayer(pl, pl, EffectSkillService.TURN_ON_EFFECT, EffectSkillService.HUYT_SAO_EFFECT);
                                 pl.nPoint.calPoint();
-                                pl.nPoint.setHP((long) pl.nPoint.hp + ((long) pl.nPoint.hp * tileHP / 100L));
+                                pl.nPoint.setHP(pl.nPoint.hp + (pl.nPoint.hp * tileHP / 100L));
                                 Service.gI().point(pl);
                                 Service.gI().Send_Info_NV(pl);
                                 ItemTimeService.gI().sendItemTime(pl, 3781, 30);
@@ -740,7 +739,7 @@ public class SkillService {
                         EffectSkillService.gI().setStartHuytSao(player, tileHP);
                         EffectSkillService.gI().sendEffectPlayer(player, player, EffectSkillService.TURN_ON_EFFECT, EffectSkillService.HUYT_SAO_EFFECT);
                         player.nPoint.calPoint();
-                        player.nPoint.setHP((long) player.nPoint.hp + ((long) player.nPoint.hp * tileHP / 100L));
+                        player.nPoint.setHP(player.nPoint.hp + (player.nPoint.hp * tileHP / 100L));
                         Service.gI().point(player);
                         Service.gI().Send_Info_NV(player);
                         ItemTimeService.gI().sendItemTime(player, 3781, 30);
@@ -783,11 +782,11 @@ public class SkillService {
                         dame = player.nPoint.hp;
                     } else {
                         int skillPct = player.playerSkill.skillSelect.damage > 0 ? player.playerSkill.skillSelect.damage : 100;
-                        dame = (long) player.nPoint.hp * skillPct / 100L;
+                        dame = player.nPoint.hp * skillPct / 100L;
                         if (player.setClothes.cadicM == 4) {
-                            dame += (long) player.nPoint.hpMax * 30L / 100L;
+                            dame += player.nPoint.hpMax * 30L / 100L;
                         } else if (player.setClothes.cadicM >= 5) {
-                            dame += (long) player.nPoint.hpMax * 60L / 100L;
+                            dame += player.nPoint.hpMax * 60L / 100L;
                         }
                     }
                     if (!player.isBoss) {
@@ -806,7 +805,9 @@ public class SkillService {
                     if (!MapService.gI().isMapOffline(player.zone.map.mapId)) {
                         for (Player pl : playersMap) {
                             if (!player.equals(pl) && canAttackPlayer(player, pl) && Util.getDistance(player, pl) <= rangeBom) {
-                                long dameTarget = pl.isBoss ? (dame * 70L / 100L) : dame;
+                                long dameTarget = pl.isBoss
+                                        ? Math.min(dame * 70L / 100L, Math.max(1_500_000_000L, pl.nPoint.hpMax / 5L))
+                                        : dame;
                                 pl.injured(player, dameTarget, MapService.gI().isMapYardart(player.zone.map.mapId), false);
                                 Service.gI().reload_HP_NV(pl);
                                 PlayerService.gI().sendInfoHpMpMoney(pl);
@@ -875,9 +876,9 @@ public class SkillService {
                         msg.writer().writeByte(0); //read continue
                         Service.gI().sendMessAllPlayerInMap(pl, msg);
                         boolean isDie = pl.isDie();
-                        player.nPoint.setHP((long) player.nPoint.getHP() + ((long) player.nPoint.hpMax * percentTriThuong / 100L));
-                        pl.nPoint.setHP((long) pl.nPoint.getHP() + ((long) pl.nPoint.hpMax * percentTriThuong / 100L));
-                        pl.nPoint.setMP((long) pl.nPoint.getMP() + ((long) pl.nPoint.mpMax * percentTriThuong / 100L));
+                        player.nPoint.setHP(player.nPoint.getHP() + (player.nPoint.hpMax * percentTriThuong / 100L));
+                        pl.nPoint.setHP(pl.nPoint.getHP() + (pl.nPoint.hpMax * percentTriThuong / 100L));
+                        pl.nPoint.setMP(pl.nPoint.getMP() + (pl.nPoint.mpMax * percentTriThuong / 100L));
                         if (isDie) {
                             AchievementService.gI().checkDoneTask(pl, ConstAchievement.CHAM_SOC_DAC_BIET);
                             Service.gI().chat(pl, "Cảm ơn " + player.name + " đã hồi sinh mình");
@@ -906,10 +907,10 @@ public class SkillService {
     }
 
     private void phanSatThuong(Player plAtt, Player plTarget, long dame) {
-        if (plAtt != null) {
-            int percentPST = plTarget.nPoint.tlPST;
+        if (plAtt != null && plTarget != null && plTarget.nPoint != null) {
+            int percentPST = Math.max(0, Math.min(plTarget.isBoss ? 80 : 50, plTarget.nPoint.tlPST));
             if (percentPST != 0) {
-                long damePST = Math.max(0L, dame / 100L * percentPST);
+                long damePST = Math.max(0L, (dame / 100L) * percentPST + (dame % 100L) * percentPST / 100L);
                 Message msg = null;
                 try {
                     msg = new Message(56);
@@ -946,8 +947,8 @@ public class SkillService {
     private void hutHPMP(Player player, long dame, Player pl, Mob mob) {
         int tiLeHutHp = player.nPoint.getTileHutHp(mob != null);
         int tiLeHutMp = player.nPoint.getTiLeHutMp();
-        long hpHoi = Math.max(0L, dame / 100L * tiLeHutHp);
-        long mpHoi = Math.max(0L, dame / 100L * tiLeHutMp);
+        long hpHoi = Math.max(0L, (dame / 100L) * tiLeHutHp + (dame % 100L) * tiLeHutHp / 100L);
+        long mpHoi = Math.max(0L, (dame / 100L) * tiLeHutMp + (dame % 100L) * tiLeHutMp / 100L);
         if (hpHoi > 0 || mpHoi > 0) {
             int x = -1;
             int y = -1;
@@ -1131,12 +1132,12 @@ public class SkillService {
         if (player.playerSkill.skillSelect != null) {
             int skillId = player.playerSkill.skillSelect.template.id;
             if (skillId == Skill.KAIOKEN) {
-                long hpUse = (long) player.nPoint.hpMax * 10 / 100;
+                long hpUse = player.nPoint.hpMax * 10 / 100;
                 if (player.setClothes != null) {
                     if (player.setClothes.thanVuTruKaio == 4) {
-                        hpUse = (long) player.nPoint.hpMax * 5 / 100;
+                        hpUse = player.nPoint.hpMax * 5 / 100;
                     } else if (player.setClothes.thanVuTruKaio == 5) {
-                        hpUse = (long) player.nPoint.hpMax * 2 / 100;
+                        hpUse = player.nPoint.hpMax * 2 / 100;
                     }
                 }
                 if (player.isBoss && player instanceof Rival) {

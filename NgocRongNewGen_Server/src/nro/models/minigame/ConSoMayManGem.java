@@ -97,7 +97,7 @@ public class ConSoMayManGem implements Runnable {
         data.conSoMayManNgoc = 1;
         data.conSoMayManVang = 0;
         players.add(data);
-        player.inventory.gem -= (this.cost);
+        player.inventory.gem = (int) Math.max(0L, (long) player.inventory.gem - this.cost);
         Service.gI().sendMoney(player);
         Service.gI().sendThongBao(player, "Bạn đã chọn số " + point + " bằng " + this.cost + " ngọc.");
         Service.gI().showYourNumber(player, strNumber((int) player.id), null, null, 0);
@@ -139,7 +139,7 @@ public class ConSoMayManGem implements Runnable {
         data.conSoMayManNgoc = 1;
         data.conSoMayManVang = 0;
         players.add(data);
-        player.inventory.gem -= this.cost;
+        player.inventory.gem = (int) Math.max(0L, (long) player.inventory.gem - this.cost);
         Service.gI().sendMoney(player);
         Service.gI().sendThongBao(player, "Bạn đã chọn ngẫu nhiên số lẻ " + generatedPoint + " bằng " + this.cost + " ngọc.");
         Service.gI().showYourNumber(player, strNumber((int) player.id), null, null, 0);
@@ -181,7 +181,7 @@ public class ConSoMayManGem implements Runnable {
         data.conSoMayManNgoc = 1;
         data.conSoMayManVang = 0;
         players.add(data);
-        player.inventory.gem -= this.cost;
+        player.inventory.gem = (int) Math.max(0L, (long) player.inventory.gem - this.cost);
         Service.gI().sendMoney(player);
         Service.gI().sendThongBao(player, "Bạn đã chọn ngẫu nhiên số chẵn " + generatedPoint + " bằng " + this.cost + " ngọc.");
         Service.gI().showYourNumber(player, strNumber((int) player.id), null, null, 0);
@@ -206,7 +206,7 @@ public class ConSoMayManGem implements Runnable {
                 if (currentPlayer != null) {
                     if (g.conSoMayManNgoc == 1) {
                         finish = "Chúc mừng " + currentPlayer.name + " đã thắng " + this.rewardAmount + " ngọc với con số may mắn " + result;
-                        currentPlayer.inventory.gem += this.rewardAmount;
+                        currentPlayer.inventory.gem = (int) Math.min((long) Integer.MAX_VALUE, (long) currentPlayer.inventory.gem + this.rewardAmount);
                         Service.gI().sendMoney(currentPlayer);
                     }
                 } else {

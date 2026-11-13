@@ -1,9 +1,6 @@
 package nro.models.Bot;
 
-import java.util.Comparator;
 import java.util.Random;
-import java.util.ArrayList;
-import java.util.List;
 import nro.models.consts.ConstPlayer;
 import nro.models.boss.Boss;
 import nro.models.boss.Boss_Manager.BossManager;

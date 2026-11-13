@@ -3,7 +3,6 @@ package nro.models.boss.vodai_vt6;
 import nro.models.boss.BossID;
 import nro.models.boss.BossesData;
 import nro.models.player.Player;
-import nro.models.services.Service;
 import nro.models.utils.Util;
 
 public class CauliflaVt6 extends Universe6Boss {

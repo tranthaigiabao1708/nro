@@ -14,14 +14,11 @@ import nro.models.utils.Logger;
 import nro.models.utils.Util;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import nro.models.managers.TopKhiGasHuyDiet;
 import nro.models.map.phoban.BanDoKhoBau;
 import nro.models.map.phoban.SnakeWay;
 import nro.models.map.phoban.DestronGas;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import nro.models.server.Manager;
-import nro.models.services.TaskService;
 import nro.models.utils.TimeUtil;
 
 public class Clan {

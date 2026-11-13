@@ -6747,12 +6747,12 @@ Char.myCharz().paintCharBody(g, xScroll + wScroll / 2, yScroll + 70, 1, 0, true)
 int xM = (position == 0 ? 36 : 35);
 g.setColor(9993045);
 g.fillRect(xScroll + xM, yScroll + 70, 100, 50);
-int totalHP = 0;
-int totalMP = 0;
-int totalDame = 0;
-int totalDameCM = 0;
-int totalHutHP = 0;
-int totalHutMP = 0;
+long totalHP = 0;
+long totalMP = 0;
+long totalDame = 0;
+long totalDameCM = 0;
+long totalHutHP = 0;
+long totalHutMP = 0;
 bool chonglanh = false;
 bool khangtdhs = false;
 for (int i = 0; i < Char.myCharz().arrItemBody.Length; i++)
@@ -7267,7 +7267,7 @@ paintScrollArrow(g);
             mFont.tahoma_7b_white.drawString(g, TileMap.zoneID + string.Empty, 25, 27, mFont.CENTER);
         }
 
-        public int getCompare(Item item)
+        public long getCompare(Item item)
         {
             if (item == null)
             {
@@ -7285,12 +7285,12 @@ paintScrollArrow(g);
             if (itemOption.optionTemplate.id == 22)
             {
                 itemOption.optionTemplate = GameScr.gI().iOptionTemplates[6];
-                itemOption.param *= 1000;
+                itemOption.param *= 1000L;
             }
             if (itemOption.optionTemplate.id == 23)
             {
                 itemOption.optionTemplate = GameScr.gI().iOptionTemplates[7];
-                itemOption.param *= 1000;
+                itemOption.param *= 1000L;
             }
             Item item2 = null;
             for (int i = 0; i < Char.myCharz().arrItemBody.Length; i++)
@@ -7299,12 +7299,12 @@ paintScrollArrow(g);
                 if (itemOption.optionTemplate.id == 22)
                 {
                     itemOption.optionTemplate = GameScr.gI().iOptionTemplates[6];
-                    itemOption.param *= 1000;
+                    itemOption.param *= 1000L;
                 }
                 if (itemOption.optionTemplate.id == 23)
                 {
                     itemOption.optionTemplate = GameScr.gI().iOptionTemplates[7];
-                    itemOption.param *= 1000;
+                    itemOption.param *= 1000L;
                 }
                 if (item3 != null && item3.itemOption != null && item3.template.type == item.template.type)
                 {
@@ -7317,7 +7317,7 @@ paintScrollArrow(g);
                 isUp = true;
                 return itemOption.param;
             }
-            int num = ((item2 == null || item2.itemOption == null) ? itemOption.param : (itemOption.param - item2.itemOption[0].param));
+            long num = ((item2 == null || item2.itemOption == null) ? itemOption.param : (itemOption.param - item2.itemOption[0].param));
             if (num < 0)
             {
                 isUp = false;
@@ -12280,7 +12280,7 @@ else
             };
         }
 
-        public static sbyte GetColor_Item_Upgrade(int lv)
+        public static sbyte GetColor_Item_Upgrade(long lv)
         {
             if (lv < 0)
             {
@@ -12347,7 +12347,7 @@ else
             return result;
         }
 
-        public void paintOptItem(mGraphics g, int idOpt, int param, int x, int y, int w, int h)
+        public void paintOptItem(mGraphics g, int idOpt, long param, int x, int y, int w, int h)
         {
             switch (idOpt)
             {
@@ -12384,7 +12384,7 @@ else
             }
         }
 
-        public void paintOptItemInventory(mGraphics g, int idOpt, int param, int x, int y, int w, int h, Item item)
+        public void paintOptItemInventory(mGraphics g, int idOpt, long param, int x, int y, int w, int h, Item item)
         {
             try
             {
@@ -12428,12 +12428,12 @@ else
             }
         }
 
-        public void paintOptSlotItem(mGraphics g, int idOpt, int param, int x, int y, int w, int h)
+        public void paintOptSlotItem(mGraphics g, int idOpt, long param, int x, int y, int w, int h)
         {
             if (idOpt == 102 && param > ChatPopup.numSlot)
             {
                 sbyte color_Item_Upgrade = GetColor_Item_Upgrade(param);
-                int nline = param - ChatPopup.numSlot;
+                int nline = (int)(param - ChatPopup.numSlot);
                 paintUpgradeEffect(x, y, w, h, nline, color_Item_Upgrade, g);
             }
         }

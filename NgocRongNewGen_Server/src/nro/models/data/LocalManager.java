@@ -10,10 +10,8 @@ import java.sql.SQLException;
 import java.sql.Connection;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.HikariConfig;
-import nro.models.data.ResultSetImpl;
 import java.io.IOException;
 import nro.models.utils.Logger;
-import nro.models.data.LocalResultSet;
 
 public class LocalManager {
 

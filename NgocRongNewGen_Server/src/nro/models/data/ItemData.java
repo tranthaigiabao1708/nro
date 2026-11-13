@@ -48,7 +48,7 @@ public class ItemData {
             msg.writer().writeByte(8);
             msg.writer().writeByte(DataGame.vsItem); //vcitem
             msg.writer().writeByte(0); //update option
-            msg.writer().writeByte(Manager.ITEM_OPTION_TEMPLATES.size());
+            msg.writer().writeShort(Manager.ITEM_OPTION_TEMPLATES.size());
             for (ItemOptionTemplate io : Manager.ITEM_OPTION_TEMPLATES) {
                 msg.writer().writeUTF(io.name);
                 msg.writer().writeByte(io.type);

@@ -3,8 +3,6 @@ package nro.models.shop;
 import java.util.ArrayList;
 import java.util.List;
 import nro.models.player.Player;
-import nro.models.shop.TabShopHocKynang;
-import nro.models.shop.TabShopSoHuu;
 
 /**
  *

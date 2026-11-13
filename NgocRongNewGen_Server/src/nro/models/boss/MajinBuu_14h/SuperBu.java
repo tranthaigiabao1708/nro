@@ -1,6 +1,5 @@
 package nro.models.boss.MajinBuu_14h;
 
-
 import nro.models.boss.Boss;
 import nro.models.boss.Boss_Manager.FinalBossManager;
 import nro.models.boss.BossID;
@@ -10,12 +9,10 @@ import static nro.models.consts.BossType.FINAL;
 import java.util.ArrayList;
 import java.util.List;
 import nro.models.player.Player;
-import nro.models.services.EffectSkillService;
 import nro.models.services.Service;
 import nro.models.utils.Util;
 import nro.models.server.ServerNotify;
 import nro.models.services.SkillService;
-import nro.models.services.TaskService;
 import nro.models.map.service.ChangeMapService;
 import nro.models.utils.SkillUtil;
 

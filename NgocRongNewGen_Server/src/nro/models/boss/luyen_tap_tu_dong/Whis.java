@@ -10,7 +10,6 @@ import nro.models.player.Player;
 import nro.models.services.Service;
 import nro.models.map.service.ChangeMapService;
 import nro.models.server.Manager;
-import static nro.models.server.Manager.isTopWhisChanged;
 import nro.models.utils.Util;
 
 public class Whis extends TrainingBoss {
