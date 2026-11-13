@@ -1,9 +1,9 @@
 /*M!999999\- enable the sandbox mode */ 
--- MariaDB dump 10.19  Distrib 10.11.11-MariaDB, for Win64 (AMD64)
+-- MariaDB dump 10.19-11.4.4-MariaDB, for Win64 (AMD64)
 --
 -- Host: 127.0.0.1    Database: nro_newgen
 -- ------------------------------------------------------
--- Server version	10.11.11-MariaDB
+-- Server version	11.4.4-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -14,7 +14,7 @@
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*M!100616 SET @OLD_NOTE_VERBOSITY=@@NOTE_VERBOSITY, NOTE_VERBOSITY=0 */;
 
 --
 -- Table structure for table `achievement_template`
@@ -22,7 +22,7 @@
 
 DROP TABLE IF EXISTS `achievement_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `achievement_template` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `info1` text NOT NULL,
@@ -74,7 +74,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `array_head_2_frames`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `array_head_2_frames` (
   `id` int(11) NOT NULL,
   `data` text NOT NULL,
@@ -150,7 +150,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `bg_item_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `bg_item_template` (
   `id` int(11) NOT NULL,
   `image_id` int(11) NOT NULL,
@@ -774,7 +774,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `clan_task_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `clan_task_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -862,7 +862,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `data_badges`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `data_badges` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `idEffect` int(11) NOT NULL,
@@ -908,7 +908,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `flag_bag`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `flag_bag` (
   `id` int(11) NOT NULL,
   `icon_data` varchar(1000) NOT NULL,
@@ -1095,7 +1095,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `head_avatar`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `head_avatar` (
   `head_id` int(11) NOT NULL,
   `avatar_id` int(11) NOT NULL,
@@ -1614,7 +1614,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `img_by_name`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `img_by_name` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `NAME` varchar(55) NOT NULL,
@@ -1798,7 +1798,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `intrinsic`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `intrinsic` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -2035,7 +2035,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `item_option_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `item_option_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -2314,7 +2314,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `item_shop`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `item_shop` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `tab_id` int(11) NOT NULL,
@@ -3140,7 +3140,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `item_shop_option`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `item_shop_option` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `item_shop_id` int(11) NOT NULL,
@@ -4535,7 +4535,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `item_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `item_template` (
   `id` int(11) NOT NULL,
   `TYPE` int(11) NOT NULL,
@@ -6603,7 +6603,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `map_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `map_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(55) NOT NULL,
@@ -6814,12 +6814,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `mob_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mob_template` (
   `id` int(11) NOT NULL,
   `TYPE` int(11) NOT NULL,
   `NAME` varchar(50) NOT NULL,
-  `hp` int(11) NOT NULL,
+  `hp` bigint(20) NOT NULL,
   `range_move` smallint(6) NOT NULL,
   `speed` smallint(6) NOT NULL,
   `dart_Type` smallint(6) NOT NULL,
@@ -6964,7 +6964,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `notify`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `notify` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
@@ -6988,7 +6988,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `npc_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `npc_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(50) NOT NULL,
@@ -7109,7 +7109,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `part`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `part` (
   `id` int(11) NOT NULL,
   `TYPE` int(11) NOT NULL,
@@ -9238,7 +9238,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `radar`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `radar` (
   `id` int(11) NOT NULL,
   `iconId` int(11) DEFAULT 0,
@@ -9293,7 +9293,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `settings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `settings` (
   `Title` varchar(100) DEFAULT 'Nguyen Duc Kien',
   `Description` longtext DEFAULT NULL,
@@ -9331,7 +9331,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `shop`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `shop` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `npc_id` int(11) NOT NULL,
@@ -9385,7 +9385,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `side_task_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `side_task_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -9473,7 +9473,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `skill_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `skill_template` (
   `nclass_id` int(11) NOT NULL,
   `id` int(11) NOT NULL,
@@ -9532,7 +9532,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tab_shop`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tab_shop` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `shop_id` int(11) NOT NULL,
@@ -9614,7 +9614,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `task_badges_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `task_badges_template` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `NAME` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
@@ -9658,7 +9658,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `task_main_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `task_main_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -9713,7 +9713,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `task_sub_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `task_sub_template` (
   `task_main_id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -9869,6 +9869,6 @@ UNLOCK TABLES;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
 -- Dump completed
