@@ -29,7 +29,7 @@ import nro.models.player_system.Template.BgItem;
 
 public class DataGame {
 
-    public static byte vsData = 17;
+    public static byte vsData = 18;
     public static byte vsMap = 11;
     public static byte vsSkill = 2;
     public static byte vsItem = 67;

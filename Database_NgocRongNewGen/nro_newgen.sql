@@ -1,9 +1,11 @@
+CREATE DATABASE IF NOT EXISTS `nro_newgen` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `nro_newgen`;
 /*M!999999\- enable the sandbox mode */ 
--- MariaDB dump 10.19  Distrib 10.11.11-MariaDB, for Win64 (AMD64)
+-- MariaDB dump 10.19-11.4.4-MariaDB, for Win64 (AMD64)
 --
 -- Host: 127.0.0.1    Database: nro_newgen
 -- ------------------------------------------------------
--- Server version	10.11.11-MariaDB
+-- Server version	11.4.4-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -14,7 +16,7 @@
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*M!100616 SET @OLD_NOTE_VERBOSITY=@@NOTE_VERBOSITY, NOTE_VERBOSITY=0 */;
 
 --
 -- Table structure for table `account`
@@ -22,7 +24,7 @@
 
 DROP TABLE IF EXISTS `account`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `account` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(64) NOT NULL,
@@ -61,23 +63,408 @@ CREATE TABLE `account` (
   `admin` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `username` (`username`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=405 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `account`
+-- Table structure for table `adminpanel`
 --
 
-LOCK TABLES `account` WRITE;
-/*!40000 ALTER TABLE `account` DISABLE KEYS */;
-INSERT INTO `account` VALUES
-(1,'admin','123456','','2026-11-09 12:52:21','2026-11-09 12:52:21',0,1,'2002-07-30 10:00:00','2002-07-30 10:00:00',NULL,1,9999,-1,1,0,'0',NULL,99999999,0,'','','',0,0,0,0,0,0,0,NULL,0,0,0,1),
-(2,'test','123456','','2026-11-09 12:58:44','2026-11-09 12:58:44',0,0,'2026-11-15 20:39:42','2026-11-15 20:40:51','127.0.0.1',1,20,-1,1,0,'0',NULL,100000,0,'','','',0,0,0,0,0,0,0,NULL,0,0,0,0),
-(3,'1','1','','2026-11-09 20:13:46','2026-11-09 20:13:46',0,0,'2002-07-30 17:00:00','2002-07-30 17:00:00',NULL,1,20,-1,1,0,'0',NULL,100000,0,'','','',0,0,0,0,0,0,0,NULL,0,0,0,0),
-(114,'user8399129721','','','2026-11-14 19:19:51','2026-11-14 19:19:51',0,0,'2002-07-30 17:00:00','2002-07-30 17:00:00',NULL,1,20,-1,1,0,'0',NULL,100000,0,'','','',0,0,0,0,0,0,0,NULL,0,0,0,0),
-(115,'user8399212383','','','2026-11-14 19:19:52','2026-11-14 19:19:52',0,0,'2026-11-14 19:39:22','2026-11-14 19:39:52','127.0.0.1',1,20,-1,1,0,'0',NULL,100000,0,'','','',0,0,0,0,0,0,0,NULL,0,0,0,0);
-/*!40000 ALTER TABLE `account` ENABLE KEYS */;
-UNLOCK TABLES;
+DROP TABLE IF EXISTS `adminpanel`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `adminpanel` (
+  `domain` text DEFAULT NULL,
+  `title` text DEFAULT NULL,
+  `tenmaychu` text DEFAULT NULL,
+  `logo` text DEFAULT NULL,
+  `trangthai` text NOT NULL,
+  `android` text DEFAULT NULL,
+  `iphone` text DEFAULT NULL,
+  `windows` text DEFAULT NULL,
+  `java` text DEFAULT NULL,
+  `apikey` text DEFAULT NULL,
+  `giatri` int(11) NOT NULL DEFAULT 1,
+  `userlogin` varchar(20) DEFAULT NULL,
+  `stk` varchar(20) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `sessionId` varchar(255) DEFAULT NULL,
+  `deviceId` varchar(255) DEFAULT NULL,
+  `token` varchar(255) DEFAULT NULL,
+  `time` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `bank_transfers`
+--
+
+DROP TABLE IF EXISTS `bank_transfers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `bank_transfers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `transaction_id` varchar(255) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `amount` decimal(15,2) NOT NULL,
+  `description` text DEFAULT NULL,
+  `status` varchar(50) NOT NULL,
+  `sender_bank_name` varchar(255) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `is_credited` tinyint(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `transaction_id` (`transaction_id`) USING BTREE,
+  KEY `username` (`username`) USING BTREE,
+  KEY `status` (`status`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `clan`
+--
+
+DROP TABLE IF EXISTS `clan`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `clan` (
+  `id` int(11) NOT NULL,
+  `NAME` varchar(255) NOT NULL,
+  `NAME_2` varchar(4) NOT NULL,
+  `slogan` varchar(255) NOT NULL DEFAULT '',
+  `img_id` int(11) NOT NULL DEFAULT 0,
+  `power_point` bigint(20) NOT NULL DEFAULT 0,
+  `max_member` smallint(6) NOT NULL DEFAULT 10,
+  `clan_point` int(11) NOT NULL DEFAULT 0,
+  `LEVEL` int(11) NOT NULL DEFAULT 1,
+  `members` text NOT NULL,
+  `tops` text NOT NULL,
+  `create_time` timestamp NOT NULL DEFAULT current_timestamp(),
+  `thanhTichBDKB` varchar(255) NOT NULL DEFAULT '[0,0]',
+  `thongTinLeader` varchar(255) NOT NULL DEFAULT '[0,0,0,0,0]',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `comments`
+--
+
+DROP TABLE IF EXISTS `comments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `comments` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `post_id` int(11) NOT NULL,
+  `nguoidung` varchar(255) NOT NULL,
+  `traloi` text NOT NULL,
+  `gender` int(11) NOT NULL DEFAULT 0,
+  `admin` int(11) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `binhluan` int(11) NOT NULL DEFAULT 0,
+  `image` varchar(255) DEFAULT NULL,
+  `server` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `post_id` (`post_id`) USING BTREE,
+  CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `giftcode`
+--
+
+DROP TABLE IF EXISTS `giftcode`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `giftcode` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` text NOT NULL,
+  `count_left` int(11) NOT NULL,
+  `detail` text NOT NULL,
+  `datecreate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `expired` timestamp NOT NULL DEFAULT '2037-12-31 17:00:00',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `history_transaction`
+--
+
+DROP TABLE IF EXISTS `history_transaction`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `history_transaction` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `player_1` varchar(255) NOT NULL,
+  `player_2` varchar(255) NOT NULL,
+  `item_player_1` text NOT NULL,
+  `item_player_2` text NOT NULL,
+  `bag_1_before_tran` text NOT NULL,
+  `bag_2_before_tran` text NOT NULL,
+  `bag_1_after_tran` text NOT NULL,
+  `bag_2_after_tran` text NOT NULL,
+  `time_tran` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `napthe`
+--
+
+DROP TABLE IF EXISTS `napthe`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `napthe` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_nap` varchar(100) NOT NULL,
+  `telco` varchar(255) NOT NULL,
+  `serial` varchar(255) NOT NULL,
+  `code` varchar(255) NOT NULL,
+  `amount` int(11) NOT NULL,
+  `status` int(11) NOT NULL,
+  `request_id` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `payments`
+--
+
+DROP TABLE IF EXISTS `payments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `payments` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `refNo` varchar(255) NOT NULL,
+  `date` datetime NOT NULL,
+  `card_serial` varchar(255) DEFAULT NULL,
+  `card_pin` varchar(255) DEFAULT NULL,
+  `declared_amount` int(11) NOT NULL,
+  `api_declared_value` int(11) DEFAULT NULL,
+  `detected_value` int(11) DEFAULT NULL,
+  `received_amount_from_api` int(11) DEFAULT NULL,
+  `final_credited_amount` int(11) DEFAULT 0,
+  `status_text` varchar(255) NOT NULL,
+  `api_status_code` varchar(50) NOT NULL,
+  `api_message` text DEFAULT NULL,
+  `card_telco` varchar(50) DEFAULT NULL,
+  `is_credited` tinyint(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `refNo` (`refNo`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `phongchat`
+--
+
+DROP TABLE IF EXISTS `phongchat`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `phongchat` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_user` int(11) DEFAULT NULL,
+  `noidung` text NOT NULL,
+  `ngaytao` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `player`
+--
+
+DROP TABLE IF EXISTS `player`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `player` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `account_id` int(11) DEFAULT NULL,
+  `name` varchar(20) NOT NULL,
+  `head` int(11) NOT NULL DEFAULT 102,
+  `gender` int(11) NOT NULL,
+  `have_tennis_space_ship` tinyint(1) DEFAULT 0,
+  `clan_id` int(11) NOT NULL DEFAULT -1,
+  `data_inventory` text NOT NULL,
+  `data_location` text NOT NULL,
+  `data_point` text NOT NULL,
+  `data_magic_tree` text NOT NULL,
+  `items_body` text NOT NULL,
+  `items_bag` text NOT NULL,
+  `items_box` text NOT NULL,
+  `items_box_lucky_round` text NOT NULL,
+  `items_daban` text NOT NULL,
+  `friends` text NOT NULL,
+  `enemies` text NOT NULL,
+  `data_intrinsic` text NOT NULL,
+  `data_item_time` text NOT NULL,
+  `data_task` text NOT NULL,
+  `data_mabu_egg` text NOT NULL,
+  `data_charm` text NOT NULL,
+  `skills` text NOT NULL,
+  `skills_shortcut` text NOT NULL,
+  `pet` text NOT NULL,
+  `data_black_ball` text NOT NULL,
+  `data_side_task` text NOT NULL,
+  `create_time` timestamp NOT NULL DEFAULT current_timestamp(),
+  `notify` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `baovetaikhoan` varchar(1000) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '[]',
+  `captcha` varchar(1000) NOT NULL DEFAULT '[]',
+  `data_card` text NOT NULL,
+  `lasttimepkcommeson` bigint(20) NOT NULL DEFAULT 0,
+  `bandokhobau` varchar(250) NOT NULL DEFAULT '[]',
+  `doanhtrai` bigint(20) NOT NULL DEFAULT 0,
+  `conduongrandoc` varchar(255) NOT NULL DEFAULT '[]',
+  `masterDoesNotAttack` text NOT NULL,
+  `nhanthoivang` varchar(200) NOT NULL DEFAULT '[]',
+  `ruonggo` varchar(255) NOT NULL DEFAULT '[]',
+  `sieuthanthuy` varchar(255) NOT NULL DEFAULT '[]',
+  `vodaisinhtu` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '[]',
+  `rongxuong` bigint(20) NOT NULL DEFAULT 0,
+  `data_item_event` varchar(1000) NOT NULL DEFAULT '[]',
+  `data_luyentap` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `data_clan_task` varchar(255) NOT NULL DEFAULT '[]',
+  `data_vip` text DEFAULT NULL,
+  `rank` int(11) NOT NULL DEFAULT 0,
+  `data_achievement` text NOT NULL,
+  `giftcode` text NOT NULL,
+  `event_point` int(11) NOT NULL DEFAULT 0,
+  `data_event` text DEFAULT NULL,
+  `dataBadges` text DEFAULT NULL,
+  `dataTaskBadges` text DEFAULT NULL,
+  `firstTimeLogin` timestamp NOT NULL DEFAULT current_timestamp(),
+  `BoughtSkill` text DEFAULT NULL,
+  `LearnSkill` text DEFAULT NULL,
+  `dailyGift` text NOT NULL,
+  `point_sukien` int(11) NOT NULL DEFAULT 0,
+  `thachdauwhis` int(11) NOT NULL DEFAULT 0,
+  `point_sukien1` int(11) NOT NULL DEFAULT 0,
+  `point_maydam` int(11) NOT NULL DEFAULT 0,
+  `total_damage_maydam` bigint(20) NOT NULL,
+  `data_duahau_egg` text NOT NULL,
+  `checkNhanQua` varchar(255) NOT NULL DEFAULT '[1,1,"1970-01-01T00:00:00"]',
+  `thanhTichBang` varchar(255) NOT NULL DEFAULT '[0,0,0,0]',
+  `thanhTichKhiGas` varchar(255) NOT NULL DEFAULT '[0,0,0,0]',
+  `thanhTichCDRD` varchar(255) NOT NULL DEFAULT '[0,0,0,0]',
+  `nhiem_vu_kol` text NOT NULL,
+  `point_sukien2` int(11) NOT NULL DEFAULT 0,
+  `data_skh_collection` text NOT NULL DEFAULT '[]',
+  `unlock_vu_tru_13` tinyint(1) NOT NULL DEFAULT 0,
+  `hide_cai_trang` tinyint(1) NOT NULL DEFAULT 0,
+  `vu_tru_13_stage` int(11) NOT NULL DEFAULT 0,
+  `vo_cuc_type` tinyint(4) NOT NULL DEFAULT 0,
+  `vo_cuc_level` int(11) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `account_id` (`account_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=403 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `posts`
+--
+
+DROP TABLE IF EXISTS `posts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `posts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `tieude` varchar(75) NOT NULL,
+  `noidung` text NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `theloai` int(11) NOT NULL DEFAULT 0,
+  `ghimbai` int(11) NOT NULL DEFAULT 0,
+  `image` varchar(255) DEFAULT NULL,
+  `trangthai` int(11) NOT NULL DEFAULT 0,
+  `tinhtrang` int(11) NOT NULL DEFAULT 0,
+  `like` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `shop_ky_gui`
+--
+
+DROP TABLE IF EXISTS `shop_ky_gui`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shop_ky_gui` (
+  `id` int(11) NOT NULL,
+  `player_id` int(11) NOT NULL,
+  `tab` int(11) NOT NULL,
+  `item_id` int(11) NOT NULL,
+  `gold` int(11) NOT NULL,
+  `gem` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `itemOption` text NOT NULL,
+  `isUpTop` int(11) NOT NULL,
+  `isBuy` int(11) NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `super_rank`
+--
+
+DROP TABLE IF EXISTS `super_rank`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `super_rank` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `player_id` int(11) NOT NULL,
+  `name` text NOT NULL,
+  `rank` int(11) NOT NULL,
+  `last_pk_time` bigint(20) NOT NULL,
+  `last_reward_time` bigint(20) NOT NULL,
+  `ticket` int(11) NOT NULL,
+  `win` int(11) NOT NULL,
+  `lose` int(11) NOT NULL,
+  `history` text NOT NULL,
+  `info` text NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=403 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
+
+-- Dump completed
+
+-- Tai khoan Admin mac dinh cho may moi
+INSERT IGNORE INTO `account` (`id`, `username`, `password`, `is_admin`, `active`) VALUES (1, 'admin', '123456', 1, 1);
+INSERT IGNORE INTO `giftcode` (`id`, `code`, `count_left`, `detail`, `datecreate`, `expired`) VALUES (1, 'tanthu', -1, '[{"id":457,"quantity":20,"options":[{"id":30,"param":0}]},{"id":1635,"quantity":5,"options":[{"id":30,"param":0}]},{"id":1787,"quantity":2,"options":[{"id":30,"param":0}]}]', '2026-01-01 00:00:00', '2035-12-31 23:59:59');
+
+/*M!999999\- enable the sandbox mode */ 
+-- MariaDB dump 10.19-11.4.4-MariaDB, for Win64 (AMD64)
+--
+-- Host: 127.0.0.1    Database: nro_newgen
+-- ------------------------------------------------------
+-- Server version	11.4.4-MariaDB
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*M!100616 SET @OLD_NOTE_VERBOSITY=@@NOTE_VERBOSITY, NOTE_VERBOSITY=0 */;
 
 --
 -- Table structure for table `achievement_template`
@@ -85,7 +472,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `achievement_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `achievement_template` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `info1` text NOT NULL,
@@ -132,51 +519,12 @@ INSERT INTO `achievement_template` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `adminpanel`
---
-
-DROP TABLE IF EXISTS `adminpanel`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `adminpanel` (
-  `domain` text DEFAULT NULL,
-  `title` text DEFAULT NULL,
-  `tenmaychu` text DEFAULT NULL,
-  `logo` text DEFAULT NULL,
-  `trangthai` text NOT NULL,
-  `android` text DEFAULT NULL,
-  `iphone` text DEFAULT NULL,
-  `windows` text DEFAULT NULL,
-  `java` text DEFAULT NULL,
-  `apikey` text DEFAULT NULL,
-  `giatri` int(11) NOT NULL DEFAULT 1,
-  `userlogin` varchar(20) DEFAULT NULL,
-  `stk` varchar(20) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
-  `sessionId` varchar(255) DEFAULT NULL,
-  `deviceId` varchar(255) DEFAULT NULL,
-  `token` varchar(255) DEFAULT NULL,
-  `time` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `adminpanel`
---
-
-LOCK TABLES `adminpanel` WRITE;
-/*!40000 ALTER TABLE `adminpanel` DISABLE KEYS */;
-/*!40000 ALTER TABLE `adminpanel` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `array_head_2_frames`
 --
 
 DROP TABLE IF EXISTS `array_head_2_frames`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `array_head_2_frames` (
   `id` int(11) NOT NULL,
   `data` text NOT NULL,
@@ -247,45 +595,12 @@ INSERT INTO `array_head_2_frames` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `bank_transfers`
---
-
-DROP TABLE IF EXISTS `bank_transfers`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `bank_transfers` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `transaction_id` varchar(255) NOT NULL,
-  `username` varchar(255) NOT NULL,
-  `amount` decimal(15,2) NOT NULL,
-  `description` text DEFAULT NULL,
-  `status` varchar(50) NOT NULL,
-  `sender_bank_name` varchar(255) DEFAULT NULL,
-  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
-  `is_credited` tinyint(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `transaction_id` (`transaction_id`) USING BTREE,
-  KEY `username` (`username`) USING BTREE,
-  KEY `status` (`status`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `bank_transfers`
---
-
-LOCK TABLES `bank_transfers` WRITE;
-/*!40000 ALTER TABLE `bank_transfers` DISABLE KEYS */;
-/*!40000 ALTER TABLE `bank_transfers` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `bg_item_template`
 --
 
 DROP TABLE IF EXISTS `bg_item_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `bg_item_template` (
   `id` int(11) NOT NULL,
   `image_id` int(11) NOT NULL,
@@ -904,49 +1219,12 @@ INSERT INTO `bg_item_template` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `clan`
---
-
-DROP TABLE IF EXISTS `clan`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `clan` (
-  `id` int(11) NOT NULL,
-  `NAME` varchar(255) NOT NULL,
-  `NAME_2` varchar(4) NOT NULL,
-  `slogan` varchar(255) NOT NULL DEFAULT '',
-  `img_id` int(11) NOT NULL DEFAULT 0,
-  `power_point` bigint(20) NOT NULL DEFAULT 0,
-  `max_member` smallint(6) NOT NULL DEFAULT 10,
-  `clan_point` int(11) NOT NULL DEFAULT 0,
-  `LEVEL` int(11) NOT NULL DEFAULT 1,
-  `members` text NOT NULL,
-  `tops` text NOT NULL,
-  `create_time` timestamp NOT NULL DEFAULT current_timestamp(),
-  `thanhTichBDKB` varchar(255) NOT NULL DEFAULT '[0,0]',
-  `thongTinLeader` varchar(255) NOT NULL DEFAULT '[0,0,0,0,0]',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `clan`
---
-
-LOCK TABLES `clan` WRITE;
-/*!40000 ALTER TABLE `clan` DISABLE KEYS */;
-INSERT INTO `clan` VALUES
-(0,'dfgdfg','','',79,0,10,2,1,'[\"{\\\"role\\\":0,\\\"receive_donate\\\":0,\\\"member_point\\\":2,\\\"body\\\":1854,\\\"join_time\\\":1794321401,\\\"leg\\\":1855,\\\"head\\\":1851,\\\"ask_pea_time\\\":0,\\\"name\\\":\\\"gohan\\\",\\\"clan_point\\\":2,\\\"id\\\":1,\\\"donate\\\":0,\\\"power\\\":46952092139}\"]','cc','2026-11-10 14:36:41','[0,0]','[1,gohan,907,908,909]');
-/*!40000 ALTER TABLE `clan` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `clan_task_template`
 --
 
 DROP TABLE IF EXISTS `clan_task_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `clan_task_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -1029,45 +1307,12 @@ INSERT INTO `clan_task_template` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `comments`
---
-
-DROP TABLE IF EXISTS `comments`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `comments` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `post_id` int(11) NOT NULL,
-  `nguoidung` varchar(255) NOT NULL,
-  `traloi` text NOT NULL,
-  `gender` int(11) NOT NULL DEFAULT 0,
-  `admin` int(11) NOT NULL DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `binhluan` int(11) NOT NULL DEFAULT 0,
-  `image` varchar(255) DEFAULT NULL,
-  `server` int(11) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `post_id` (`post_id`) USING BTREE,
-  CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `comments`
---
-
-LOCK TABLES `comments` WRITE;
-/*!40000 ALTER TABLE `comments` DISABLE KEYS */;
-/*!40000 ALTER TABLE `comments` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `data_badges`
 --
 
 DROP TABLE IF EXISTS `data_badges`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `data_badges` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `idEffect` int(11) NOT NULL,
@@ -1113,7 +1358,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `flag_bag`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `flag_bag` (
   `id` int(11) NOT NULL,
   `icon_data` varchar(1000) NOT NULL,
@@ -1295,59 +1540,12 @@ INSERT INTO `flag_bag` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `giftcode`
---
-
-DROP TABLE IF EXISTS `giftcode`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `giftcode` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `code` text NOT NULL,
-  `count_left` int(11) NOT NULL,
-  `detail` text NOT NULL,
-  `datecreate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `expired` timestamp NOT NULL DEFAULT '2037-12-31 17:00:00',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `giftcode`
---
-
-LOCK TABLES `giftcode` WRITE;
-/*!40000 ALTER TABLE `giftcode` DISABLE KEYS */;
-INSERT INTO `giftcode` VALUES
-(1,'newgen',-1,'[{\"id\":457,\"quantity\":50,\"options\":[{\"id\":30,\"param\":0}]},{\"id\":381,\"quantity\":10,\"options\":[{\"id\":30,\"param\":0}]},{\"id\":382,\"quantity\":10,\"options\":[{\"id\":30,\"param\":0}]},{\"id\":383,\"quantity\":10,\"options\":[{\"id\":30,\"param\":0}]},{\"id\":384,\"quantity\":10,\"options\":[{\"id\":30,\"param\":0}]},{\"id\":385,\"quantity\":10,\"options\":[{\"id\":30,\"param\":0}]}]','2026-11-09 12:52:21','2035-12-31 16:59:59'),
-(2,'tanthu',-1,'[{\"id\":457,\"quantity\":20,\"options\":[{\"id\":30,\"param\":0}]},{\"id\":1635,\"quantity\":5,\"options\":[{\"id\":30,\"param\":0}]},{\"id\":1787,\"quantity\":2,\"options\":[{\"id\":30,\"param\":0}]}]','2026-11-09 12:52:21','2035-12-31 16:59:59'),
-(3,'tdsongoku',-1,'[{\"id\":555,\"quantity\":1,\"options\":[{\"id\":47,\"param\":800},{\"id\":21,\"param\":15},{\"id\":129,\"param\":0},{\"id\":141,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":556,\"quantity\":1,\"options\":[{\"id\":22,\"param\":52},{\"id\":27,\"param\":2600},{\"id\":21,\"param\":15},{\"id\":129,\"param\":0},{\"id\":141,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":562,\"quantity\":1,\"options\":[{\"id\":0,\"param\":4400},{\"id\":21,\"param\":10},{\"id\":129,\"param\":0},{\"id\":141,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":563,\"quantity\":1,\"options\":[{\"id\":23,\"param\":48},{\"id\":28,\"param\":2400},{\"id\":21,\"param\":15},{\"id\":129,\"param\":0},{\"id\":141,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":561,\"quantity\":1,\"options\":[{\"id\":14,\"param\":14},{\"id\":21,\"param\":15},{\"id\":129,\"param\":0},{\"id\":141,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":650,\"quantity\":1,\"options\":[{\"id\":47,\"param\":1600},{\"id\":129,\"param\":0},{\"id\":141,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":651,\"quantity\":1,\"options\":[{\"id\":22,\"param\":104},{\"id\":129,\"param\":0},{\"id\":141,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":657,\"quantity\":1,\"options\":[{\"id\":0,\"param\":8800},{\"id\":21,\"param\":20},{\"id\":129,\"param\":0},{\"id\":141,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":658,\"quantity\":1,\"options\":[{\"id\":23,\"param\":96},{\"id\":129,\"param\":0},{\"id\":141,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":656,\"quantity\":1,\"options\":[{\"id\":14,\"param\":16},{\"id\":129,\"param\":0},{\"id\":141,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1048,\"quantity\":1,\"options\":[{\"id\":47,\"param\":3500},{\"id\":21,\"param\":30},{\"id\":129,\"param\":0},{\"id\":141,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1051,\"quantity\":1,\"options\":[{\"id\":22,\"param\":143},{\"id\":21,\"param\":30},{\"id\":129,\"param\":0},{\"id\":141,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1054,\"quantity\":1,\"options\":[{\"id\":0,\"param\":10500},{\"id\":21,\"param\":30},{\"id\":129,\"param\":0},{\"id\":141,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1057,\"quantity\":1,\"options\":[{\"id\":23,\"param\":110},{\"id\":21,\"param\":30},{\"id\":129,\"param\":0},{\"id\":141,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1060,\"quantity\":1,\"options\":[{\"id\":14,\"param\":20},{\"id\":21,\"param\":30},{\"id\":129,\"param\":0},{\"id\":141,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]}]','2025-12-31 17:00:00','2035-12-31 16:59:59'),
-(4,'tdkirin',-1,'[{\"id\":555,\"quantity\":1,\"options\":[{\"id\":47,\"param\":800},{\"id\":21,\"param\":15},{\"id\":128,\"param\":0},{\"id\":140,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":556,\"quantity\":1,\"options\":[{\"id\":22,\"param\":52},{\"id\":27,\"param\":2600},{\"id\":21,\"param\":15},{\"id\":128,\"param\":0},{\"id\":140,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":562,\"quantity\":1,\"options\":[{\"id\":0,\"param\":4400},{\"id\":21,\"param\":10},{\"id\":128,\"param\":0},{\"id\":140,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":563,\"quantity\":1,\"options\":[{\"id\":23,\"param\":48},{\"id\":28,\"param\":2400},{\"id\":21,\"param\":15},{\"id\":128,\"param\":0},{\"id\":140,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":561,\"quantity\":1,\"options\":[{\"id\":14,\"param\":14},{\"id\":21,\"param\":15},{\"id\":128,\"param\":0},{\"id\":140,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":650,\"quantity\":1,\"options\":[{\"id\":47,\"param\":1600},{\"id\":128,\"param\":0},{\"id\":140,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":651,\"quantity\":1,\"options\":[{\"id\":22,\"param\":104},{\"id\":128,\"param\":0},{\"id\":140,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":657,\"quantity\":1,\"options\":[{\"id\":0,\"param\":8800},{\"id\":21,\"param\":20},{\"id\":128,\"param\":0},{\"id\":140,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":658,\"quantity\":1,\"options\":[{\"id\":23,\"param\":96},{\"id\":128,\"param\":0},{\"id\":140,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":656,\"quantity\":1,\"options\":[{\"id\":14,\"param\":16},{\"id\":128,\"param\":0},{\"id\":140,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1048,\"quantity\":1,\"options\":[{\"id\":47,\"param\":3500},{\"id\":21,\"param\":30},{\"id\":128,\"param\":0},{\"id\":140,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1051,\"quantity\":1,\"options\":[{\"id\":22,\"param\":143},{\"id\":21,\"param\":30},{\"id\":128,\"param\":0},{\"id\":140,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1054,\"quantity\":1,\"options\":[{\"id\":0,\"param\":10500},{\"id\":21,\"param\":30},{\"id\":128,\"param\":0},{\"id\":140,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1057,\"quantity\":1,\"options\":[{\"id\":23,\"param\":110},{\"id\":21,\"param\":30},{\"id\":128,\"param\":0},{\"id\":140,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1060,\"quantity\":1,\"options\":[{\"id\":14,\"param\":20},{\"id\":21,\"param\":30},{\"id\":128,\"param\":0},{\"id\":140,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]}]','2025-12-31 17:00:00','2035-12-31 16:59:59'),
-(5,'tdthenxinhang',-1,'[{\"id\":555,\"quantity\":1,\"options\":[{\"id\":47,\"param\":800},{\"id\":21,\"param\":15},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":556,\"quantity\":1,\"options\":[{\"id\":22,\"param\":52},{\"id\":27,\"param\":2600},{\"id\":21,\"param\":15},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":562,\"quantity\":1,\"options\":[{\"id\":0,\"param\":4400},{\"id\":21,\"param\":10},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":563,\"quantity\":1,\"options\":[{\"id\":23,\"param\":48},{\"id\":28,\"param\":2400},{\"id\":21,\"param\":15},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":561,\"quantity\":1,\"options\":[{\"id\":14,\"param\":14},{\"id\":21,\"param\":15},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":650,\"quantity\":1,\"options\":[{\"id\":47,\"param\":1600},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":651,\"quantity\":1,\"options\":[{\"id\":22,\"param\":104},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":657,\"quantity\":1,\"options\":[{\"id\":0,\"param\":8800},{\"id\":21,\"param\":20},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":658,\"quantity\":1,\"options\":[{\"id\":23,\"param\":96},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":656,\"quantity\":1,\"options\":[{\"id\":14,\"param\":16},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1048,\"quantity\":1,\"options\":[{\"id\":47,\"param\":3500},{\"id\":21,\"param\":30},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1051,\"quantity\":1,\"options\":[{\"id\":22,\"param\":143},{\"id\":21,\"param\":30},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1054,\"quantity\":1,\"options\":[{\"id\":0,\"param\":10500},{\"id\":21,\"param\":30},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1057,\"quantity\":1,\"options\":[{\"id\":23,\"param\":110},{\"id\":21,\"param\":30},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1060,\"quantity\":1,\"options\":[{\"id\":14,\"param\":20},{\"id\":21,\"param\":30},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]}]','2025-12-31 17:00:00','2035-12-31 16:59:59'),
-(6,'tdthienxinhang',-1,'[{\"id\":555,\"quantity\":1,\"options\":[{\"id\":47,\"param\":800},{\"id\":21,\"param\":15},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":556,\"quantity\":1,\"options\":[{\"id\":22,\"param\":52},{\"id\":27,\"param\":2600},{\"id\":21,\"param\":15},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":562,\"quantity\":1,\"options\":[{\"id\":0,\"param\":4400},{\"id\":21,\"param\":10},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":563,\"quantity\":1,\"options\":[{\"id\":23,\"param\":48},{\"id\":28,\"param\":2400},{\"id\":21,\"param\":15},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":561,\"quantity\":1,\"options\":[{\"id\":14,\"param\":14},{\"id\":21,\"param\":15},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":650,\"quantity\":1,\"options\":[{\"id\":47,\"param\":1600},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":651,\"quantity\":1,\"options\":[{\"id\":22,\"param\":104},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":657,\"quantity\":1,\"options\":[{\"id\":0,\"param\":8800},{\"id\":21,\"param\":20},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":658,\"quantity\":1,\"options\":[{\"id\":23,\"param\":96},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":656,\"quantity\":1,\"options\":[{\"id\":14,\"param\":16},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1048,\"quantity\":1,\"options\":[{\"id\":47,\"param\":3500},{\"id\":21,\"param\":30},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1051,\"quantity\":1,\"options\":[{\"id\":22,\"param\":143},{\"id\":21,\"param\":30},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1054,\"quantity\":1,\"options\":[{\"id\":0,\"param\":10500},{\"id\":21,\"param\":30},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1057,\"quantity\":1,\"options\":[{\"id\":23,\"param\":110},{\"id\":21,\"param\":30},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1060,\"quantity\":1,\"options\":[{\"id\":14,\"param\":20},{\"id\":21,\"param\":30},{\"id\":127,\"param\":0},{\"id\":139,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]}]','2025-12-31 17:00:00','2035-12-31 16:59:59'),
-(7,'tdgohan',-1,'[{\"id\":555,\"quantity\":1,\"options\":[{\"id\":47,\"param\":800},{\"id\":21,\"param\":15},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":556,\"quantity\":1,\"options\":[{\"id\":22,\"param\":52},{\"id\":27,\"param\":2600},{\"id\":21,\"param\":15},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":562,\"quantity\":1,\"options\":[{\"id\":0,\"param\":4400},{\"id\":21,\"param\":10},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":563,\"quantity\":1,\"options\":[{\"id\":23,\"param\":48},{\"id\":28,\"param\":2400},{\"id\":21,\"param\":15},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":561,\"quantity\":1,\"options\":[{\"id\":14,\"param\":14},{\"id\":21,\"param\":15},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":650,\"quantity\":1,\"options\":[{\"id\":47,\"param\":1600},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":651,\"quantity\":1,\"options\":[{\"id\":22,\"param\":104},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":657,\"quantity\":1,\"options\":[{\"id\":0,\"param\":8800},{\"id\":21,\"param\":20},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":658,\"quantity\":1,\"options\":[{\"id\":23,\"param\":96},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":656,\"quantity\":1,\"options\":[{\"id\":14,\"param\":16},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1048,\"quantity\":1,\"options\":[{\"id\":47,\"param\":3500},{\"id\":21,\"param\":30},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1051,\"quantity\":1,\"options\":[{\"id\":22,\"param\":143},{\"id\":21,\"param\":30},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1054,\"quantity\":1,\"options\":[{\"id\":0,\"param\":10500},{\"id\":21,\"param\":30},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1057,\"quantity\":1,\"options\":[{\"id\":23,\"param\":110},{\"id\":21,\"param\":30},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1060,\"quantity\":1,\"options\":[{\"id\":14,\"param\":20},{\"id\":21,\"param\":30},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]}]','2025-12-31 17:00:00','2035-12-31 16:59:59'),
-(8,'tdkaio',-1,'[{\"id\":555,\"quantity\":1,\"options\":[{\"id\":47,\"param\":800},{\"id\":21,\"param\":15},{\"id\":245,\"param\":0},{\"id\":246,\"param\":0},{\"id\":247,\"param\":0},{\"id\":248,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":556,\"quantity\":1,\"options\":[{\"id\":22,\"param\":52},{\"id\":27,\"param\":2600},{\"id\":21,\"param\":15},{\"id\":245,\"param\":0},{\"id\":246,\"param\":0},{\"id\":247,\"param\":0},{\"id\":248,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":562,\"quantity\":1,\"options\":[{\"id\":0,\"param\":4400},{\"id\":21,\"param\":10},{\"id\":245,\"param\":0},{\"id\":246,\"param\":0},{\"id\":247,\"param\":0},{\"id\":248,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":563,\"quantity\":1,\"options\":[{\"id\":23,\"param\":48},{\"id\":28,\"param\":2400},{\"id\":21,\"param\":15},{\"id\":245,\"param\":0},{\"id\":246,\"param\":0},{\"id\":247,\"param\":0},{\"id\":248,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":561,\"quantity\":1,\"options\":[{\"id\":14,\"param\":14},{\"id\":21,\"param\":15},{\"id\":245,\"param\":0},{\"id\":246,\"param\":0},{\"id\":247,\"param\":0},{\"id\":248,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":650,\"quantity\":1,\"options\":[{\"id\":47,\"param\":1600},{\"id\":245,\"param\":0},{\"id\":246,\"param\":0},{\"id\":247,\"param\":0},{\"id\":248,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":651,\"quantity\":1,\"options\":[{\"id\":22,\"param\":104},{\"id\":245,\"param\":0},{\"id\":246,\"param\":0},{\"id\":247,\"param\":0},{\"id\":248,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":657,\"quantity\":1,\"options\":[{\"id\":0,\"param\":8800},{\"id\":21,\"param\":20},{\"id\":245,\"param\":0},{\"id\":246,\"param\":0},{\"id\":247,\"param\":0},{\"id\":248,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":658,\"quantity\":1,\"options\":[{\"id\":23,\"param\":96},{\"id\":245,\"param\":0},{\"id\":246,\"param\":0},{\"id\":247,\"param\":0},{\"id\":248,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":656,\"quantity\":1,\"options\":[{\"id\":14,\"param\":16},{\"id\":245,\"param\":0},{\"id\":246,\"param\":0},{\"id\":247,\"param\":0},{\"id\":248,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1048,\"quantity\":1,\"options\":[{\"id\":47,\"param\":3500},{\"id\":21,\"param\":30},{\"id\":245,\"param\":0},{\"id\":246,\"param\":0},{\"id\":247,\"param\":0},{\"id\":248,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1051,\"quantity\":1,\"options\":[{\"id\":22,\"param\":143},{\"id\":21,\"param\":30},{\"id\":245,\"param\":0},{\"id\":246,\"param\":0},{\"id\":247,\"param\":0},{\"id\":248,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1054,\"quantity\":1,\"options\":[{\"id\":0,\"param\":10500},{\"id\":21,\"param\":30},{\"id\":245,\"param\":0},{\"id\":246,\"param\":0},{\"id\":247,\"param\":0},{\"id\":248,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1057,\"quantity\":1,\"options\":[{\"id\":23,\"param\":110},{\"id\":21,\"param\":30},{\"id\":245,\"param\":0},{\"id\":246,\"param\":0},{\"id\":247,\"param\":0},{\"id\":248,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1060,\"quantity\":1,\"options\":[{\"id\":14,\"param\":20},{\"id\":21,\"param\":30},{\"id\":245,\"param\":0},{\"id\":246,\"param\":0},{\"id\":247,\"param\":0},{\"id\":248,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]}]','2025-12-31 17:00:00','2035-12-31 16:59:59'),
-(9,'nmpicolo',-1,'[{\"id\":557,\"quantity\":1,\"options\":[{\"id\":47,\"param\":850},{\"id\":21,\"param\":15},{\"id\":130,\"param\":0},{\"id\":142,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":558,\"quantity\":1,\"options\":[{\"id\":22,\"param\":50},{\"id\":27,\"param\":2500},{\"id\":21,\"param\":15},{\"id\":130,\"param\":0},{\"id\":142,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":564,\"quantity\":1,\"options\":[{\"id\":0,\"param\":4300},{\"id\":21,\"param\":10},{\"id\":130,\"param\":0},{\"id\":142,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":565,\"quantity\":1,\"options\":[{\"id\":23,\"param\":50},{\"id\":28,\"param\":2500},{\"id\":21,\"param\":15},{\"id\":130,\"param\":0},{\"id\":142,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":561,\"quantity\":1,\"options\":[{\"id\":14,\"param\":14},{\"id\":21,\"param\":15},{\"id\":130,\"param\":0},{\"id\":142,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":652,\"quantity\":1,\"options\":[{\"id\":47,\"param\":1700},{\"id\":130,\"param\":0},{\"id\":142,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":653,\"quantity\":1,\"options\":[{\"id\":22,\"param\":100},{\"id\":130,\"param\":0},{\"id\":142,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":659,\"quantity\":1,\"options\":[{\"id\":0,\"param\":8600},{\"id\":21,\"param\":20},{\"id\":130,\"param\":0},{\"id\":142,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":660,\"quantity\":1,\"options\":[{\"id\":23,\"param\":100},{\"id\":130,\"param\":0},{\"id\":142,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":656,\"quantity\":1,\"options\":[{\"id\":14,\"param\":16},{\"id\":130,\"param\":0},{\"id\":142,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1049,\"quantity\":1,\"options\":[{\"id\":47,\"param\":3500},{\"id\":21,\"param\":30},{\"id\":130,\"param\":0},{\"id\":142,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1052,\"quantity\":1,\"options\":[{\"id\":22,\"param\":130},{\"id\":21,\"param\":30},{\"id\":130,\"param\":0},{\"id\":142,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1055,\"quantity\":1,\"options\":[{\"id\":0,\"param\":10500},{\"id\":21,\"param\":30},{\"id\":130,\"param\":0},{\"id\":142,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1058,\"quantity\":1,\"options\":[{\"id\":23,\"param\":121},{\"id\":21,\"param\":30},{\"id\":130,\"param\":0},{\"id\":142,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1061,\"quantity\":1,\"options\":[{\"id\":14,\"param\":22},{\"id\":21,\"param\":30},{\"id\":130,\"param\":0},{\"id\":142,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]}]','2025-12-31 17:00:00','2035-12-31 16:59:59'),
-(10,'nmoctieu',-1,'[{\"id\":557,\"quantity\":1,\"options\":[{\"id\":47,\"param\":850},{\"id\":21,\"param\":15},{\"id\":131,\"param\":0},{\"id\":143,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":558,\"quantity\":1,\"options\":[{\"id\":22,\"param\":50},{\"id\":27,\"param\":2500},{\"id\":21,\"param\":15},{\"id\":131,\"param\":0},{\"id\":143,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":564,\"quantity\":1,\"options\":[{\"id\":0,\"param\":4300},{\"id\":21,\"param\":10},{\"id\":131,\"param\":0},{\"id\":143,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":565,\"quantity\":1,\"options\":[{\"id\":23,\"param\":50},{\"id\":28,\"param\":2500},{\"id\":21,\"param\":15},{\"id\":131,\"param\":0},{\"id\":143,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":561,\"quantity\":1,\"options\":[{\"id\":14,\"param\":14},{\"id\":21,\"param\":15},{\"id\":131,\"param\":0},{\"id\":143,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":652,\"quantity\":1,\"options\":[{\"id\":47,\"param\":1700},{\"id\":131,\"param\":0},{\"id\":143,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":653,\"quantity\":1,\"options\":[{\"id\":22,\"param\":100},{\"id\":131,\"param\":0},{\"id\":143,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":659,\"quantity\":1,\"options\":[{\"id\":0,\"param\":8600},{\"id\":21,\"param\":20},{\"id\":131,\"param\":0},{\"id\":143,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":660,\"quantity\":1,\"options\":[{\"id\":23,\"param\":100},{\"id\":131,\"param\":0},{\"id\":143,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":656,\"quantity\":1,\"options\":[{\"id\":14,\"param\":16},{\"id\":131,\"param\":0},{\"id\":143,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1049,\"quantity\":1,\"options\":[{\"id\":47,\"param\":3500},{\"id\":21,\"param\":30},{\"id\":131,\"param\":0},{\"id\":143,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1052,\"quantity\":1,\"options\":[{\"id\":22,\"param\":130},{\"id\":21,\"param\":30},{\"id\":131,\"param\":0},{\"id\":143,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1055,\"quantity\":1,\"options\":[{\"id\":0,\"param\":10500},{\"id\":21,\"param\":30},{\"id\":131,\"param\":0},{\"id\":143,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1058,\"quantity\":1,\"options\":[{\"id\":23,\"param\":121},{\"id\":21,\"param\":30},{\"id\":131,\"param\":0},{\"id\":143,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1061,\"quantity\":1,\"options\":[{\"id\":14,\"param\":22},{\"id\":21,\"param\":30},{\"id\":131,\"param\":0},{\"id\":143,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]}]','2025-12-31 17:00:00','2035-12-31 16:59:59'),
-(11,'nmpikkoro',-1,'[{\"id\":557,\"quantity\":1,\"options\":[{\"id\":47,\"param\":850},{\"id\":21,\"param\":15},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":558,\"quantity\":1,\"options\":[{\"id\":22,\"param\":50},{\"id\":27,\"param\":2500},{\"id\":21,\"param\":15},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":564,\"quantity\":1,\"options\":[{\"id\":0,\"param\":4300},{\"id\":21,\"param\":10},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":565,\"quantity\":1,\"options\":[{\"id\":23,\"param\":50},{\"id\":28,\"param\":2500},{\"id\":21,\"param\":15},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":561,\"quantity\":1,\"options\":[{\"id\":14,\"param\":14},{\"id\":21,\"param\":15},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":652,\"quantity\":1,\"options\":[{\"id\":47,\"param\":1700},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":653,\"quantity\":1,\"options\":[{\"id\":22,\"param\":100},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":659,\"quantity\":1,\"options\":[{\"id\":0,\"param\":8600},{\"id\":21,\"param\":20},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":660,\"quantity\":1,\"options\":[{\"id\":23,\"param\":100},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":656,\"quantity\":1,\"options\":[{\"id\":14,\"param\":16},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1049,\"quantity\":1,\"options\":[{\"id\":47,\"param\":3500},{\"id\":21,\"param\":30},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1052,\"quantity\":1,\"options\":[{\"id\":22,\"param\":130},{\"id\":21,\"param\":30},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1055,\"quantity\":1,\"options\":[{\"id\":0,\"param\":10500},{\"id\":21,\"param\":30},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1058,\"quantity\":1,\"options\":[{\"id\":23,\"param\":121},{\"id\":21,\"param\":30},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1061,\"quantity\":1,\"options\":[{\"id\":14,\"param\":22},{\"id\":21,\"param\":30},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]}]','2025-12-31 17:00:00','2035-12-31 16:59:59'),
-(12,'nmpikkorodaimao',-1,'[{\"id\":557,\"quantity\":1,\"options\":[{\"id\":47,\"param\":850},{\"id\":21,\"param\":15},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":558,\"quantity\":1,\"options\":[{\"id\":22,\"param\":50},{\"id\":27,\"param\":2500},{\"id\":21,\"param\":15},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":564,\"quantity\":1,\"options\":[{\"id\":0,\"param\":4300},{\"id\":21,\"param\":10},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":565,\"quantity\":1,\"options\":[{\"id\":23,\"param\":50},{\"id\":28,\"param\":2500},{\"id\":21,\"param\":15},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":561,\"quantity\":1,\"options\":[{\"id\":14,\"param\":14},{\"id\":21,\"param\":15},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":652,\"quantity\":1,\"options\":[{\"id\":47,\"param\":1700},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":653,\"quantity\":1,\"options\":[{\"id\":22,\"param\":100},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":659,\"quantity\":1,\"options\":[{\"id\":0,\"param\":8600},{\"id\":21,\"param\":20},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":660,\"quantity\":1,\"options\":[{\"id\":23,\"param\":100},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":656,\"quantity\":1,\"options\":[{\"id\":14,\"param\":16},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1049,\"quantity\":1,\"options\":[{\"id\":47,\"param\":3500},{\"id\":21,\"param\":30},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1052,\"quantity\":1,\"options\":[{\"id\":22,\"param\":130},{\"id\":21,\"param\":30},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1055,\"quantity\":1,\"options\":[{\"id\":0,\"param\":10500},{\"id\":21,\"param\":30},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1058,\"quantity\":1,\"options\":[{\"id\":23,\"param\":121},{\"id\":21,\"param\":30},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1061,\"quantity\":1,\"options\":[{\"id\":14,\"param\":22},{\"id\":21,\"param\":30},{\"id\":132,\"param\":0},{\"id\":144,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]}]','2025-12-31 17:00:00','2035-12-31 16:59:59'),
-(13,'nmgohan',-1,'[{\"id\":557,\"quantity\":1,\"options\":[{\"id\":47,\"param\":850},{\"id\":21,\"param\":15},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":558,\"quantity\":1,\"options\":[{\"id\":22,\"param\":50},{\"id\":27,\"param\":2500},{\"id\":21,\"param\":15},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":564,\"quantity\":1,\"options\":[{\"id\":0,\"param\":4300},{\"id\":21,\"param\":10},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":565,\"quantity\":1,\"options\":[{\"id\":23,\"param\":50},{\"id\":28,\"param\":2500},{\"id\":21,\"param\":15},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":561,\"quantity\":1,\"options\":[{\"id\":14,\"param\":14},{\"id\":21,\"param\":15},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":652,\"quantity\":1,\"options\":[{\"id\":47,\"param\":1700},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":653,\"quantity\":1,\"options\":[{\"id\":22,\"param\":100},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":659,\"quantity\":1,\"options\":[{\"id\":0,\"param\":8600},{\"id\":21,\"param\":20},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":660,\"quantity\":1,\"options\":[{\"id\":23,\"param\":100},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":656,\"quantity\":1,\"options\":[{\"id\":14,\"param\":16},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1049,\"quantity\":1,\"options\":[{\"id\":47,\"param\":3500},{\"id\":21,\"param\":30},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1052,\"quantity\":1,\"options\":[{\"id\":22,\"param\":130},{\"id\":21,\"param\":30},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1055,\"quantity\":1,\"options\":[{\"id\":0,\"param\":10500},{\"id\":21,\"param\":30},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1058,\"quantity\":1,\"options\":[{\"id\":23,\"param\":121},{\"id\":21,\"param\":30},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1061,\"quantity\":1,\"options\":[{\"id\":14,\"param\":22},{\"id\":21,\"param\":30},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]}]','2025-12-31 17:00:00','2035-12-31 16:59:59'),
-(14,'nmnail',-1,'[{\"id\":557,\"quantity\":1,\"options\":[{\"id\":47,\"param\":850},{\"id\":21,\"param\":15},{\"id\":237,\"param\":0},{\"id\":238,\"param\":0},{\"id\":239,\"param\":0},{\"id\":240,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":558,\"quantity\":1,\"options\":[{\"id\":22,\"param\":50},{\"id\":27,\"param\":2500},{\"id\":21,\"param\":15},{\"id\":237,\"param\":0},{\"id\":238,\"param\":0},{\"id\":239,\"param\":0},{\"id\":240,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":564,\"quantity\":1,\"options\":[{\"id\":0,\"param\":4300},{\"id\":21,\"param\":10},{\"id\":237,\"param\":0},{\"id\":238,\"param\":0},{\"id\":239,\"param\":0},{\"id\":240,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":565,\"quantity\":1,\"options\":[{\"id\":23,\"param\":50},{\"id\":28,\"param\":2500},{\"id\":21,\"param\":15},{\"id\":237,\"param\":0},{\"id\":238,\"param\":0},{\"id\":239,\"param\":0},{\"id\":240,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":561,\"quantity\":1,\"options\":[{\"id\":14,\"param\":14},{\"id\":21,\"param\":15},{\"id\":237,\"param\":0},{\"id\":238,\"param\":0},{\"id\":239,\"param\":0},{\"id\":240,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":652,\"quantity\":1,\"options\":[{\"id\":47,\"param\":1700},{\"id\":237,\"param\":0},{\"id\":238,\"param\":0},{\"id\":239,\"param\":0},{\"id\":240,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":653,\"quantity\":1,\"options\":[{\"id\":22,\"param\":100},{\"id\":237,\"param\":0},{\"id\":238,\"param\":0},{\"id\":239,\"param\":0},{\"id\":240,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":659,\"quantity\":1,\"options\":[{\"id\":0,\"param\":8600},{\"id\":21,\"param\":20},{\"id\":237,\"param\":0},{\"id\":238,\"param\":0},{\"id\":239,\"param\":0},{\"id\":240,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":660,\"quantity\":1,\"options\":[{\"id\":23,\"param\":100},{\"id\":237,\"param\":0},{\"id\":238,\"param\":0},{\"id\":239,\"param\":0},{\"id\":240,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":656,\"quantity\":1,\"options\":[{\"id\":14,\"param\":16},{\"id\":237,\"param\":0},{\"id\":238,\"param\":0},{\"id\":239,\"param\":0},{\"id\":240,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1049,\"quantity\":1,\"options\":[{\"id\":47,\"param\":3500},{\"id\":21,\"param\":30},{\"id\":237,\"param\":0},{\"id\":238,\"param\":0},{\"id\":239,\"param\":0},{\"id\":240,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1052,\"quantity\":1,\"options\":[{\"id\":22,\"param\":130},{\"id\":21,\"param\":30},{\"id\":237,\"param\":0},{\"id\":238,\"param\":0},{\"id\":239,\"param\":0},{\"id\":240,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1055,\"quantity\":1,\"options\":[{\"id\":0,\"param\":10500},{\"id\":21,\"param\":30},{\"id\":237,\"param\":0},{\"id\":238,\"param\":0},{\"id\":239,\"param\":0},{\"id\":240,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1058,\"quantity\":1,\"options\":[{\"id\":23,\"param\":121},{\"id\":21,\"param\":30},{\"id\":237,\"param\":0},{\"id\":238,\"param\":0},{\"id\":239,\"param\":0},{\"id\":240,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1061,\"quantity\":1,\"options\":[{\"id\":14,\"param\":22},{\"id\":21,\"param\":30},{\"id\":237,\"param\":0},{\"id\":238,\"param\":0},{\"id\":239,\"param\":0},{\"id\":240,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]}]','2025-12-31 17:00:00','2035-12-31 16:59:59'),
-(15,'xdkakarot',-1,'[{\"id\":559,\"quantity\":1,\"options\":[{\"id\":47,\"param\":900},{\"id\":21,\"param\":15},{\"id\":133,\"param\":0},{\"id\":136,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":560,\"quantity\":1,\"options\":[{\"id\":22,\"param\":48},{\"id\":27,\"param\":2400},{\"id\":21,\"param\":15},{\"id\":133,\"param\":0},{\"id\":136,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":566,\"quantity\":1,\"options\":[{\"id\":0,\"param\":4500},{\"id\":21,\"param\":10},{\"id\":133,\"param\":0},{\"id\":136,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":567,\"quantity\":1,\"options\":[{\"id\":23,\"param\":46},{\"id\":28,\"param\":2300},{\"id\":21,\"param\":15},{\"id\":133,\"param\":0},{\"id\":136,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":561,\"quantity\":1,\"options\":[{\"id\":14,\"param\":14},{\"id\":21,\"param\":15},{\"id\":133,\"param\":0},{\"id\":136,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":654,\"quantity\":1,\"options\":[{\"id\":47,\"param\":1800},{\"id\":133,\"param\":0},{\"id\":136,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":655,\"quantity\":1,\"options\":[{\"id\":22,\"param\":96},{\"id\":133,\"param\":0},{\"id\":136,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":661,\"quantity\":1,\"options\":[{\"id\":0,\"param\":9000},{\"id\":21,\"param\":20},{\"id\":133,\"param\":0},{\"id\":136,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":662,\"quantity\":1,\"options\":[{\"id\":23,\"param\":92},{\"id\":133,\"param\":0},{\"id\":136,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":656,\"quantity\":1,\"options\":[{\"id\":14,\"param\":16},{\"id\":133,\"param\":0},{\"id\":136,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1050,\"quantity\":1,\"options\":[{\"id\":47,\"param\":3850},{\"id\":21,\"param\":30},{\"id\":133,\"param\":0},{\"id\":136,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1053,\"quantity\":1,\"options\":[{\"id\":22,\"param\":130},{\"id\":21,\"param\":30},{\"id\":133,\"param\":0},{\"id\":136,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1056,\"quantity\":1,\"options\":[{\"id\":0,\"param\":11550},{\"id\":21,\"param\":30},{\"id\":133,\"param\":0},{\"id\":136,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1059,\"quantity\":1,\"options\":[{\"id\":23,\"param\":110},{\"id\":21,\"param\":30},{\"id\":133,\"param\":0},{\"id\":136,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1062,\"quantity\":1,\"options\":[{\"id\":14,\"param\":20},{\"id\":21,\"param\":30},{\"id\":133,\"param\":0},{\"id\":136,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]}]','2025-12-31 17:00:00','2035-12-31 16:59:59'),
-(16,'xdcadic',-1,'[{\"id\":559,\"quantity\":1,\"options\":[{\"id\":47,\"param\":900},{\"id\":21,\"param\":15},{\"id\":134,\"param\":0},{\"id\":137,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":560,\"quantity\":1,\"options\":[{\"id\":22,\"param\":48},{\"id\":27,\"param\":2400},{\"id\":21,\"param\":15},{\"id\":134,\"param\":0},{\"id\":137,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":566,\"quantity\":1,\"options\":[{\"id\":0,\"param\":4500},{\"id\":21,\"param\":10},{\"id\":134,\"param\":0},{\"id\":137,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":567,\"quantity\":1,\"options\":[{\"id\":23,\"param\":46},{\"id\":28,\"param\":2300},{\"id\":21,\"param\":15},{\"id\":134,\"param\":0},{\"id\":137,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":561,\"quantity\":1,\"options\":[{\"id\":14,\"param\":14},{\"id\":21,\"param\":15},{\"id\":134,\"param\":0},{\"id\":137,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":654,\"quantity\":1,\"options\":[{\"id\":47,\"param\":1800},{\"id\":134,\"param\":0},{\"id\":137,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":655,\"quantity\":1,\"options\":[{\"id\":22,\"param\":96},{\"id\":134,\"param\":0},{\"id\":137,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":661,\"quantity\":1,\"options\":[{\"id\":0,\"param\":9000},{\"id\":21,\"param\":20},{\"id\":134,\"param\":0},{\"id\":137,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":662,\"quantity\":1,\"options\":[{\"id\":23,\"param\":92},{\"id\":134,\"param\":0},{\"id\":137,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":656,\"quantity\":1,\"options\":[{\"id\":14,\"param\":16},{\"id\":134,\"param\":0},{\"id\":137,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1050,\"quantity\":1,\"options\":[{\"id\":47,\"param\":3850},{\"id\":21,\"param\":30},{\"id\":134,\"param\":0},{\"id\":137,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1053,\"quantity\":1,\"options\":[{\"id\":22,\"param\":130},{\"id\":21,\"param\":30},{\"id\":134,\"param\":0},{\"id\":137,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1056,\"quantity\":1,\"options\":[{\"id\":0,\"param\":11550},{\"id\":21,\"param\":30},{\"id\":134,\"param\":0},{\"id\":137,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1059,\"quantity\":1,\"options\":[{\"id\":23,\"param\":110},{\"id\":21,\"param\":30},{\"id\":134,\"param\":0},{\"id\":137,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1062,\"quantity\":1,\"options\":[{\"id\":14,\"param\":20},{\"id\":21,\"param\":30},{\"id\":134,\"param\":0},{\"id\":137,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]}]','2025-12-31 17:00:00','2035-12-31 16:59:59'),
-(17,'xdnappa',-1,'[{\"id\":559,\"quantity\":1,\"options\":[{\"id\":47,\"param\":900},{\"id\":21,\"param\":15},{\"id\":135,\"param\":0},{\"id\":138,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":560,\"quantity\":1,\"options\":[{\"id\":22,\"param\":48},{\"id\":27,\"param\":2400},{\"id\":21,\"param\":15},{\"id\":135,\"param\":0},{\"id\":138,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":566,\"quantity\":1,\"options\":[{\"id\":0,\"param\":4500},{\"id\":21,\"param\":10},{\"id\":135,\"param\":0},{\"id\":138,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":567,\"quantity\":1,\"options\":[{\"id\":23,\"param\":46},{\"id\":28,\"param\":2300},{\"id\":21,\"param\":15},{\"id\":135,\"param\":0},{\"id\":138,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":561,\"quantity\":1,\"options\":[{\"id\":14,\"param\":14},{\"id\":21,\"param\":15},{\"id\":135,\"param\":0},{\"id\":138,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":654,\"quantity\":1,\"options\":[{\"id\":47,\"param\":1800},{\"id\":135,\"param\":0},{\"id\":138,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":655,\"quantity\":1,\"options\":[{\"id\":22,\"param\":96},{\"id\":135,\"param\":0},{\"id\":138,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":661,\"quantity\":1,\"options\":[{\"id\":0,\"param\":9000},{\"id\":21,\"param\":20},{\"id\":135,\"param\":0},{\"id\":138,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":662,\"quantity\":1,\"options\":[{\"id\":23,\"param\":92},{\"id\":135,\"param\":0},{\"id\":138,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":656,\"quantity\":1,\"options\":[{\"id\":14,\"param\":16},{\"id\":135,\"param\":0},{\"id\":138,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1050,\"quantity\":1,\"options\":[{\"id\":47,\"param\":3850},{\"id\":21,\"param\":30},{\"id\":135,\"param\":0},{\"id\":138,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1053,\"quantity\":1,\"options\":[{\"id\":22,\"param\":130},{\"id\":21,\"param\":30},{\"id\":135,\"param\":0},{\"id\":138,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1056,\"quantity\":1,\"options\":[{\"id\":0,\"param\":11550},{\"id\":21,\"param\":30},{\"id\":135,\"param\":0},{\"id\":138,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1059,\"quantity\":1,\"options\":[{\"id\":23,\"param\":110},{\"id\":21,\"param\":30},{\"id\":135,\"param\":0},{\"id\":138,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1062,\"quantity\":1,\"options\":[{\"id\":14,\"param\":20},{\"id\":21,\"param\":30},{\"id\":135,\"param\":0},{\"id\":138,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]}]','2025-12-31 17:00:00','2035-12-31 16:59:59'),
-(18,'xdgohan',-1,'[{\"id\":559,\"quantity\":1,\"options\":[{\"id\":47,\"param\":900},{\"id\":21,\"param\":15},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":560,\"quantity\":1,\"options\":[{\"id\":22,\"param\":48},{\"id\":27,\"param\":2400},{\"id\":21,\"param\":15},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":566,\"quantity\":1,\"options\":[{\"id\":0,\"param\":4500},{\"id\":21,\"param\":10},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":567,\"quantity\":1,\"options\":[{\"id\":23,\"param\":46},{\"id\":28,\"param\":2300},{\"id\":21,\"param\":15},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":561,\"quantity\":1,\"options\":[{\"id\":14,\"param\":14},{\"id\":21,\"param\":15},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":654,\"quantity\":1,\"options\":[{\"id\":47,\"param\":1800},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":655,\"quantity\":1,\"options\":[{\"id\":22,\"param\":96},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":661,\"quantity\":1,\"options\":[{\"id\":0,\"param\":9000},{\"id\":21,\"param\":20},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":662,\"quantity\":1,\"options\":[{\"id\":23,\"param\":92},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":656,\"quantity\":1,\"options\":[{\"id\":14,\"param\":16},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1050,\"quantity\":1,\"options\":[{\"id\":47,\"param\":3850},{\"id\":21,\"param\":30},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1053,\"quantity\":1,\"options\":[{\"id\":22,\"param\":130},{\"id\":21,\"param\":30},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1056,\"quantity\":1,\"options\":[{\"id\":0,\"param\":11550},{\"id\":21,\"param\":30},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1059,\"quantity\":1,\"options\":[{\"id\":23,\"param\":110},{\"id\":21,\"param\":30},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1062,\"quantity\":1,\"options\":[{\"id\":14,\"param\":20},{\"id\":21,\"param\":30},{\"id\":233,\"param\":0},{\"id\":234,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]}]','2025-12-31 17:00:00','2035-12-31 16:59:59'),
-(19,'xdcadicm',-1,'[{\"id\":559,\"quantity\":1,\"options\":[{\"id\":47,\"param\":900},{\"id\":21,\"param\":15},{\"id\":241,\"param\":0},{\"id\":242,\"param\":0},{\"id\":243,\"param\":0},{\"id\":244,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":560,\"quantity\":1,\"options\":[{\"id\":22,\"param\":48},{\"id\":27,\"param\":2400},{\"id\":21,\"param\":15},{\"id\":241,\"param\":0},{\"id\":242,\"param\":0},{\"id\":243,\"param\":0},{\"id\":244,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":566,\"quantity\":1,\"options\":[{\"id\":0,\"param\":4500},{\"id\":21,\"param\":10},{\"id\":241,\"param\":0},{\"id\":242,\"param\":0},{\"id\":243,\"param\":0},{\"id\":244,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":567,\"quantity\":1,\"options\":[{\"id\":23,\"param\":46},{\"id\":28,\"param\":2300},{\"id\":21,\"param\":15},{\"id\":241,\"param\":0},{\"id\":242,\"param\":0},{\"id\":243,\"param\":0},{\"id\":244,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":561,\"quantity\":1,\"options\":[{\"id\":14,\"param\":14},{\"id\":21,\"param\":15},{\"id\":241,\"param\":0},{\"id\":242,\"param\":0},{\"id\":243,\"param\":0},{\"id\":244,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":654,\"quantity\":1,\"options\":[{\"id\":47,\"param\":1800},{\"id\":241,\"param\":0},{\"id\":242,\"param\":0},{\"id\":243,\"param\":0},{\"id\":244,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":655,\"quantity\":1,\"options\":[{\"id\":22,\"param\":96},{\"id\":241,\"param\":0},{\"id\":242,\"param\":0},{\"id\":243,\"param\":0},{\"id\":244,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":661,\"quantity\":1,\"options\":[{\"id\":0,\"param\":9000},{\"id\":21,\"param\":20},{\"id\":241,\"param\":0},{\"id\":242,\"param\":0},{\"id\":243,\"param\":0},{\"id\":244,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":662,\"quantity\":1,\"options\":[{\"id\":23,\"param\":92},{\"id\":241,\"param\":0},{\"id\":242,\"param\":0},{\"id\":243,\"param\":0},{\"id\":244,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":656,\"quantity\":1,\"options\":[{\"id\":14,\"param\":16},{\"id\":241,\"param\":0},{\"id\":242,\"param\":0},{\"id\":243,\"param\":0},{\"id\":244,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1050,\"quantity\":1,\"options\":[{\"id\":47,\"param\":3850},{\"id\":21,\"param\":30},{\"id\":241,\"param\":0},{\"id\":242,\"param\":0},{\"id\":243,\"param\":0},{\"id\":244,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1053,\"quantity\":1,\"options\":[{\"id\":22,\"param\":130},{\"id\":21,\"param\":30},{\"id\":241,\"param\":0},{\"id\":242,\"param\":0},{\"id\":243,\"param\":0},{\"id\":244,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1056,\"quantity\":1,\"options\":[{\"id\":0,\"param\":11550},{\"id\":21,\"param\":30},{\"id\":241,\"param\":0},{\"id\":242,\"param\":0},{\"id\":243,\"param\":0},{\"id\":244,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1059,\"quantity\":1,\"options\":[{\"id\":23,\"param\":110},{\"id\":21,\"param\":30},{\"id\":241,\"param\":0},{\"id\":242,\"param\":0},{\"id\":243,\"param\":0},{\"id\":244,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]},{\"id\":1062,\"quantity\":1,\"options\":[{\"id\":14,\"param\":20},{\"id\":21,\"param\":30},{\"id\":241,\"param\":0},{\"id\":242,\"param\":0},{\"id\":243,\"param\":0},{\"id\":244,\"param\":0},{\"id\":107,\"param\":9},{\"id\":218,\"param\":0},{\"id\":228,\"param\":9}]}]','2025-12-31 17:00:00','2035-12-31 16:59:59');
-/*!40000 ALTER TABLE `giftcode` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `head_avatar`
 --
 
 DROP TABLE IF EXISTS `head_avatar`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `head_avatar` (
   `head_id` int(11) NOT NULL,
   `avatar_id` int(11) NOT NULL,
@@ -1865,43 +2063,12 @@ INSERT INTO `head_avatar` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `history_transaction`
---
-
-DROP TABLE IF EXISTS `history_transaction`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `history_transaction` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `player_1` varchar(255) NOT NULL,
-  `player_2` varchar(255) NOT NULL,
-  `item_player_1` text NOT NULL,
-  `item_player_2` text NOT NULL,
-  `bag_1_before_tran` text NOT NULL,
-  `bag_2_before_tran` text NOT NULL,
-  `bag_1_after_tran` text NOT NULL,
-  `bag_2_after_tran` text NOT NULL,
-  `time_tran` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `history_transaction`
---
-
-LOCK TABLES `history_transaction` WRITE;
-/*!40000 ALTER TABLE `history_transaction` DISABLE KEYS */;
-/*!40000 ALTER TABLE `history_transaction` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `img_by_name`
 --
 
 DROP TABLE IF EXISTS `img_by_name`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `img_by_name` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `NAME` varchar(55) NOT NULL,
@@ -2207,7 +2374,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `intrinsic`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `intrinsic` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -2444,7 +2611,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `item_option_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `item_option_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -2724,7 +2891,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `item_shop`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `item_shop` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `tab_id` int(11) NOT NULL,
@@ -3542,7 +3709,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `item_shop_option`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `item_shop_option` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `item_shop_id` int(11) NOT NULL,
@@ -4928,7 +5095,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `item_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `item_template` (
   `id` int(11) NOT NULL,
   `TYPE` int(11) NOT NULL,
@@ -6998,7 +7165,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `map_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `map_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(55) NOT NULL,
@@ -7214,7 +7381,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `mob_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mob_template` (
   `id` int(11) NOT NULL,
   `TYPE` int(11) NOT NULL,
@@ -7361,42 +7528,12 @@ INSERT INTO `mob_template` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `napthe`
---
-
-DROP TABLE IF EXISTS `napthe`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `napthe` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_nap` varchar(100) NOT NULL,
-  `telco` varchar(255) NOT NULL,
-  `serial` varchar(255) NOT NULL,
-  `code` varchar(255) NOT NULL,
-  `amount` int(11) NOT NULL,
-  `status` int(11) NOT NULL,
-  `request_id` varchar(255) NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `napthe`
---
-
-LOCK TABLES `napthe` WRITE;
-/*!40000 ALTER TABLE `napthe` DISABLE KEYS */;
-/*!40000 ALTER TABLE `napthe` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `notify`
 --
 
 DROP TABLE IF EXISTS `notify`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `notify` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
@@ -7420,7 +7557,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `npc_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `npc_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(50) NOT NULL,
@@ -7544,7 +7681,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `part`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `part` (
   `id` int(11) NOT NULL,
   `TYPE` int(11) NOT NULL,
@@ -9665,9 +9802,9 @@ INSERT INTO `part` VALUES
 (2102,0,'[[2955,0,0],[2955,0,0],[2955,0,0]]'),
 (2103,1,'[[20828,0,0],[20827,-24,-52],[20829,-23,-45],[20830,-25,-47],[20831,-29,-47],[20832,-16,-47],[20833,-20,-50],[20834,-17,-39],[34,0,0],[34,0,0],[34,0,0],[34,0,0],[34,0,0],[34,0,0],[34,0,0],[34,0,0],[34,0,0]]'),
 (2104,2,'[[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0]]'),
-(2105,0,'[[27110,-1,-13],[27111,-4,-14],[27112,-5,-11]]'),
-(2106,1,'[[27113,-7,-3],[27114,-7,-11],[27115,-8,-11],[27116,-5,-12],[27117,-9,-10],[27118,-7,-10],[27119,-8,-11],[27120,-1,-3],[27121,-1,1],[27122,-9,3],[27123,-9,-8],[27124,-6,-8],[27120,-6,-1],[27125,-4,-11],[27126,-8,-9],[27126,-10,-8],[27127,-5,-2]]'),
-(2107,2,'[[27128,7,5],[27129,-6,-6],[27130,-4,-5],[27131,-2,-6],[27132,-6,-5],[27133,-2,-5],[27134,-4,-6],[27135,-6,1],[27136,-9,-3],[27137,-2,-7],[27135,-11,9],[27135,-11,9],[27138,-6,5],[27135,-9,1]]'),
+(2105,0,'[[27110,-2,-33],[27111,-5,-26],[27112,-6,-23]]'),
+(2106,1,'[[27113,-1,-16],[27114,-2,-23],[27115,-8,-25],[27116,-7,-25],[27117,-11,-24],[27118,-7,-25],[27119,-9,-22],[27120,4,-16],[27121,5,-11],[27122,-5,-8],[27123,-10,-23],[27124,-9,-23],[27115,-7,-18],[27125,-4,-23],[27126,1,-20],[27126,-3,-19],[27127,-5,-16]]'),
+(2107,2,'[[27128,12,-6],[27129,-3,-17],[27130,-2,-15],[27131,-4,-14],[27132,-4,-15],[27133,-2,-11],[27134,-3,-14],[27135,-2,-11],[27136,-7,-14],[27137,-3,-16],[27135,-10,-1],[27138,-12,-2],[27138,-4,-5],[27135,-7,-7]]'),
 (2108,0,'[[27150,0,-15],[27151,-3,-16],[27152,-4,-13]]'),
 (2109,1,'[[27153,-7,-3],[27154,-7,-11],[27155,-8,-11],[27156,-5,-12],[27157,-9,-10],[27158,-7,-10],[27159,-8,-11],[27160,-1,-3],[27161,-1,1],[27162,-9,3],[27163,-9,-8],[27164,-6,-8],[27160,-6,-1],[27165,-4,-11],[27166,-8,-9],[27166,-10,-8],[27167,-5,-2]]'),
 (2110,2,'[[27168,7,5],[27169,-6,-6],[27170,-4,-5],[27171,-2,-6],[27172,-6,-5],[27173,-2,-5],[27174,-4,-6],[27175,-6,1],[27176,-9,-3],[27177,-2,-7],[27175,-11,9],[27175,-11,9],[27178,-6,5],[27175,-9,1]]'),
@@ -9684,209 +9821,12 @@ INSERT INTO `part` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `payments`
---
-
-DROP TABLE IF EXISTS `payments`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `payments` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `refNo` varchar(255) NOT NULL,
-  `date` datetime NOT NULL,
-  `card_serial` varchar(255) DEFAULT NULL,
-  `card_pin` varchar(255) DEFAULT NULL,
-  `declared_amount` int(11) NOT NULL,
-  `api_declared_value` int(11) DEFAULT NULL,
-  `detected_value` int(11) DEFAULT NULL,
-  `received_amount_from_api` int(11) DEFAULT NULL,
-  `final_credited_amount` int(11) DEFAULT 0,
-  `status_text` varchar(255) NOT NULL,
-  `api_status_code` varchar(50) NOT NULL,
-  `api_message` text DEFAULT NULL,
-  `card_telco` varchar(50) DEFAULT NULL,
-  `is_credited` tinyint(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `refNo` (`refNo`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `payments`
---
-
-LOCK TABLES `payments` WRITE;
-/*!40000 ALTER TABLE `payments` DISABLE KEYS */;
-/*!40000 ALTER TABLE `payments` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `phongchat`
---
-
-DROP TABLE IF EXISTS `phongchat`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `phongchat` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_user` int(11) DEFAULT NULL,
-  `noidung` text NOT NULL,
-  `ngaytao` datetime NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `phongchat`
---
-
-LOCK TABLES `phongchat` WRITE;
-/*!40000 ALTER TABLE `phongchat` DISABLE KEYS */;
-/*!40000 ALTER TABLE `phongchat` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `player`
---
-
-DROP TABLE IF EXISTS `player`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `player` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `account_id` int(11) DEFAULT NULL,
-  `name` varchar(20) NOT NULL,
-  `head` int(11) NOT NULL DEFAULT 102,
-  `gender` int(11) NOT NULL,
-  `have_tennis_space_ship` tinyint(1) DEFAULT 0,
-  `clan_id` int(11) NOT NULL DEFAULT -1,
-  `data_inventory` text NOT NULL,
-  `data_location` text NOT NULL,
-  `data_point` text NOT NULL,
-  `data_magic_tree` text NOT NULL,
-  `items_body` mediumtext NOT NULL,
-  `items_bag` mediumtext NOT NULL,
-  `items_box` mediumtext NOT NULL,
-  `items_box_lucky_round` text NOT NULL,
-  `items_daban` text NOT NULL,
-  `friends` text NOT NULL,
-  `enemies` text NOT NULL,
-  `data_intrinsic` text NOT NULL,
-  `data_item_time` text NOT NULL,
-  `data_task` text NOT NULL,
-  `data_mabu_egg` text NOT NULL,
-  `data_charm` text NOT NULL,
-  `skills` text NOT NULL,
-  `skills_shortcut` text NOT NULL,
-  `pet` text NOT NULL,
-  `data_black_ball` text NOT NULL,
-  `data_side_task` text NOT NULL,
-  `create_time` timestamp NOT NULL DEFAULT current_timestamp(),
-  `notify` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `baovetaikhoan` varchar(1000) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '[]',
-  `captcha` varchar(1000) NOT NULL DEFAULT '[]',
-  `data_card` text NOT NULL,
-  `lasttimepkcommeson` bigint(20) NOT NULL DEFAULT 0,
-  `bandokhobau` varchar(250) NOT NULL DEFAULT '[]',
-  `doanhtrai` bigint(20) NOT NULL DEFAULT 0,
-  `conduongrandoc` varchar(255) NOT NULL DEFAULT '[]',
-  `masterDoesNotAttack` text NOT NULL,
-  `nhanthoivang` varchar(200) NOT NULL DEFAULT '[]',
-  `ruonggo` varchar(255) NOT NULL DEFAULT '[]',
-  `sieuthanthuy` varchar(255) NOT NULL DEFAULT '[]',
-  `vodaisinhtu` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '[]',
-  `rongxuong` bigint(20) NOT NULL DEFAULT 0,
-  `data_item_event` varchar(1000) NOT NULL DEFAULT '[]',
-  `data_luyentap` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `data_clan_task` varchar(255) NOT NULL DEFAULT '[]',
-  `data_vip` text DEFAULT NULL,
-  `rank` int(11) NOT NULL DEFAULT 0,
-  `data_achievement` text NOT NULL,
-  `giftcode` text NOT NULL,
-  `event_point` int(11) NOT NULL DEFAULT 0,
-  `data_event` text DEFAULT NULL,
-  `dataBadges` text DEFAULT NULL,
-  `dataTaskBadges` text DEFAULT NULL,
-  `firstTimeLogin` timestamp NOT NULL DEFAULT current_timestamp(),
-  `BoughtSkill` text DEFAULT NULL,
-  `LearnSkill` text DEFAULT NULL,
-  `dailyGift` text NOT NULL,
-  `point_sukien` int(11) NOT NULL DEFAULT 0,
-  `thachdauwhis` int(11) NOT NULL DEFAULT 0,
-  `point_sukien1` int(11) NOT NULL DEFAULT 0,
-  `point_maydam` int(11) NOT NULL DEFAULT 0,
-  `total_damage_maydam` bigint(20) NOT NULL,
-  `last_damage_maydam` bigint(20) NOT NULL DEFAULT 0,
-  `data_duahau_egg` text NOT NULL,
-  `checkNhanQua` varchar(255) NOT NULL DEFAULT '[1,1,"1970-01-01T00:00:00"]',
-  `thanhTichBang` varchar(255) NOT NULL DEFAULT '[0,0,0,0]',
-  `thanhTichKhiGas` varchar(255) NOT NULL DEFAULT '[0,0,0,0]',
-  `thanhTichCDRD` varchar(255) NOT NULL DEFAULT '[0,0,0,0]',
-  `nhiem_vu_kol` text NOT NULL,
-  `point_sukien2` int(11) NOT NULL DEFAULT 0,
-  `data_skh_collection` text NOT NULL DEFAULT '[]',
-  `unlock_vu_tru_13` tinyint(1) NOT NULL DEFAULT 0,
-  `hide_cai_trang` tinyint(1) NOT NULL DEFAULT 0,
-  `vu_tru_13_stage` int(11) NOT NULL DEFAULT 0,
-  `vo_cuc_type` tinyint(4) NOT NULL DEFAULT 0,
-  `vo_cuc_level` int(11) NOT NULL DEFAULT 1,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `account_id` (`account_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=114 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `player`
---
-
-LOCK TABLES `player` WRITE;
-/*!40000 ALTER TABLE `player` DISABLE KEYS */;
-INSERT INTO `player` VALUES
-(1,2,'gohan',30,0,1,0,'[1350591695304,237626,11507,0,0]','[21,481,336]','[13,95794474638,24010043235,1000,1000,632000,450000,35000,1,0,0,0,2359609,1572198]','[7,17,0,1794773327628,1794234119687]','[\"[1048,1,\\\"[\\\\\\\"[47,3500]\\\\\\\",\\\\\\\"[21,30]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\",\\\\\\\"[50,81]\\\\\\\",\\\\\\\"[102,9]\\\\\\\"]\\\",1794575062054]\",\"[1051,1,\\\"[\\\\\\\"[22,143]\\\\\\\",\\\\\\\"[21,30]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\",\\\\\\\"[50,81]\\\\\\\",\\\\\\\"[102,9]\\\\\\\"]\\\",1794575062054]\",\"[1054,1,\\\"[\\\\\\\"[0,20028]\\\\\\\",\\\\\\\"[21,30]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\",\\\\\\\"[50,81]\\\\\\\",\\\\\\\"[102,9]\\\\\\\",\\\\\\\"[72,7]\\\\\\\",\\\\\\\"[209,1]\\\\\\\"]\\\",1794575062054]\",\"[1057,1,\\\"[\\\\\\\"[23,110]\\\\\\\",\\\\\\\"[21,30]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\",\\\\\\\"[50,81]\\\\\\\",\\\\\\\"[102,9]\\\\\\\"]\\\",1794575062054]\",\"[1060,1,\\\"[\\\\\\\"[14,20]\\\\\\\",\\\\\\\"[21,30]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\",\\\\\\\"[50,81]\\\\\\\",\\\\\\\"[102,9]\\\\\\\"]\\\",1794575062054]\",\"[1815,1,\\\"[\\\\\\\"[0,12000]\\\\\\\",\\\\\\\"[50,113]\\\\\\\",\\\\\\\"[77,22]\\\\\\\",\\\\\\\"[103,22]\\\\\\\",\\\\\\\"[5,18]\\\\\\\",\\\\\\\"[106,0]\\\\\\\",\\\\\\\"[38,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[102,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\"]\\\",1794491299538]\",\"[529,1,\\\"[\\\\\\\"[9,109]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[50,81]\\\\\\\",\\\\\\\"[102,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\"]\\\",1794503642457]\",\"[2004,1,\\\"[\\\\\\\"[50,96]\\\\\\\",\\\\\\\"[77,15]\\\\\\\",\\\\\\\"[103,15]\\\\\\\",\\\\\\\"[5,5]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[102,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\"]\\\",1794486941079]\",\"[2000,1,\\\"[\\\\\\\"[50,99]\\\\\\\",\\\\\\\"[77,18]\\\\\\\",\\\\\\\"[103,18]\\\\\\\",\\\\\\\"[236,25]\\\\\\\",\\\\\\\"[251,20]\\\\\\\",\\\\\\\"[252,20]\\\\\\\",\\\\\\\"[30,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[102,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\"]\\\",1794486937073]\",\"[2006,1,\\\"[\\\\\\\"[0,3000]\\\\\\\",\\\\\\\"[227,30]\\\\\\\",\\\\\\\"[254,0]\\\\\\\",\\\\\\\"[235,0]\\\\\\\",\\\\\\\"[89,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[50,81]\\\\\\\",\\\\\\\"[102,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\"]\\\",1794486944889]\",\"[2007,1,\\\"[\\\\\\\"[249,0]\\\\\\\",\\\\\\\"[30,0]\\\\\\\"]\\\",1794491521573]\",\"[1278,1,\\\"[\\\\\\\"[5,10]\\\\\\\",\\\\\\\"[94,1]\\\\\\\",\\\\\\\"[21,40]\\\\\\\",\\\\\\\"[30,0]\\\\\\\",\\\\\\\"[87,0]\\\\\\\",\\\\\\\"[219,5]\\\\\\\",\\\\\\\"[212,1000]\\\\\\\"]\\\",1794373800821]\"]','[\"[194,1,\\\"[\\\\\\\"[30,0]\\\\\\\"]\\\",1794229138032]\",\"[1819,1,\\\"[\\\\\\\"[255,20]\\\\\\\",\\\\\\\"[5,18]\\\\\\\",\\\\\\\"[5,28]\\\\\\\",\\\\\\\"[72,3]\\\\\\\"]\\\",1794360466804]\",\"[457,932911,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794289833331]\",\"[457,9,\\\"[\\\\\\\"[30,0]\\\\\\\"]\\\",1794743119851]\",\"[2009,1,\\\"[\\\\\\\"[232,0]\\\\\\\",\\\\\\\"[101,20]\\\\\\\",\\\\\\\"[30,0]\\\\\\\"]\\\",1794639932650]\",\"[20,462,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794229228298]\",\"[19,366,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794229239820]\",\"[17,90,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794229241994]\",\"[18,133,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794229395906]\",\"[65,83,\\\"[\\\\\\\"[2,32]\\\\\\\"]\\\",1794234123143]\",\"[1656,570,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794246582870]\",\"[16,628,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794243880513]\",\"[1784,1,\\\"[\\\\\\\"[0,8000]\\\\\\\",\\\\\\\"[50,25]\\\\\\\",\\\\\\\"[77,30]\\\\\\\",\\\\\\\"[103,30]\\\\\\\",\\\\\\\"[160,60]\\\\\\\",\\\\\\\"[106,0]\\\\\\\"]\\\",1794504061592]\",\"[15,92,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794320901024]\",\"[14,42,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794324444651]\",\"[1423,29,\\\"[\\\\\\\"[167,0]\\\\\\\",\\\\\\\"[168,0]\\\\\\\"]\\\",1794324771129]\",\"[1438,31,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794324790308]\",\"[1439,112,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794324810178]\",\"[1635,6,\\\"[\\\\\\\"[30,0]\\\\\\\"]\\\",1794329170178]\",\"[702,38,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794360221352]\",\"[703,38,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794360227663]\",\"[704,38,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794360229503]\",\"[705,38,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794360231492]\",\"[706,38,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794360233947]\",\"[707,38,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794360236484]\",\"[708,38,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794360238780]\",\"[381,6,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794373257605]\",\"[611,11,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794373291217]\",\"[1787,3,\\\"[\\\\\\\"[30,0]\\\\\\\",\\\\\\\"[93,1]\\\\\\\"]\\\",1794732561043]\",\"[1990,310,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794485202364]\",\"[1275,1,\\\"[\\\\\\\"[0,5000]\\\\\\\",\\\\\\\"[50,25]\\\\\\\",\\\\\\\"[77,20]\\\\\\\",\\\\\\\"[103,20]\\\\\\\",\\\\\\\"[5,10]\\\\\\\",\\\\\\\"[101,45]\\\\\\\",\\\\\\\"[106,0]\\\\\\\",\\\\\\\"[30,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[96,15]\\\\\\\",\\\\\\\"[102,9]\\\\\\\",\\\\\\\"[95,15]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\"]\\\",1794323308416]\",\"[2008,1,\\\"[\\\\\\\"[232,0]\\\\\\\",\\\\\\\"[101,20]\\\\\\\"]\\\",1794313878306]\",\"[1655,284,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794491661494]\",\"[1051,1,\\\"[\\\\\\\"[22,132]\\\\\\\",\\\\\\\"[21,30]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\"]\\\",1794493620730]\",\"[1057,1,\\\"[\\\\\\\"[23,110]\\\\\\\",\\\\\\\"[21,30]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\"]\\\",1794493801871]\",\"[1060,1,\\\"[\\\\\\\"[14,18]\\\\\\\",\\\\\\\"[21,30]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\"]\\\",1794498852348]\",\"[1048,1,\\\"[\\\\\\\"[47,2966]\\\\\\\",\\\\\\\"[21,30]\\\\\\\",\\\\\\\"[245,0]\\\\\\\",\\\\\\\"[246,0]\\\\\\\",\\\\\\\"[247,0]\\\\\\\",\\\\\\\"[248,0]\\\\\\\"]\\\",1794499244940]\",\"[1051,1,\\\"[\\\\\\\"[22,155]\\\\\\\",\\\\\\\"[21,30]\\\\\\\",\\\\\\\"[245,0]\\\\\\\",\\\\\\\"[246,0]\\\\\\\",\\\\\\\"[247,0]\\\\\\\",\\\\\\\"[248,0]\\\\\\\"]\\\",1794499279630]\",\"[1057,1,\\\"[\\\\\\\"[23,124]\\\\\\\",\\\\\\\"[21,30]\\\\\\\",\\\\\\\"[245,0]\\\\\\\",\\\\\\\"[246,0]\\\\\\\",\\\\\\\"[247,0]\\\\\\\",\\\\\\\"[248,0]\\\\\\\"]\\\",1794499303983]\",\"[1060,1,\\\"[\\\\\\\"[14,18]\\\\\\\",\\\\\\\"[21,30]\\\\\\\",\\\\\\\"[245,0]\\\\\\\",\\\\\\\"[246,0]\\\\\\\",\\\\\\\"[247,0]\\\\\\\",\\\\\\\"[248,0]\\\\\\\"]\\\",1794499329629]\",\"[2016,12,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794500055751]\",\"[446,6,\\\"[\\\\\\\"[100,5]\\\\\\\"]\\\",1794500580247]\",\"[906,1,\\\"[\\\\\\\"[236,40]\\\\\\\",\\\\\\\"[106,0]\\\\\\\",\\\\\\\"[30,0]\\\\\\\"]\\\",1794313831425]\",\"[447,48,\\\"[\\\\\\\"[101,5]\\\\\\\"]\\\",1794505465085]\",\"[445,5,\\\"[\\\\\\\"[99,3]\\\\\\\",\\\\\\\"[98,3]\\\\\\\"]\\\",1794506645993]\",\"[225,2,\\\"[\\\\\\\"[74,0]\\\\\\\"]\\\",1794506671233]\",\"[441,5,\\\"[\\\\\\\"[95,5]\\\\\\\"]\\\",1794506926640]\",\"[1281,810,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794506965594]\",\"[442,3,\\\"[\\\\\\\"[96,5]\\\\\\\"]\\\",1794513750267]\",\"[444,5,\\\"[\\\\\\\"[98,3]\\\\\\\",\\\\\\\"[99,3]\\\\\\\"]\\\",1794513959872]\",\"[1795,1,\\\"[\\\\\\\"[250,25]\\\\\\\"]\\\",1794518985391]\",\"[2018,28,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794520837565]\",\"[2022,1,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794520848896]\",\"[1149,1,\\\"[\\\\\\\"[236,35]\\\\\\\",\\\\\\\"[50,5]\\\\\\\",\\\\\\\"[77,5]\\\\\\\",\\\\\\\"[103,5]\\\\\\\"]\\\",1794578176100]\",\"[1285,50,\\\"[\\\\\\\"[30,0]\\\\\\\"]\\\",1794579246112]\",\"[1284,49,\\\"[\\\\\\\"[30,0]\\\\\\\"]\\\",1794579303819]\",\"[1083,20,\\\"[\\\\\\\"[30,1]\\\\\\\"]\\\",1794579566421]\",\"[1082,21,\\\"[\\\\\\\"[30,1]\\\\\\\"]\\\",1794579567523]\",\"[1078,19,\\\"[\\\\\\\"[30,1]\\\\\\\"]\\\",1794579571516]\",\"[1077,20,\\\"[\\\\\\\"[30,1]\\\\\\\"]\\\",1794579572263]\",\"[1084,49,\\\"[\\\\\\\"[30,1]\\\\\\\"]\\\",1794579583861]\",\"[2019,6,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794613153802]\",\"[992,1,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794614143192]\",\"[1229,1161,\\\"[\\\\\\\"[73,0]\\\\\\\"]\\\",1794732776656]\",\"[559,1,\\\"[\\\\\\\"[47,1017]\\\\\\\",\\\\\\\"[21,17]\\\\\\\"]\\\",1794733752926]\",\"[557,1,\\\"[\\\\\\\"[47,918]\\\\\\\",\\\\\\\"[21,16]\\\\\\\"]\\\",1794733818958]\",\"[2031,1,\\\"[\\\\\\\"[30,0]\\\\\\\"]\\\",1794739344958]\",\"[558,1,\\\"[\\\\\\\"[22,54]\\\\\\\",\\\\\\\"[27,2700]\\\\\\\",\\\\\\\"[21,17]\\\\\\\"]\\\",1794743363844]\",\"[559,1,\\\"[\\\\\\\"[47,909]\\\\\\\",\\\\\\\"[21,15]\\\\\\\"]\\\",1794743443728]\",\"[561,1,\\\"[\\\\\\\"[14,15]\\\\\\\",\\\\\\\"[21,16]\\\\\\\"]\\\",1794743450795]\",\"[557,1,\\\"[\\\\\\\"[47,969]\\\\\\\",\\\\\\\"[21,16]\\\\\\\"]\\\",1794743533415]\",\"[566,1,\\\"[\\\\\\\"[0,4500]\\\\\\\",\\\\\\\"[21,10]\\\\\\\"]\\\",1794743602012]\",\"[566,1,\\\"[\\\\\\\"[0,4860]\\\\\\\",\\\\\\\"[86,0]\\\\\\\",\\\\\\\"[21,10]\\\\\\\"]\\\",1794743693330]\",\"[557,1,\\\"[\\\\\\\"[47,952]\\\\\\\",\\\\\\\"[21,15]\\\\\\\"]\\\",1794743868776]\",\"[560,1,\\\"[\\\\\\\"[22,52]\\\\\\\",\\\\\\\"[27,2616]\\\\\\\",\\\\\\\"[21,17]\\\\\\\"]\\\",1794744057504]\",\"[559,1,\\\"[\\\\\\\"[47,900]\\\\\\\",\\\\\\\"[21,16]\\\\\\\"]\\\",1794744247745]\",\"[566,1,\\\"[\\\\\\\"[0,4635]\\\\\\\",\\\\\\\"[21,10]\\\\\\\"]\\\",1794744914853]\",\"[-1,0,\\\"[]\\\",1794775181988]\",\"[-1,0,\\\"[]\\\",1794775181988]\",\"[-1,0,\\\"[]\\\",1794775181988]\",\"[-1,0,\\\"[]\\\",1794775181988]\",\"[-1,0,\\\"[]\\\",1794775181988]\",\"[-1,0,\\\"[]\\\",1794775181988]\",\"[-1,0,\\\"[]\\\",1794775181988]\",\"[-1,0,\\\"[]\\\",1794775181988]\",\"[-1,0,\\\"[]\\\",1794775181988]\",\"[-1,0,\\\"[]\\\",1794775181988]\",\"[-1,0,\\\"[]\\\",1794775181988]\",\"[-1,0,\\\"[]\\\",1794775181988]\",\"[-1,0,\\\"[]\\\",1794775181988]\",\"[-1,0,\\\"[]\\\",1794775181988]\",\"[-1,0,\\\"[]\\\",1794775181988]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181989]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181990]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181991]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181992]\",\"[-1,0,\\\"[]\\\",1794775181994]\",\"[-1,0,\\\"[]\\\",1794775181994]\",\"[-1,0,\\\"[]\\\",1794775181994]\",\"[-1,0,\\\"[]\\\",1794775181994]\",\"[-1,0,\\\"[]\\\",1794775181994]\",\"[-1,0,\\\"[]\\\",1794775181994]\",\"[-1,0,\\\"[]\\\",1794775181994]\",\"[-1,0,\\\"[]\\\",1794775181994]\",\"[-1,0,\\\"[]\\\",1794775181994]\",\"[-1,0,\\\"[]\\\",1794775181994]\",\"[-1,0,\\\"[]\\\",1794775181994]\",\"[-1,0,\\\"[]\\\",1794775181994]\",\"[-1,0,\\\"[]\\\",1794775181994]\",\"[-1,0,\\\"[]\\\",1794775181994]\",\"[-1,0,\\\"[]\\\",1794775181994]\",\"[-1,0,\\\"[]\\\",1794775181994]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\",\"[-1,0,\\\"[]\\\",1794775181995]\"]','[\"[33,1,\\\"[\\\\\\\"[47,4]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[101,45]\\\\\\\",\\\\\\\"[102,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\"]\\\",1794505055744]\",\"[35,1,\\\"[\\\\\\\"[6,150]\\\\\\\",\\\\\\\"[27,12]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[101,45]\\\\\\\",\\\\\\\"[102,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\"]\\\",1794505059225]\",\"[1054,1,\\\"[\\\\\\\"[0,10413]\\\\\\\",\\\\\\\"[21,30]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[50,81]\\\\\\\",\\\\\\\"[102,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\"]\\\",1794484218452]\",\"[27,1,\\\"[\\\\\\\"[7,10]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[101,45]\\\\\\\",\\\\\\\"[102,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\"]\\\",1794505067245]\",\"[12,1,\\\"[\\\\\\\"[14,1]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[101,45]\\\\\\\",\\\\\\\"[102,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\"]\\\",1794505070465]\",\"[529,1,\\\"[\\\\\\\"[9,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[101,45]\\\\\\\",\\\\\\\"[102,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\"]\\\",1794505626202]\",\"[21,1,\\\"[\\\\\\\"[0,4]\\\\\\\",\\\\\\\"[233,0]\\\\\\\",\\\\\\\"[234,0]\\\\\\\",\\\\\\\"[107,7]\\\\\\\",\\\\\\\"[101,35]\\\\\\\",\\\\\\\"[102,7]\\\\\\\"]\\\",1794234647757]\",\"[30,1,\\\"[\\\\\\\"[7,25]\\\\\\\",\\\\\\\"[28,5]\\\\\\\",\\\\\\\"[233,0]\\\\\\\",\\\\\\\"[234,0]\\\\\\\",\\\\\\\"[107,7]\\\\\\\",\\\\\\\"[101,35]\\\\\\\",\\\\\\\"[102,7]\\\\\\\"]\\\",1794231240682]\",\"[12,1,\\\"[\\\\\\\"[14,1]\\\\\\\",\\\\\\\"[233,0]\\\\\\\",\\\\\\\"[234,0]\\\\\\\",\\\\\\\"[107,7]\\\\\\\",\\\\\\\"[101,35]\\\\\\\",\\\\\\\"[102,7]\\\\\\\"]\\\",1794229662594]\",\"[35,1,\\\"[\\\\\\\"[6,150]\\\\\\\",\\\\\\\"[27,12]\\\\\\\",\\\\\\\"[233,0]\\\\\\\",\\\\\\\"[234,0]\\\\\\\",\\\\\\\"[107,7]\\\\\\\",\\\\\\\"[101,35]\\\\\\\",\\\\\\\"[102,7]\\\\\\\"]\\\",1794234604544]\",\"[-1,0,\\\"[]\\\",1794775181997]\",\"[-1,0,\\\"[]\\\",1794775181997]\",\"[-1,0,\\\"[]\\\",1794775181998]\",\"[-1,0,\\\"[]\\\",1794775181998]\",\"[-1,0,\\\"[]\\\",1794775181998]\",\"[555,1,\\\"[\\\\\\\"[47,800]\\\\\\\",\\\\\\\"[21,15]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\"]\\\",1794575062053]\",\"[556,1,\\\"[\\\\\\\"[22,52]\\\\\\\",\\\\\\\"[27,2600]\\\\\\\",\\\\\\\"[21,15]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\"]\\\",1794575062054]\",\"[562,1,\\\"[\\\\\\\"[0,4400]\\\\\\\",\\\\\\\"[21,10]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\"]\\\",1794575062054]\",\"[563,1,\\\"[\\\\\\\"[23,48]\\\\\\\",\\\\\\\"[28,2400]\\\\\\\",\\\\\\\"[21,15]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\"]\\\",1794575062054]\",\"[561,1,\\\"[\\\\\\\"[14,14]\\\\\\\",\\\\\\\"[21,15]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\"]\\\",1794575062054]\",\"[21,1,\\\"[\\\\\\\"[0,4]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[101,45]\\\\\\\",\\\\\\\"[102,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\"]\\\",1794505063036]\",\"[562,1,\\\"[\\\\\\\"[0,3435]\\\\\\\",\\\\\\\"[21,10]\\\\\\\",\\\\\\\"[245,0]\\\\\\\",\\\\\\\"[246,0]\\\\\\\",\\\\\\\"[247,0]\\\\\\\",\\\\\\\"[248,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\",\\\\\\\"[50,81]\\\\\\\",\\\\\\\"[102,9]\\\\\\\",\\\\\\\"[218,0]\\\\\\\",\\\\\\\"[228,9]\\\\\\\"]\\\",1794484247048]\",\"[657,1,\\\"[\\\\\\\"[0,8800]\\\\\\\",\\\\\\\"[21,20]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\"]\\\",1794492735986]\",\"[562,1,\\\"[\\\\\\\"[0,3418]\\\\\\\",\\\\\\\"[21,10]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\",\\\\\\\"[107,9]\\\\\\\"]\\\",1794491982188]\",\"[-1,0,\\\"[]\\\",1794775182000]\",\"[-1,0,\\\"[]\\\",1794775182000]\",\"[-1,0,\\\"[]\\\",1794775182000]\",\"[-1,0,\\\"[]\\\",1794775182000]\",\"[-1,0,\\\"[]\\\",1794775182000]\",\"[-1,0,\\\"[]\\\",1794775182000]\"]','[\"[189,29000,\\\"[]\\\",1794775182000]\",\"[189,9000,\\\"[]\\\",1794775182000]\",\"[189,25000,\\\"[]\\\",1794775182000]\",\"[189,9000,\\\"[]\\\",1794775182000]\",\"[189,25000,\\\"[]\\\",1794775182000]\",\"[1209,1,\\\"[\\\\\\\"[50,25]\\\\\\\",\\\\\\\"[77,22]\\\\\\\",\\\\\\\"[103,24]\\\\\\\",\\\\\\\"[154,0]\\\\\\\",\\\\\\\"[93,6]\\\\\\\"]\\\",1794775182000]\",\"[956,1,\\\"[]\\\",1794775182000]\",\"[189,9000,\\\"[]\\\",1794775182000]\",\"[189,13000,\\\"[]\\\",1794775182000]\",\"[189,8000,\\\"[]\\\",1794775182000]\",\"[189,33000,\\\"[]\\\",1794775182000]\",\"[189,49000,\\\"[]\\\",1794775182000]\",\"[189,8000,\\\"[]\\\",1794775182001]\",\"[189,5000,\\\"[]\\\",1794775182001]\",\"[469,1,\\\"[\\\\\\\"[77,8]\\\\\\\",\\\\\\\"[30,0]\\\\\\\",\\\\\\\"[93,20]\\\\\\\"]\\\",1794775182001]\",\"[189,40000,\\\"[]\\\",1794775182001]\",\"[800,1,\\\"[\\\\\\\"[50,6]\\\\\\\",\\\\\\\"[30,0]\\\\\\\",\\\\\\\"[93,21]\\\\\\\"]\\\",1794775182001]\",\"[189,11000,\\\"[]\\\",1794775182001]\",\"[189,35000,\\\"[]\\\",1794775182001]\",\"[471,1,\\\"[\\\\\\\"[94,7]\\\\\\\",\\\\\\\"[30,0]\\\\\\\",\\\\\\\"[93,8]\\\\\\\"]\\\",1794775182001]\",\"[189,6000,\\\"[]\\\",1794775182001]\",\"[189,46000,\\\"[]\\\",1794775182001]\",\"[189,23000,\\\"[]\\\",1794775182001]\",\"[189,5000,\\\"[]\\\",1794775182001]\",\"[745,1,\\\"[\\\\\\\"[80,5]\\\\\\\",\\\\\\\"[30,0]\\\\\\\",\\\\\\\"[93,14]\\\\\\\"]\\\",1794775182001]\",\"[189,5000,\\\"[]\\\",1794775182001]\",\"[467,1,\\\"[\\\\\\\"[81,5]\\\\\\\",\\\\\\\"[30,0]\\\\\\\",\\\\\\\"[93,23]\\\\\\\"]\\\",1794775182001]\",\"[189,5000,\\\"[]\\\",1794775182001]\"]','[\"[30,1,\\\"[\\\\\\\"[7,25]\\\\\\\",\\\\\\\"[28,5]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\"]\\\",1794234618670]\",\"[57,1,\\\"[\\\\\\\"[14,2]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\"]\\\",1794234619759]\",\"[0,1,\\\"[\\\\\\\"[47,2]\\\\\\\",\\\\\\\"[128,0]\\\\\\\",\\\\\\\"[140,0]\\\\\\\"]\\\",1794234621393]\",\"[27,1,\\\"[\\\\\\\"[7,10]\\\\\\\",\\\\\\\"[128,0]\\\\\\\",\\\\\\\"[140,0]\\\\\\\"]\\\",1794234624650]\",\"[30,1,\\\"[\\\\\\\"[7,25]\\\\\\\",\\\\\\\"[28,5]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\"]\\\",1794234625735]\",\"[30,1,\\\"[\\\\\\\"[7,25]\\\\\\\",\\\\\\\"[28,5]\\\\\\\",\\\\\\\"[129,0]\\\\\\\",\\\\\\\"[141,0]\\\\\\\"]\\\",1794234628464]\",\"[24,1,\\\"[\\\\\\\"[0,7]\\\\\\\",\\\\\\\"[127,0]\\\\\\\",\\\\\\\"[139,0]\\\\\\\"]\\\",1794234629539]\",\"[27,1,\\\"[\\\\\\\"[7,10]\\\\\\\",\\\\\\\"[127,0]\\\\\\\",\\\\\\\"[139,0]\\\\\\\"]\\\",1794234631722]\",\"[27,1,\\\"[\\\\\\\"[7,10]\\\\\\\",\\\\\\\"[128,0]\\\\\\\",\\\\\\\"[140,0]\\\\\\\"]\\\",1794234639069]\",\"[27,1,\\\"[\\\\\\\"[7,10]\\\\\\\",\\\\\\\"[245,0]\\\\\\\",\\\\\\\"[246,0]\\\\\\\",\\\\\\\"[247,0]\\\\\\\",\\\\\\\"[248,0]\\\\\\\"]\\\",1794234632807]\"]','[]','[]','[6,150,0,0,false,0,0,0]','[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]','[29,4,0,0]','[]','[1796821205338,1796821205972,1796821206632,1796821207407,1794229138033,1796821209128,1796821210074,1796821215060,1796821211242,1796821216567]','[\"[0,1,1794746232577,0,0]\",\"[1,7,1794745268395,0,0]\",\"[6,0,1794734079253,0,0]\",\"[9,7,1794745262910,0,0]\",\"[10,0,1794734079253,0,0]\",\"[20,7,1794745267263,0,0]\",\"[22,0,1794734079253,0,0]\",\"[19,7,1794739527233,0,0]\",\"[24,4,1794745205620,1000,0]\"]','[0,1,9,20,19,24,-1,-1,-1,-1]','[\"[1,0,\\\"$Mabư Vip\\\",9,890992408,4]\",\"[13,44046461389,5133,1000,1000,305760,304780,13908,746,3,547487,303631]\",\"[\\\"[1048,1,\\\\\\\"[\\\\\\\\\\\\\\\"[47,3500]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[21,30]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[245,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[246,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[247,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[248,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[107,9]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[218,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[228,9]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[50,81]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[102,9]\\\\\\\\\\\\\\\"]\\\\\\\",1794613333549]\\\",\\\"[1051,1,\\\\\\\"[\\\\\\\\\\\\\\\"[22,143]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[21,30]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[245,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[246,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[247,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[248,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[107,9]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[218,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[228,9]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[50,81]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[102,9]\\\\\\\\\\\\\\\"]\\\\\\\",1794613333549]\\\",\\\"[1054,1,\\\\\\\"[\\\\\\\\\\\\\\\"[0,20521]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[21,30]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[245,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[246,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[247,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[248,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[107,9]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[50,81]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[102,9]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[218,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[228,9]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[72,7]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[209,4]\\\\\\\\\\\\\\\"]\\\\\\\",1794484218452]\\\",\\\"[1057,1,\\\\\\\"[\\\\\\\\\\\\\\\"[23,110]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[21,30]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[245,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[246,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[247,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[248,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[107,9]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[218,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[228,9]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[50,81]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[102,9]\\\\\\\\\\\\\\\"]\\\\\\\",1794613333549]\\\",\\\"[1060,1,\\\\\\\"[\\\\\\\\\\\\\\\"[14,20]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[21,30]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[245,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[246,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[247,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[248,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[107,9]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[218,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[228,9]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[50,81]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[102,9]\\\\\\\\\\\\\\\"]\\\\\\\",1794613333549]\\\",\\\"[1781,1,\\\\\\\"[\\\\\\\\\\\\\\\"[0,12000]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[50,113]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[77,22]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[103,22]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[5,18]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[106,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[107,9]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[102,9]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[218,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[228,9]\\\\\\\\\\\\\\\"]\\\\\\\",1794607407847]\\\",\\\"[529,1,\\\\\\\"[\\\\\\\\\\\\\\\"[9,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[107,9]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[50,81]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[102,9]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[218,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[228,9]\\\\\\\\\\\\\\\"]\\\\\\\",1794578415038]\\\"]\",\"[\\\"[4,7,1794613921073,0,0]\\\",\\\"[1,7,1794613920059,0,0]\\\",\\\"[6,1,1794773536622,0,0]\\\",\\\"[13,7,1794773538114,0,0]\\\",\\\"[-1,0,0,0,0]\\\",\\\"[-1,0,0,0,0]\\\",\\\"[-1,0,0,0,0]\\\"]\"]','[\"[0,0,0]\",\"[0,0,0]\",\"[0,0,0]\",\"[0,0,0]\",\"[0,0,0]\",\"[0,0,0]\",\"[0,0,0]\"]','[-1,0,0,0,10,0]','2026-11-09 12:58:58','null','[0,false,1794229138069]','[]','[]',0,'[0,1794229138069]',0,'[false,1794624977156,false,false]','0','[false,0]','[0,50000000,100,1794229138069,1794328887069,4,800000000,50,1794734079253,0]','[false,1794733398235,false]','[false,0,1794328886565,94]',1794607756858,'[0,0,0,0,0,0]','[0,false,-1,6666667,1794775251915,0,0,0,0,0]','[-1,0,0,0,5,0]','[0,0,false,false,false,0,0,0]',1,'[\"[55052810,true]\",\"[55052810,true]\",\"[7,true]\",\"[0,false]\",\"[106,false]\",\"[29682,false]\",\"[3867,true]\",\"[6,false]\",\"[109294000,false]\",\"[0,false]\",\"[41,false]\",\"[0,false]\",\"[3,false]\",\"[251,false]\",\"[0,false]\",\"[662,false]\",\"[55052810,true]\",\"[15,false]\",\"[0,false]\",\"[36,false]\",\"[5,true]\",\"[5,true]\",\"[5,true]\",\"[5,true]\",\"[5,false]\"]','[\"tdsongoku\",\"tdkaio\"]',0,'[0,0,0,0,0,0,false,false,false,false]','[{\"idBadGes\":\"224\",\"timeofUseBadges\":\"1796821846005\",\"isUse\":\"false\"},{\"idBadGes\":\"224\",\"timeofUseBadges\":\"1796821846005\",\"isUse\":\"false\"},{\"idBadGes\":\"222\",\"timeofUseBadges\":\"1796835738572\",\"isUse\":\"true\"},{\"idBadGes\":\"222\",\"timeofUseBadges\":\"1796835738572\",\"isUse\":\"true\"}]','[{\"id\":\"1\",\"count\":\"0\",\"countMax\":\"1000000\",\"idBadgesReward\":\"218\"},{\"id\":\"2\",\"count\":\"0\",\"countMax\":\"100\",\"idBadgesReward\":\"219\"},{\"id\":\"3\",\"count\":\"0\",\"countMax\":\"300\",\"idBadgesReward\":\"220\"},{\"id\":\"4\",\"count\":\"0\",\"countMax\":\"5\",\"idBadgesReward\":\"221\"},{\"id\":\"5\",\"count\":\"1\",\"countMax\":\"1\",\"idBadgesReward\":\"222\"},{\"id\":\"6\",\"count\":\"0\",\"countMax\":\"10\",\"idBadgesReward\":\"223\"},{\"id\":\"7\",\"count\":\"0\",\"countMax\":\"20\",\"idBadgesReward\":\"215\"},{\"id\":\"8\",\"count\":\"0\",\"countMax\":\"5\",\"idBadgesReward\":\"216\"},{\"id\":\"9\",\"count\":\"0\",\"countMax\":\"500\",\"idBadgesReward\":\"224\"},{\"id\":\"10\",\"count\":\"0\",\"countMax\":\"30\",\"idBadgesReward\":\"225\"},{\"id\":\"11\",\"count\":\"0\",\"countMax\":\"30\",\"idBadgesReward\":\"229\"},{\"id\":\"12\",\"count\":\"0\",\"countMax\":\"10\",\"idBadgesReward\":\"240\"},{\"id\":\"13\",\"count\":\"0\",\"countMax\":\"20\",\"idBadgesReward\":\"242\"},{\"id\":\"14\",\"count\":\"0\",\"countMax\":\"30\",\"idBadgesReward\":\"243\"},{\"id\":\"15\",\"count\":\"0\",\"countMax\":\"500\",\"idBadgesReward\":\"247\"},{\"id\":\"16\",\"count\":\"0\",\"countMax\":\"2000000\",\"idBadgesReward\":\"253\"},{\"id\":\"17\",\"count\":\"0\",\"countMax\":\"7\",\"idBadgesReward\":\"256\"},{\"id\":\"18\",\"count\":\"0\",\"countMax\":\"1\",\"idBadgesReward\":\"226\"}]','2026-11-15 20:08:46','[0,301,302,303,304,305,306,435,436,437,438,439,440,95,96,97,98,99,100,489,490,491,492,493,494]','[-1,-1,0]','[{\"id\":\"0\",\"daNhan\":\"false\"},{\"id\":\"1\",\"daNhan\":\"false\"}]',0,0,0,91330,790056138440,255827417,'[]','[1,1,null]','[0,0,0,0]','[0,0,0,0]','[0,0,0,0]','{\"kolQuestStage\":0,\"kolVIPQuestStage\":0,\"destronGas70CompletionCount\":0,\"martialArtsTournamentWins\":0,\"dailySuperHardQuestCompletionCount\":0,\"bossBabyDefeatParticipationCount\":0,\"monsterKillCountAutoTrain\":0}',0,'[\"[\\\"[1048,1,\\\\\\\"[\\\\\\\\\\\\\\\"[47,3973]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[21,30]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[129,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[141,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794493484610]\\\",\\\"[6,1,\\\\\\\"[\\\\\\\\\\\\\\\"[6,30]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[129,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[141,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234607807]\\\",\\\"[24,1,\\\\\\\"[\\\\\\\\\\\\\\\"[0,7]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[129,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[141,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234635806]\\\",\\\"[27,1,\\\\\\\"[\\\\\\\\\\\\\\\"[7,10]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[129,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[141,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234602914]\\\",\\\"[12,1,\\\\\\\"[\\\\\\\\\\\\\\\"[14,1]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[129,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[141,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234598974]\\\"]\",\"[\\\"[0,1,\\\\\\\"[\\\\\\\\\\\\\\\"[47,2]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[128,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[140,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794230796241]\\\",\\\"[6,1,\\\\\\\"[\\\\\\\\\\\\\\\"[6,30]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[128,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[140,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794230579584]\\\",\\\"[24,1,\\\\\\\"[\\\\\\\\\\\\\\\"[0,7]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[128,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[140,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794230114905]\\\",\\\"[27,1,\\\\\\\"[\\\\\\\\\\\\\\\"[7,10]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[128,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[140,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794230378698]\\\",\\\"[57,1,\\\\\\\"[\\\\\\\\\\\\\\\"[14,2]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[128,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[140,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234640148]\\\"]\",\"[\\\"[0,1,\\\\\\\"[\\\\\\\\\\\\\\\"[47,2]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[127,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[139,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794230147295]\\\",\\\"[35,1,\\\\\\\"[\\\\\\\\\\\\\\\"[6,150]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[27,12]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[127,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[139,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794246722179]\\\",\\\"[21,1,\\\\\\\"[\\\\\\\\\\\\\\\"[0,4]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[127,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[139,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234613779]\\\",\\\"[30,1,\\\\\\\"[\\\\\\\\\\\\\\\"[7,25]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[28,5]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[127,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[139,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234595709]\\\",\\\"[12,1,\\\\\\\"[\\\\\\\\\\\\\\\"[14,1]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[127,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[139,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234626831]\\\"]\",\"[\\\"[0,1,\\\\\\\"[\\\\\\\\\\\\\\\"[47,2]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[233,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[234,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[107,7]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[102,7]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[101,50]\\\\\\\\\\\\\\\"]\\\\\\\",1794234654293]\\\",\\\"[6,1,\\\\\\\"[\\\\\\\\\\\\\\\"[6,30]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[233,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[234,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794613605427]\\\",\\\"[21,1,\\\\\\\"[\\\\\\\\\\\\\\\"[0,4]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[233,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[234,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234600606]\\\",\\\"[30,1,\\\\\\\"[\\\\\\\\\\\\\\\"[7,25]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[28,5]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[233,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[234,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234645585]\\\",\\\"[12,1,\\\\\\\"[\\\\\\\\\\\\\\\"[14,1]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[233,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[234,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794613609700]\\\"]\",\"[\\\"[0,1,\\\\\\\"[\\\\\\\\\\\\\\\"[47,2]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[245,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[246,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[247,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[248,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794234617586]\\\",\\\"[35,1,\\\\\\\"[\\\\\\\\\\\\\\\"[6,150]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[27,12]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[245,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[246,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[247,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[248,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794229565146]\\\",\\\"[24,1,\\\\\\\"[\\\\\\\\\\\\\\\"[0,7]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[245,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[246,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[247,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[248,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794230055556]\\\",\\\"[27,1,\\\\\\\"[\\\\\\\\\\\\\\\"[7,10]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[245,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[246,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[247,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[248,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794229402678]\\\",\\\"[12,1,\\\\\\\"[\\\\\\\\\\\\\\\"[14,1]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[245,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[246,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[247,0]\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"[248,0]\\\\\\\\\\\\\\\"]\\\\\\\",1794230009701]\\\"]\",1]',1,0,1,1,3),
-(112,115,'dsdasd',7,6,0,-1,'[50000000,50000,10000,0,0]','[45,100,384]','[0,1500000,1500000,1000,1000,100,100,10,0,0,0,0,116,100]','[1,5,0,1794684006540,1794684006540]','[\"[2,1,\\\"[\\\\\\\"[47,2]\\\\\\\"]\\\",1794684006540]\",\"[8,1,\\\"[\\\\\\\"[6,20]\\\\\\\"]\\\",1794684006540]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\"]','[\"[194,1,\\\"[\\\\\\\"[30,0]\\\\\\\"]\\\",1794684006540]\",\"[457,20,\\\"[\\\\\\\"[30,0]\\\\\\\"]\\\",1794684006540]\",\"[63,10,\\\"[\\\\\\\"[2,8]\\\\\\\"]\\\",1794684006540]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\",\"[-1,0,\\\"[]\\\",1794685162352]\"]','[\"[12,1,\\\"[\\\\\\\"[14,1]\\\\\\\"]\\\",1794684006540]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\",\"[-1,0,\\\"[]\\\",1794685162187]\"]','[]','[]','[]','[]','[0,0,0,0,false,0,0,0]','[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]','[0,0,0,1794684006555]','[]','[1794684006540,1794684006540,1794684006540,1794684006540,1794684006540,1794684006540,1794684006540,1794684006540,1794684006540,1794684006540]','[\"[4,1,0,0]\",\"[5,0,0,0]\",\"[8,0,0,0]\",\"[13,0,0,0]\",\"[14,0,0,0]\",\"[21,0,0,0]\",\"[23,0,0,0]\",\"[19,0,0,0]\"]','[4,-1,-1,-1,-1,-1,-1,-1,-1,-1]','[]','[\"[0,0,0]\",\"[0,0,0]\",\"[0,0,0]\",\"[0,0,0]\",\"[0,0,0]\",\"[0,0,0]\",\"[0,0,0]\"]','[-1,0,0,0,10,0]','2026-11-14 19:20:06','null','[0,false,1794684006556]','[]','[]',0,'[0,1794684006556]',0,'[false,0,false,false]','0','[false,0]','[0,50000000,100,1794684006556,0,0,50000000,10,0,0]','[false,0,false]','[false,0,0,0]',0,'[0,0,0,0,0,0]','[0,false,-1,0,1794685192198,0,0,0,0,0]','[-1,0,0,0,5,0]','[0,0,false,false,false,0,0,0]',56,'[\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[350000,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\",\"[0,false]\"]','[]',0,'[0,0,0,0,0,0,false,false,false,false]','[]','[{\"id\":\"1\",\"count\":\"0\",\"countMax\":\"1000000\",\"idBadgesReward\":\"218\"},{\"id\":\"2\",\"count\":\"0\",\"countMax\":\"100\",\"idBadgesReward\":\"219\"},{\"id\":\"3\",\"count\":\"0\",\"countMax\":\"300\",\"idBadgesReward\":\"220\"},{\"id\":\"4\",\"count\":\"0\",\"countMax\":\"5\",\"idBadgesReward\":\"221\"},{\"id\":\"5\",\"count\":\"0\",\"countMax\":\"1\",\"idBadgesReward\":\"222\"},{\"id\":\"6\",\"count\":\"0\",\"countMax\":\"10\",\"idBadgesReward\":\"223\"},{\"id\":\"7\",\"count\":\"0\",\"countMax\":\"20\",\"idBadgesReward\":\"215\"},{\"id\":\"8\",\"count\":\"0\",\"countMax\":\"5\",\"idBadgesReward\":\"216\"},{\"id\":\"9\",\"count\":\"0\",\"countMax\":\"500\",\"idBadgesReward\":\"224\"},{\"id\":\"10\",\"count\":\"0\",\"countMax\":\"30\",\"idBadgesReward\":\"225\"},{\"id\":\"11\",\"count\":\"0\",\"countMax\":\"30\",\"idBadgesReward\":\"229\"},{\"id\":\"12\",\"count\":\"0\",\"countMax\":\"10\",\"idBadgesReward\":\"240\"},{\"id\":\"13\",\"count\":\"0\",\"countMax\":\"20\",\"idBadgesReward\":\"242\"},{\"id\":\"14\",\"count\":\"0\",\"countMax\":\"30\",\"idBadgesReward\":\"243\"},{\"id\":\"15\",\"count\":\"0\",\"countMax\":\"500\",\"idBadgesReward\":\"247\"},{\"id\":\"16\",\"count\":\"0\",\"countMax\":\"2000000\",\"idBadgesReward\":\"253\"},{\"id\":\"17\",\"count\":\"0\",\"countMax\":\"7\",\"idBadgesReward\":\"256\"},{\"id\":\"18\",\"count\":\"0\",\"countMax\":\"1\",\"idBadgesReward\":\"226\"}]','2026-11-14 19:20:06','[4]','[-1,-1,0]','[{\"id\":\"0\",\"daNhan\":\"false\"},{\"id\":\"1\",\"daNhan\":\"false\"}]',0,0,0,0,0,0,'[]','[1,1,\"1970-01-01T00:00\"]','[0,0,0,0]','[0,0,0,0]','[0,0,0,0]','{\"kolQuestStage\":0,\"kolVIPQuestStage\":0,\"destronGas70CompletionCount\":0,\"martialArtsTournamentWins\":0,\"dailySuperHardQuestCompletionCount\":0,\"bossBabyDefeatParticipationCount\":0,\"monsterKillCountAutoTrain\":0}',0,'[\"[\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\"]\",\"[\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\"]\",\"[\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\"]\",\"[\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\"]\",\"[\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\",\\\"[-1,0,\\\\\\\"[]\\\\\\\",0]\\\"]\",0]',0,0,0,0,1);
-/*!40000 ALTER TABLE `player` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `posts`
---
-
-DROP TABLE IF EXISTS `posts`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `posts` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `tieude` varchar(75) NOT NULL,
-  `noidung` text NOT NULL,
-  `username` varchar(50) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `theloai` int(11) NOT NULL DEFAULT 0,
-  `ghimbai` int(11) NOT NULL DEFAULT 0,
-  `image` varchar(255) DEFAULT NULL,
-  `trangthai` int(11) NOT NULL DEFAULT 0,
-  `tinhtrang` int(11) NOT NULL DEFAULT 0,
-  `like` int(11) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `posts`
---
-
-LOCK TABLES `posts` WRITE;
-/*!40000 ALTER TABLE `posts` DISABLE KEYS */;
-/*!40000 ALTER TABLE `posts` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `radar`
 --
 
 DROP TABLE IF EXISTS `radar`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `radar` (
   `id` int(11) NOT NULL,
   `iconId` int(11) DEFAULT 0,
@@ -9941,7 +9881,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `settings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `settings` (
   `Title` varchar(100) DEFAULT 'Nguyen Duc Kien',
   `Description` longtext DEFAULT NULL,
@@ -9979,7 +9919,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `shop`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `shop` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `npc_id` int(11) NOT NULL,
@@ -10028,43 +9968,12 @@ INSERT INTO `shop` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `shop_ky_gui`
---
-
-DROP TABLE IF EXISTS `shop_ky_gui`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `shop_ky_gui` (
-  `id` int(11) NOT NULL,
-  `player_id` int(11) NOT NULL,
-  `tab` int(11) NOT NULL,
-  `item_id` int(11) NOT NULL,
-  `gold` int(11) NOT NULL,
-  `gem` int(11) NOT NULL,
-  `quantity` int(11) NOT NULL,
-  `itemOption` text NOT NULL,
-  `isUpTop` int(11) NOT NULL,
-  `isBuy` int(11) NOT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `shop_ky_gui`
---
-
-LOCK TABLES `shop_ky_gui` WRITE;
-/*!40000 ALTER TABLE `shop_ky_gui` DISABLE KEYS */;
-/*!40000 ALTER TABLE `shop_ky_gui` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `side_task_template`
 --
 
 DROP TABLE IF EXISTS `side_task_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `side_task_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -10152,7 +10061,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `skill_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `skill_template` (
   `nclass_id` int(11) NOT NULL,
   `id` int(11) NOT NULL,
@@ -10206,157 +10115,12 @@ INSERT INTO `skill_template` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `super_rank`
---
-
-DROP TABLE IF EXISTS `super_rank`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `super_rank` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `player_id` int(11) NOT NULL,
-  `name` text NOT NULL,
-  `rank` int(11) NOT NULL,
-  `last_pk_time` bigint(20) NOT NULL,
-  `last_reward_time` bigint(20) NOT NULL,
-  `ticket` int(11) NOT NULL,
-  `win` int(11) NOT NULL,
-  `lose` int(11) NOT NULL,
-  `history` text NOT NULL,
-  `info` text NOT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=113 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `super_rank`
---
-
-LOCK TABLES `super_rank` WRITE;
-/*!40000 ALTER TABLE `super_rank` DISABLE KEYS */;
-INSERT INTO `super_rank` VALUES
-(1,1,'gohan',1,1794773326425,1794773327632,3,0,0,'[]','{\"head\":1851,\"def\":3504,\"hp\":2359609,\"dame\":54840123,\"body\":1854,\"leg\":1855}'),
-(2,3,'ltbot019',2,1794408037097,1794408037125,3,0,0,'[]','{\"head\":1861,\"def\":1600,\"hp\":576724,\"dame\":48460,\"body\":1864,\"leg\":1865}'),
-(3,16,'ltbot002',2,1794408037104,1794408037126,3,0,0,'[]','{\"head\":1639,\"def\":1600,\"hp\":71647186,\"dame\":49243,\"body\":1632,\"leg\":1633}'),
-(4,11,'ltbot013',3,1794408037104,1794408037143,3,0,0,'[]','{\"head\":1861,\"def\":1600,\"hp\":576724,\"dame\":48460,\"body\":1864,\"leg\":1865}'),
-(5,2,'ltbot010',4,1794408037096,1794408037151,3,0,0,'[]','{\"head\":1861,\"def\":1600,\"hp\":576724,\"dame\":48460,\"body\":1864,\"leg\":1865}'),
-(6,6,'ltbot018',4,1794408037104,1794408037148,3,0,0,'[]','{\"head\":1697,\"def\":1600,\"hp\":562882,\"dame\":2829939,\"body\":1700,\"leg\":1701}'),
-(7,18,'ltbot009',4,1794408037104,1794408037151,3,0,0,'[]','{\"head\":1697,\"def\":1600,\"hp\":562882,\"dame\":2829939,\"body\":1700,\"leg\":1701}'),
-(8,5,'ltbot008',5,1794408037104,1794408037155,3,0,0,'[]','{\"head\":1639,\"def\":1600,\"hp\":71647186,\"dame\":49243,\"body\":1632,\"leg\":1633}'),
-(9,19,'ltbot006',6,1794408037114,1794408037156,3,0,0,'[]','{\"head\":1697,\"def\":1600,\"hp\":562882,\"dame\":2829939,\"body\":1700,\"leg\":1701}'),
-(10,7,'ltbot005',7,1794408037114,1794408037158,3,0,0,'[]','{\"head\":1639,\"def\":1600,\"hp\":71647186,\"dame\":49243,\"body\":1632,\"leg\":1633}'),
-(11,15,'ltbot001',7,1794408037114,1794408037158,3,0,0,'[]','{\"head\":1861,\"def\":1600,\"hp\":576724,\"dame\":48460,\"body\":1864,\"leg\":1865}'),
-(12,8,'ltbot012',8,1794408037104,1794408037161,3,0,0,'[]','{\"head\":1697,\"def\":1600,\"hp\":562882,\"dame\":2829939,\"body\":1700,\"leg\":1701}'),
-(13,13,'ltbot003',8,1794408037105,1794408037161,3,0,0,'[]','{\"head\":1697,\"def\":1600,\"hp\":562882,\"dame\":2829939,\"body\":1700,\"leg\":1701}'),
-(14,9,'ltbot004',8,1794408037121,1794408037162,3,0,0,'[]','{\"head\":1861,\"def\":1600,\"hp\":576724,\"dame\":48460,\"body\":1864,\"leg\":1865}'),
-(15,14,'ltbot000',8,1794408037115,1794408037162,3,0,0,'[]','{\"head\":1697,\"def\":1600,\"hp\":562882,\"dame\":2829939,\"body\":1700,\"leg\":1701}'),
-(16,12,'ltbot014',9,1794408037115,1794408037163,3,0,0,'[]','{\"head\":1639,\"def\":1600,\"hp\":71647186,\"dame\":49243,\"body\":1632,\"leg\":1633}'),
-(17,4,'ltbot015',9,1794408037114,1794408037163,3,0,0,'[]','{\"head\":1697,\"def\":1600,\"hp\":562882,\"dame\":2829939,\"body\":1700,\"leg\":1701}'),
-(18,21,'ltbot016',9,1794408037121,1794408037163,3,0,0,'[]','{\"head\":1861,\"def\":1600,\"hp\":576724,\"dame\":48460,\"body\":1864,\"leg\":1865}'),
-(19,17,'ltbot007',10,1794408037162,1794408037168,3,0,0,'[]','{\"head\":1861,\"def\":1600,\"hp\":576724,\"dame\":48460,\"body\":1864,\"leg\":1865}'),
-(20,20,'ltbot017',11,1794408037166,1794408037171,3,0,0,'[]','{\"head\":1639,\"def\":1600,\"hp\":71647186,\"dame\":49243,\"body\":1632,\"leg\":1633}'),
-(21,10,'ltbot011',12,1794408037166,1794408037174,3,0,0,'[]','{\"head\":1639,\"def\":1600,\"hp\":71647186,\"dame\":49243,\"body\":1632,\"leg\":1633}'),
-(22,23,'ltbot020',13,1794408038396,1794408038402,3,0,0,'[]','{\"head\":1639,\"def\":1600,\"hp\":71647186,\"dame\":49243,\"body\":1632,\"leg\":1633}'),
-(23,22,'ltbot021',13,1794408038396,1794408038402,3,0,0,'[]','{\"head\":1697,\"def\":1600,\"hp\":562882,\"dame\":2829939,\"body\":1700,\"leg\":1701}'),
-(24,26,'ltbot022',14,1794408038420,1794408038425,3,0,0,'[]','{\"head\":1861,\"def\":1600,\"hp\":576724,\"dame\":48460,\"body\":1864,\"leg\":1865}'),
-(25,25,'ltbot027',15,1794408038420,1794408038427,3,0,0,'[]','{\"head\":1697,\"def\":1600,\"hp\":562882,\"dame\":2829939,\"body\":1700,\"leg\":1701}'),
-(26,24,'ltbot025',15,1794408038420,1794408038427,3,0,0,'[]','{\"head\":1861,\"def\":1600,\"hp\":576724,\"dame\":48460,\"body\":1864,\"leg\":1865}'),
-(27,27,'ltbot023',15,1794408038421,1794408038427,3,0,0,'[]','{\"head\":1639,\"def\":1600,\"hp\":71647186,\"dame\":49243,\"body\":1632,\"leg\":1633}'),
-(28,29,'ltbot026',16,1794408038423,1794408038429,3,0,0,'[]','{\"head\":1639,\"def\":1600,\"hp\":71647186,\"dame\":49243,\"body\":1632,\"leg\":1633}'),
-(29,30,'ltbot029',16,1794408038423,1794408038429,3,0,0,'[]','{\"head\":1639,\"def\":1600,\"hp\":71647186,\"dame\":49243,\"body\":1632,\"leg\":1633}'),
-(30,28,'ltbot028',16,1794408038423,1794408038429,3,0,0,'[]','{\"head\":1861,\"def\":1600,\"hp\":576724,\"dame\":48460,\"body\":1864,\"leg\":1865}'),
-(31,31,'ltbot024',16,1794408038423,1794408038429,3,0,0,'[]','{\"head\":1697,\"def\":1600,\"hp\":562882,\"dame\":2829939,\"body\":1700,\"leg\":1701}'),
-(32,32,'ltbot034',17,1794408038437,1794408038441,3,0,0,'[]','{\"head\":1861,\"def\":1600,\"hp\":576724,\"dame\":48460,\"body\":1864,\"leg\":1865}'),
-(33,33,'ltbot030',18,1794408038451,1794408038458,3,0,0,'[]','{\"head\":1697,\"def\":1600,\"hp\":562882,\"dame\":2829939,\"body\":1700,\"leg\":1701}'),
-(34,35,'ltbot038',19,1794408038455,1794408038460,3,0,0,'[]','{\"head\":1639,\"def\":1600,\"hp\":71647186,\"dame\":49243,\"body\":1632,\"leg\":1633}'),
-(35,36,'ltbot035',19,1794408038455,1794408038460,3,0,0,'[]','{\"head\":1639,\"def\":1600,\"hp\":71647186,\"dame\":49243,\"body\":1632,\"leg\":1633}'),
-(36,40,'ltbot036',19,1794408038454,1794408038460,3,0,0,'[]','{\"head\":1697,\"def\":1600,\"hp\":562882,\"dame\":2829939,\"body\":1700,\"leg\":1701}'),
-(37,39,'ltbot032',19,1794408038455,1794408038460,3,0,0,'[]','{\"head\":1639,\"def\":1600,\"hp\":71647186,\"dame\":49243,\"body\":1632,\"leg\":1633}'),
-(38,34,'ltbot031',19,1794408038454,1794408038460,3,0,0,'[]','{\"head\":1861,\"def\":1600,\"hp\":576724,\"dame\":48460,\"body\":1864,\"leg\":1865}'),
-(39,37,'ltbot039',19,1794408038454,1794408038460,3,0,0,'[]','{\"head\":1697,\"def\":1600,\"hp\":562882,\"dame\":2829939,\"body\":1700,\"leg\":1701}'),
-(40,41,'ltbot037',19,1794408038454,1794408038460,3,0,0,'[]','{\"head\":1861,\"def\":1600,\"hp\":576724,\"dame\":48460,\"body\":1864,\"leg\":1865}'),
-(41,38,'ltbot033',19,1794408038454,1794408038460,3,0,0,'[]','{\"head\":1697,\"def\":1600,\"hp\":562882,\"dame\":2829939,\"body\":1700,\"leg\":1701}'),
-(42,42,'ltbot041',20,1794408039666,1794408039673,3,0,0,'[]','{\"head\":1639,\"def\":1400,\"hp\":61101676,\"dame\":30816,\"body\":1632,\"leg\":1633}'),
-(43,43,'ltbot040',20,1794408039666,1794408039673,3,0,0,'[]','{\"head\":1861,\"def\":1400,\"hp\":441838,\"dame\":30305,\"body\":1864,\"leg\":1865}'),
-(44,44,'ltbot044',21,1794408039697,1794408039702,3,0,0,'[]','{\"head\":1639,\"def\":1400,\"hp\":61080494,\"dame\":30802,\"body\":1632,\"leg\":1633}'),
-(45,47,'ltbot042',21,1794408039697,1794408039702,3,0,0,'[]','{\"head\":1697,\"def\":1400,\"hp\":431032,\"dame\":2224422,\"body\":1700,\"leg\":1701}'),
-(46,45,'ltbot045',21,1794408039697,1794408039702,3,0,0,'[]','{\"head\":1697,\"def\":1400,\"hp\":430900,\"dame\":2224694,\"body\":1700,\"leg\":1701}'),
-(47,46,'ltbot043',22,1794408039697,1794408039704,3,0,0,'[]','{\"head\":1861,\"def\":1400,\"hp\":441632,\"dame\":30312,\"body\":1864,\"leg\":1865}'),
-(48,48,'ltbot047',23,1794408039711,1794408039716,3,0,0,'[]','{\"head\":1639,\"def\":1400,\"hp\":61128214,\"dame\":30795,\"body\":1632,\"leg\":1633}'),
-(49,50,'ltbot048',24,1794408039712,1794408039719,3,0,0,'[]','{\"head\":1697,\"def\":1400,\"hp\":430770,\"dame\":2224797,\"body\":1700,\"leg\":1701}'),
-(50,51,'ltbot046',24,1794408039713,1794408039719,3,0,0,'[]','{\"head\":1861,\"def\":1400,\"hp\":441838,\"dame\":30316,\"body\":1864,\"leg\":1865}'),
-(51,49,'ltbot049',24,1794408039711,1794408039719,3,0,0,'[]','{\"head\":1861,\"def\":1400,\"hp\":441904,\"dame\":30321,\"body\":1864,\"leg\":1865}'),
-(52,52,'ltbot050',25,1794408039725,1794408039729,3,0,0,'[]','{\"head\":1639,\"def\":1400,\"hp\":61053966,\"dame\":30802,\"body\":1632,\"leg\":1633}'),
-(53,53,'ltbot053',26,1794408039740,1794408039744,3,0,0,'[]','{\"head\":1639,\"def\":1400,\"hp\":61080494,\"dame\":30806,\"body\":1632,\"leg\":1633}'),
-(54,54,'ltbot054',27,1794408039743,1794408039747,3,0,0,'[]','{\"head\":1697,\"def\":1400,\"hp\":430968,\"dame\":2224169,\"body\":1700,\"leg\":1701}'),
-(55,59,'ltbot058',28,1794408039743,1794408039752,3,0,0,'[]','{\"head\":1861,\"def\":12800,\"hp\":1187374,\"dame\":690572,\"body\":1864,\"leg\":1865}'),
-(56,58,'ltbot056',28,1794408039744,1794408039752,3,0,0,'[]','{\"head\":1639,\"def\":12800,\"hp\":172484040,\"dame\":794040,\"body\":1632,\"leg\":1633}'),
-(57,61,'ltbot051',28,1794408039744,1794408039752,3,0,0,'[]','{\"head\":1697,\"def\":1400,\"hp\":430900,\"dame\":2224307,\"body\":1700,\"leg\":1701}'),
-(58,56,'ltbot055',28,1794408039744,1794408039752,3,0,0,'[]','{\"head\":1861,\"def\":12800,\"hp\":1187374,\"dame\":690572,\"body\":1864,\"leg\":1865}'),
-(59,60,'ltbot057',28,1794408039743,1794408039752,3,0,0,'[]','{\"head\":1697,\"def\":12800,\"hp\":1158878,\"dame\":40428222,\"body\":1700,\"leg\":1701}'),
-(60,57,'ltbot052',29,1794408039744,1794408039752,3,0,0,'[]','{\"head\":1861,\"def\":1400,\"hp\":441770,\"dame\":30305,\"body\":1864,\"leg\":1865}'),
-(61,55,'ltbot059',28,1794408039743,1794408039752,3,0,0,'[]','{\"head\":1639,\"def\":12800,\"hp\":172484040,\"dame\":794040,\"body\":1632,\"leg\":1633}'),
-(62,62,'ltbot061',30,1794408040944,1794408040950,3,0,0,'[]','{\"head\":1861,\"def\":12800,\"hp\":1187374,\"dame\":690572,\"body\":1864,\"leg\":1865}'),
-(63,63,'ltbot060',30,1794408040944,1794408040950,3,0,0,'[]','{\"head\":1697,\"def\":12800,\"hp\":1158878,\"dame\":40428222,\"body\":1700,\"leg\":1701}'),
-(64,65,'ltbot065',31,1794408040975,1794408040980,3,0,0,'[]','{\"head\":1639,\"def\":12800,\"hp\":172484040,\"dame\":794040,\"body\":1632,\"leg\":1633}'),
-(65,66,'ltbot063',31,1794408040975,1794408040980,3,0,0,'[]','{\"head\":1697,\"def\":12800,\"hp\":1158878,\"dame\":40428222,\"body\":1700,\"leg\":1701}'),
-(66,64,'ltbot062',31,1794408040975,1794408040980,3,0,0,'[]','{\"head\":1639,\"def\":12800,\"hp\":172484040,\"dame\":794040,\"body\":1632,\"leg\":1633}'),
-(67,67,'ltbot064',32,1794408040976,1794408040981,3,0,0,'[]','{\"head\":1861,\"def\":12800,\"hp\":1187374,\"dame\":690572,\"body\":1864,\"leg\":1865}'),
-(68,71,'ltbot066',33,1794408040992,1794408040995,3,0,0,'[]','{\"head\":1697,\"def\":12800,\"hp\":1158878,\"dame\":40428222,\"body\":1700,\"leg\":1701}'),
-(69,70,'ltbot067',34,1794408040992,1794408040999,3,0,0,'[]','{\"head\":1861,\"def\":12800,\"hp\":1187374,\"dame\":690572,\"body\":1864,\"leg\":1865}'),
-(70,68,'ltbot069',34,1794408040993,1794408040999,3,0,0,'[]','{\"head\":1697,\"def\":12800,\"hp\":1158878,\"dame\":40428222,\"body\":1700,\"leg\":1701}'),
-(71,69,'ltbot068',34,1794408040992,1794408040999,3,0,0,'[]','{\"head\":1639,\"def\":12800,\"hp\":172484040,\"dame\":794040,\"body\":1632,\"leg\":1633}'),
-(72,73,'ltbot075',35,1794408041004,1794408041008,3,0,0,'[]','{\"head\":1697,\"def\":2800,\"hp\":662216,\"dame\":4042806,\"body\":1700,\"leg\":1701}'),
-(73,72,'ltbot070',36,1794408041004,1794408041010,3,0,0,'[]','{\"head\":1861,\"def\":2800,\"hp\":678500,\"dame\":84807,\"body\":1864,\"leg\":1865}'),
-(74,75,'ltbot076',37,1794408041021,1794408041027,3,0,0,'[]','{\"head\":1861,\"def\":2800,\"hp\":678500,\"dame\":84807,\"body\":1864,\"leg\":1865}'),
-(75,74,'ltbot077',37,1794408041021,1794408041027,3,0,0,'[]','{\"head\":1639,\"def\":2800,\"hp\":79607990,\"dame\":86174,\"body\":1632,\"leg\":1633}'),
-(76,81,'ltbot073',38,1794408041024,1794408041028,3,0,0,'[]','{\"head\":1861,\"def\":2800,\"hp\":678500,\"dame\":84807,\"body\":1864,\"leg\":1865}'),
-(77,77,'ltbot071',39,1794408041027,1794408041031,3,0,0,'[]','{\"head\":1639,\"def\":2800,\"hp\":79607990,\"dame\":86174,\"body\":1632,\"leg\":1633}'),
-(78,80,'ltbot074',40,1794408041027,1794408041031,3,0,0,'[]','{\"head\":1639,\"def\":2800,\"hp\":79607990,\"dame\":86174,\"body\":1632,\"leg\":1633}'),
-(79,78,'ltbot072',40,1794408041027,1794408041031,3,0,0,'[]','{\"head\":1697,\"def\":2800,\"hp\":662216,\"dame\":4042806,\"body\":1700,\"leg\":1701}'),
-(80,76,'ltbot079',41,1794408041027,1794408041033,3,0,0,'[]','{\"head\":1861,\"def\":2800,\"hp\":678500,\"dame\":84807,\"body\":1864,\"leg\":1865}'),
-(81,79,'ltbot078',41,1794408041027,1794408041033,3,0,0,'[]','{\"head\":1697,\"def\":2800,\"hp\":662216,\"dame\":4042806,\"body\":1700,\"leg\":1701}'),
-(82,83,'ltbot081',42,1794408042226,1794408042232,3,0,0,'[]','{\"head\":1697,\"def\":6800,\"hp\":993324,\"dame\":11117749,\"body\":1700,\"leg\":1701}'),
-(83,82,'ltbot080',42,1794408042227,1794408042232,3,0,0,'[]','{\"head\":412,\"def\":6800,\"hp\":106143998,\"dame\":301612,\"body\":413,\"leg\":414}'),
-(84,86,'ltbot085',43,1794408042258,1794408042265,3,0,0,'[]','{\"head\":1861,\"def\":6800,\"hp\":1017750,\"dame\":296824,\"body\":1864,\"leg\":1865}'),
-(85,87,'ltbot082',43,1794408042258,1794408042265,3,0,0,'[]','{\"head\":1861,\"def\":6800,\"hp\":1017750,\"dame\":296824,\"body\":1864,\"leg\":1865}'),
-(86,85,'ltbot084',43,1794408042258,1794408042265,3,0,0,'[]','{\"head\":412,\"def\":6800,\"hp\":993324,\"dame\":11117749,\"body\":413,\"leg\":414}'),
-(87,84,'ltbot083',43,1794408042258,1794408042265,3,0,0,'[]','{\"head\":412,\"def\":6800,\"hp\":106143998,\"dame\":301612,\"body\":413,\"leg\":414}'),
-(88,89,'ltbot089',44,1794408042275,1794408042280,3,0,0,'[]','{\"head\":1639,\"def\":6800,\"hp\":106143998,\"dame\":301612,\"body\":1632,\"leg\":1633}'),
-(89,90,'ltbot088',45,1794408042276,1794408042282,3,0,0,'[]','{\"head\":1861,\"def\":6800,\"hp\":1017750,\"dame\":296824,\"body\":1864,\"leg\":1865}'),
-(90,91,'ltbot086',46,1794408042277,1794408042282,3,0,0,'[]','{\"head\":1639,\"def\":6800,\"hp\":106143998,\"dame\":301612,\"body\":1632,\"leg\":1633}'),
-(91,88,'ltbot087',46,1794408042276,1794408042282,3,0,0,'[]','{\"head\":1697,\"def\":6800,\"hp\":993324,\"dame\":11117749,\"body\":1700,\"leg\":1701}'),
-(92,92,'ltbot090',47,1794408042286,1794408042291,3,0,0,'[]','{\"head\":1697,\"def\":2800,\"hp\":662216,\"dame\":3537447,\"body\":1700,\"leg\":1701}'),
-(93,93,'ltbot091',48,1794408042286,1794408042292,3,0,0,'[]','{\"head\":1861,\"def\":2800,\"hp\":678500,\"dame\":69662,\"body\":1864,\"leg\":1865}'),
-(94,94,'ltbot096',49,1794408042302,1794408042309,3,0,0,'[]','{\"head\":1697,\"def\":2800,\"hp\":331108,\"dame\":1768724,\"body\":1700,\"leg\":1701}'),
-(95,99,'ltbot099',50,1794408042309,1794408042318,3,0,0,'[]','{\"head\":1697,\"def\":2800,\"hp\":662216,\"dame\":3537447,\"body\":1700,\"leg\":1701}'),
-(96,97,'ltbot093',50,1794408042309,1794408042318,3,0,0,'[]','{\"head\":1697,\"def\":2800,\"hp\":331108,\"dame\":1768724,\"body\":1700,\"leg\":1701}'),
-(97,98,'ltbot098',50,1794408042309,1794408042318,3,0,0,'[]','{\"head\":1639,\"def\":2800,\"hp\":39803995,\"dame\":35393,\"body\":1632,\"leg\":1633}'),
-(98,96,'ltbot097',50,1794408042309,1794408042318,3,0,0,'[]','{\"head\":1861,\"def\":2800,\"hp\":339250,\"dame\":34831,\"body\":1864,\"leg\":1865}'),
-(99,95,'ltbot094',50,1794408042309,1794408042318,3,0,0,'[]','{\"head\":1861,\"def\":2800,\"hp\":339250,\"dame\":34831,\"body\":1864,\"leg\":1865}'),
-(100,100,'ltbot095',50,1794408042310,1794408042318,3,0,0,'[]','{\"head\":1639,\"def\":2800,\"hp\":39803995,\"dame\":35393,\"body\":1632,\"leg\":1633}'),
-(101,101,'ltbot092',51,1794408042309,1794408042318,3,0,0,'[]','{\"head\":1639,\"def\":2800,\"hp\":39803995,\"dame\":35393,\"body\":1632,\"leg\":1633}'),
-(102,103,'ltdup00',52,1794408043507,1794408043511,3,0,0,'[]','{\"head\":1861,\"def\":2800,\"hp\":339250,\"dame\":34831,\"body\":1864,\"leg\":1865}'),
-(103,102,'ltdup01',52,1794408043507,1794408043511,3,0,0,'[]','{\"head\":1639,\"def\":2800,\"hp\":30618458,\"dame\":35393,\"body\":1632,\"leg\":1633}'),
-(104,106,'ltdup04',53,1794408043537,1794408043542,3,0,0,'[]','{\"head\":1639,\"def\":2800,\"hp\":30618458,\"dame\":35393,\"body\":1632,\"leg\":1633}'),
-(105,105,'ltdup03',53,1794408043537,1794408043542,3,0,0,'[]','{\"head\":1861,\"def\":2800,\"hp\":339250,\"dame\":34831,\"body\":1864,\"leg\":1865}'),
-(106,104,'ltdup02',53,1794408043537,1794408043542,3,0,0,'[]','{\"head\":1697,\"def\":2800,\"hp\":331108,\"dame\":1768724,\"body\":1700,\"leg\":1701}'),
-(107,107,'ltdup05',53,1794408043537,1794408043542,3,0,0,'[]','{\"head\":1697,\"def\":2800,\"hp\":331108,\"dame\":1768724,\"body\":1700,\"leg\":1701}'),
-(108,109,'ltdup08',54,1794408043550,1794408043554,3,0,0,'[]','{\"head\":1697,\"def\":2800,\"hp\":331108,\"dame\":1768724,\"body\":1700,\"leg\":1701}'),
-(109,110,'ltdup09',55,1794408043550,1794408043557,3,0,0,'[]','{\"head\":1861,\"def\":2800,\"hp\":339250,\"dame\":34831,\"body\":1864,\"leg\":1865}'),
-(110,111,'ltdup06',55,1794408043552,1794408043557,3,0,0,'[]','{\"head\":1861,\"def\":2800,\"hp\":339250,\"dame\":34831,\"body\":1864,\"leg\":1865}'),
-(111,108,'ltdup07',55,1794408043550,1794408043557,3,0,0,'[]','{\"head\":1639,\"def\":2800,\"hp\":30618458,\"dame\":35393,\"body\":1632,\"leg\":1633}'),
-(112,112,'dsdasd',56,1794684006557,1794684006567,3,0,0,'[]','{\"head\":7,\"def\":2,\"hp\":120,\"dame\":10,\"body\":16,\"leg\":17}');
-/*!40000 ALTER TABLE `super_rank` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `tab_shop`
 --
 
 DROP TABLE IF EXISTS `tab_shop`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tab_shop` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `shop_id` int(11) NOT NULL,
@@ -10438,7 +10202,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `task_badges_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `task_badges_template` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `NAME` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
@@ -10482,7 +10246,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `task_main_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `task_main_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -10538,7 +10302,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `task_sub_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `task_sub_template` (
   `task_main_id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -10694,10 +10458,6 @@ INSERT INTO `task_sub_template` VALUES
 (30,'bạn đã xong nhiệm vụ rồi',-1,'.....',-1,-1,133);
 /*!40000 ALTER TABLE `task_sub_template` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Dumping routines for database 'nro_newgen'
---
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -10706,6 +10466,6 @@ UNLOCK TABLES;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-11-16  9:38:57
+-- Dump completed

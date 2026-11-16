@@ -1,0 +1,2547 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NRO Part Editor Studio — Tùy Chỉnh Thứ Tự Lớp Từng Frame & Hỗ Trợ JPG/PNG</title>
+<style>
+  :root {
+    --bg-dark: #0f172a;
+    --bg-panel: #1e293b;
+    --bg-card: #273549;
+    --border: #334155;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --accent: #38bdf8;
+    --accent-hover: #0284c7;
+    --success: #22c55e;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --head-color: #c084fc;
+    --body-color: #38bdf8;
+    --leg-color: #fb923c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    user-select: none;
+  }
+  header {
+    background: #0b1120;
+    border-bottom: 1px solid var(--border);
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--accent);
+  }
+  .badge {
+    background: #1d4ed8;
+    color: #fff;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-wrap: wrap;
+  }
+  button, select, input[type="number"], input[type="text"] {
+    background: var(--bg-card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 9px;
+    font-size: 12px;
+    outline: none;
+  }
+  button {
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.15s, border-color 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  button:hover { background: #334155; border-color: var(--accent); }
+  button.primary { background: #0284c7; border-color: #38bdf8; color: #fff; }
+  button.primary:hover { background: #0369a1; }
+  button.success { background: #15803d; border-color: #22c55e; color: #fff; }
+  button.success:hover { background: #166534; }
+  button.warn { background: #b45309; border-color: #f59e0b; color: #fff; }
+  button.warn:hover { background: #92400e; }
+
+  .workspace {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 340px 1fr 415px;
+    min-height: 0;
+  }
+
+  .panel {
+    background: var(--bg-panel);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .panel.right {
+    border-right: none;
+    border-left: 1px solid var(--border);
+  }
+  .panel-header {
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    background: #151f32;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .panel-body {
+    padding: 9px 11px;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .card-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .row label {
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+
+  /* Active Part Selector */
+  .part-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+  }
+  .part-tab {
+    justify-content: center;
+    padding: 7px 4px;
+    font-size: 12px;
+    border-width: 2px;
+  }
+  .part-tab.active-head { background: rgba(192,132,252,0.22); border-color: var(--head-color); color: #e9d5ff; }
+  .part-tab.active-body { background: rgba(56,189,248,0.22); border-color: var(--body-color); color: #bae6fd; }
+  .part-tab.active-leg  { background: rgba(251,146,60,0.22); border-color: var(--leg-color);  color: #fed7aa; }
+
+  /* Per-Frame Layer Stack Reorderer */
+  .z-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 2px;
+  }
+  .z-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 8px;
+    border-radius: 6px;
+    background: #182234;
+    border: 1px solid var(--border);
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .z-row.selected-z {
+    border-color: var(--accent);
+    background: rgba(56, 189, 248, 0.14);
+  }
+  .z-badge {
+    font-size: 10.5px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: #0f172a;
+    color: var(--muted);
+    min-width: 82px;
+    text-align: center;
+  }
+  .z-btns {
+    display: flex;
+    gap: 3px;
+  }
+  .z-btns button {
+    padding: 2px 6px;
+    font-size: 11px;
+  }
+
+  .nudge-pad {
+    display: grid;
+    grid-template-columns: repeat(3, 36px);
+    grid-template-rows: repeat(2, 30px);
+    gap: 4px;
+    justify-content: center;
+  }
+  .nudge-pad button { justify-content: center; font-size: 13px; padding: 0; }
+
+  /* Center Stage */
+  .stage-wrap {
+    display: flex;
+    flex-direction: column;
+    background: #090d16;
+    min-height: 0;
+    position: relative;
+  }
+  .stage-top-bar {
+    padding: 6px 12px;
+    background: #111827;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 12px;
+  }
+  .canvas-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+  }
+  .canvas-container.drag-over {
+    outline: 3px dashed var(--accent);
+    outline-offset: -8px;
+  }
+  .canvas-container:active { cursor: grabbing; }
+  #stageCanvas { image-rendering: pixelated; }
+  .stage-hud {
+    position: absolute;
+    left: 12px;
+    top: 10px;
+    background: rgba(15, 23, 42, 0.88);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 11px;
+    font-size: 12px;
+    line-height: 1.55;
+    pointer-events: none;
+  }
+  .stage-help {
+    position: absolute;
+    right: 12px;
+    top: 10px;
+    background: rgba(15, 23, 42, 0.88);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 11.5px;
+    color: var(--muted);
+    line-height: 1.5;
+    pointer-events: none;
+  }
+
+  /* 13 Action Groups Bar + Filmstrip */
+  .filmstrip-wrap {
+    height: 174px;
+    background: #0f172a;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+  }
+  .action-groups-bar {
+    padding: 5px 8px;
+    background: #131c2e;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    align-items: center;
+  }
+  .ag-btn {
+    padding: 3px 8px;
+    font-size: 11px;
+    border-radius: 999px;
+    white-space: nowrap;
+    background: #1e293b;
+    color: #cbd5e1;
+    border: 1px solid #334155;
+  }
+  .ag-btn.active {
+    background: #0284c7;
+    color: #fff;
+    border-color: #38bdf8;
+  }
+  .filmstrip-header {
+    padding: 3px 10px;
+    font-size: 11px;
+    background: #151f32;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--muted);
+  }
+  .filmstrip {
+    flex: 1;
+    display: flex;
+    gap: 6px;
+    padding: 5px 10px;
+    overflow-x: auto;
+    align-items: center;
+  }
+  .frame-thumb {
+    min-width: 78px;
+    height: 100px;
+    background: #1e293b;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 3px;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .frame-thumb:hover { border-color: #64748b; }
+  .frame-thumb.active { border-color: var(--accent); background: #172554; }
+  .frame-thumb.in-group { border-color: rgba(56, 189, 248, 0.45); }
+  .frame-thumb span {
+    font-size: 10px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .frame-thumb.active span { color: #fff; font-weight: 700; }
+  .thumb-z-tag {
+    position: absolute;
+    top: 2px;
+    right: 3px;
+    font-size: 9px;
+    color: #fde047;
+    background: rgba(15,23,42,0.82);
+    padding: 0 3px;
+    border-radius: 3px;
+  }
+
+  /* Right Slot Table */
+  .slot-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .slot-item {
+    display: grid;
+    grid-template-columns: 44px 48px 1fr;
+    gap: 7px;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+  .slot-item.current-cf-slot {
+    border-color: var(--accent);
+    background: rgba(56, 189, 248, 0.13);
+  }
+  .slot-item.drag-over-slot {
+    border-color: #22c55e;
+    background: rgba(34, 197, 94, 0.2);
+  }
+  .slot-preview {
+    width: 46px;
+    height: 46px;
+    background: repeating-conic-gradient(#1e293b 0% 25%, #0f172a 0% 50%) 50% / 10px 10px;
+    border: 1px dashed #64748b;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .slot-preview:hover { border-color: var(--accent); }
+  .slot-preview img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .slot-idx { font-weight: 700; font-size: 11.5px; text-align: center; line-height: 1.25; }
+  .slot-controls { display: flex; flex-direction: column; gap: 4px; }
+  .slot-inputs { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .slot-inputs input[type="number"] { width: 52px; padding: 3px 4px; font-size: 12px; text-align: center; }
+  .slot-inputs input.icon-id-input { width: 64px; font-weight: 700; color: #fde047; }
+  .slot-cf-hint { font-size: 10.5px; color: var(--muted); }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    width: min(880px, 96vw);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .modal-head {
+    padding: 12px 16px;
+    background: #0b1120;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+  }
+  .modal-content {
+    padding: 14px 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    user-select: text;
+  }
+  textarea {
+    width: 100%;
+    min-height: 165px;
+    background: #090d16;
+    color: #a7f3d0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+    font-family: Consolas, monospace;
+    font-size: 12px;
+    resize: vertical;
+  }
+  .hint-box {
+    background: rgba(56, 189, 248, 0.1);
+    border-left: 3px solid var(--accent);
+    padding: 8px 10px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #e2e8f0;
+  }
+  .status-toast {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    background: #0284c7;
+    color: #fff;
+    padding: 9px 15px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 600;
+    display: none;
+    z-index: 200;
+    max-width: 580px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span>🐉 NRO Part Editor Studio</span>
+    <span class="badge">Tự Quyết Định Thứ Tự Lớp Từng Frame + Nhận JPG/PNG</span>
+  </div>
+  <div class="toolbar">
+    <label style="font-size:12px;color:var(--muted);">Mẫu:</label>
+    <select id="presetSelect">
+      <option value="ui_vt13">Bản Năng Vô Cực — Vũ Trụ 13 (part 2105 / 2106 / 2107)</option>
+      <option value="ue_vt13">Bản Ngã Tối Thượng — Vũ Trụ 13 (part 2108 / 2109 / 2110)</option>
+      <option value="teamobi_ui">Mẫu Chuẩn Teamobi CT Goku UI (part 1980 / 1981 / 1982)</option>
+      <option value="goku_base">Khung Chuẩn Goku Mặc Định Gốc (part 0 / 57 / 58)</option>
+    </select>
+    <button id="btnImportCurrentSlot" class="primary" title="Chọn bất kỳ file ảnh JPG, JPEG, PNG, WEBP nào trên máy để nạp thẳng vào bộ phận đang chọn!">🖼️ Chọn ảnh JPG/PNG vào Slot</button>
+    <input type="file" id="multiImgInput" accept="image/*,.jpg,.jpeg,.png,.webp,.bmp" multiple style="display:none">
+    <button id="btnOpenResizer" class="warn">🚀 Lưu bộ ảnh ra Server (PNG x4..x1)</button>
+    <button id="btnOpenImportJson">📥 Nhập JSON</button>
+    <button id="btnOpenExportSql" class="success">💾 Xuất SQL</button>
+  </div>
+</header>
+
+<div class="workspace">
+  <!-- LEFT PANEL -->
+  <div class="panel">
+    <div class="panel-header">
+      <span>1. Thứ Tự Lớp & Tinh Chỉnh</span>
+      <span style="font-size:11px;color:var(--muted);">Ctrl+Z hoàn tác</span>
+    </div>
+    <div class="panel-body">
+
+      <!-- CARD 1: BỘ PHẬN ĐANG CHỌN & THỨ TỰ LỚP ĐÈ RIÊNG CHO TỪNG FRAME -->
+      <div class="card" style="border-color:#c084fc;">
+        <div class="card-title">
+          <span>Bộ phận đang chọn (Kéo thả JPG/PNG vào được)</span>
+        </div>
+        <div class="part-tabs">
+          <button class="part-tab active-head" id="tabHead" onclick="setActivePart(0)">1. ĐẦU (Head)</button>
+          <button class="part-tab" id="tabBody" onclick="setActivePart(1)">2. THÂN (Body)</button>
+          <button class="part-tab" id="tabLeg" onclick="setActivePart(2)">3. CHÂN (Leg)</button>
+        </div>
+
+        <div style="margin-top:4px;padding-top:6px;border-top:1px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span style="font-size:11.5px;font-weight:700;color:#fde047;">
+              📑 Thứ tự lớp đè riêng của <span id="zCfLabel">cf = 0</span>:
+            </span>
+          </div>
+          <select id="zQuickSelect" style="width:100%;margin-bottom:5px;" onchange="onZQuickSelectChange(this.value)">
+            <option value="2,1,0">ĐẦU (Trên cùng) ← THÂN (Giữa) ← CHÂN (Dưới)</option>
+            <option value="1,2,0">ĐẦU (Trên cùng) ← CHÂN (Giữa) ← THÂN (Dưới)</option>
+            <option value="0,2,1">THÂN (Trên cùng) ← CHÂN (Giữa) ← ĐẦU (Dưới)</option>
+            <option value="2,0,1">THÂN (Trên cùng) ← ĐẦU (Giữa) ← CHÂN (Dưới)</option>
+            <option value="0,1,2">CHÂN (Trên cùng) ← THÂN (Giữa) ← ĐẦU (Dưới)</option>
+            <option value="1,0,2">CHÂN (Trên cùng) ← ĐẦU (Giữa) ← THÂN (Dưới)</option>
+          </select>
+
+          <!-- Stack hiển thị từ TRÊN CÙNG xuống DƯỚI CÙNG với nút ▲ ▼ -->
+          <div class="z-stack" id="zStackContainer"></div>
+
+          <div class="row" style="margin-top:6px;">
+            <button onclick="applyZOrderToCurrentGroup()" style="flex:1;justify-content:center;font-size:11px;" title="Sao chép thứ tự đè này cho toàn bộ các frame trong cùng Khung hoạt động hiện tại">
+              📌 Gán cho Khung hoạt động này
+            </button>
+            <button onclick="applyZOrderToAll33()" style="font-size:11px;" title="Sao chép thứ tự đè này cho tất cả 33 frame">
+              🌐 Cả 33 cf
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 2: TÁCH NỀN JPG & CHỈNH CỠ -->
+      <div class="card" style="border-color:#0284c7;">
+        <div class="card-title">
+          <span>🪄 Tự Tách Nền JPG & Chỉnh Cỡ Chuẩn NRO</span>
+        </div>
+        <div class="row">
+          <select id="bgRemoveMode" style="width:100%;" onchange="reprocessActiveCustomIcon()">
+            <option value="bg_and_aura" selected>✨ Xóa nền trắng + Xóa viền hào quang mờ (Khuyên dùng)</option>
+            <option value="bg_only">🏳️ Chỉ xóa nền trắng tinh (Giữ hào quang quanh người)</option>
+            <option value="none">🚫 Giữ nguyên ảnh gốc (PNG đã tách nền sẵn)</option>
+          </select>
+        </div>
+        <div class="row">
+          <label>Cỡ rộng (x4):</label>
+          <input type="range" id="partWidthRange" min="40" max="240" step="4" value="120" style="flex:1;" oninput="onPartWidthSlider(this.value)">
+          <span id="partWidthLabel" style="font-size:12px;font-weight:700;color:#fde047;min-width:46px;text-align:right;">120px</span>
+        </div>
+      </div>
+
+      <!-- CARD 3: TINH CHỈNH TỌA ĐỘ -->
+      <div class="card">
+        <div class="card-title">
+          <span>Tinh chỉnh tọa độ (<span id="curSlotLabel">Head[0]</span>)</span>
+        </div>
+        <div class="row" style="justify-content:space-between;">
+          <div class="nudge-pad">
+            <div></div>
+            <button onclick="nudgeActive(0,-1)" title="Lên trên 1 đơn vị x1 (dy - 1)">▲</button>
+            <div></div>
+            <button onclick="nudgeActive(-1,0)" title="Sang trái / lùi sau 1 đơn vị x1 (dx - 1)">◀</button>
+            <button onclick="nudgeActive(0,1)" title="Xuống dưới 1 đơn vị x1 (dy + 1)">▼</button>
+            <button onclick="nudgeActive(1,0)" title="Sang phải / tiến trước 1 đơn vị x1 (dx + 1)">▶</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px;flex:1;padding-left:6px;">
+            <button onclick="centerActiveHorizontally()">🎯 Căn giữa trục cx</button>
+            <button onclick="setInvisible2955()">👻 Ẩn slot [2955,0,0]</button>
+          </div>
+        </div>
+        <div id="sharedCfNotice" class="hint-box" style="font-size:11px;padding:5px 8px;"></div>
+      </div>
+
+      <!-- CARD 4: ANIMATION & BÓNG MỜ -->
+      <div class="card">
+        <div class="card-title"><span>Diễn Hoạt & Bóng Mờ Đối Chiếu</span></div>
+        <div class="row">
+          <select id="animSelect" style="flex:1;">
+            <option value="manual">✋ Chỉnh từng Frame thủ công</option>
+            <option value="current_group">🎬 Chạy lặp riêng Khung hoạt động đang chọn</option>
+            <option value="idle">🧍 Đứng thở (cf = 0 ↔ 1)</option>
+            <option value="run">🏃 Chạy bộ (cf = 2 → 6)</option>
+            <option value="jump">🦘 Nhảy & Rơi (cf = 7 ↔ 8)</option>
+            <option value="fly">✈️ Bay ngang (cf = 9 ↔ 10)</option>
+            <option value="charge">⚡ Gồng Ki / Kame (cf = 12 ↔ 22)</option>
+            <option value="attack">🥊 Combo Đấm Đá (cf = 13 → 21)</option>
+            <option value="guard">🛡️ Thủ thế / Đỡ đòn (cf = 23 ↔ 24)</option>
+            <option value="all26">🎞️ Toàn bộ 26 Frame (cf = 0 → 25)</option>
+          </select>
+          <input type="range" id="fpsRange" min="2" max="15" value="7" style="width:65px;" title="Tốc độ FPS">
+          <span id="fpsLabel" style="font-size:11px;">7fps</span>
+        </div>
+        <div class="row">
+          <select id="onionSelect" style="flex:1;">
+            <option value="teamobi_ui">Bóng mờ: CT Goku UI Teamobi (1980-1982)</option>
+            <option value="goku_base">Bóng mờ: Goku Gốc NRO (0-57-58)</option>
+            <option value="none">Tắt bóng mờ đối chiếu</option>
+          </select>
+          <input type="range" id="onionAlpha" min="10" max="85" value="35" style="width:65px;">
+        </div>
+        <div class="row">
+          <label><input type="checkbox" id="chkGuides" checked> Trục (cx,cy)</label>
+          <label><input type="checkbox" id="chkBbox" checked> Khung viền</label>
+          <label><input type="checkbox" id="chkDualMirror" checked> Song song Phải+Trái</label>
+        </div>
+        <div class="row">
+          <label><input type="checkbox" id="chkShowHead" checked> Đầu</label>
+          <label><input type="checkbox" id="chkShowBody" checked> Thân</label>
+          <label><input type="checkbox" id="chkShowLeg" checked> Chân</label>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CENTER STAGE -->
+  <div class="stage-wrap">
+    <div class="stage-top-bar">
+      <div class="row">
+        <button onclick="stepCf(-1)">⏮ cf trước</button>
+        <strong id="cfTitle" style="color:#fde047;font-size:13px;min-width:240px;text-align:center;">cf = 0 (Đứng yên 1)</strong>
+        <button onclick="stepCf(1)">cf sau ⏭</button>
+      </div>
+      <div class="row">
+        <button id="btnFlipDir" onclick="toggleDir()">➡️ Hướng chính: Quay Phải (cdir = 1)</button>
+        <label>Zoom:</label>
+        <select id="canvasZoomSelect">
+          <option value="1">100%</option>
+          <option value="1.5" selected>150%</option>
+          <option value="2">200%</option>
+          <option value="3">300%</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="canvas-container" id="canvasContainer" title="Kéo thả trực tiếp file .jpg hoặc .png từ máy tính vào giữa sân khấu này!">
+      <canvas id="stageCanvas" width="760" height="440"></canvas>
+      <div class="stage-hud" id="stageHud"></div>
+      <div class="stage-help">
+        📥 <b>Kéo thả file .JPG / .PNG</b> thẳng vào sân khấu!<br>
+        📑 <b>Nút ▲ / ▼ bên trái</b>: Đổi thứ tự đè ở từng Frame<br>
+        🖱️ <b>Kéo chuột trái</b>: Di chuyển bộ phận đang chọn<br>
+        ⌨️ <b>Phím ← ↑ → ↓</b>: Dịch ±1 đơn vị x1 (Shift: ±5)
+      </div>
+    </div>
+
+    <!-- 13 KHUNG HOẠT ĐỘNG + 33 FRAMES -->
+    <div class="filmstrip-wrap">
+      <div class="action-groups-bar" id="actionGroupsBar"></div>
+      <div class="filmstrip-header">
+        <span id="groupDetailLabel">Khung hoạt động 1/13: Đứng yên & thở (cf = 0, 1) — Nhãn vàng góc phải mỗi ô là Thứ tự đè (Trên>Giữa>Dưới)</span>
+        <span id="loadedIconsStat">Đang tải ảnh...</span>
+      </div>
+      <div class="filmstrip" id="filmstrip"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL: SLOT TABLE -->
+  <div class="panel right">
+    <div class="panel-header">
+      <span id="rightPanelTitle">2. Danh Sách Slot Của ĐẦU (Head — 3 Slot)</span>
+      <input type="file" id="singleSlotFileInput" accept="image/*,.jpg,.jpeg,.png,.webp,.bmp" style="display:none">
+    </div>
+    <div style="padding:7px 12px;border-bottom:1px solid var(--border);background:#162033;font-size:11.5px;color:#bae6fd;">
+      💡 Bấm nút <b>📂Ảnh</b> (hoặc kéo thả file <b>.jpg / .png</b> bất kỳ tên gì) vào từng dòng Slot bên dưới — tự động tách nền trắng & thu về chuẩn NRO!
+    </div>
+    <div class="panel-body">
+      <div class="slot-list" id="slotList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT SQL MODAL -->
+<div class="modal-backdrop" id="exportModal">
+  <div class="modal">
+    <div class="modal-head">
+      <span>💾 Xuất Lệnh SQL & Dữ Liệu JSON Bảng `part`</span>
+      <button onclick="closeModal('exportModal')">✖ Đóng</button>
+    </div>
+    <div class="modal-content">
+      <div class="row">
+        <label>ID Part ĐẦU (TYPE=0):</label>
+        <input type="number" id="sqlHeadId" value="2105" onchange="refreshExportSql()">
+        <label>ID Part THÂN (TYPE=1):</label>
+        <input type="number" id="sqlBodyId" value="2106" onchange="refreshExportSql()">
+        <label>ID Part CHÂN (TYPE=2):</label>
+        <input type="number" id="sqlLegId" value="2107" onchange="refreshExportSql()">
+      </div>
+      <div class="hint-box">
+        • <b>Bản Năng Vô Cực (Goku UI):</b> <code>2105 / 2106 / 2107</code> | <b>Bản Ngã Tối Thượng (Vegeta UE):</b> <code>2108 / 2109 / 2110</code>.<br>
+        • Đừng quên bấm nút cam <b>🚀 Lưu bộ ảnh ra Server (PNG x4..x1)</b> để công cụ xuất ảnh đã tách nền và tự động cắt khớp đè theo đúng Thứ tự lớp từng Frame của bạn!
+      </div>
+      <textarea id="sqlOutputBox" readonly></textarea>
+      <div class="row" style="justify-content:flex-end;">
+        <button onclick="copySql()" class="primary">📋 Copy toàn bộ SQL</button>
+        <button onclick="downloadSqlFile()" class="success">💾 Tải file custom_part.sql (Chạy cùng file .bat)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT JSON/SQL MODAL -->
+<div class="modal-backdrop" id="importModal">
+  <div class="modal">
+    <div class="modal-head">
+      <span>📥 Nhập Mảng JSON Bảng `part` Để Chỉnh Sửa Tiếp</span>
+      <button onclick="closeModal('importModal')">✖ Đóng</button>
+    </div>
+    <div class="modal-content">
+      <label style="font-size:12px;font-weight:700;color:var(--head-color);">Head DATA (3 phần tử — TYPE = 0):</label>
+      <textarea id="impHeadBox" style="min-height:52px;"></textarea>
+      <label style="font-size:12px;font-weight:700;color:var(--body-color);">Body DATA (17 phần tử — TYPE = 1):</label>
+      <textarea id="impBodyBox" style="min-height:72px;"></textarea>
+      <label style="font-size:12px;font-weight:700;color:var(--leg-color);">Leg DATA (14 phần tử — TYPE = 2):</label>
+      <textarea id="impLegBox" style="min-height:72px;"></textarea>
+      <div class="row" style="justify-content:space-between;">
+        <button onclick="resetSavedLocalLayerOrders()" class="warn">🔄 Đặt lại Thứ tự lớp 33 Frame về mặc định</button>
+        <button onclick="applyImportedJson()" class="primary">✅ Áp dụng JSON vào bàn căn chỉnh</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT IMAGES TO SERVER MODAL -->
+<div class="modal-backdrop" id="resizerModal">
+  <div class="modal">
+    <div class="modal-head">
+      <span>🚀 Xuất Tự Động Ra 4 Thư Mục `data/icon/x4, x3, x2, x1` (Đúng Thứ Tự Lớp Của Bạn!)</span>
+      <button onclick="closeModal('resizerModal')">✖ Đóng</button>
+    </div>
+    <div class="modal-content">
+      <div class="card" style="border-color:#22c55e;">
+        <div class="card-title" style="color:#4ade80;font-size:13px;">
+          <span>Cách 1 (Khuyên dùng): Xuất toàn bộ bộ phận trên bàn ghép ra thẳng Server</span>
+        </div>
+        <div style="font-size:12px;color:#e2e8f0;line-height:1.5;">
+          • Tự động đổi mọi ảnh <code>.jpg / .png</code> bạn vừa nạp thành <b><code>&lt;iconId&gt;.png</code></b> nền trong suốt.<br>
+          • <b>Đặc biệt:</b> Tự động xử lý cắt khớp vùng giao nhau theo đúng <b>Thứ tự lớp đè (Trên / Giữa / Dưới) ở từng Frame</b> mà bạn đã quyết định — giúp vào thẳng <code>NgocRongNewGen.exe</code> hiển thị y hệt trên bàn ghép mà không cần build lại code C#!
+        </div>
+        <div class="row">
+          <label><input type="checkbox" id="chkBakeZOrderCutout" checked> <b>Giữ đúng Thứ tự lớp đè từng Frame khi vào Game Client</b> (Tự cắt vùng bị lớp trên che)</label>
+        </div>
+        <div class="row">
+          <label><input type="checkbox" id="chkAutoAvatar27139" checked> Tự xuất luôn Avatar <code>27139.png</code> (hoặc <code>27179.png</code>) từ ảnh <code>Head[0]</code></label>
+        </div>
+        <div class="row">
+          <button onclick="exportWorkspaceCustomIconsToServer()" class="success" style="padding:8px 14px;font-size:13px;">
+            🚀 Chọn thư mục `NgocRongNewGen_Server/data/icon` & Ghi ngay!
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>Cách 2: Đổi hàng loạt file rời (.JPG / .PNG) trên máy thành bộ `x4, x3, x2, x1`</span>
+        </div>
+        <div class="row">
+          <label><input type="checkbox" id="chkBatchRemoveBg" checked> Tự tách nền trắng nếu là file JPG</label>
+          <label><input type="checkbox" id="chkAutoPad4" checked> Tự làm chẵn kích thước chia hết cho 4</label>
+        </div>
+        <div class="row">
+          <input type="file" id="resizerFilesInput" accept="image/*,.jpg,.jpeg,.png,.webp,.bmp" multiple>
+          <button onclick="exportSelectedFilesToIconFolders()" class="primary">📂 Chọn thư mục `data/icon` & Xuất loạt file này</button>
+        </div>
+      </div>
+
+      <div id="resizerLog" style="font-family:Consolas,monospace;font-size:12px;background:#090d16;padding:10px;border-radius:6px;min-height:110px;white-space:pre-wrap;color:#cbd5e1;">Sẵn sàng xuất ảnh...</div>
+    </div>
+  </div>
+</div>
+
+<div class="status-toast" id="toast"></div>
+
+<script>
+// ============================================================================
+// 1. BẢNG KHUNG XƯƠNG GỐC CharInfo[0..32] & 13 KHUNG HOẠT ĐỘNG TRONG GAME
+// ============================================================================
+const CHAR_INFO = [
+  [[0,-13,34],[1,-8,10],[1,-9,16]],   // cf=0: Đứng yên 1
+  [[0,-13,35],[1,-8,10],[1,-9,17]],   // cf=1: Đứng thở 2
+  [[1,-10,33],[2,-10,11],[2,-8,16]],  // cf=2: Chạy pha 1
+  [[1,-10,32],[3,-12,10],[3,-11,15]], // cf=3: Chạy pha 2
+  [[1,-10,34],[4,-8,11],[4,-7,17]],   // cf=4: Chạy pha 3
+  [[1,-10,34],[5,-12,11],[5,-9,17]],  // cf=5: Chạy pha 4
+  [[1,-10,33],[6,-10,10],[6,-8,16]],  // cf=6: Chạy pha 5
+  [[0,-9,36],[7,-5,17],[7,-11,25]],   // cf=7: Nhảy lên
+  [[0,-7,35],[0,-18,22],[7,-10,25]],  // cf=8: Rơi xuống
+  [[1,-11,35],[10,-3,25],[12,-10,26]],// cf=9: Bay ngang 1
+  [[1,-11,37],[11,-3,25],[12,-11,27]],// cf=10: Bay ngang 2
+  [[0,-14,34],[12,-8,21],[9,-7,31]],  // cf=11: Bị đánh / Bật lùi
+  [[0,-12,35],[8,-5,14],[8,-15,29]],  // cf=12: Gồng Ki
+  [[1,-9,34],[9,-12,9],[10,-7,19]],   // cf=13: Đấm thẳng 1
+  [[1,-13,34],[9,-12,9],[11,-10,19]], // cf=14: Đấm thẳng 2
+  [[1,-8,32],[9,-12,9],[2,-6,15]],    // cf=15: Lao đấm 3
+  [[1,-8,32],[9,-12,9],[13,-12,16]],  // cf=16: Xoay người đánh 4
+  [[0,-10,31],[9,-12,9],[7,-13,20]],  // cf=17: Tấn lao tới 5
+  [[0,-11,32],[9,-12,9],[8,-15,26]],  // cf=18: Chưởng Ki 6
+  [[0,-9,33],[9,-12,9],[14,-8,18]],   // cf=19: Liên hoàn 7
+  [[0,-11,33],[9,-12,9],[15,-6,19]],  // cf=20: Liên hoàn 8
+  [[0,-16,31],[9,-12,9],[9,-8,28]],   // cf=21: Móc thượng 9
+  [[0,-14,34],[1,-8,10],[8,-16,28]],  // cf=22: Đứng chưởng Kame
+  [[0,-8,36],[7,-5,17],[0,-5,25]],    // cf=23: Đỡ đòn trên không
+  [[0,-9,31],[9,-12,9],[0,-6,20]],    // cf=24: Đỡ đòn dưới đất
+  [[2,-9,36],[13,-5,17],[16,-11,25]], // cf=25: Lướt tàn ảnh
+  [[1,-9,34],[8,-5,13],[10,-7,19]],   // cf=26: Tấn rộng đấm 1
+  [[1,-13,34],[8,-5,13],[11,-10,19]], // cf=27: Tấn rộng đấm 2
+  [[1,-8,32],[8,-5,13],[2,-6,15]],    // cf=28: Tấn rộng đấm 3
+  [[1,-8,32],[8,-5,13],[13,-12,16]],  // cf=29: Tấn rộng đánh 4
+  [[0,-9,33],[8,-5,13],[14,-8,18]],   // cf=30: Tấn rộng liên hoàn 5
+  [[0,-11,33],[8,-5,13],[15,-6,19]],  // cf=31: Tấn rộng liên hoàn 6
+  [[0,-16,32],[8,-5,13],[9,-8,29]]    // cf=32: Tấn rộng móc thượng 7
+];
+
+// 13 Khung hoạt động chuẩn của nhân vật NRO
+const ACTION_GROUPS = [
+  { id: 1,  name: "1. Đứng thở",       cfs: [0, 1] },
+  { id: 2,  name: "2. Chạy bộ",        cfs: [2, 3, 4, 5, 6] },
+  { id: 3,  name: "3. Nhảy lên",       cfs: [7] },
+  { id: 4,  name: "4. Rơi xuống",      cfs: [8] },
+  { id: 5,  name: "5. Bay ngang",      cfs: [9, 10] },
+  { id: 6,  name: "6. Bị đánh",        cfs: [11] },
+  { id: 7,  name: "7. Gồng Ki",        cfs: [12] },
+  { id: 8,  name: "8. Đấm thẳng",      cfs: [13, 14, 15, 26, 27, 28] },
+  { id: 9,  name: "9. Đánh xoay",      cfs: [16, 29] },
+  { id: 10, name: "10. Lao & Chưởng",  cfs: [17, 18] },
+  { id: 11, name: "11. Liên hoàn/Móc", cfs: [19, 20, 21, 30, 31, 32] },
+  { id: 12, name: "12. Đứng Kame",     cfs: [22] },
+  { id: 13, name: "13. Đỡ đòn & Lướt", cfs: [23, 24, 25] }
+];
+
+const CF_NAMES = [
+  "Đứng yên 1", "Đứng thở 2", "Chạy 1", "Chạy 2", "Chạy 3", "Chạy 4", "Chạy 5",
+  "Nhảy lên", "Rơi xuống", "Bay ngang 1", "Bay ngang 2", "Bị đánh / Đá cao", "Gồng Ki",
+  "Đấm 1", "Đấm 2", "Đấm 3", "Đánh xoay 4", "Tấn lao 5", "Chưởng Ki 6",
+  "Liên hoàn 7", "Liên hoàn 8", "Móc thượng 9", "Đứng Kame", "Thủ thế nhảy", "Thủ thế đất",
+  "Lướt tàn ảnh", "Tấn rộng 1", "Tấn rộng 2", "Tấn rộng 3", "Tấn rộng 4",
+  "Tấn rộng 5", "Tấn rộng 6", "Tấn rộng 7"
+];
+
+const PART_META = {
+  0: { short: 'Đ', code: 'Head', title: '🟣 ĐẦU (Head)', color: '#c084fc' },
+  1: { short: 'T', code: 'Body', title: '🔵 THÂN (Body)', color: '#38bdf8' },
+  2: { short: 'C', code: 'Leg',  title: '🟠 CHÂN (Leg)',  color: '#fb923c' }
+};
+
+const SLOT_DESCRIPTIONS = {
+  0: [
+    "Đầu nhìn thẳng / chếch 3/4 (Đứng, Nhảy, Gồng Ki, Chưởng)",
+    "Đầu nhìn nghiêng sang phải (Chạy bộ, Bay ngang, Đấm thẳng)",
+    "Đầu lướt tàn ảnh cf=25 (Có thể dùng lại Head[1] hoặc 2955)"
+  ],
+  1: [
+    "Thân thủ thế / đỡ đòn (cf=23, 24)",
+    "⭐ Thân đứng yên & thở (cf=0, 1)",
+    "Thân chạy pha 1 & lao đấm (cf=2, 15, 28)",
+    "Thân chạy pha 2 (cf=3 — hoặc 2955 nếu vẽ liền vào Leg[3])",
+    "Thân chạy pha 3 (cf=4 — hoặc 2955 nếu vẽ liền vào Leg[4])",
+    "Thân chạy pha 4 (cf=5 — hoặc 2955 nếu vẽ liền vào Leg[5])",
+    "Thân chạy pha 5 (cf=6 — hoặc 2955 nếu vẽ liền vào Leg[6])",
+    "Thân nhảy / rơi / lao tới (cf=7, 8, 17)",
+    "⭐ Thân gồng Ki / Kamehameha (cf=12, 18, 22)",
+    "Thân bị đánh / móc thượng (cf=11, 21, 32)",
+    "Thân đấm thẳng tay trước 1 (cf=13, 26)",
+    "Thân đấm thẳng tay sau 2 (cf=14, 27)",
+    "Thân bay ngang trên không (cf=9, 10)",
+    "Thân xoay lưng / đá xoay (cf=16, 29)",
+    "Thân đánh liên hoàn 1 (cf=19, 30)",
+    "Thân đánh liên hoàn 2 (cf=20, 31)",
+    "Thân lướt tàn ảnh (cf=25 — thường để 2955)"
+  ],
+  2: [
+    "Chân co rơi trên không (cf=8)",
+    "⭐ Chân đứng thẳng trên mặt đất (cf=0, 1, 22)",
+    "Chân chạy bộ pha 1 (cf=2)",
+    "Chân chạy bộ pha 2 (cf=3)",
+    "Chân chạy bộ pha 3 (cf=4)",
+    "Chân chạy bộ pha 4 (cf=5)",
+    "Chân chạy bộ pha 5 (cf=6)",
+    "Chân nhảy co 1 gối (cf=7, 23)",
+    "⭐ Chân tấn rộng gồng Ki (cf=12, 26..32)",
+    "⭐ Chân tấn chiến đấu ra đòn (cf=13..21, 24)",
+    "Chân bay ngang duỗi 1 (cf=9)",
+    "Chân bay ngang duỗi 2 (cf=10)",
+    "Chân bật lùi / bị đánh (cf=11)",
+    "Chân lướt tàn ảnh (cf=25 — thường để 2955)"
+  ]
+};
+
+const DEFAULT_NRO_X4_WIDTH = { 0: 124, 1: 116, 2: 100 };
+
+const PRESETS = {
+  ui_vt13: {
+    ids: [2105, 2106, 2107],
+    head: [[27110,-2,-33],[27111,-5,-26],[27112,-6,-23]],
+    body: [[27113,-1,-16],[27114,-2,-23],[27115,-8,-25],[27116,-7,-25],[27117,-11,-24],[27118,-7,-25],[27119,-9,-22],[27120,4,-16],[27121,5,-11],[27122,-5,-8],[27123,-10,-23],[27124,-9,-23],[27115,-7,-18],[27125,-4,-23],[27126,1,-20],[27126,-3,-19],[27127,-5,-16]],
+    leg:  [[27128,12,-6],[27129,-3,-17],[27130,-2,-15],[27131,-4,-14],[27132,-4,-15],[27133,-2,-11],[27134,-3,-14],[27135,-2,-11],[27136,-7,-14],[27137,-3,-16],[27135,-10,-1],[27138,-12,-2],[27138,-4,-5],[27135,-7,-7]]
+  },
+  ue_vt13: {
+    ids: [2108, 2109, 2110],
+    head: [[27150,0,-15],[27151,-3,-16],[27152,-4,-13]],
+    body: [[27153,-7,-3],[27154,-7,-11],[27155,-8,-11],[27156,-5,-12],[27157,-9,-10],[27158,-7,-10],[27159,-8,-11],[27160,-1,-3],[27161,-1,1],[27162,-9,3],[27163,-9,-8],[27164,-6,-8],[27160,-6,-1],[27165,-4,-11],[27166,-8,-9],[27166,-10,-8],[27167,-5,-2]],
+    leg:  [[27168,7,5],[27169,-6,-6],[27170,-4,-5],[27171,-2,-6],[27172,-6,-5],[27173,-2,-5],[27174,-4,-6],[27175,-6,1],[27176,-9,-3],[27177,-2,-7],[27175,-11,9],[27175,-11,9],[27178,-6,5],[27175,-9,1]]
+  },
+  teamobi_ui: {
+    ids: [1980, 1981, 1982],
+    head: [[16947,-6,-22],[16950,-4,-21],[2955,0,0]],
+    body: [[16951,-4,-7],[16952,-7,-11],[16953,-10,-13],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[16954,-5,-15],[16955,-12,-17],[16956,-6,-14],[16957,-11,-17],[16958,-12,-19],[16959,-7,-18],[16960,-9,-16],[16961,-11,-15],[16962,-8,-15],[2955,0,0]],
+    leg:  [[16963,0,5],[16964,-4,-5],[16965,-4,-6],[16966,-9,-19],[16967,-11,-17],[16968,-7,-17],[16969,-7,-17],[16970,-5,-1],[16971,-6,-13],[16972,-6,-7],[16973,-5,-5],[16974,-6,-5],[16975,-4,-8],[2955,0,0]]
+  },
+  goku_base: {
+    ids: [0, 57, 58],
+    head: [[17,0,0],[18,0,0],[20,0,0]],
+    body: [[608,0,0],[581,0,0],[582,0,0],[583,0,-1],[584,0,0],[585,0,0],[586,0,0],[609,0,-1],[587,0,0],[588,0,0],[589,0,0],[590,1,0],[591,0,0],[592,0,0],[593,1,0],[594,0,0],[16,0,0]],
+    leg:  [[595,0,0],[596,0,0],[597,1,1],[598,0,1],[599,0,1],[600,0,0],[601,0,0],[602,0,1],[603,0,0],[604,0,0],[605,0,0],[606,0,0],[607,0,0],[34,0,0]]
+  }
+};
+
+const ANIM_SEQUENCES = {
+  idle:   [0, 0, 1, 1],
+  run:    [2, 3, 4, 5, 6],
+  jump:   [7, 7, 8, 8],
+  fly:    [9, 10],
+  charge: [12, 12, 22, 22],
+  attack: [13, 14, 15, 16, 17, 18, 19, 20, 21],
+  guard:  [23, 24],
+  all26:  Array.from({length: 26}, (_, i) => i)
+};
+
+// Mặc định tạo mảng 33 phần tử layerOrders: mỗi phần tử là [lớp_dưới_cùng, lớp_giữa, lớp_trên_cùng]
+function createDefaultLayerOrders() {
+  return Array.from({ length: 33 }, () => [2, 1, 0]); // Mặc định ưu tiên: CHÂN (dưới) -> THÂN (giữa) -> ĐẦU (trên cùng) để cằm không bị cổ che!
+}
+
+function loadSavedLayerOrders() {
+  try {
+    const raw = localStorage.getItem('nro_studio_layer_orders_v1');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length === 33) return parsed;
+    }
+  } catch (_) {}
+  return createDefaultLayerOrders();
+}
+
+function persistLayerOrders() {
+  try {
+    localStorage.setItem('nro_studio_layer_orders_v1', JSON.stringify(state.layerOrders));
+  } catch (_) {}
+}
+
+let state = {
+  partIds: [2105, 2106, 2107],
+  head: JSON.parse(JSON.stringify(PRESETS.ui_vt13.head)),
+  body: JSON.parse(JSON.stringify(PRESETS.ui_vt13.body)),
+  leg:  JSON.parse(JSON.stringify(PRESETS.ui_vt13.leg)),
+  layerOrders: loadSavedLayerOrders(), // [bottom, middle, top] riêng biệt cho từng cf = 0..32!
+  cf: 0,
+  cdir: 1,
+  activePartType: 0,
+  stageZoom: 1.5
+};
+
+let historyStack = [];
+let redoStack = [];
+const iconCache = new Map();
+let pendingSlotUpload = null;
+let animTimer = null;
+let animTick = 0;
+
+function showToast(msg, ms = 3200) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.display = 'none'; }, ms);
+}
+
+function saveHistory() {
+  historyStack.push(JSON.stringify({
+    head: state.head, body: state.body, leg: state.leg, layerOrders: state.layerOrders
+  }));
+  if (historyStack.length > 60) historyStack.shift();
+  redoStack = [];
+}
+
+function undo() {
+  if (!historyStack.length) return;
+  redoStack.push(JSON.stringify({ head: state.head, body: state.body, leg: state.leg, layerOrders: state.layerOrders }));
+  const prev = JSON.parse(historyStack.pop());
+  state.head = prev.head; state.body = prev.body; state.leg = prev.leg;
+  if (prev.layerOrders) { state.layerOrders = prev.layerOrders; persistLayerOrders(); }
+  renderAll();
+  showToast("Đã hoàn tác (Undo)");
+}
+
+function redo() {
+  if (!redoStack.length) return;
+  historyStack.push(JSON.stringify({ head: state.head, body: state.body, leg: state.leg, layerOrders: state.layerOrders }));
+  const next = JSON.parse(redoStack.pop());
+  state.head = next.head; state.body = next.body; state.leg = next.leg;
+  if (next.layerOrders) { state.layerOrders = next.layerOrders; persistLayerOrders(); }
+  renderAll();
+  showToast("Đã làm lại (Redo)");
+}
+
+// ============================================================================
+// 2. QUẢN LÝ THỨ TỰ LỚP ĐÈ (Z-ORDER) TỪNG FRAME & 13 KHUNG HOẠT ĐỘNG
+// ============================================================================
+function getActionGroupForCf(cf) {
+  return ACTION_GROUPS.find(g => g.cfs.includes(cf)) || ACTION_GROUPS[0];
+}
+
+function formatZTag(orderBottomToTop) {
+  // Hiển thị Trên > Giữa > Dưới (vd: Đ>T>C)
+  return `${PART_META[orderBottomToTop[2]].short}>${PART_META[orderBottomToTop[1]].short}>${PART_META[orderBottomToTop[0]].short}`;
+}
+
+function renderZOrderStackUI() {
+  const order = state.layerOrders[state.cf] || [2, 1, 0]; // [bottom, middle, top]
+  document.getElementById('zCfLabel').textContent = `cf = ${state.cf} (${CF_NAMES[state.cf]})`;
+  document.getElementById('zQuickSelect').value = order.join(',');
+
+  const container = document.getElementById('zStackContainer');
+  container.innerHTML = '';
+
+  const depthLabels = ['Lớp 1: Dưới cùng', 'Lớp 2: Ở giữa', 'Lớp 3: Đè trên cùng'];
+  // Vẽ từ Trên cùng (idx=2) xuống Dưới cùng (idx=0)
+  for (let pos = 2; pos >= 0; pos--) {
+    const pType = order[pos];
+    const meta = PART_META[pType];
+    const row = document.createElement('div');
+    row.className = 'z-row' + (state.activePartType === pType ? ' selected-z' : '');
+    row.onclick = (e) => {
+      if (e.target.tagName === 'BUTTON') return;
+      setActivePart(pType);
+    };
+    row.innerHTML = `
+      <div style="display:flex;align-items:center;gap:7px;">
+        <span class="z-badge">${depthLabels[pos]}</span>
+        <strong style="color:${meta.color};">${meta.title}</strong>
+      </div>
+      <div class="z-btns">
+        <button onclick="moveLayerInCurrentCf(${pos}, 1)" ${pos === 2 ? 'disabled style="opacity:0.3;cursor:default;"' : ''} title="Đưa bộ phận này lên đè phía trên">▲ Lên</button>
+        <button onclick="moveLayerInCurrentCf(${pos}, -1)" ${pos === 0 ? 'disabled style="opacity:0.3;cursor:default;"' : ''} title="Hạ bộ phận này xuống nằm phía dưới">▼ Xuống</button>
+      </div>
+    `;
+    container.appendChild(row);
+  }
+}
+
+function moveLayerInCurrentCf(pos, dir) {
+  const newPos = pos + dir;
+  if (newPos < 0 || newPos > 2) return;
+  saveHistory();
+  const arr = [...state.layerOrders[state.cf]];
+  const tmp = arr[pos];
+  arr[pos] = arr[newPos];
+  arr[newPos] = tmp;
+  state.layerOrders[state.cf] = arr;
+  persistLayerOrders();
+  renderZOrderStackUI();
+  drawStage();
+  renderFilmstripThumbs();
+}
+
+function onZQuickSelectChange(val) {
+  const parts = val.split(',').map(Number);
+  if (parts.length !== 3) return;
+  saveHistory();
+  state.layerOrders[state.cf] = parts;
+  persistLayerOrders();
+  renderZOrderStackUI();
+  drawStage();
+  renderFilmstripThumbs();
+}
+
+function applyZOrderToCurrentGroup() {
+  const grp = getActionGroupForCf(state.cf);
+  saveHistory();
+  const cur = [...state.layerOrders[state.cf]];
+  grp.cfs.forEach(c => { state.layerOrders[c] = [...cur]; });
+  persistLayerOrders();
+  renderFilmstripThumbs();
+  showToast(`📌 Đã áp dụng thứ tự [${formatZTag(cur)}] cho cả Khung "${grp.name}" (cf = ${grp.cfs.join(', ')})!`);
+}
+
+function applyZOrderToAll33() {
+  saveHistory();
+  const cur = [...state.layerOrders[state.cf]];
+  for (let c = 0; c < 33; c++) state.layerOrders[c] = [...cur];
+  persistLayerOrders();
+  renderFilmstripThumbs();
+  showToast(`🌐 Đã áp dụng thứ tự [${formatZTag(cur)}] cho toàn bộ 33 Frame!`);
+}
+
+function resetSavedLocalLayerOrders() {
+  saveHistory();
+  state.layerOrders = Array.from({ length: 33 }, () => [0, 2, 1]);
+  persistLayerOrders();
+  renderAll();
+  showToast("Đã đặt thứ tự 33 Frame về mặc định gốc NRO (Thân > Chân > Đầu)");
+}
+
+function buildActionGroupsBar() {
+  const bar = document.getElementById('actionGroupsBar');
+  bar.innerHTML = '';
+  ACTION_GROUPS.forEach(grp => {
+    const btn = document.createElement('button');
+    btn.className = 'ag-btn';
+    btn.id = `agBtn_${grp.id}`;
+    btn.textContent = grp.name;
+    btn.title = `Nhảy tới khung hoạt động "${grp.name}" (cf = ${grp.cfs.join(', ')})`;
+    btn.onclick = () => {
+      document.getElementById('animSelect').value = 'manual';
+      stopAnim();
+      state.cf = grp.cfs[0];
+      syncWidthSliderWithActiveSlot();
+      renderAll();
+    };
+    bar.appendChild(btn);
+  });
+}
+
+function highlightActiveActionGroup() {
+  const curGrp = getActionGroupForCf(state.cf);
+  ACTION_GROUPS.forEach(grp => {
+    const b = document.getElementById(`agBtn_${grp.id}`);
+    if (b) b.classList.toggle('active', grp.id === curGrp.id);
+  });
+  document.getElementById('groupDetailLabel').textContent =
+    `Khung hoạt động ${curGrp.id}/13: ${curGrp.name} (cf = ${curGrp.cfs.join(', ')}) — Nhãn vàng góc phải mỗi ô là Thứ tự đè (Trên>Giữa>Dưới)`;
+}
+
+// ============================================================================
+// 3. TÁCH NỀN TRẮNG + HÀO QUANG MỜ CHO FILE .JPG / .PNG AI
+// ============================================================================
+function removeWhiteBgAndCrop(sourceImg, mode) {
+  const sw = sourceImg.naturalWidth || sourceImg.width;
+  const sh = sourceImg.naturalHeight || sourceImg.height;
+  const cv = document.createElement('canvas');
+  cv.width = sw; cv.height = sh;
+  const ctx = cv.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(sourceImg, 0, 0);
+
+  const imgData = ctx.getImageData(0, 0, sw, sh);
+  const data = imgData.data;
+  const total = sw * sh;
+
+  const corners = [0, sw - 1, (sh - 1) * sw, total - 1];
+  let transparentCorners = 0;
+  for (const ci of corners) {
+    if (data[ci * 4 + 3] < 30) transparentCorners++;
+  }
+
+  if (mode !== 'none' && transparentCorners < 2) {
+    const lumMin = (mode === 'bg_only') ? 236 : 155;
+    const satMax = (mode === 'bg_only') ? 25  : 58;
+
+    const visited = new Uint8Array(total);
+    const queue = new Int32Array(total);
+    let qHead = 0, qTail = 0;
+
+    const canPass = (idx) => {
+      const o = idx * 4;
+      if (data[o + 3] < 25) return true;
+      const r = data[o], g = data[o + 1], b = data[o + 2];
+      const lum = (r + g + b) * 0.3333333;
+      const maxC = r > g ? (r > b ? r : b) : (g > b ? g : b);
+      const minC = r < g ? (r < b ? r : b) : (g < b ? g : b);
+      return lum >= lumMin && (maxC - minC) <= satMax;
+    };
+
+    const pushIf = (idx) => {
+      if (!visited[idx] && canPass(idx)) {
+        visited[idx] = 1;
+        queue[qTail++] = idx;
+      }
+    };
+
+    for (let x = 0; x < sw; x++) {
+      pushIf(x);
+      pushIf((sh - 1) * sw + x);
+    }
+    for (let y = 1; y < sh - 1; y++) {
+      pushIf(y * sw);
+      pushIf(y * sw + (sw - 1));
+    }
+
+    while (qHead < qTail) {
+      const cur = queue[qHead++];
+      const x = cur % sw;
+      const y = (cur - x) / sw;
+      if (y > 0) pushIf(cur - sw);
+      if (y < sh - 1) pushIf(cur + sw);
+      if (x > 0) pushIf(cur - 1);
+      if (x < sw - 1) pushIf(cur + 1);
+    }
+
+    for (let i = 0; i < total; i++) {
+      if (visited[i]) data[i * 4 + 3] = 0;
+    }
+
+    for (let y = 1; y < sh - 1; y++) {
+      for (let x = 1; x < sw - 1; x++) {
+        const i = y * sw + x;
+        if (visited[i]) continue;
+        if (visited[i - 1] || visited[i + 1] || visited[i - sw] || visited[i + sw]) {
+          const o = i * 4;
+          const lum = (data[o] + data[o + 1] + data[o + 2]) * 0.3333333;
+          if (lum > 95) {
+            const factor = Math.max(0, Math.min(1, (175 - lum) / 80));
+            data[o + 3] = Math.round(data[o + 3] * factor);
+          }
+        }
+      }
+    }
+  }
+
+  let minX = sw, minY = sh, maxX = -1, maxY = -1;
+  for (let y = 0; y < sh; y++) {
+    for (let x = 0; x < sw; x++) {
+      if (data[(y * sw + x) * 4 + 3] > 14) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  if (maxX < minX || maxY < minY) return cv;
+
+  const cw = maxX - minX + 1;
+  const ch = maxY - minY + 1;
+  const cropped = document.createElement('canvas');
+  cropped.width = cw;
+  cropped.height = ch;
+  cropped.getContext('2d').drawImage(cv, minX, minY, cw, ch, 0, 0, cw, ch);
+  return cropped;
+}
+
+function downscaleAndPad4(srcCanvas, targetW4) {
+  const sw = srcCanvas.width;
+  const sh = srcCanvas.height;
+  const scale = targetW4 / sw;
+  const rawW = Math.max(4, Math.round(targetW4));
+  const rawH = Math.max(4, Math.round(sh * scale));
+
+  let curCv = srcCanvas;
+  let curW = sw, curH = sh;
+  while (curW * 0.5 > rawW * 1.35) {
+    const nextW = Math.max(rawW, Math.round(curW * 0.5));
+    const nextH = Math.max(rawH, Math.round(curH * 0.5));
+    const tmp = document.createElement('canvas');
+    tmp.width = nextW; tmp.height = nextH;
+    const tctx = tmp.getContext('2d');
+    tctx.imageSmoothingEnabled = true;
+    tctx.imageSmoothingQuality = 'high';
+    tctx.drawImage(curCv, 0, 0, nextW, nextH);
+    curCv = tmp;
+    curW = nextW; curH = nextH;
+  }
+
+  const finalW = Math.ceil(rawW / 4) * 4;
+  const finalH = Math.ceil(rawH / 4) * 4;
+  const out = document.createElement('canvas');
+  out.width = finalW;
+  out.height = finalH;
+  const octx = out.getContext('2d');
+  octx.imageSmoothingEnabled = true;
+  octx.imageSmoothingQuality = 'high';
+  const padLeft = Math.floor((finalW - rawW) / 2);
+  const padTop  = finalH - rawH;
+  octx.drawImage(curCv, 0, 0, curW, curH, padLeft, padTop, rawW, rawH);
+  return out;
+}
+
+function safeToDataUrl(cv, fallbackSrc = '') {
+  try { return cv.toDataURL('image/png'); } catch (_) { return fallbackSrc; }
+}
+
+// ============================================================================
+// 4. QUẢN LÝ BỘ NHỚ ICON
+// ============================================================================
+function getImgDimensions(imgOrCv) {
+  return {
+    w: imgOrCv.naturalWidth || imgOrCv.width || 0,
+    h: imgOrCv.naturalHeight || imgOrCv.height || 0
+  };
+}
+
+function getIconEntry(iconId) {
+  iconId = Number(iconId) || 0;
+  if (iconId <= 0 || iconId === 2955) {
+    return { status: 'empty', img: null, zoom: 4 };
+  }
+  if (iconCache.has(iconId)) return iconCache.get(iconId);
+
+  const entry = { status: 'loading', img: null, zoom: 4, isCustom: false, fileSrc: '' };
+  iconCache.set(iconId, entry);
+
+  const zooms = [4, 3, 2, 1];
+  let idx = 0;
+  const tryNextZoom = () => {
+    if (idx >= zooms.length) {
+      entry.status = 'missing';
+      updateLoadedStat();
+      drawStage();
+      return;
+    }
+    const z = zooms[idx++];
+    const img = new Image();
+    img.onload = () => {
+      entry.img = img;
+      entry.fileSrc = img.src;
+      entry.zoom = z;
+      entry.status = 'loaded';
+      updateLoadedStat();
+      drawStage();
+      renderFilmstripThumbs();
+      updateSlotPreviews();
+      syncWidthSliderWithActiveSlot();
+    };
+    img.onerror = tryNextZoom;
+    img.src = `../NgocRongNewGen_Server/data/icon/x${z}/${iconId}.png`;
+  };
+  tryNextZoom();
+  return entry;
+}
+
+function loadCustomImageFileIntoIcon(iconId, file, partTypeHint = 0, autoCenter = true) {
+  const url = URL.createObjectURL(file);
+  const rawImg = new Image();
+  rawImg.onload = () => {
+    const bgMode = document.getElementById('bgRemoveMode').value;
+    const cleanCropped = removeWhiteBgAndCrop(rawImg, bgMode);
+
+    let targetW4 = cleanCropped.width;
+    if (cleanCropped.width > 220 || cleanCropped.height > 220) {
+      targetW4 = DEFAULT_NRO_X4_WIDTH[partTypeHint] || 116;
+    } else {
+      targetW4 = Math.ceil(cleanCropped.width / 4) * 4;
+    }
+
+    const finalCanvas = downscaleAndPad4(cleanCropped, targetW4);
+    const previewUrl = safeToDataUrl(finalCanvas, url);
+
+    iconCache.set(Number(iconId), {
+      status: 'loaded',
+      img: finalCanvas,
+      previewUrl,
+      zoom: 4,
+      isCustom: true,
+      isCleanOrigin: true,
+      rawSourceImg: rawImg,
+      cleanCroppedCanvas: cleanCropped,
+      targetW4: finalCanvas.width,
+      bgMode,
+      fileName: file.name
+    });
+
+    if (autoCenter) {
+      const ciOff = getActiveCiOffsetForCf(state.cf, partTypeHint);
+      const arr = partTypeHint === 0 ? state.head : (partTypeHint === 1 ? state.body : state.leg);
+      arr.forEach((sl) => {
+        if (sl[0] === Number(iconId)) {
+          const wX1 = finalCanvas.width / 4;
+          sl[1] = Math.round(-wX1 / 2 - ciOff[1]);
+        }
+      });
+    }
+
+    updateLoadedStat();
+    syncWidthSliderWithActiveSlot();
+    renderAll();
+    showToast(`✅ Đã nạp "${file.name}" → Icon ${iconId} (${finalCanvas.width}×${finalCanvas.height}px)!`);
+  };
+  rawImg.onerror = () => showToast(`❌ Không đọc được file ảnh "${file.name}"!`);
+  rawImg.src = url;
+}
+
+function reprocessActiveCustomIcon() {
+  const pType = state.activePartType;
+  const piIdx = getActiveCiIndexForCf(state.cf, pType);
+  const iconId = getActivePartArray()[piIdx][0];
+  const entry = iconCache.get(iconId);
+  if (!entry || !entry.isCleanOrigin || !entry.rawSourceImg) return;
+
+  const bgMode = document.getElementById('bgRemoveMode').value;
+  entry.bgMode = bgMode;
+  entry.cleanCroppedCanvas = removeWhiteBgAndCrop(entry.rawSourceImg, bgMode);
+  const finalCv = downscaleAndPad4(entry.cleanCroppedCanvas, entry.targetW4);
+  entry.img = finalCv;
+  entry.previewUrl = safeToDataUrl(finalCv);
+  renderAll();
+  showToast(`Đã cập nhật chế độ tách nền cho Icon ${iconId}!`);
+}
+
+function onPartWidthSlider(val) {
+  const w4 = Math.max(16, Math.round(Number(val) / 4) * 4);
+  document.getElementById('partWidthLabel').textContent = `${w4}px`;
+
+  const pType = state.activePartType;
+  const piIdx = getActiveCiIndexForCf(state.cf, pType);
+  const slot = getActivePartArray()[piIdx];
+  const iconId = slot[0];
+  const entry = iconCache.get(iconId);
+  if (!entry || entry.status !== 'loaded') return;
+
+  if (!entry.cleanCroppedCanvas && entry.img) {
+    const tmp = document.createElement('canvas');
+    const d = getImgDimensions(entry.img);
+    tmp.width = d.w; tmp.height = d.h;
+    tmp.getContext('2d').drawImage(entry.img, 0, 0);
+    entry.cleanCroppedCanvas = tmp;
+    entry.isCustom = true;
+  }
+
+  if (entry.cleanCroppedCanvas) {
+    const oldW1 = getImgDimensions(entry.img).w / entry.zoom;
+    entry.targetW4 = w4;
+    entry.zoom = 4;
+    const finalCv = downscaleAndPad4(entry.cleanCroppedCanvas, w4);
+    entry.img = finalCv;
+    entry.previewUrl = safeToDataUrl(finalCv, entry.fileSrc);
+
+    const newW1 = finalCv.width / 4;
+    slot[1] = Math.round(slot[1] + (oldW1 - newW1) / 2);
+
+    drawStage();
+    renderFilmstripThumbs();
+    updateSlotPreviews();
+    const dxInp = document.getElementById(`inpDx_${pType}_${piIdx}`);
+    if (dxInp) dxInp.value = slot[1];
+  }
+}
+
+function syncWidthSliderWithActiveSlot() {
+  const pType = state.activePartType;
+  const piIdx = getActiveCiIndexForCf(state.cf, pType);
+  const slot = getActivePartArray()[piIdx];
+  if (!slot) return;
+  const entry = iconCache.get(slot[0]);
+  if (entry && entry.status === 'loaded' && entry.img) {
+    const d = getImgDimensions(entry.img);
+    const w4 = Math.round(d.w * (4 / entry.zoom));
+    document.getElementById('partWidthRange').value = Math.max(40, Math.min(240, w4));
+    document.getElementById('partWidthLabel').textContent = `${w4}px`;
+  }
+}
+
+function updateLoadedStat() {
+  let ok = 0, custom = 0;
+  iconCache.forEach(v => {
+    if (v.status === 'loaded') {
+      ok++;
+      if (v.isCustom) custom++;
+    }
+  });
+  document.getElementById('loadedIconsStat').textContent =
+    `Đã nạp: ${ok} icon` + (custom ? ` (${custom} ảnh mới)` : '');
+}
+
+function preloadPresetIcons(p) {
+  [...p.head, ...p.body, ...p.leg].forEach(slot => getIconEntry(slot[0]));
+}
+
+// ============================================================================
+// 5. VẼ NHÂN VẬT THEO THỨ TỰ LỚP ĐÈ TỪNG FRAME CỦA NGƯỜI DÙNG
+// ============================================================================
+function getPartLookupForCf(partSet, cf, partType) {
+  const ci = CHAR_INFO[cf];
+  if (partType === 0) return { arr: partSet.head, ciEntry: ci[0] };
+  if (partType === 2) return { arr: partSet.leg,  ciEntry: ci[1] };
+  return { arr: partSet.body, ciEntry: ci[2] };
+}
+
+function drawCharacterAt(ctx, partSet, cf, cx4, cy4, cdir, alpha = 1.0, layerFilter = [true, true, true], recordBboxes = null) {
+  const ci = CHAR_INFO[cf];
+  if (!ci) return;
+
+  ctx.save();
+  ctx.globalAlpha = alpha;
+
+  // Lấy thứ tự lớp vẽ từ dưới lên trên [bottom, middle, top] của chính frame cf này!
+  const orderBottomToTop = (partSet.layerOrders && partSet.layerOrders[cf])
+    ? partSet.layerOrders[cf]
+    : [0, 2, 1];
+
+  for (const pType of orderBottomToTop) {
+    if (!layerFilter[pType]) continue;
+    const { arr, ciEntry } = getPartLookupForCf(partSet, cf, pType);
+    const piIdx = ciEntry[0];
+    const ciX   = ciEntry[1];
+    const ciY   = ciEntry[2];
+    const slot  = arr[piIdx];
+    if (!slot) continue;
+
+    const [iconId, dx, dy] = slot;
+    if (iconId === 2955 || iconId <= 0) continue;
+
+    const entry = getIconEntry(iconId);
+    if (entry.status !== 'loaded' || !entry.img) continue;
+
+    const dims = getImgDimensions(entry.img);
+    const scaleToX4 = 4 / entry.zoom;
+    const w4 = dims.w * scaleToX4;
+    const h4 = dims.h * scaleToX4;
+
+    const yTop = cy4 + (-ciY + dy) * 4;
+    let bboxX = 0;
+
+    if (cdir === 1) {
+      const xLeft = cx4 + (ciX + dx) * 4;
+      bboxX = xLeft;
+      ctx.drawImage(entry.img, xLeft, yTop, w4, h4);
+    } else {
+      const xRight = cx4 - (ciX + dx) * 4;
+      bboxX = xRight - w4;
+      ctx.save();
+      ctx.translate(xRight, yTop);
+      ctx.scale(-1, 1);
+      ctx.drawImage(entry.img, 0, 0, w4, h4);
+      ctx.restore();
+    }
+
+    if (recordBboxes) {
+      recordBboxes[pType] = { x: bboxX, y: yTop, w: w4, h: h4, iconId, piIdx, dx, dy };
+    }
+  }
+
+  ctx.restore();
+}
+
+function getActivePartArray() {
+  if (state.activePartType === 0) return state.head;
+  if (state.activePartType === 1) return state.body;
+  return state.leg;
+}
+
+function getActiveCiIndexForCf(cf, partType) {
+  const ci = CHAR_INFO[cf];
+  if (partType === 0) return ci[0][0];
+  if (partType === 2) return ci[1][0];
+  return ci[2][0];
+}
+
+function getActiveCiOffsetForCf(cf, partType) {
+  const ci = CHAR_INFO[cf];
+  if (partType === 0) return ci[0];
+  if (partType === 2) return ci[1];
+  return ci[2];
+}
+
+function getCfsUsingSlot(partType, piIdx) {
+  const list = [];
+  for (let c = 0; c < CHAR_INFO.length; c++) {
+    if (getActiveCiIndexForCf(c, partType) === piIdx) list.push(c);
+  }
+  return list;
+}
+
+// ============================================================================
+// 6. VẼ SÂN KHẤU CHÍNH & BẢNG 33 FRAME
+// ============================================================================
+const stageCanvas = document.getElementById('stageCanvas');
+const stageCtx = stageCanvas.getContext('2d');
+let lastMainBboxes = {};
+
+function drawCrosshair(ctx, cx, cy, label) {
+  ctx.save();
+  ctx.strokeStyle = 'rgba(245, 158, 11, 0.65)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([5, 4]);
+  ctx.beginPath();
+  ctx.moveTo(cx - 140, cy);
+  ctx.lineTo(cx + 140, cy);
+  ctx.stroke();
+
+  ctx.strokeStyle = 'rgba(56, 189, 248, 0.65)';
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - 230);
+  ctx.lineTo(cx, cy + 45);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.38)';
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + 2, 42, 10, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = '#fde047';
+  ctx.beginPath();
+  ctx.arc(cx, cy, 3.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  if (label) {
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '11px Segoe UI';
+    ctx.textAlign = 'center';
+    ctx.fillText(label, cx, cy + 32);
+  }
+  ctx.restore();
+}
+
+function drawStage() {
+  const container = document.getElementById('canvasContainer');
+  const cw = container.clientWidth || 760;
+  const ch = container.clientHeight || 440;
+  if (stageCanvas.width !== cw || stageCanvas.height !== ch) {
+    stageCanvas.width = cw;
+    stageCanvas.height = ch;
+  }
+
+  const ctx = stageCtx;
+  ctx.imageSmoothingEnabled = false;
+
+  ctx.fillStyle = '#0b1120';
+  ctx.fillRect(0, 0, cw, ch);
+  const grid = 24;
+  ctx.fillStyle = '#111a2e';
+  for (let y = 0; y < ch; y += grid) {
+    for (let x = (y / grid % 2) * grid; x < cw; x += grid * 2) {
+      ctx.fillRect(x, y, grid, grid);
+    }
+  }
+
+  const zoom = state.stageZoom;
+  const dual = document.getElementById('chkDualMirror').checked;
+  const showGuides = document.getElementById('chkGuides').checked;
+  const showBbox = document.getElementById('chkBbox').checked;
+  const layerFilter = [
+    document.getElementById('chkShowHead').checked,
+    document.getElementById('chkShowBody').checked,
+    document.getElementById('chkShowLeg').checked
+  ];
+
+  const onionMode = document.getElementById('onionSelect').value;
+  const onionAlpha = Number(document.getElementById('onionAlpha').value) / 100;
+
+  ctx.save();
+  ctx.scale(zoom, zoom);
+
+  const logicalW = cw / zoom;
+  const logicalH = ch / zoom;
+  const mainCx = dual ? logicalW * 0.36 : logicalW * 0.5;
+  const mirrorCx = logicalW * 0.70;
+  const groundCy = logicalH * 0.73;
+
+  if (showGuides) {
+    drawCrosshair(ctx, mainCx, groundCy, state.cdir === 1 ? 'Chính: Quay Phải (cdir = 1)' : 'Chính: Quay Trái (cdir = -1)');
+    if (dual) {
+      drawCrosshair(ctx, mirrorCx, groundCy, state.cdir === 1 ? 'Đối chiếu lật: Quay Trái (cdir = -1)' : 'Đối chiếu lật: Quay Phải (cdir = 1)');
+    }
+  }
+
+  if (onionMode !== 'none' && PRESETS[onionMode]) {
+    drawCharacterAt(ctx, PRESETS[onionMode], state.cf, mainCx, groundCy, state.cdir, onionAlpha, [true, true, true], null);
+    if (dual) {
+      drawCharacterAt(ctx, PRESETS[onionMode], state.cf, mirrorCx, groundCy, -state.cdir, onionAlpha, [true, true, true], null);
+    }
+  }
+
+  lastMainBboxes = {};
+  drawCharacterAt(ctx, state, state.cf, mainCx, groundCy, state.cdir, 1.0, layerFilter, lastMainBboxes);
+
+  if (dual) {
+    drawCharacterAt(ctx, state, state.cf, mirrorCx, groundCy, -state.cdir, 1.0, layerFilter, null);
+  }
+
+  const activeBox = lastMainBboxes[state.activePartType];
+  if (showBbox && activeBox) {
+    const colors = ['#c084fc', '#38bdf8', '#fb923c'];
+    ctx.strokeStyle = colors[state.activePartType];
+    ctx.lineWidth = 1.3 / zoom;
+    ctx.strokeRect(activeBox.x, activeBox.y, activeBox.w, activeBox.h);
+  }
+
+  ctx.restore();
+  updateHudAndNotices();
+}
+
+function updateHudAndNotices() {
+  const pNames = ['Head (ĐẦU)', 'Body (THÂN)', 'Leg (CHÂN)'];
+  const ciOff = getActiveCiOffsetForCf(state.cf, state.activePartType);
+  const piIdx = ciOff[0];
+  const arr = getActivePartArray();
+  const slot = arr[piIdx] || [0, 0, 0];
+  const entry = getIconEntry(slot[0]);
+  const d = entry.img ? getImgDimensions(entry.img) : { w: 0, h: 0 };
+  const dimText = (entry.status === 'loaded' && entry.img)
+    ? `${d.w}×${d.h}px (x${entry.zoom})${entry.isCustom ? ' ✨Ảnh mới' : ''}`
+    : (slot[0] === 2955 ? 'Ẩn [2955]' : 'Chưa có ảnh');
+
+  const grp = getActionGroupForCf(state.cf);
+  const zOrder = state.layerOrders[state.cf] || [2, 1, 0];
+  const zReadable = `${PART_META[zOrder[2]].code} (Trên) > ${PART_META[zOrder[1]].code} (Giữa) > ${PART_META[zOrder[0]].code} (Dưới)`;
+
+  document.getElementById('cfTitle').textContent = `cf = ${state.cf} — ${CF_NAMES[state.cf]} [${grp.name}]`;
+  document.getElementById('curSlotLabel').textContent = `${['Head','Body','Leg'][state.activePartType]}[${piIdx}]`;
+
+  document.getElementById('stageHud').innerHTML =
+    `<div>Đang chỉnh: <b style="color:#38bdf8">${pNames[state.activePartType]} — Slot [${piIdx}]</b> | Icon: <b style="color:#fde047">${slot[0]}</b> (${dimText})</div>` +
+    `<div>Thứ tự đè ở cf=${state.cf}: <b style="color:#c084fc">${zReadable}</b></div>` +
+    `<div>Khung xương CharInfo: <code>(${ciOff[1]}, -${ciOff[2]})</code> | <b>dx = ${slot[1]}, dy = ${slot[2]}</b></div>`;
+
+  const shared = getCfsUsingSlot(state.activePartType, piIdx);
+  document.getElementById('sharedCfNotice').innerHTML =
+    `Slot <b>${['Head','Body','Leg'][state.activePartType]}[${piIdx}]</b> dùng ở: <code>cf = ${shared.join(', ')}</code>`;
+}
+
+// ============================================================================
+// 7. DANH SÁCH SLOT & FILMSTRIP
+// ============================================================================
+function renderSlotList() {
+  const listEl = document.getElementById('slotList');
+  const pType = state.activePartType;
+  const titles = [
+    '2. Danh Sách Slot Của ĐẦU (Head — 3 Slot)',
+    '2. Danh Sách Slot Của THÂN (Body — 17 Slot)',
+    '2. Danh Sách Slot Của CHÂN (Leg — 14 Slot)'
+  ];
+  document.getElementById('rightPanelTitle').textContent = titles[pType];
+
+  const arr = getActivePartArray();
+  const activePi = getActiveCiIndexForCf(state.cf, pType);
+  listEl.innerHTML = '';
+
+  arr.forEach((slot, idx) => {
+    const cfs = getCfsUsingSlot(pType, idx);
+    const div = document.createElement('div');
+    div.className = 'slot-item' + (idx === activePi ? ' current-cf-slot' : '');
+
+    div.addEventListener('dragover', (ev) => { ev.preventDefault(); div.classList.add('drag-over-slot'); });
+    div.addEventListener('dragleave', () => div.classList.remove('drag-over-slot'));
+    div.addEventListener('drop', (ev) => {
+      ev.preventDefault();
+      div.classList.remove('drag-over-slot');
+      const file = ev.dataTransfer.files && ev.dataTransfer.files[0];
+      if (file) assignFileToSpecificSlot(pType, idx, file);
+    });
+
+    div.innerHTML = `
+      <div class="slot-idx" onclick="jumpToFirstCfOfSlot(${pType}, ${idx})" style="cursor:pointer;" title="Bấm để nhảy tới frame dùng slot này">
+        Slot<br><span style="font-size:14px;color:#38bdf8;">[${idx}]</span>
+      </div>
+      <div class="slot-preview" id="slotPrev_${pType}_${idx}" title="Bấm để chọn ảnh .JPG hoặc .PNG gắn vào Slot [${idx}]" onclick="triggerSingleSlotUpload(${pType}, ${idx})"></div>
+      <div class="slot-controls">
+        <div style="font-size:11px;font-weight:600;color:#e2e8f0;">${SLOT_DESCRIPTIONS[pType][idx] || ''}</div>
+        <div class="slot-inputs">
+          <span style="font-size:11px;color:var(--muted);">ID:</span>
+          <input type="number" class="icon-id-input" value="${slot[0]}" onchange="onSlotInputChange(${pType},${idx},0,this.value)">
+          <span style="font-size:11px;color:var(--muted);">dx:</span>
+          <input type="number" id="inpDx_${pType}_${idx}" value="${slot[1]}" onchange="onSlotInputChange(${pType},${idx},1,this.value)">
+          <span style="font-size:11px;color:var(--muted);">dy:</span>
+          <input type="number" id="inpDy_${pType}_${idx}" value="${slot[2]}" onchange="onSlotInputChange(${pType},${idx},2,this.value)">
+          <button style="padding:2px 6px;font-size:11px;" onclick="triggerSingleSlotUpload(${pType},${idx})">📂Ảnh</button>
+          <button style="padding:2px 5px;font-size:11px;" onclick="setSlot2955(${pType},${idx})" title="Ẩn slot [2955,0,0]">2955</button>
+        </div>
+        <div class="slot-cf-hint">Dùng ở cf: ${cfs.join(', ')}</div>
+      </div>
+    `;
+    listEl.appendChild(div);
+  });
+
+  updateSlotPreviews();
+}
+
+function updateSlotPreviews() {
+  const pType = state.activePartType;
+  const arr = getActivePartArray();
+  arr.forEach((slot, idx) => {
+    const box = document.getElementById(`slotPrev_${pType}_${idx}`);
+    if (!box) return;
+    box.innerHTML = '';
+    if (slot[0] === 2955) {
+      box.innerHTML = '<span style="font-size:10px;color:#f59e0b;">ẨN<br>2955</span>';
+      return;
+    }
+    const entry = getIconEntry(slot[0]);
+    if (entry.status === 'loaded' && entry.img) {
+      const im = document.createElement('img');
+      im.src = entry.previewUrl || entry.fileSrc || entry.img.src;
+      box.appendChild(im);
+    } else {
+      box.innerHTML = `<span style="font-size:10px;color:#94a3b8;">+JPG<br>#${slot[0]}</span>`;
+    }
+  });
+}
+
+function buildFilmstrip() {
+  const strip = document.getElementById('filmstrip');
+  strip.innerHTML = '';
+  for (let c = 0; c < CHAR_INFO.length; c++) {
+    const item = document.createElement('div');
+    item.className = 'frame-thumb' + (c === state.cf ? ' active' : '');
+    item.id = `thumbWrap_${c}`;
+    item.onclick = () => {
+      document.getElementById('animSelect').value = 'manual';
+      stopAnim();
+      state.cf = c;
+      syncWidthSliderWithActiveSlot();
+      renderAll();
+    };
+    const zTag = document.createElement('div');
+    zTag.className = 'thumb-z-tag';
+    zTag.id = `thumbZ_${c}`;
+    const cv = document.createElement('canvas');
+    cv.width = 68; cv.height = 72;
+    cv.id = `thumbCv_${c}`;
+    const lbl = document.createElement('span');
+    lbl.textContent = `cf=${c}`;
+    item.title = `cf=${c}: ${CF_NAMES[c]}`;
+    item.appendChild(zTag);
+    item.appendChild(cv);
+    item.appendChild(lbl);
+    strip.appendChild(item);
+  }
+  renderFilmstripThumbs();
+}
+
+function renderFilmstripThumbs() {
+  const curGrp = getActionGroupForCf(state.cf);
+  for (let c = 0; c < CHAR_INFO.length; c++) {
+    const cv = document.getElementById(`thumbCv_${c}`);
+    if (!cv) continue;
+    const tctx = cv.getContext('2d');
+    tctx.clearRect(0, 0, cv.width, cv.height);
+    tctx.save();
+    tctx.scale(0.31, 0.31);
+    drawCharacterAt(tctx, state, c, 108, 204, 1, 1.0, [true, true, true], null);
+    tctx.restore();
+
+    const zTag = document.getElementById(`thumbZ_${c}`);
+    if (zTag) zTag.textContent = formatZTag(state.layerOrders[c] || [2, 1, 0]);
+
+    const wrap = document.getElementById(`thumbWrap_${c}`);
+    if (wrap) {
+      wrap.classList.toggle('active', c === state.cf);
+      wrap.classList.toggle('in-group', c !== state.cf && curGrp.cfs.includes(c));
+    }
+  }
+}
+
+function renderAll() {
+  renderZOrderStackUI();
+  highlightActiveActionGroup();
+  drawStage();
+  renderSlotList();
+  renderFilmstripThumbs();
+}
+
+// ============================================================================
+// 8. TƯƠNG TÁC CHUỘT, PHÍM TẮT & NẠP ẢNH JPG/PNG
+// ============================================================================
+function setActivePart(pType) {
+  state.activePartType = pType;
+  document.getElementById('tabHead').className = 'part-tab' + (pType === 0 ? ' active-head' : '');
+  document.getElementById('tabBody').className = 'part-tab' + (pType === 1 ? ' active-body' : '');
+  document.getElementById('tabLeg').className  = 'part-tab' + (pType === 2 ? ' active-leg' : '');
+  syncWidthSliderWithActiveSlot();
+  renderZOrderStackUI();
+  renderSlotList();
+  drawStage();
+}
+
+function nudgeActive(ddx, ddy) {
+  saveHistory();
+  const pType = state.activePartType;
+  const piIdx = getActiveCiIndexForCf(state.cf, pType);
+  const arr = getActivePartArray();
+  arr[piIdx][1] = Math.max(-128, Math.min(127, arr[piIdx][1] + ddx));
+  arr[piIdx][2] = Math.max(-128, Math.min(127, arr[piIdx][2] + ddy));
+
+  const dxInp = document.getElementById(`inpDx_${pType}_${piIdx}`);
+  const dyInp = document.getElementById(`inpDy_${pType}_${piIdx}`);
+  if (dxInp) dxInp.value = arr[piIdx][1];
+  if (dyInp) dyInp.value = arr[piIdx][2];
+
+  drawStage();
+  renderFilmstripThumbs();
+}
+
+function centerActiveHorizontally() {
+  const pType = state.activePartType;
+  const ciOff = getActiveCiOffsetForCf(state.cf, pType);
+  const piIdx = ciOff[0];
+  const arr = getActivePartArray();
+  const entry = getIconEntry(arr[piIdx][0]);
+  if (entry.status !== 'loaded' || !entry.img) {
+    showToast("Slot này chưa có ảnh để căn giữa!");
+    return;
+  }
+  saveHistory();
+  const d = getImgDimensions(entry.img);
+  const wX1 = d.w / entry.zoom;
+  arr[piIdx][1] = Math.round(-wX1 / 2 - ciOff[1]);
+  renderAll();
+  showToast(`Đã căn giữa trục cx: dx = ${arr[piIdx][1]}`);
+}
+
+function setInvisible2955() {
+  const pType = state.activePartType;
+  const piIdx = getActiveCiIndexForCf(state.cf, pType);
+  setSlot2955(pType, piIdx);
+}
+
+function setSlot2955(pType, idx) {
+  saveHistory();
+  const target = pType === 0 ? state.head : (pType === 1 ? state.body : state.leg);
+  target[idx] = [2955, 0, 0];
+  renderAll();
+  showToast(`Đã đặt [2955, 0, 0] (ẩn bộ phận) cho ${['Head','Body','Leg'][pType]}[${idx}]`);
+}
+
+function onSlotInputChange(pType, idx, field, val) {
+  saveHistory();
+  const target = pType === 0 ? state.head : (pType === 1 ? state.body : state.leg);
+  let n = parseInt(val, 10) || 0;
+  if (field === 0) n = Math.max(0, Math.min(32767, n));
+  else n = Math.max(-128, Math.min(127, n));
+  target[idx][field] = n;
+  if (field === 0) getIconEntry(n);
+  renderAll();
+}
+
+function jumpToFirstCfOfSlot(pType, idx) {
+  const cfs = getCfsUsingSlot(pType, idx);
+  if (cfs.length) {
+    state.cf = cfs[0];
+    syncWidthSliderWithActiveSlot();
+    renderAll();
+  }
+}
+
+function stepCf(delta) {
+  document.getElementById('animSelect').value = 'manual';
+  stopAnim();
+  state.cf = (state.cf + delta + CHAR_INFO.length) % CHAR_INFO.length;
+  syncWidthSliderWithActiveSlot();
+  renderAll();
+}
+
+function toggleDir() {
+  state.cdir = -state.cdir;
+  document.getElementById('btnFlipDir').textContent =
+    state.cdir === 1 ? '➡️ Hướng chính: Quay Phải (cdir = 1)' : '⬅️ Hướng chính: Quay Trái (cdir = -1)';
+  drawStage();
+}
+
+let dragInfo = null;
+stageCanvas.addEventListener('mousedown', (e) => {
+  if (e.button !== 0) return;
+  const pType = state.activePartType;
+  const piIdx = getActiveCiIndexForCf(state.cf, pType);
+  const arr = getActivePartArray();
+  saveHistory();
+  dragInfo = { startX: e.clientX, startY: e.clientY, origDx: arr[piIdx][1], origDy: arr[piIdx][2], piIdx };
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (!dragInfo) return;
+  const pxPerX1 = 4 * state.stageZoom;
+  const ddx = Math.round(((e.clientX - dragInfo.startX) / pxPerX1) * (state.cdir === 1 ? 1 : -1));
+  const ddy = Math.round((e.clientY - dragInfo.startY) / pxPerX1);
+
+  const pType = state.activePartType;
+  const arr = getActivePartArray();
+  arr[dragInfo.piIdx][1] = Math.max(-128, Math.min(127, dragInfo.origDx + ddx));
+  arr[dragInfo.piIdx][2] = Math.max(-128, Math.min(127, dragInfo.origDy + ddy));
+
+  const dxInp = document.getElementById(`inpDx_${pType}_${dragInfo.piIdx}`);
+  const dyInp = document.getElementById(`inpDy_${pType}_${dragInfo.piIdx}`);
+  if (dxInp) dxInp.value = arr[dragInfo.piIdx][1];
+  if (dyInp) dyInp.value = arr[dragInfo.piIdx][2];
+
+  drawStage();
+});
+
+window.addEventListener('mouseup', () => {
+  if (dragInfo) { dragInfo = null; renderFilmstripThumbs(); }
+});
+
+const canvasContainer = document.getElementById('canvasContainer');
+canvasContainer.addEventListener('dragover', (e) => { e.preventDefault(); canvasContainer.classList.add('drag-over'); });
+canvasContainer.addEventListener('dragleave', () => canvasContainer.classList.remove('drag-over'));
+canvasContainer.addEventListener('drop', (e) => {
+  e.preventDefault();
+  canvasContainer.classList.remove('drag-over');
+  const files = Array.from(e.dataTransfer.files || []);
+  if (files.length) handleSmartFilesImport(files);
+});
+
+window.addEventListener('keydown', (e) => {
+  const tag = (e.target && e.target.tagName) || '';
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); return; }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); return; }
+
+  const step = e.shiftKey ? 5 : 1;
+  if (e.key === 'ArrowLeft')  { e.preventDefault(); nudgeActive(state.cdir === 1 ? -step : step, 0); }
+  if (e.key === 'ArrowRight') { e.preventDefault(); nudgeActive(state.cdir === 1 ? step : -step, 0); }
+  if (e.key === 'ArrowUp')    { e.preventDefault(); nudgeActive(0, -step); }
+  if (e.key === 'ArrowDown')  { e.preventDefault(); nudgeActive(0, step); }
+  if (e.key === '1') setActivePart(0);
+  if (e.key === '2') setActivePart(1);
+  if (e.key === '3') setActivePart(2);
+});
+
+function assignFileToSpecificSlot(pType, slotIdx, file) {
+  saveHistory();
+  const target = pType === 0 ? state.head : (pType === 1 ? state.body : state.leg);
+  let iconId = target[slotIdx][0];
+
+  if (iconId === 2955 || iconId <= 0) {
+    const base = state.partIds[0] === 2108 ? 27150 : 27110;
+    const offset = pType === 0 ? slotIdx : (pType === 1 ? 3 + slotIdx : 20 + slotIdx);
+    iconId = base + offset;
+    target[slotIdx][0] = iconId;
+  }
+
+  const exactNum = file.name.match(/^(\d+)\.(png|jpe?g|webp|bmp)$/i);
+  if (exactNum) {
+    const num = parseInt(exactNum[1], 10);
+    if (num > 0 && num <= 32767) {
+      iconId = num;
+      target[slotIdx][0] = iconId;
+    }
+  }
+
+  const cfs = getCfsUsingSlot(pType, slotIdx);
+  if (cfs.length && !cfs.includes(state.cf)) {
+    state.cf = cfs[0];
+  }
+  loadCustomImageFileIntoIcon(iconId, file, pType, true);
+}
+
+function triggerSingleSlotUpload(pType, idx) {
+  pendingSlotUpload = { pType, idx };
+  const inp = document.getElementById('singleSlotFileInput');
+  inp.value = '';
+  inp.click();
+}
+
+document.getElementById('singleSlotFileInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file || !pendingSlotUpload) return;
+  assignFileToSpecificSlot(pendingSlotUpload.pType, pendingSlotUpload.idx, file);
+});
+
+document.getElementById('btnImportCurrentSlot').addEventListener('click', () => {
+  const inp = document.getElementById('multiImgInput');
+  inp.value = '';
+  inp.click();
+});
+
+document.getElementById('multiImgInput').addEventListener('change', (e) => {
+  const files = Array.from(e.target.files || []);
+  if (files.length) handleSmartFilesImport(files);
+});
+
+function inferPartTypeFromIconId(id) {
+  if ((id >= 27110 && id <= 27112) || (id >= 27150 && id <= 27152) || id === 16947 || id === 16950) return 0;
+  if ((id >= 27128 && id <= 27138) || (id >= 27168 && id <= 27178) || (id >= 16963 && id <= 16975)) return 2;
+  return 1;
+}
+
+function handleSmartFilesImport(files) {
+  if (files.length === 1) {
+    const f = files[0];
+    const exactNum = f.name.match(/^(\d+)\.(png|jpe?g|webp|bmp)$/i);
+    if (exactNum) {
+      const id = parseInt(exactNum[1], 10);
+      if (id > 0 && id <= 32767) {
+        loadCustomImageFileIntoIcon(id, f, inferPartTypeFromIconId(id), true);
+        return;
+      }
+    }
+    const pType = state.activePartType;
+    const piIdx = getActiveCiIndexForCf(state.cf, pType);
+    assignFileToSpecificSlot(pType, piIdx, f);
+    return;
+  }
+
+  let byIdCount = 0;
+  const unnumbered = [];
+  files.forEach(f => {
+    const m = f.name.match(/^(\d+)\.(png|jpe?g|webp|bmp)$/i);
+    if (m) {
+      const id = parseInt(m[1], 10);
+      if (id > 0 && id <= 32767) {
+        loadCustomImageFileIntoIcon(id, f, inferPartTypeFromIconId(id), true);
+        byIdCount++;
+        return;
+      }
+    }
+    unnumbered.push(f);
+  });
+
+  if (unnumbered.length > 0 && byIdCount === 0) {
+    const pType = state.activePartType;
+    const piIdx = getActiveCiIndexForCf(state.cf, pType);
+    assignFileToSpecificSlot(pType, piIdx, unnumbered[0]);
+    showToast(`Đã nạp "${unnumbered[0].name}" vào ${['Head','Body','Leg'][pType]}[${piIdx}]! Bấm "📂Ảnh" ở từng dòng bên phải để nạp tiếp các file còn lại.`, 5000);
+  }
+}
+
+// ============================================================================
+// 9. ANIMATION, XUẤT SQL & XUẤT ẢNH BẢO TOÀN THỨ TỰ LỚP ĐÈ (Z-ORDER BAKING)
+// ============================================================================
+function stopAnim() {
+  if (animTimer) { clearInterval(animTimer); animTimer = null; }
+}
+
+function restartAnimIfNeeded() {
+  stopAnim();
+  const mode = document.getElementById('animSelect').value;
+  if (mode === 'manual') return;
+  const seq = (mode === 'current_group')
+    ? getActionGroupForCf(state.cf).cfs
+    : (ANIM_SEQUENCES[mode] || [0]);
+  const fps = Number(document.getElementById('fpsRange').value) || 7;
+  animTick = 0;
+  animTimer = setInterval(() => {
+    state.cf = seq[animTick % seq.length];
+    animTick++;
+    renderZOrderStackUI();
+    highlightActiveActionGroup();
+    drawStage();
+    document.querySelectorAll('.frame-thumb').forEach((el, i) => el.classList.toggle('active', i === state.cf));
+  }, Math.round(1000 / fps));
+}
+
+document.getElementById('animSelect').addEventListener('change', restartAnimIfNeeded);
+document.getElementById('fpsRange').addEventListener('input', (e) => {
+  document.getElementById('fpsLabel').textContent = `${e.target.value}fps`;
+  restartAnimIfNeeded();
+});
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function refreshExportSql() {
+  const hId = Number(document.getElementById('sqlHeadId').value) || 2105;
+  const bId = Number(document.getElementById('sqlBodyId').value) || 2106;
+  const lId = Number(document.getElementById('sqlLegId').value) || 2107;
+
+  const sql = [
+    `-- Cập nhật tọa độ nhân vật xuất từ NRO Part Editor Studio`,
+    `INSERT INTO \`part\` (\`id\`, \`TYPE\`, \`DATA\`) VALUES`,
+    `  (${hId}, 0, '${JSON.stringify(state.head)}'),`,
+    `  (${bId}, 1, '${JSON.stringify(state.body)}'),`,
+    `  (${lId}, 2, '${JSON.stringify(state.leg)}')`,
+    `ON DUPLICATE KEY UPDATE`,
+    `  \`TYPE\` = VALUES(\`TYPE\`),`,
+    `  \`DATA\` = VALUES(\`DATA\`);`,
+    ``
+  ].join('\n');
+
+  document.getElementById('sqlOutputBox').value = sql;
+}
+
+document.getElementById('btnOpenExportSql').addEventListener('click', () => {
+  document.getElementById('sqlHeadId').value = state.partIds[0];
+  document.getElementById('sqlBodyId').value = state.partIds[1];
+  document.getElementById('sqlLegId').value  = state.partIds[2];
+  refreshExportSql();
+  openModal('exportModal');
+});
+
+function copySql() {
+  navigator.clipboard.writeText(document.getElementById('sqlOutputBox').value);
+  showToast("Đã copy lệnh SQL vào Clipboard!");
+}
+
+function downloadSqlFile() {
+  refreshExportSql();
+  const blob = new Blob([document.getElementById('sqlOutputBox').value], { type: 'text/sql;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'custom_part.sql';
+  a.click();
+  showToast("Đã tải file custom_part.sql!");
+}
+
+document.getElementById('btnOpenImportJson').addEventListener('click', () => {
+  document.getElementById('impHeadBox').value = JSON.stringify(state.head);
+  document.getElementById('impBodyBox').value = JSON.stringify(state.body);
+  document.getElementById('impLegBox').value  = JSON.stringify(state.leg);
+  openModal('importModal');
+});
+
+function normalizePartArray(raw, expectedLen) {
+  const parsed = JSON.parse(raw.trim());
+  if (!Array.isArray(parsed) || parsed.length !== expectedLen) {
+    throw new Error(`Cần đúng ${expectedLen} phần tử, nhưng dữ liệu nhập có ${Array.isArray(parsed) ? parsed.length : 0}`);
+  }
+  return parsed.map(item => [Number(item[0]) || 0, Number(item[1]) || 0, Number(item[2]) || 0]);
+}
+
+function applyImportedJson() {
+  try {
+    const h = normalizePartArray(document.getElementById('impHeadBox').value, 3);
+    const b = normalizePartArray(document.getElementById('impBodyBox').value, 17);
+    const l = normalizePartArray(document.getElementById('impLegBox').value, 14);
+    saveHistory();
+    state.head = h; state.body = b; state.leg = l;
+    preloadPresetIcons(state);
+    closeModal('importModal');
+    renderAll();
+    showToast("Đã nạp JSON thành công!");
+  } catch (err) {
+    alert("Lỗi định dạng JSON: " + err.message);
+  }
+}
+
+document.getElementById('btnOpenResizer').addEventListener('click', () => {
+  const customIds = [];
+  iconCache.forEach((v, k) => { if (v.isCustom) customIds.push(k); });
+  document.getElementById('resizerLog').textContent =
+    `Sẵn sàng xuất bộ icon cho Part [${state.partIds.join(', ')}]` +
+    (customIds.length ? ` (Có ${customIds.length} ảnh mới nạp: ${customIds.join(', ')}).` : `.`) +
+    `\nBấm nút màu xanh lá ở Cách 1 và chọn thư mục "NgocRongNewGen_Server/data/icon"!`;
+  openModal('resizerModal');
+});
+
+function canvasToPngBlob(cv) {
+  return new Promise(resolve => cv.toBlob(resolve, 'image/png'));
+}
+
+async function writeCanvasTo4Zooms(subDirs, pngFileName, cv4) {
+  const w4 = cv4.width;
+  const h4 = cv4.height;
+  for (const z of [4, 3, 2, 1]) {
+    const tw = Math.max(1, Math.round((w4 * z) / 4));
+    const th = Math.max(1, Math.round((h4 * z) / 4));
+    const cv = document.createElement('canvas');
+    cv.width = tw; cv.height = th;
+    const c = cv.getContext('2d');
+    c.imageSmoothingEnabled = true;
+    c.imageSmoothingQuality = 'high';
+    c.drawImage(cv4, 0, 0, tw, th);
+
+    const blob = await canvasToPngBlob(cv);
+    const fh = await subDirs[z].getFileHandle(pngFileName, { create: true });
+    const writable = await fh.createWritable();
+    await writable.write(blob);
+    await writable.close();
+  }
+}
+
+// Đọc sạch Canvas x4 không bị lỗi CORS taint từ bộ nhớ hoặc từ thư mục data/icon được cấp quyền
+async function loadCleanX4CanvasForIcon(iconId, subDirs) {
+  if (!iconId || iconId === 2955) return null;
+  const entry = iconCache.get(iconId);
+  if (entry && entry.isCleanOrigin && entry.img) {
+    const d = getImgDimensions(entry.img);
+    const cv = document.createElement('canvas');
+    cv.width = Math.ceil(d.w / 4) * 4;
+    cv.height = Math.ceil(d.h / 4) * 4;
+    cv.getContext('2d').drawImage(entry.img, 0, 0);
+    return cv;
+  }
+  // Đọc trực tiếp từ thư mục data/icon/x4..x1 mà người dùng vừa chọn
+  for (const z of [4, 3, 2, 1]) {
+    try {
+      const fh = await subDirs[z].getFileHandle(`${iconId}.png`);
+      const file = await fh.getFile();
+      const bmp = await createImageBitmap(file);
+      const scale = 4 / z;
+      const w4 = Math.ceil((bmp.width * scale) / 4) * 4;
+      const h4 = Math.ceil((bmp.height * scale) / 4) * 4;
+      const cv = document.createElement('canvas');
+      cv.width = w4; cv.height = h4;
+      const ctx = cv.getContext('2d');
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(bmp, 0, 0, w4, h4);
+      return cv;
+    } catch (_) {}
+  }
+  return null;
+}
+
+// Engine gốc NgocRongNewGen.exe vẽ theo thứ tự: Head(0)=rank 0 -> Leg(2)=rank 1 -> Body(1)=rank 2.
+// Nếu ở frame cf người dùng xếp bộ phận U đè lên bộ phận T nhưng Engine lại vẽ T đè lên U,
+// hàm này tự động cắt phần alpha giao nhau của U ra khỏi T để vào Game hiển thị đúng 100% ý người dùng!
+const ENGINE_RANK = { 0: 0, 2: 1, 1: 2 };
+
+async function resolveIconRootDir(pickedDir) {
+  // Nếu người dùng chọn nhầm thư mục gốc d:\nro hoặc NgocRongNewGen_Server hoặc data, tự động đi sâu vào data/icon!
+  let cur = pickedDir;
+  try { cur = await cur.getDirectoryHandle('NgocRongNewGen_Server'); } catch (_) {}
+  try { cur = await cur.getDirectoryHandle('data'); } catch (_) {}
+  try { cur = await cur.getDirectoryHandle('icon'); } catch (_) {}
+  return cur;
+}
+
+async function exportWorkspaceCustomIconsToServer() {
+  if (!window.showDirectoryPicker) {
+    alert("Hãy mở công cụ bằng Google Chrome hoặc Microsoft Edge để ghi thẳng vào thư mục data/icon!");
+    return;
+  }
+
+  try {
+    const pickedDir = await window.showDirectoryPicker({ mode: 'readwrite' });
+    const rootDir = await resolveIconRootDir(pickedDir);
+    const subDirs = {};
+    for (const z of [1, 2, 3, 4]) {
+      subDirs[z] = await rootDir.getDirectoryHandle(`x${z}`, { create: true });
+    }
+
+    const bakeZ = document.getElementById('chkBakeZOrderCutout').checked;
+    const cleanCanvases = new Map();
+    const getClean = async (id) => {
+      if (cleanCanvases.has(id)) return cleanCanvases.get(id);
+      const cv = await loadCleanX4CanvasForIcon(id, subDirs);
+      cleanCanvases.set(id, cv);
+      return cv;
+    };
+
+    const exportedIds = new Set();
+    const report = [`Đang xử lý & ghi bộ ảnh PNG vào "${rootDir.name}/x1..x4"...`];
+
+    // Duyệt qua tất cả các Slot của Head(0), Leg(2), Body(1)
+    const allPartArrays = [
+      { pType: 0, arr: state.head },
+      { pType: 2, arr: state.leg },
+      { pType: 1, arr: state.body }
+    ];
+
+    for (const { pType, arr } of allPartArrays) {
+      for (let sIdx = 0; sIdx < arr.length; sIdx++) {
+        const [targetId, targetDx, targetDy] = arr[sIdx];
+        if (!targetId || targetId === 2955 || exportedIds.has(targetId)) continue;
+
+        const baseCv = await getClean(targetId);
+        if (!baseCv) continue;
+
+        const entry = iconCache.get(targetId);
+        let needsWrite = Boolean(entry && entry.isCustom);
+
+        // Bản sao để cắt khớp Z-Order nếu cần
+        const outCv = document.createElement('canvas');
+        outCv.width = baseCv.width;
+        outCv.height = baseCv.height;
+        const octx = outCv.getContext('2d');
+        octx.drawImage(baseCv, 0, 0);
+
+        if (bakeZ && ENGINE_RANK[pType] > 0) {
+          // Lấy frame chính đầu tiên (ưu tiên 0..25) sử dụng slot này
+          const cfs = getCfsUsingSlot(pType, sIdx);
+          const primaryCf = cfs.find(c => c <= 25) ?? cfs[0];
+          if (primaryCf !== undefined) {
+            const userOrder = state.layerOrders[primaryCf] || [2, 1, 0];
+            const ciTarget = getActiveCiOffsetForCf(primaryCf, pType);
+            const targetX4 = (ciTarget[1] + targetDx) * 4;
+            const targetY4 = (-ciTarget[2] + targetDy) * 4;
+
+            for (const upperType of [0, 2, 1]) {
+              if (upperType === pType) continue;
+              const userWantsUpperAbove = userOrder.indexOf(upperType) > userOrder.indexOf(pType);
+              const engineDrawsTargetAbove = ENGINE_RANK[pType] > ENGINE_RANK[upperType];
+
+              if (userWantsUpperAbove && engineDrawsTargetAbove) {
+                const { arr: uArr, ciEntry: ciUpper } = getPartLookupForCf(state, primaryCf, upperType);
+                const [uId, uDx, uDy] = uArr[ciUpper[0]] || [0, 0, 0];
+                const uCv = await getClean(uId);
+                if (uCv) {
+                  const relX = (ciUpper[1] + uDx) * 4 - targetX4;
+                  const relY = (-ciUpper[2] + uDy) * 4 - targetY4;
+                  // Kiểm tra có giao nhau thực sự không
+                  if (relX < outCv.width && relX + uCv.width > 0 && relY < outCv.height && relY + uCv.height > 0) {
+                    octx.save();
+                    octx.globalCompositeOperation = 'destination-out';
+                    octx.drawImage(uCv, relX, relY);
+                    octx.restore();
+                    needsWrite = true;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        if (needsWrite) {
+          await writeCanvasTo4Zooms(subDirs, `${targetId}.png`, outCv);
+          exportedIds.add(targetId);
+          report.push(`✅ ${targetId}.png (${PART_META[pType].code}[${sIdx}]): x4(${outCv.width}×${outCv.height}) → x1(${outCv.width/4}×${outCv.height/4})`);
+        }
+      }
+    }
+
+    // Xuất thêm các icon mới trong bộ nhớ chưa gắn vào slot hiện tại (nếu có)
+    for (const [id, entry] of iconCache.entries()) {
+      if (entry.isCustom && !exportedIds.has(id)) {
+        const cv = await getClean(id);
+        if (cv) {
+          await writeCanvasTo4Zooms(subDirs, `${id}.png`, cv);
+          exportedIds.add(id);
+          report.push(`✅ ${id}.png: x4(${cv.width}×${cv.height}) → x1(${cv.width/4}×${cv.height/4})`);
+        }
+      }
+    }
+
+    // Tự tạo Avatar 27139.png (hoặc 27179.png) từ Head[0]
+    if (document.getElementById('chkAutoAvatar27139').checked) {
+      const head0Id = state.head[0][0];
+      const head0Entry = iconCache.get(head0Id);
+      if (head0Entry && head0Entry.isCustom) {
+        const avId = state.partIds[0] === 2108 ? 27179 : 27139;
+        const cvAv = await getClean(head0Id);
+        if (cvAv) {
+          await writeCanvasTo4Zooms(subDirs, `${avId}.png`, cvAv);
+          report.push(`✅ ${avId}.png (Avatar góc màn hình): Tự tạo từ Head[0] (${head0Id}.png)`);
+        }
+      }
+    }
+
+    if (exportedIds.size === 0) {
+      report.push(`ℹ️ Chưa phát hiện ảnh mới hoặc thay đổi thứ tự đè nào cần ghi lại.`);
+    }
+    document.getElementById('resizerLog').textContent = report.join('\n');
+    showToast(`🎉 Đã xuất ${exportedIds.size} bộ icon chuẩn PNG x4..x1 đúng theo Thứ tự lớp của bạn!`);
+  } catch (err) {
+    if (err.name !== 'AbortError') alert("Lỗi khi ghi file: " + err.message);
+  }
+}
+
+async function exportSelectedFilesToIconFolders() {
+  const files = Array.from(document.getElementById('resizerFilesInput').files || []);
+  if (!files.length) { alert("Hãy chọn file ảnh (.jpg hoặc .png) trước!"); return; }
+  if (!window.showDirectoryPicker) { alert("Hãy mở bằng Chrome hoặc Edge!"); return; }
+
+  try {
+    const rootDir = await window.showDirectoryPicker({ mode: 'readwrite' });
+    const subDirs = {};
+    for (const z of [1, 2, 3, 4]) subDirs[z] = await rootDir.getDirectoryHandle(`x${z}`, { create: true });
+
+    const removeBg = document.getElementById('chkBatchRemoveBg').checked;
+    const autoPad = document.getElementById('chkAutoPad4').checked;
+    const report = [`Đang chuyển đổi ${files.length} file sang PNG x1..x4...`];
+
+    for (const f of files) {
+      const bmp = await createImageBitmap(f);
+      let srcCv;
+      if (removeBg) {
+        srcCv = removeWhiteBgAndCrop(bmp, 'bg_and_aura');
+      } else {
+        srcCv = document.createElement('canvas');
+        srcCv.width = bmp.width; srcCv.height = bmp.height;
+        srcCv.getContext('2d').drawImage(bmp, 0, 0);
+      }
+
+      let cv4;
+      if (srcCv.width > 240 || srcCv.height > 240) {
+        cv4 = downscaleAndPad4(srcCv, 120);
+      } else {
+        const w4 = autoPad ? Math.ceil(srcCv.width / 4) * 4 : srcCv.width;
+        const h4 = autoPad ? Math.ceil(srcCv.height / 4) * 4 : srcCv.height;
+        cv4 = document.createElement('canvas');
+        cv4.width = w4; cv4.height = h4;
+        cv4.getContext('2d').drawImage(srcCv, Math.floor((w4 - srcCv.width) / 2), h4 - srcCv.height);
+      }
+
+      const baseName = f.name.replace(/\.(png|jpe?g|webp|bmp)$/i, '') + '.png';
+      await writeCanvasTo4Zooms(subDirs, baseName, cv4);
+      report.push(`✅ ${f.name} → ${baseName}: x4(${cv4.width}×${cv4.height}) → x1(${cv4.width/4}×${cv4.height/4})`);
+    }
+
+    document.getElementById('resizerLog').textContent = report.join('\n');
+    showToast(`🎉 Đã xuất ${files.length} file sang PNG chuẩn x1..x4!`);
+  } catch (err) {
+    if (err.name !== 'AbortError') alert("Lỗi: " + err.message);
+  }
+}
+
+// ============================================================================
+// 10. KHỞI TẠO
+// ============================================================================
+document.getElementById('presetSelect').addEventListener('change', (e) => {
+  const p = PRESETS[e.target.value];
+  if (!p) return;
+  saveHistory();
+  state.partIds = [...p.ids];
+  state.head = JSON.parse(JSON.stringify(p.head));
+  state.body = JSON.parse(JSON.stringify(p.body));
+  state.leg  = JSON.parse(JSON.stringify(p.leg));
+  preloadPresetIcons(p);
+  syncWidthSliderWithActiveSlot();
+  renderAll();
+  showToast(`Đã chuyển sang mẫu: ${e.target.options[e.target.selectedIndex].text}`);
+});
+
+document.getElementById('onionSelect').addEventListener('change', (e) => {
+  const p = PRESETS[e.target.value];
+  if (p) preloadPresetIcons(p);
+  drawStage();
+});
+document.getElementById('onionAlpha').addEventListener('input', drawStage);
+document.getElementById('canvasZoomSelect').addEventListener('change', (e) => {
+  state.stageZoom = parseFloat(e.target.value) || 1.5;
+  drawStage();
+});
+['chkGuides', 'chkBbox', 'chkDualMirror', 'chkShowHead', 'chkShowBody', 'chkShowLeg'].forEach(id => {
+  document.getElementById(id).addEventListener('change', drawStage);
+});
+window.addEventListener('resize', drawStage);
+
+preloadPresetIcons(PRESETS.ui_vt13);
+preloadPresetIcons(PRESETS.teamobi_ui);
+preloadPresetIcons(PRESETS.goku_base);
+buildActionGroupsBar();
+buildFilmstrip();
+renderAll();
+</script>
+</body>
+</html>
