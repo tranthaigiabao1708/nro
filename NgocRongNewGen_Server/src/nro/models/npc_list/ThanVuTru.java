@@ -157,6 +157,14 @@ public class ThanVuTru extends Npc {
                                         "Gia nhập bang hội trên 1 ngày mới được tham gia");
                                 return;
                             }
+                            boolean sameActiveSession = player.clan.ConDuongRanDoc != null
+                                    && player.lastTimeJoinCDRD == player.clan.lastTimeOpenConDuongRanDoc;
+                            if (!sameActiveSession && player.lastTimeJoinCDRD > 0
+                                    && !nro.models.utils.Util.isAfterMidnight(player.lastTimeJoinCDRD)) {
+                                NpcService.gI().createTutorial(player, tempId, this.avartar,
+                                        "Mỗi ngày mỗi thành viên trong bang chỉ được đi Con Đường Rắn Độc 1 lần!\nHãy quay lại vào ngày mai.");
+                                return;
+                            }
                             if (player.clan.ConDuongRanDoc == null) {
                                 Input.gI().createFormChooseLevelCDRD(player);
                             } else {

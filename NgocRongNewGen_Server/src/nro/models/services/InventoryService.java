@@ -306,24 +306,63 @@ public class InventoryService {
         //**********************************************************************
     }
 
+    private boolean isLockedGoldBar(Item item) {
+        if (item == null || !item.isNotNullItem()) {
+            return false;
+        }
+        if (item.template.id == 1535) {
+            return true;
+        }
+        if (item.template.id != 457 || item.itemOptions == null) {
+            return false;
+        }
+        for (ItemOption io : item.itemOptions) {
+            if (io != null && io.optionTemplate != null && io.optionTemplate.id == 30) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int getBagSortPriority(Item item) {
+        if (item == null || !item.isNotNullItem() || item.template == null) {
+            return 999;
+        }
+        int id = item.template.id;
+        // Slot đầu tiên: Capsule đặc biệt (194) và các loại Bông tai Porata (454, 921, 1819)
+        if (id == 194) {
+            return 0;
+        }
+        if (id == 454 || id == 921 || id == 1819) {
+            return 1;
+        }
+        // Tiếp theo: Thỏi vàng thường (không khóa) -> Thỏi vàng khóa (option 30 / id 1535)
+        if (id == 457) {
+            return isLockedGoldBar(item) ? 3 : 2;
+        }
+        if (id == 1535) {
+            return 3;
+        }
+        return 4;
+    }
+
     public void sortItems(List<Item> list) {
-        for (int i = 0; i < list.size() - 1; i++) {
-            Item current = list.get(i);
-            if (current == null || !current.isNotNullItem()) {
-                int indexSwap = -1;
-                for (int j = i + 1; j < list.size(); j++) {
-                    Item candidate = list.get(j);
-                    if (candidate != null && candidate.isNotNullItem()) {
-                        indexSwap = j;
-                        break;
-                    }
-                }
-                if (indexSwap != -1) {
-                    list.set(i, list.get(indexSwap));
-                    list.set(indexSwap, ItemService.gI().createItemNull());
-                } else {
-                    break;
-                }
+        if (list == null || list.isEmpty()) {
+            return;
+        }
+        int totalSlots = list.size();
+        List<Item> validItems = new ArrayList<>(totalSlots);
+        for (Item item : list) {
+            if (item != null && item.isNotNullItem()) {
+                validItems.add(item);
+            }
+        }
+        validItems.sort((a, b) -> Integer.compare(getBagSortPriority(a), getBagSortPriority(b)));
+        for (int i = 0; i < totalSlots; i++) {
+            if (i < validItems.size()) {
+                list.set(i, validItems.get(i));
+            } else {
+                list.set(i, ItemService.gI().createItemNull());
             }
         }
     }
@@ -500,6 +539,9 @@ public class InventoryService {
         Item item = player.inventory.itemsBag.get(index);
         if (item.isNotNullItem()) {
             player.inventory.itemsBag.set(index, putItemBody(player, item));
+            if (player.setClothes != null) {
+                player.setClothes.setup();
+            }
             sendItemBags(player);
             sendItemBody(player);
             if (player.zone != null) {
@@ -526,6 +568,9 @@ public class InventoryService {
                 }
             }
             player.inventory.itemsBody.set(index, putItemBag(player, item));
+            if (player.setClothes != null) {
+                player.setClothes.setup();
+            }
             sendItemBags(player);
             sendItemBody(player);
             if (player.zone != null) {
@@ -540,20 +585,34 @@ public class InventoryService {
 
     public void itemBagToPetBody(Player player, int index) {
         try {
+            if (player != null && player.inventory != null && index >= 0 && index < player.inventory.itemsBag.size()) {
+                Item checkItem = player.inventory.itemsBag.get(index);
+                if (checkItem.isNotNullItem() && (checkItem.template.id == 727 || checkItem.template.id == 728)) {
+                    nro.models.services_func.UseItem.gI().useSieuThanThuyForPet(player, checkItem);
+                    return;
+                }
+            }
             if (player.pet != null && player.pet.nPoint.power >= 1500000) {
                 Item item = player.inventory.itemsBag.get(index);
                 if (item.isNotNullItem()) {
                     Item itemSwap = putItemBody(player.pet, item);
                     player.inventory.itemsBag.set(index, itemSwap);
+                    if (player.pet.setClothes != null) {
+                        player.pet.setClothes.setup();
+                    }
                     sendItemBags(player);
                     sendItemBody(player);
                     if (!itemSwap.equals(item)) {
                         Service.gI().point(player);
                         Service.gI().showInfoPet(player);
                     }
+                    if (player.pet.zone != null) {
+                        player.pet.zone.load_Me_To_Another(player.pet);
+                    }
                     Service.gI().Send_Caitrang(player.pet);
                     Service.gI().Send_Caitrang(player);
                     Service.gI().sendFlagBag(player.pet);
+                    RadarService.gI().sendAura(player.pet, player.pet.getAura(), player.pet.getEffFront());
                 }
             } else {
                 Service.gI().sendThongBao(player, "Đệ tử phải đạt 1tr5 sức mạnh mới có thể mặc");
@@ -567,13 +626,20 @@ public class InventoryService {
         Item item = player.pet.inventory.itemsBody.get(index);
         if (item.isNotNullItem()) {
             player.pet.inventory.itemsBody.set(index, putItemBag(player, item));
+            if (player.pet.setClothes != null) {
+                player.pet.setClothes.setup();
+            }
             sendItemBags(player);
             sendItemBody(player);
             Service.gI().point(player);
+            if (player.pet.zone != null) {
+                player.pet.zone.load_Me_To_Another(player.pet);
+            }
             Service.gI().Send_Caitrang(player.pet);
             Service.gI().Send_Caitrang(player);
             Service.gI().sendFlagBag(player.pet);
             Service.gI().showInfoPet(player);
+            RadarService.gI().sendAura(player.pet, player.pet.getAura(), player.pet.getEffFront());
         }
     }
 
@@ -606,9 +672,18 @@ public class InventoryService {
                             player.inventory.itemsBox.set(index, itemBody);
                             done = true;
 
+                            if (player.setClothes != null) {
+                                player.setClothes.setup();
+                            }
                             sendItemBody(player);
-                            Service.gI().point(player);
+                            sendItemBox(player);
+                            if (player.zone != null) {
+                                player.zone.load_Me_To_Another(player);
+                            }
                             Service.gI().Send_Caitrang(player);
+                            Service.gI().sendFlagBag(player);
+                            Service.gI().point(player);
+                            RadarService.gI().sendAura(player, player.getAura(), player.getEffFront());
                         }
                     }
                 }
@@ -621,6 +696,7 @@ public class InventoryService {
                         player.inventory.itemsBox.set(index, sItem);
                     }
                     sendItemBags(player);
+                    sendItemBox(player);
                 }
             }
         }
@@ -653,15 +729,24 @@ public class InventoryService {
     }
 
     public void itemBodyToBox(Player player, int index) {
-        if (index < 0 || index >= player.inventory.itemsBody.size()) {
+        if (index >= 0 && index < player.inventory.itemsBody.size()) {
             Item item = player.inventory.itemsBody.get(index);
             if (item.isNotNullItem()) {
                 player.inventory.itemsBody.set(index, putItemBox(player, item));
+                if (player.setClothes != null) {
+                    player.setClothes.setup();
+                }
                 sortItems(player.inventory.itemsBag);
+                sendItemBags(player);
                 sendItemBody(player);
                 sendItemBox(player);
-                Service.gI().point(player);
+                if (player.zone != null) {
+                    player.zone.load_Me_To_Another(player);
+                }
                 Service.gI().Send_Caitrang(player);
+                Service.gI().sendFlagBag(player);
+                Service.gI().point(player);
+                RadarService.gI().sendAura(player, player.getAura(), player.getEffFront());
             }
         }
     }
@@ -929,15 +1014,49 @@ public class InventoryService {
 
         int[] idParam = isItemIncrementalOption(itemAdd);
         if (idParam[0] != -1) {
+            int addAmount = (idParam[0] == 31) ? Math.max(itemAdd.quantity, idParam[1]) : idParam[1];
             for (Item it : items) {
-                if (it.isNotNullItem() && it.template.id == itemAdd.template.id) {
-                    for (Item.ItemOption io : it.itemOptions) {
-                        if (io.optionTemplate.id == idParam[0]) {
-                            io.param += idParam[1];
+                if (it != null && it.isNotNullItem() && it.template.id == itemAdd.template.id) {
+                    Item.ItemOption targetOpt = null;
+                    if (it.itemOptions != null) {
+                        for (Item.ItemOption io : it.itemOptions) {
+                            if (io != null && io.optionTemplate != null && io.optionTemplate.id == idParam[0]) {
+                                targetOpt = io;
+                                break;
+                            }
                         }
                     }
-                    itemAdd.quantity = 0;
-                    return true;
+                    if (targetOpt != null) {
+                        if (idParam[0] == 31 && it.quantity > targetOpt.param) {
+                            targetOpt.param = it.quantity;
+                            it.quantity = 1;
+                        }
+                        targetOpt.param += addAmount;
+                        itemAdd.quantity = 0;
+                        return true;
+                    } else if (idParam[0] == 31 && it.quantity < 99999) {
+                        int canAdd = 99999 - it.quantity;
+                        if (addAmount <= canAdd) {
+                            it.quantity += addAmount;
+                            itemAdd.quantity = 0;
+                            return true;
+                        } else {
+                            it.quantity = 99999;
+                            addAmount -= canAdd;
+                            for (Item.ItemOption io : itemAdd.itemOptions) {
+                                if (io != null && io.optionTemplate != null && io.optionTemplate.id == 31) {
+                                    io.param = addAmount;
+                                }
+                            }
+                            itemAdd.quantity = 1;
+                        }
+                    }
+                }
+            }
+            if (idParam[0] == 31 && itemAdd.quantity > idParam[1]) {
+                itemAdd.itemOptions.removeIf(io -> io != null && io.optionTemplate != null && io.optionTemplate.id == 31);
+                if (itemAdd.itemOptions.isEmpty()) {
+                    itemAdd.itemOptions.add(new Item.ItemOption(73, 0));
                 }
             }
         }
@@ -1079,11 +1198,78 @@ public class InventoryService {
         return true;
     }
 
+    private int getEffectiveCountOpt31(Item it) {
+        if (it == null || !it.isNotNullItem()) {
+            return 0;
+        }
+        int optParam = 0;
+        if (it.itemOptions != null) {
+            for (ItemOption iop : it.itemOptions) {
+                if (iop != null && iop.optionTemplate != null && iop.optionTemplate.id == 31) {
+                    optParam = Math.max(optParam, iop.param);
+                }
+            }
+        }
+        return Math.max(Math.max(0, it.quantity), optParam);
+    }
+
+    private int deductItemCountOpt31(Player player, Item it, int remaining) {
+        if (remaining <= 0 || it == null || !it.isNotNullItem()) {
+            return remaining;
+        }
+        int avail = getEffectiveCountOpt31(it);
+        if (avail <= 0) {
+            return remaining;
+        }
+        ItemOption op31 = null;
+        if (it.itemOptions != null) {
+            for (ItemOption op : it.itemOptions) {
+                if (op != null && op.optionTemplate != null && op.optionTemplate.id == 31) {
+                    op31 = op;
+                    break;
+                }
+            }
+        }
+        int deduct = Math.min(remaining, avail);
+        int left = avail - deduct;
+        remaining -= deduct;
+        if (left <= 0) {
+            removeItem(player.inventory.itemsBag, it);
+        } else if (op31 != null && it.quantity <= 1) {
+            op31.param = left;
+            it.quantity = 1;
+        } else {
+            it.quantity = left;
+            if (op31 != null && it.itemOptions != null) {
+                it.itemOptions.removeIf(o -> o != null && o.optionTemplate != null && o.optionTemplate.id == 31);
+                if (it.itemOptions.isEmpty()) {
+                    it.itemOptions.add(new ItemOption(73, 0));
+                }
+            }
+        }
+        return remaining;
+    }
+
     public int getParam(Player player, int idoption, int itemID) {
+        if (player == null || player.inventory == null || player.inventory.itemsBag == null) {
+            return 0;
+        }
+        if (idoption == 31) {
+            long total = 0;
+            for (Item it : player.inventory.itemsBag) {
+                if (it != null && it.isNotNullItem() && it.template != null && it.template.id == itemID) {
+                    total += getEffectiveCountOpt31(it);
+                    if (total >= Integer.MAX_VALUE) {
+                        return Integer.MAX_VALUE;
+                    }
+                }
+            }
+            return (int) total;
+        }
         for (Item it : player.inventory.itemsBag) {
             if (it != null && it.itemOptions != null && it.isNotNullItem() && it.template.id == itemID) {
                 for (ItemOption iop : it.itemOptions) {
-                    if (iop.optionTemplate.id == idoption) {
+                    if (iop != null && iop.optionTemplate != null && iop.optionTemplate.id == idoption) {
                         return iop.param;
                     }
                 }
@@ -1093,9 +1279,33 @@ public class InventoryService {
     }
 
     public void subParamItemsBag(Player player, int itemID, int idoption, int param) {
+        if (player == null || player.inventory == null || player.inventory.itemsBag == null || param <= 0) {
+            return;
+        }
+        if (idoption == 31) {
+            int remaining = param;
+            if (player.combineNew != null && player.combineNew.itemsCombine != null) {
+                for (Item combIt : new ArrayList<>(player.combineNew.itemsCombine)) {
+                    if (remaining <= 0) {
+                        break;
+                    }
+                    if (combIt != null && combIt.isNotNullItem() && combIt.template != null && combIt.template.id == itemID
+                            && player.inventory.itemsBag.contains(combIt)) {
+                        remaining = deductItemCountOpt31(player, combIt, remaining);
+                    }
+                }
+            }
+            for (int i = 0; i < player.inventory.itemsBag.size() && remaining > 0; i++) {
+                Item it = player.inventory.itemsBag.get(i);
+                if (it != null && it.isNotNullItem() && it.template != null && it.template.id == itemID) {
+                    remaining = deductItemCountOpt31(player, it, remaining);
+                }
+            }
+            return;
+        }
         Item itemRemove = null;
         for (Item it : player.inventory.itemsBag) {
-            if (it != null && it.template.id == itemID) {
+            if (it != null && it.isNotNullItem() && it.template.id == itemID) {
                 for (ItemOption op : it.itemOptions) {
                     if (op != null && op.optionTemplate.id == idoption) {
                         op.param -= param;

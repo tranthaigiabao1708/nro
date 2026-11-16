@@ -35,14 +35,20 @@ public class Baby extends Boss {
     public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack
     ) {
         if (!this.isDie()) {
+            if (damage <= 0) {
+                return 0;
+            }
             if (!piercing && Util.isTrue(this.nPoint.tlNeDon, 1000)) {
                 this.chat("Xí hụt");
                 return 0;
             }
-
-            damage = (long) (damage * 0.7);
-
-            damage = this.nPoint.subDameInjureWithDeff(damage / 2);
+            if (plAtt != null && plAtt.idNRNM != -1) {
+                return 1;
+            }
+            if (!piercing) {
+                damage = this.nPoint.subDameInjureWithDeff(damage, plAtt);
+            }
+            damage = Math.max(1L, (damage * 7L) / 20L);
 
             if (!piercing && effectSkill.isShielding) {
                 if (damage > nPoint.hpMax) {

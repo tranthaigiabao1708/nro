@@ -11,9 +11,9 @@ import nro.models.utils.Util;
 
 public class HitVt6 extends Universe6Boss {
 
-    private static final long REAL_HP = 75_000_000_000L;
-    private static final long FLAT_ARMOR = 50_000_000L;
-    private static final int ARMOR_PCT = 78;
+    private static final long REAL_HP = 37_500_000_000L;
+    private static final long FLAT_ARMOR = 16_666_667L;
+    private static final int ARMOR_PCT = 26;
 
     private long lastTimeSkip;
 
@@ -42,8 +42,8 @@ public class HitVt6 extends Universe6Boss {
     }
 
     @Override
-    protected int getBonusPercentMaxHpPerHit() {
-        return 11;
+    public int getHitPercentMaxHp() {
+        return 36;
     }
 
     @Override

@@ -812,9 +812,11 @@ namespace Game2.Assets.src.f
 					}
 					if (b == 6)
 					{
+						bigBoss.haftBody = false;
 						bigBoss.getDataB2();
-						bigBoss.x = msg.reader().readShort();
-						bigBoss.y = msg.reader().readShort();
+						bigBoss.x = (bigBoss.xTo = (bigBoss.xFirst = msg.reader().readShort()));
+						bigBoss.y = (bigBoss.yTo = (bigBoss.yFirst = msg.reader().readShort()));
+						bigBoss.status = 2;
 					}
 					if (b == 7)
 					{
@@ -829,6 +831,14 @@ namespace Game2.Assets.src.f
 					if (b == 9)
 					{
 						bigBoss.x = (bigBoss.y = (bigBoss.xTo = (bigBoss.yTo = (bigBoss.xFirst = (bigBoss.yFirst = -1000)))));
+					}
+					if (b == 10)
+					{
+						bigBoss.haftBody = false;
+						bigBoss.getDataB();
+						bigBoss.x = (bigBoss.xTo = (bigBoss.xFirst = msg.reader().readShort()));
+						bigBoss.y = (bigBoss.yTo = (bigBoss.yFirst = msg.reader().readShort()));
+						bigBoss.status = 2;
 					}
 					break;
 				}

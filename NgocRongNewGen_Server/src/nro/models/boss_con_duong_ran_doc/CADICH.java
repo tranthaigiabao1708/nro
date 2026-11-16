@@ -56,14 +56,35 @@ public class CADICH extends Boss {
 
     @Override
     public void reward(Player plKill) {
+        if (plKill == null || this.zone == null) {
+            return;
+        }
+        Player owner = resolveRewardOwner(plKill);
+        long ownerId = (owner != null) ? owner.id : plKill.id;
+        int xBase = this.location.x;
+        int yBase = this.location.y - 24;
+
         if (Util.isTrue(50, 100)) {
-            ItemMap it = new ItemMap(this.zone, 459, 1, this.location.x, this.zone.map.yPhysicInTop(this.location.x,
-                    this.location.y - 24), plKill.id);
+            ItemMap it = new ItemMap(this.zone, 459, 1, xBase, this.zone.map.yPhysicInTop(xBase, yBase), ownerId);
             it.options.add(new Item.ItemOption(112, 80));
             it.options.add(new Item.ItemOption(93, 90));
             it.options.add(new Item.ItemOption(20, Util.nextInt(10000)));
             Service.gI().dropItemMap(this.zone, it);
         }
+
+        int xHema = Math.max(24, Math.min(this.zone.map.mapWidth - 24, xBase - 18));
+        ItemMap hema = new ItemMap(this.zone, 1423, 1, xHema, this.zone.map.yPhysicInTop(xHema, yBase), ownerId);
+        hema.options.add(new Item.ItemOption(167, 0));
+        hema.options.add(new Item.ItemOption(168, 0));
+        Service.gI().dropItemMap(this.zone, hema);
+
+        int xNr1s = Math.max(24, Math.min(this.zone.map.mapWidth - 24, xBase + 18));
+        ItemMap nr1s = new ItemMap(this.zone, 14, 1, xNr1s, this.zone.map.yPhysicInTop(xNr1s, yBase), ownerId);
+        nr1s.options.add(new Item.ItemOption(73, 0));
+        Service.gI().dropItemMap(this.zone, nr1s);
+
+        // Cađích có tỉ lệ 25% rơi Đồ Thần Linh
+        tryDropGodItemStatic(this.zone, xBase, this.location.y, plKill, 25, true, false);
     }
 
     @Override
@@ -87,6 +108,7 @@ public class CADICH extends Boss {
     public void die(Player plKill) {
         if (plKill != null) {
             reward(plKill);
+            tryDropManhGiay726(this.zone, this.location.x, this.location.y, plKill);
         }
         this.changeStatus(BossStatus.DIE);
     }

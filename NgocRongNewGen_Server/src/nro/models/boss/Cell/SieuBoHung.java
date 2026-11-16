@@ -68,7 +68,23 @@ public class SieuBoHung extends Boss {
 
     @Override
     public void reward(Player plKill) {
-        rewardGroupCell20TV(plKill);
+        nro.models.task.BadgesTaskService.updateCountBagesTask(plKill, nro.models.consts.ConstTaskBadges.TRUM_SAN_BOSS, 1);
+        nro.models.services.TaskService.gI().checkDoneTaskKillBoss(plKill, this);
+        if (plKill == null || this.zone == null) {
+            return;
+        }
+        Player owner = resolveRewardOwner(plKill);
+        long ownerId = (owner != null) ? owner.id : plKill.id;
+        dropGoldBarsStatic(this.zone, this.location.x, this.location.y, plKill, 20, true);
+        tryDropGodItemStatic(this.zone, this.location.x, this.location.y, plKill, 10, true, false);
+        if (Util.isTrue(50, 100)) {
+            int xNr = Math.max(24, Math.min(this.zone.map.mapWidth - 24, this.location.x + 14));
+            int yNr = this.zone.map.yPhysicInTop(xNr, this.location.y - 24);
+            nro.models.map.ItemMap nr1s = new nro.models.map.ItemMap(this.zone, 14, 1, xNr, yNr, ownerId);
+            nr1s.options.add(new nro.models.item.Item.ItemOption(73, 0));
+            Service.gI().dropItemMap(this.zone, nr1s);
+        }
+        dropStandardCrystalMaterialsStatic(this.zone, this.location.x, this.location.y, plKill);
     }
 
     @Override
@@ -85,7 +101,7 @@ public class SieuBoHung extends Boss {
             return 0;
         }
 
-        if (!callCellCon && damage >= this.nPoint.hp) {
+        if (this.currentLevel == 0 && !callCellCon && damage >= this.nPoint.hp) {
             callCellCon();
             return 0;
         }

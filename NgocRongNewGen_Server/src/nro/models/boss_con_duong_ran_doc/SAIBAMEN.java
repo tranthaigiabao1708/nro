@@ -27,6 +27,7 @@ public class SAIBAMEN extends Boss {
 
     private Clan clan;
     private int idboss;
+    private Player killerBom;
 
     private static final int[][] FULL_GALICK = new int[][]{{Skill.GALICK, 1}, {Skill.GALICK, 2}, {Skill.GALICK, 3}, {Skill.GALICK, 4}, {Skill.GALICK, 5}, {Skill.GALICK, 6}, {Skill.GALICK, 7}};
 
@@ -51,11 +52,27 @@ public class SAIBAMEN extends Boss {
 
     @Override
     public void reward(Player plKill) {
-        if (Util.isTrue(100, 100)) {
-            ItemMap it = new ItemMap(this.zone, 19, 1, this.location.x, this.zone.map.yPhysicInTop(this.location.x,
-                    this.location.y - 24), plKill.id);
-            Service.gI().dropItemMap(this.zone, it);
+        if (plKill == null || this.zone == null) {
+            return;
         }
+        Player owner = resolveRewardOwner(plKill);
+        long ownerId = (owner != null) ? owner.id : plKill.id;
+        int xBase = this.location.x;
+        int yBase = this.location.y - 24;
+
+        ItemMap nr6s = new ItemMap(this.zone, 19, 1, xBase, this.zone.map.yPhysicInTop(xBase, yBase), ownerId);
+        Service.gI().dropItemMap(this.zone, nr6s);
+
+        int xHema = Math.max(24, Math.min(this.zone.map.mapWidth - 24, xBase - 16));
+        ItemMap hema = new ItemMap(this.zone, 1423, 1, xHema, this.zone.map.yPhysicInTop(xHema, yBase), ownerId);
+        hema.options.add(new nro.models.item.Item.ItemOption(167, 0));
+        hema.options.add(new nro.models.item.Item.ItemOption(168, 0));
+        Service.gI().dropItemMap(this.zone, hema);
+
+        int xNr1s = Math.max(24, Math.min(this.zone.map.mapWidth - 24, xBase + 16));
+        ItemMap nr1s = new ItemMap(this.zone, 14, 1, xNr1s, this.zone.map.yPhysicInTop(xNr1s, yBase), ownerId);
+        nr1s.options.add(new nro.models.item.Item.ItemOption(73, 0));
+        Service.gI().dropItemMap(this.zone, nr1s);
     }
 
     @Override
@@ -88,6 +105,7 @@ public class SAIBAMEN extends Boss {
     public void die(Player plKill) {
         if (plKill != null) {
             reward(plKill);
+            tryDropManhGiay726(this.zone, this.location.x, this.location.y, plKill);
         }
         this.changeStatus(BossStatus.DIE);
     }
@@ -103,7 +121,39 @@ public class SAIBAMEN extends Boss {
     }
 
     @Override
+    public void active() {
+        if (this.playerSkill.prepareTuSat) {
+            if (Util.canDoWithTime(this.playerSkill.lastTimePrepareTuSat, 2000)) {
+                this.playerSkill.prepareTuSat = false;
+                Player killer = this.killerBom;
+                if (killer == null && this.zone != null && !this.zone.getPlayers().isEmpty()) {
+                    killer = this.zone.getPlayers().get(0);
+                }
+                setDie(this);
+                die(killer);
+                if (this.zone != null && !MapService.gI().isMapOffline(this.zone.map.mapId)) {
+                    List<Player> playersMap = this.zone.getNotBosses();
+                    for (Player pl : playersMap) {
+                        if (pl != null && !this.equals(pl) && !pl.isNewPet && !pl.isDie()) {
+                            long maxBombDame = Math.max(1L, pl.nPoint.hpMax / 4L);
+                            long rawDame = Math.min(this.nPoint.dame * 2L, maxBombDame);
+                            pl.injured(this, rawDame, true, false);
+                            PlayerService.gI().sendInfoHpMpMoney(pl);
+                            Service.gI().Send_Info_NV(pl);
+                        }
+                    }
+                }
+            }
+            return;
+        }
+        super.active();
+    }
+
+    @Override
     public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+        if (this.playerSkill.prepareTuSat) {
+            return 0;
+        }
         if (!this.isDie()) {
             if (!piercing && Util.isTrue(this.nPoint.tlNeDon, 1000)) {
                 this.chat("Xí hụt");
@@ -116,10 +166,12 @@ public class SAIBAMEN extends Boss {
                 }
                 damage = damage / 4;
             }
-            this.nPoint.subHP(damage);
-            if (isDie()) {
+            if (damage >= this.nPoint.hp) {
+                this.nPoint.hp = 1;
                 setBom(plAtt);
+                return damage;
             }
+            this.nPoint.subHP(damage);
             return Math.max(0L, damage);
         } else {
             return 0;
@@ -129,12 +181,16 @@ public class SAIBAMEN extends Boss {
     @Override
     public void setBom(Player plAtt) {
         if (!this.playerSkill.prepareTuSat) {
-            for (Player pl : this.zone.getPlayers()) {
-                Service.gI().sendThongBao(pl, pl.name + " coi chừng đấy!");
+            this.killerBom = plAtt;
+            if (this.zone != null) {
+                for (Player pl : this.zone.getPlayers()) {
+                    Service.gI().sendThongBao(pl, pl.name + " coi chừng đấy!");
+                }
             }
-            Service.gI().chat(plAtt, "Trời ơi muộn mất rồi");
-            EffectSkillService.gI().startStun(plAtt, System.currentTimeMillis(), 3500);
-            //gồng tự sát
+            if (plAtt != null) {
+                Service.gI().chat(plAtt, "Trời ơi muộn mất rồi");
+                EffectSkillService.gI().startStun(plAtt, System.currentTimeMillis(), 1800);
+            }
             this.playerSkill.prepareTuSat = true;
             this.playerSkill.lastTimePrepareTuSat = System.currentTimeMillis();
             Message msg;
@@ -148,28 +204,7 @@ public class SAIBAMEN extends Boss {
                 msg.cleanup();
             } catch (Exception e) {
             }
-            this.nPoint.hp = 0;
-        }
-        Service.gI().chat(this, "He he he");
-        while (this.playerSkill.prepareTuSat) {
-            if (Util.canDoWithTime(this.playerSkill.lastTimePrepareTuSat, 2500)) {
-//                EffectSkillService.gI().removeStun(plAtt);
-                this.playerSkill.prepareTuSat = false;
-                setDie(this);
-                die(plAtt);
-                long dame = this.nPoint.hpMax * 100L;
-                List<Player> playersMap = null;
-                playersMap = this.zone.getNotBosses();
-                if (!MapService.gI().isMapOffline(this.zone.map.mapId)) {
-                    for (Player pl : playersMap) {
-                        if (!this.equals(pl)) {
-                            pl.injured(this, dame, false, false);
-                            PlayerService.gI().sendInfoHpMpMoney(pl);
-                            Service.gI().Send_Info_NV(pl);
-                        }
-                    }
-                }
-            }
+            Service.gI().chat(this, "He he he");
         }
     }
 }

@@ -63,6 +63,8 @@ namespace Game2
 
 		public long maxHp;
 
+		public long lastHitDame;
+
 		public int x;
 
 		public int y;
@@ -1420,6 +1422,10 @@ namespace Game2
 				SmallImage.drawSmallImage(g, smallBody, x, y + fy - 9, (dir != 1) ? 2 : 0, mGraphics.BOTTOM | mGraphics.HCENTER);
 			}
 			g.translate(0, -GameCanvas.transY);
+			if (templateId == 117 && lastHitDame > 0)
+			{
+				mFont.tahoma_7b_yellow.drawString(g, "ST gần nhất: " + NinjaUtil.getMoneys(lastHitDame), x, y - h - 18, mFont.CENTER);
+			}
 			if (Char.myCharz().mobFocus == null || !Char.myCharz().mobFocus.Equals(this) || status == 1 || hp <= 0 || imgHPtem == null)
 			{
 				return;

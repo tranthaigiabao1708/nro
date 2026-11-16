@@ -476,8 +476,10 @@ namespace Game2
 			Panel.graphics = Rms.loadRMSInt("lowGraphic");
 			lowGraphic = Rms.loadRMSInt("lowGraphic") == 1;
 			GameScr.isPaintChatVip = Rms.loadRMSInt("serverchat") != 1;
-			Char.isPaintAura = Rms.loadRMSInt("isPaintAura") == 1;
-			Char.isPaintAura2 = Rms.loadRMSInt("isPaintAura2") == 1;
+			int rmsPaintAura = Rms.loadRMSInt("isPaintAura");
+			Char.isPaintAura = rmsPaintAura == -1 || rmsPaintAura == 1;
+			int rmsPaintAura2 = Rms.loadRMSInt("isPaintAura2");
+			Char.isPaintAura2 = rmsPaintAura2 == -1 || rmsPaintAura2 == 1;
 			Res.init();
 			SmallImage.loadBigImage();
 			Panel.WIDTH_PANEL = 176;
@@ -1380,6 +1382,30 @@ namespace Game2
 					paintBackgroundtLayer(g, 2, 2, -1, colorBotton[1]);
 					paintBackgroundtLayer(g, 1, 1, -1, colorBotton[0]);
 					paintCloud(g);
+				}
+				else if (typeBg == 34 || typeBg == 35 || typeBg == 36)
+				{
+					int floorY35 = ((TileMap.pxh > 200) ? (TileMap.pxh - 168) : 456) - GameScr.cmy;
+					g.setColor(colorTop[3]);
+					g.fillRect(0, 0, gW, h);
+					int[] speeds35 = new int[4] { 1, 2, 2, 3 };
+					for (int idx35 = 3; idx35 >= 0; idx35--)
+					{
+						if (imgBG != null && idx35 < imgBG.Length && imgBG[idx35] != null && bgW[idx35] > 0)
+						{
+							int rawShift35 = ((idx35 == 1) ? (GameScr.cmx * 3 >> 3) : (GameScr.cmx >> speeds35[idx35]));
+							int sx35 = -(rawShift35 % bgW[idx35]);
+							if (sx35 > 0)
+							{
+								sx35 -= bgW[idx35];
+							}
+							int sy35 = floorY35 - bgH[idx35] + ((idx35 == 0) ? 1 : 0);
+							for (int drawX35 = sx35; drawX35 < gW + bgW[idx35]; drawX35 += bgW[idx35])
+							{
+								g.drawImage(imgBG[idx35], drawX35, sy35, 0);
+							}
+						}
+					}
 				}
 				else
 				{

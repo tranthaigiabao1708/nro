@@ -727,7 +727,12 @@ public class AdminPanelServer {
         } else {
             List<Item.ItemOption> ops = ItemService.gI().getListOptionItemShop((short) itemId);
             if (ops != null && !ops.isEmpty()) {
-                item.itemOptions = ops;
+                if (item.quantity > 1) {
+                    ops.removeIf(o -> o != null && o.optionTemplate != null && o.optionTemplate.id == 31);
+                }
+                if (!ops.isEmpty()) {
+                    item.itemOptions = ops;
+                }
             }
         }
     }

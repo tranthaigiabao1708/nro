@@ -4,6 +4,7 @@ import nro.models.item.Item.ItemOption;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import nro.models.player.Player;
 
 /**
@@ -17,8 +18,8 @@ public class GiftCode {
     public String code;
     public int countLeft;
     public int id;
-    public HashMap<Integer, Integer> detail = new HashMap<>();
-    public HashMap<Integer, ArrayList<ItemOption>> option = new HashMap<>();
+    public HashMap<Integer, Integer> detail = new LinkedHashMap<>();
+    public HashMap<Integer, ArrayList<ItemOption>> option = new LinkedHashMap<>();
     public Timestamp datecreate;
     public Timestamp dateexpired;
 
@@ -27,6 +28,12 @@ public class GiftCode {
     }
 
     public boolean timeCode() {
-        return this.datecreate.getTime() > this.dateexpired.getTime();
+        if (this.dateexpired == null) {
+            return false;
+        }
+        if (this.datecreate != null && this.datecreate.getTime() > this.dateexpired.getTime()) {
+            return true;
+        }
+        return System.currentTimeMillis() > this.dateexpired.getTime();
     }
 }

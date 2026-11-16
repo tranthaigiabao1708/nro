@@ -4,6 +4,7 @@ import nro.models.consts.ConstFont;
 import nro.models.consts.ConstNpc;
 import nro.models.item.Item;
 import nro.models.player.Player;
+import nro.models.services.ItemService;
 import nro.models.services.Service;
 import nro.models.services.InventoryService;
 
@@ -16,22 +17,26 @@ public class TaySach {
     public static void showInfoCombine(Player player) {
         if (player.combineNew.itemsCombine.size() != 1) {
             Service.gI().sendDialogMessage(player, "Cần Sách Tuyệt Kỹ để tẩy.");
+            return;
         }
         Item sachTuyetKy = player.combineNew.itemsCombine.get(0);
-        if (sachTuyetKy == null || !sachTuyetKy.isSachTuyetKy() && !sachTuyetKy.isSachTuyetKy2()) {
+        if (sachTuyetKy == null || (!sachTuyetKy.isSachTuyetKy() && !sachTuyetKy.isSachTuyetKy2())) {
             Service.gI().sendDialogMessage(player, "Cần Sách Tuyệt Kỹ để tẩy.");
             return;
         }
+        ItemService.gI().ensureDefaultOptions(sachTuyetKy);
         CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE, ConstFont.BOLD_BLUE + "Tẩy Sách Tuyệt Kỹ ?", "Đồng ý", "Từ chối");
     }
 
     public static void taySach(Player player) {
         if (player.combineNew.itemsCombine.size() != 1) {
-        }
-        Item sachTuyetKy = player.combineNew.itemsCombine.get(0);
-        if (sachTuyetKy == null || !sachTuyetKy.isSachTuyetKy() && !sachTuyetKy.isSachTuyetKy2()) {
             return;
         }
+        Item sachTuyetKy = player.combineNew.itemsCombine.get(0);
+        if (sachTuyetKy == null || (!sachTuyetKy.isSachTuyetKy() && !sachTuyetKy.isSachTuyetKy2())) {
+            return;
+        }
+        ItemService.gI().ensureDefaultOptions(sachTuyetKy);
         if (sachTuyetKy.getOptionParam(219) <= 0 || sachTuyetKy.isHaveOption(217)) {
             Service.gI().sendServerMessage(player, "Không thể thực hiện");
             return;

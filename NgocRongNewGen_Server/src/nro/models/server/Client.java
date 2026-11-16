@@ -39,8 +39,13 @@ public class Client implements Runnable {
     private final Map<Long, Player> players_id = new ConcurrentHashMap<>();
     private final Map<Integer, Player> players_userId = new ConcurrentHashMap<>();
     private final Map<String, Player> players_name = new ConcurrentHashMap<>();
+    private final Map<Integer, Object> userLocks = new ConcurrentHashMap<>();
     @Getter
     private final List<Player> players = new CopyOnWriteArrayList<>();
+
+    public Object getUserLock(int userId) {
+        return userLocks.computeIfAbsent(userId, k -> new Object());
+    }
 
     private Client() {
         Executors.newSingleThreadExecutor().submit(this, "Update Client");
@@ -83,21 +88,47 @@ public class Client implements Runnable {
         if (session == null) {
             return;
         }
+        int uid = session.userId;
+        if (uid > 0) {
+            synchronized (getUserLock(uid)) {
+                removeSessionInternal(session);
+            }
+        } else {
+            removeSessionInternal(session);
+        }
+    }
+
+    private void removeSessionInternal(MySession session) {
         Player pl;
         synchronized (session) {
             pl = session.player;
             session.player = null;
         }
-        if (pl != null) {
-            this.remove(pl);
-            pl.dispose();
-        }
-        if (session.joinedGame) {
-            session.joinedGame = false;
-            try {
-                LocalManager.executeUpdate("update account set last_time_logout = ? where id = ?", new Timestamp(System.currentTimeMillis()), session.userId);
-            } catch (Exception e) {
-                Logger.logException(Client.class, e);
+        try {
+            if (pl != null) {
+                this.remove(pl);
+            }
+            if (session.joinedGame) {
+                session.joinedGame = false;
+                try {
+                    LocalManager.executeUpdate("update account set last_time_logout = ? where id = ?", new Timestamp(System.currentTimeMillis()), session.userId);
+                } catch (Exception e) {
+                    Logger.logException(Client.class, e);
+                }
+            }
+        } finally {
+            if (pl != null) {
+                synchronized (this) {
+                    this.players_id.remove(pl.id, pl);
+                    if (pl.name != null) {
+                        this.players_name.remove(pl.name, pl);
+                    }
+                    if (session.userId > 0) {
+                        this.players_userId.remove(session.userId, pl);
+                    }
+                    this.players.remove(pl);
+                }
+                pl.dispose();
             }
         }
         ServerManager.gI().disconnect(session);
@@ -107,6 +138,7 @@ public class Client implements Runnable {
         if (player == null) {
             return;
         }
+        int uid = player.getSession() != null ? player.getSession().userId : -1;
         try {
             if (!player.beforeDispose) {
                 player.beforeDispose = true;
@@ -159,8 +191,8 @@ public class Client implements Runnable {
                 if (player.name != null) {
                     this.players_name.remove(player.name, player);
                 }
-                if (player.getSession() != null) {
-                    this.players_userId.remove(player.getSession().userId, player);
+                if (uid > 0) {
+                    this.players_userId.remove(uid, player);
                 }
                 this.players.remove(player);
             }

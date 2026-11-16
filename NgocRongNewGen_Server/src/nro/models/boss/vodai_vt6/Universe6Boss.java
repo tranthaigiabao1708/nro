@@ -46,8 +46,12 @@ public abstract class Universe6Boss extends Boss {
         return 1;
     }
 
+    public int getHitPercentMaxHp() {
+        return 10;
+    }
+
     protected int getBonusPercentMaxHpPerHit() {
-        return 6;
+        return 0;
     }
 
     protected void configureStageStats() {
@@ -66,7 +70,7 @@ public abstract class Universe6Boss extends Boss {
     @Override
     public void initBase() {
         super.initBase();
-        long realHp = Math.max(2_200_000_000L, getRealHpForCurrentStage());
+        long realHp = Math.max(1_000_000_000L, getRealHpForCurrentStage());
         this.nPoint.hpg = realHp;
         this.nPoint.hpMax = realHp;
         this.nPoint.hp = realHp;
@@ -92,7 +96,7 @@ public abstract class Universe6Boss extends Boss {
 
     @Override
     public void attack() {
-        if (Util.canDoWithTime(this.lastTimeAttack, 250) && this.typePk == ConstPlayer.PK_ALL) {
+        if (Util.canDoWithTime(this.lastTimeAttack, 1000) && this.typePk == ConstPlayer.PK_ALL) {
             this.lastTimeAttack = System.currentTimeMillis();
             try {
                 Player pl = getPlayerAttack();
@@ -113,11 +117,9 @@ public abstract class Universe6Boss extends Boss {
                                     Util.nextInt(10) % 2 == 0 ? pl.location.y : pl.location.y - Util.nextInt(0, 40));
                         }
                     }
+                    this.nPoint.isCrit = false;
+                    this.nPoint.isCrit100 = false;
                     nro.models.services.SkillService.gI().useSkill(this, pl, null, -1, null);
-                    int pctBonus = getBonusPercentMaxHpPerHit();
-                    if (pctBonus > 0 && !pl.isDie()) {
-                        applyPercentMaxHpStrike(pl, pctBonus, true, false);
-                    }
                     if (!pl.isDie()) {
                         onBossAttackHitPlayer(pl);
                     }
@@ -269,7 +271,11 @@ public abstract class Universe6Boss extends Boss {
 
     @Override
     public void dropBossSoul(Zone targetZone, int baseX, int baseY, Player plKill) {
-        if (!isFinalStage() || this.soulDroppedForCurrentLife) {
+        if (!isFinalStage()) {
+            return;
+        }
+        tryDropManhGiay726(targetZone, baseX, baseY, plKill);
+        if (this.soulDroppedForCurrentLife) {
             return;
         }
         int soulId = getBossSoulItemId();

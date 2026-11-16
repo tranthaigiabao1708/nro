@@ -22,6 +22,7 @@ public class OngParagus extends OngGohan {
                         "Bảng Sưu Tập\nSet Kích Hoạt",
                         "Nhận Hào Quang\n(Đủ 5 Set)",
                         "Hướng dẫn\nSet Kích Hoạt",
+                        "Vũ Trụ 13\n& Cải Trang",
                         "Đóng");
             }
         }

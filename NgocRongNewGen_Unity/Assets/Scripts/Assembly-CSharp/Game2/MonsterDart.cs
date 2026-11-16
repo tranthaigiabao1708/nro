@@ -90,6 +90,11 @@ namespace Game2
 
 		public override void update()
 		{
+			if (c != null && (c.statusMe == 14 || c.cHP <= 0 || (c.me && Char.ischangingMap)))
+			{
+				Effect2.vEffect2.removeElement(this);
+				return;
+			}
 			for (int i = 0; i < info.nUpdate; i++)
 			{
 				if (info.tail.Length != 0)

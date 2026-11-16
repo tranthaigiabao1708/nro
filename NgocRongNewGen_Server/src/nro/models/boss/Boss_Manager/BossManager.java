@@ -94,6 +94,7 @@ import nro.models.boss.vodai_vt6.CauliflaVt6;
 import nro.models.boss.vodai_vt6.ChampaVt6;
 import nro.models.boss.vodai_vt6.FrostVt6;
 import nro.models.boss.vodai_vt6.HitVt6;
+import nro.models.boss.vu_tru_13.DaiDeFideVt13;
 import nro.models.map.Zone;
 import nro.models.server.ServerManager;
 import nro.models.utils.Logger;
@@ -155,6 +156,8 @@ public class BossManager implements Runnable {
         this.createBoss(BossID.AUTA_MAGETTA, 1);
         this.createBoss(BossID.CABBA_VT6, 1);
         this.createBoss(BossID.CAULIFLA_VT6, 1);
+        // Boss Vũ Trụ 13: Đại Đế Fide -> Black Fide (Điện Thờ Thần Hủy Diệt VT13 - Map 180)
+        this.createBoss(BossID.DAI_DE_FIDE_VT13, 1);
     }
 
     public void createBoss(int bossID, int total) {
@@ -342,6 +345,8 @@ public class BossManager implements Runnable {
                     new HitVt6();
                 case BossID.CHAMPA_VT6 ->
                     new ChampaVt6();
+                case BossID.DAI_DE_FIDE_VT13 ->
+                    new DaiDeFideVt13();
                 default ->
                     null;
             };

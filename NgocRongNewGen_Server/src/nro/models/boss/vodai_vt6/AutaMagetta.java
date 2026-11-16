@@ -11,11 +11,11 @@ import nro.models.utils.Util;
 
 public class AutaMagetta extends Universe6Boss {
 
-    private static final long REAL_HP = 32_000_000_000L;
-    private static final long FLAT_ARMOR_NORMAL = 45_000_000L;
-    private static final long FLAT_ARMOR_INSULTED = 20_000_000L;
-    private static final int ARMOR_PCT_NORMAL = 78;
-    private static final int ARMOR_PCT_INSULTED = 68;
+    private static final long REAL_HP = 16_000_000_000L;
+    private static final long FLAT_ARMOR_NORMAL = 15_000_000L;
+    private static final long FLAT_ARMOR_INSULTED = 6_666_667L;
+    private static final int ARMOR_PCT_NORMAL = 26;
+    private static final int ARMOR_PCT_INSULTED = 23;
 
     private static final String[] INSULT_KEYWORDS = {
         "do sat vun",
@@ -57,8 +57,8 @@ public class AutaMagetta extends Universe6Boss {
     }
 
     @Override
-    protected int getBonusPercentMaxHpPerHit() {
-        return 8;
+    public int getHitPercentMaxHp() {
+        return 21;
     }
 
     @Override
@@ -74,9 +74,9 @@ public class AutaMagetta extends Universe6Boss {
         if (isInsultedVulnerable()) {
             return damageAfterArmor;
         }
-        // Vỏ hợp kim siêu cứng: đòn không chí mạng bị giảm thêm 35% sát thương
+        // Vỏ hợp kim siêu cứng: đòn không chí mạng bị giảm thêm ~12% sát thương (1/3 ban đầu)
         if (plAtt != null && plAtt.nPoint != null && !plAtt.nPoint.isCrit) {
-            return Math.max(1L, damageAfterArmor * 65L / 100L);
+            return Math.max(1L, damageAfterArmor * 88L / 100L);
         }
         return damageAfterArmor;
     }

@@ -92,6 +92,9 @@ namespace Game2
 				Controller2.readMessage(msg);
 				switch (msg.command)
 				{
+				case -126:
+					GameScr.gI().onVuTru13Message(msg);
+					break;
 				case 118:
 					SkhCollectionUI.GI().ReadMessage(msg);
 					break;
@@ -1309,8 +1312,11 @@ namespace Game2
 					}
 					if (Char.myCharz().charID == num157)
 					{
-						isStopReadMessage = true;
-						GameScr.lockTick = 500;
+						if (GameCanvas.currentScreen == GameScr.instance)
+						{
+							isStopReadMessage = true;
+							GameScr.lockTick = 500;
+						}
 						GameScr.gI().center = null;
 						if (b43 == 0 || b43 == 1 || b43 == 3)
 						{
@@ -4004,6 +4010,7 @@ namespace Game2
 					{
 						if (num204 > 1)
 						{
+							mob14.lastHitDame = num204;
 							mob14.setInjure();
 						}
 						bool flag7 = false;

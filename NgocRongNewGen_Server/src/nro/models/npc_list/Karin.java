@@ -63,17 +63,18 @@ public class Karin extends Npc {
         if (canOpenNpc(player)) {
             if (this.mapId == 46) {
                 if (player.winSTT && !Util.isAfterMidnight(player.lastTimeWinSTT)) {
-                    int itemId = player.nPoint.power < 1_000_000_000 ? 727 : 728;
-                    Item item = ItemService.gI().createNewItem(((short) itemId));
+                    Item item = ItemService.gI().createNewItem((short) 728);
                     item.itemOptions.add(new Item.ItemOption(30, 0));
                     item.itemOptions.add(new Item.ItemOption(93, 1));
                     if (InventoryService.gI().getCountEmptyBag(player) > 0) {
                         player.callBossPocolo = false;
                         player.winSTT = false;
+                        player.lastTimeWinSTT = System.currentTimeMillis();
                         player.zoneSieuThanhThuy = null;
                         InventoryService.gI().addItemBag(player, item);
                         InventoryService.gI().sendItemBags(player);
-                        Service.gI().sendThongBao(player, "Bạn nhận được " + item.template.name);
+                        Service.gI().sendThongBao(player, "Bạn nhận được " + item.template.name + " (+2 tỷ TNSM cho Sư phụ hoặc Đệ tử)");
+                        nro.models.database.PlayerDAO.savePlayerAsync(player);
                     } else {
                         Service.gI().sendThongBao(player, "Hành trang đã đầy, cần một ô trống trong hành trang");
                     }

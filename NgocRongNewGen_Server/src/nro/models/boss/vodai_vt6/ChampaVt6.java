@@ -15,9 +15,9 @@ import nro.models.utils.Util;
 
 public class ChampaVt6 extends Universe6Boss {
 
-    private static final long REAL_HP = 110_000_000_000L;
-    private static final long FLAT_ARMOR = 65_000_000L;
-    private static final int ARMOR_PCT = 80;
+    private static final long REAL_HP = 55_000_000_000L;
+    private static final long FLAT_ARMOR = 21_666_667L;
+    private static final int ARMOR_PCT = 27;
 
     private long lastHakaiCycleTime;
     private boolean chargingHakai;
@@ -74,8 +74,8 @@ public class ChampaVt6 extends Universe6Boss {
     }
 
     @Override
-    protected int getBonusPercentMaxHpPerHit() {
-        return 13;
+    public int getHitPercentMaxHp() {
+        return 40;
     }
 
     @Override
@@ -118,10 +118,10 @@ public class ChampaVt6 extends Universe6Boss {
                     }
                 } else {
                     pl.nPoint.hakaiNoPeaUntil = now + 5_000L;
-                    applyPercentMaxHpStrike(pl, 75, false, false);
+                    applyPercentMaxHpStrike(pl, 40, false, false);
                     if (pl.isPl()) {
                         Service.gI().sendThongBao(pl,
-                                "Trúng trực diện HAKAI của Champa (-75% HP & Phong ấn Đậu Thần 5 giây)!");
+                                "Trúng trực diện HAKAI của Champa (-40% HP & Phong ấn Đậu Thần 5 giây)!");
                     }
                 }
             }

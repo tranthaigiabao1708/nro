@@ -11,11 +11,21 @@ import nro.models.utils.Util;
 
 public class Hirudegarn extends BigBoss {
 
+    public static final long HIRUDEGARN_HP = 10_000_000_000L;
+    public static final long MAX_DAMAGE_PER_HIT = 500_000_000L;
+
     private int errors;
     private Player lastAttacker;
 
     public Hirudegarn(Mob mob) {
         super(mob);
+        long baseDame = mob.point.getHpFull() > 0
+                ? (mob.point.getHpFull() / 100L * Math.max(1, mob.pDame))
+                : 2_000_000L;
+        this.point.dame = Math.max(2_000_000L, baseDame);
+        this.point.setHpFull(HIRUDEGARN_HP);
+        this.point.sethp(HIRUDEGARN_HP);
+        this.setTiemNang();
     }
 
     @Override
@@ -23,48 +33,33 @@ public class Hirudegarn extends BigBoss {
         if (plAtt != null && !plAtt.isBot) {
             this.lastAttacker = plAtt;
         }
-        damage = this.point.hp / 300 > 0 ? this.point.hp / 300 : 1;
-        super.injured(plAtt, damage, false);
+        if (damage > MAX_DAMAGE_PER_HIT) {
+            damage = MAX_DAMAGE_PER_HIT;
+        }
+        super.injured(plAtt, damage, dieWhenHpFull);
     }
 
     @Override
     public void update() {
         super.update();
-        if (isDie() && (System.currentTimeMillis() - lastTimeDie) > 600000 && lvMob == 3) {
-            lvMob = 0;
-            action = 0;
-            this.location.x = Util.nextInt(100, 900);
-            this.location.y = 360;
-            this.point.hp = this.point.getHpFull();
-            Service.gI().sendBigBoss2(this.zone, action, this);
-            Message msg = null;
-            try {
-                msg = new Message(-9);
-                msg.writer().writeByte(this.id);
-                msg.writer().writeLong(this.point.gethp());
-                msg.writer().writeLong(1L);
-                Service.gI().sendMessAllPlayerInMap(this.zone, msg);
-            } catch (Exception e) {
-            } finally {
-                if (msg != null) {
-                    msg.cleanup();
-                }
-            }
-        } else if (isDie() && (System.currentTimeMillis() - lastTimeDie) > 5000 && lvMob <= 2) {
+        if (isDie() && lvMob <= 2 && (System.currentTimeMillis() - lastTimeDie) > 5000) {
             switch (lvMob) {
                 case 0 -> {
                     lvMob = 1;
                     action = 6;
+                    this.status = 5;
                     this.point.hp = this.point.getHpFull();
                 }
                 case 1 -> {
                     lvMob = 2;
                     action = 5;
+                    this.status = 5;
                     this.point.hp = this.point.getHpFull();
                 }
                 case 2 -> {
                     lvMob = 3;
                     action = 9;
+                    this.lastTimeDie = System.currentTimeMillis();
                 }
                 default -> {
                 }
@@ -74,6 +69,7 @@ public class Hirudegarn extends BigBoss {
             long ownerId = (owner != null) ? owner.id : -1L;
             nro.models.boss.Boss.dropGoldBarsStatic(this.zone, this.location.x, this.location.y, this.lastAttacker, 20, true);
             nro.models.boss.Boss.dropBossSoulStatic(this.zone, this.location.x, this.location.y, this.lastAttacker, nro.models.boss.Boss.ITEM_HON_BOSS_LUC);
+            nro.models.boss.Boss.tryDropManhGiay726Static(this.zone, this.location.x, this.location.y, this.lastAttacker);
             if (Util.isTrue(20, 100)) {
                 int xBinh = Math.max(24, Math.min(this.zone.map.mapWidth - 24, this.location.x));
                 ItemMap it = new ItemMap(this.zone, 1795, 1, xBinh,
@@ -101,10 +97,10 @@ public class Hirudegarn extends BigBoss {
                 this.location.x = -1000;
                 this.location.y = -1000;
             }
-        }
-        if (isDie() && lvMob == 3 && (System.currentTimeMillis() - lastTimeDie) > 15000) {
+        } else if (isDie() && lvMob == 3 && (System.currentTimeMillis() - lastTimeDie) > 15000) {
             lvMob = 0;
-            action = 0;
+            action = 10;
+            this.status = 5;
             this.location.x = Util.nextInt(100, 900);
             this.location.y = 360;
             this.point.hp = this.point.getHpFull();

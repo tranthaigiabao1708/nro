@@ -36,6 +36,8 @@ namespace Game2
 
 		private bool transNow;
 
+		private long lastRetryTrans;
+
 		private int currSpeed;
 
 		public TransportScr()
@@ -77,6 +79,9 @@ namespace Game2
 			}
 			isSpeed = false;
 			transNow = false;
+			lastRetryTrans = 0L;
+			cmx = 0;
+			speed = 5;
 			if (Char.myCharz().checkLuong() > 0 && type == 0)
 			{
 				center = new Command(mResources.faster, this, 1, null);
@@ -120,7 +125,8 @@ namespace Game2
 			{
 				if (!isSpeed)
 				{
-					currSpeed = GameCanvas.w / 2 * time / maxTime;
+					int safeMax = ((maxTime <= 0) ? 1 : maxTime);
+					currSpeed = (GameCanvas.w / 2 + 35) * time / safeMax;
 				}
 			}
 			else
@@ -167,10 +173,15 @@ namespace Game2
 			{
 				currSpeed += 3;
 			}
-			if (currSpeed >= GameCanvas.w / 2 + 30 && !transNow)
+			if (currSpeed >= GameCanvas.w / 2 + 30)
 			{
-				transNow = true;
-				Service.gI().transportNow();
+				currSpeed = GameCanvas.w / 2 + 60;
+				if (!transNow || curr - lastRetryTrans >= 2500)
+				{
+					transNow = true;
+					lastRetryTrans = curr;
+					Service.gI().transportNow();
+				}
 			}
 			base.update();
 		}

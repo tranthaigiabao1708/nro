@@ -176,6 +176,8 @@ namespace Game2.Assets.src.g
 			{
 				Service.gI().requestModTemplate(templateId);
 			}
+			haftBody = false;
+			status = 2;
 			w = data.width;
 			h = data.height;
 		}

@@ -461,12 +461,19 @@ public class Trade {
                     }
                 }
                 if (tradeStatus == SUCCESS) {
-                    player1.inventory.gold += goldTrade2;
-                    player2.inventory.gold += goldTrade1;
-                    player1.inventory.gold -= goldTrade1;
-                    player2.inventory.gold -= goldTrade2;
-                    player1.inventory.itemsBag = itemsBag1;
-                    player2.inventory.itemsBag = itemsBag2;
+                    Object firstLock = player1.id <= player2.id ? player1.saveLock : player2.saveLock;
+                    Object secondLock = player1.id <= player2.id ? player2.saveLock : player1.saveLock;
+                    synchronized (firstLock) {
+                        synchronized (secondLock) {
+                            player1.inventory.gold += goldTrade2;
+                            player2.inventory.gold += goldTrade1;
+                            player1.inventory.gold -= goldTrade1;
+                            player2.inventory.gold -= goldTrade2;
+                            player1.inventory.itemsBag = itemsBag1;
+                            player2.inventory.itemsBag = itemsBag2;
+                            nro.models.database.PlayerDAO.saveTradeAtomic(player1, player2);
+                        }
+                    }
 
                     InventoryService.gI().sendItemBags(player1);
                     InventoryService.gI().sendItemBags(player2);
@@ -476,8 +483,6 @@ public class Trade {
                     HistoryTransactionDAO.insert(player1, player2, goldTrade1, goldTrade2, itemsTrade1, itemsTrade2,
                             bag1Before, bag2Before, this.player1.inventory.itemsBag, this.player2.inventory.itemsBag,
                             gold1Before, gold2Before, this.player1.inventory.gold, this.player2.inventory.gold);
-                    nro.models.database.PlayerDAO.savePlayerAsync(player1);
-                    nro.models.database.PlayerDAO.savePlayerAsync(player2);
                 }
                 sendNotifyTrade(tradeStatus);
             }

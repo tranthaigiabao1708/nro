@@ -42,6 +42,10 @@ public class VoDaiVuTru6Manager implements Runnable {
             lastUpdate = System.currentTimeMillis();
             for (VoDaiVuTru6 mc : list) {
                 try {
+                    if (mc == null || mc.endChallenge) {
+                        list.remove(mc);
+                        continue;
+                    }
                     mc.update();
                 } catch (Exception e) {
                     Logger.logException(VoDaiVuTru6Manager.class, e);
@@ -51,7 +55,7 @@ public class VoDaiVuTru6Manager implements Runnable {
     }
 
     public void add(VoDaiVuTru6 mc) {
-        if (mc != null && !list.contains(mc)) {
+        if (mc != null && !mc.endChallenge && !list.contains(mc)) {
             list.add(mc);
         }
     }
@@ -62,7 +66,7 @@ public class VoDaiVuTru6Manager implements Runnable {
 
     public VoDaiVuTru6 getMC(@NonNull Zone zone) {
         for (VoDaiVuTru6 mc : list) {
-            if (zone.equals(mc.getZone())) {
+            if (mc != null && !mc.endChallenge && zone.equals(mc.getZone())) {
                 return mc;
             }
         }
@@ -74,7 +78,7 @@ public class VoDaiVuTru6Manager implements Runnable {
             return false;
         }
         for (VoDaiVuTru6 mc : list) {
-            if (mc.getPlayer() != null && mc.getPlayer().id == player.id) {
+            if (mc != null && !mc.endChallenge && mc.getPlayer() != null && mc.getPlayer().id == player.id) {
                 return true;
             }
         }

@@ -446,6 +446,37 @@ namespace Game2
 
         public bool isViewMember;
 
+        public bool isViewClanMap;
+
+        private static readonly string[] CLAN_MAP_OPTION_BTN = new string[2] { "Map", "Bang" };
+
+        private static readonly string[] CLAN_MAP_TITLES = new string[5]
+        {
+            "Lãnh Địa Bang Hội",
+            "Doanh Trại Độc Nhãn",
+            "Bản Đồ Kho Báu",
+            "Con Đường Rắn Độc",
+            "Khí Gas Hủy Diệt"
+        };
+
+        private static readonly string[] CLAN_MAP_SUBS = new string[5]
+        {
+            "Điểm danh, Shop Bang, Boss Gấu & Porata",
+            "1 lần/ngày - Bản Đồ Kho Báu & Ngọc Rồng",
+            "3 lần/ngày - Thỏi vàng, Hồn Boss & TNSM",
+            "1 lần/ngày/TV - Hematite, NR 1S & Đồ Thần",
+            "3 lần/ngày - Cải trang Lychee & Hatchiyack"
+        };
+
+        private static readonly string[] CLAN_MAP_DETAILS = new string[5]
+        {
+            "|7|LÃNH ĐỊA BANG HỘI\n--\n|2|Cách vào:\n|5|Gặp Quy Lão Kame (Đảo Kame) -> Lãnh địa Bang Hội; gặp Ngưu Ma Vương tại Lãnh Địa.\n--\n|2|Tác dụng:\n|0|- Điểm danh mỗi ngày nhận Capsule Bang & mở Shop Bang.\n|0|- Săn nguyên liệu Bông Tai Porata tại Khu Đông/Tây/Nam/Bắc (SM >= 40 tỷ).\n|0|- Bang chủ gọi Boss Gấu Tướng Cướp (cần >= 3 thành viên cùng khu).\n--\n|2|Phần thưởng:\n|1|Tổng 50 Capsule Bang chia theo sát thương, Hồn Boss Lục (top sát thương), Mảnh vỡ & Mảnh hồn Bông Tai.",
+            "|7|DOANH TRẠI ĐỘC NHÃN\n--\n|2|Cách vào & Lượt đi:\n|5|Gặp Lính Canh (Rừng Bamboo). Vào bang >= 1 ngày, tối đa 1 lần/ngày (30 phút).\n--\n|2|Tác dụng:\n|0|Vượt ải tiêu diệt toàn bộ lính Red Ribbon và 5 Boss: Trung Úy Trắng, Trung Úy Xanh Lơ, Trung Úy Thép, Ninja Áo Tím, Robot Vệ Sĩ.\n--\n|2|Phần thưởng:\n|1|Bản Đồ Kho Báu, Ngọc Rồng 4-7 sao (tỉ lệ hiếm 1-3 sao) rơi khắp doanh trại khi thắng.",
+            "|7|BẢN ĐỒ KHO BÁU\n--\n|2|Cách vào & Lượt đi:\n|5|Gặp Quy Lão Kame (Đảo Kame), tốn 1 Bản Đồ Kho Báu, SM >= 2 tỷ, cấp 1-110 (3 lần/ngày).\n--\n|2|Tác dụng:\n|0|Quét sạch hải tặc để luyện Tiềm năng / Sức mạnh cực nhanh, đua Top Bang và hạ Boss Trung Úy Xanh Lơ ở tầng cuối.\n--\n|2|Phần thưởng:\n|1|5 Thỏi vàng, Hồn Boss, tỉ lệ rơi Ngọc Rồng Bí Ngô và nhiều Tiềm năng / Sức mạnh.",
+            "|7|CON ĐƯỜNG RẮN ĐỘC\n--\n|2|Cách vào & Lượt đi:\n|5|Gặp Thần Vũ Trụ (Hành Tinh Kaio), vào bang >= 1 ngày, cấp 1-110. Mỗi ngày mỗi thành viên đi được 1 lần.\n--\n|2|Tác dụng:\n|0|Hạ hết quái trên Con Đường Rắn Độc -> về Thần Điện gặp Thượng Đế -> xuống Tháp Karin hồi phục -> hạ Số 1-6, Nađíc (Nappa) và Cađích.\n--\n|2|Phần thưởng:\n|1|- Mỗi Boss (Số 1-6, Nappa, Cađích): rơi Đá Hematite + Ngọc Rồng 1 sao (kèm NR 6 sao / Phiếu giảm giá).\n|1|- Riêng 2 Boss Nappa và Cađích có tỉ lệ rơi Đồ Thần Linh!",
+            "|7|KHÍ GAS HỦY DIỆT\n--\n|2|Cách vào & Lượt đi:\n|5|Gặp Mr.PôPô (Thần Điện), Bang chủ mở cấp 1-110, vào bang >= 2 ngày (3 lần/ngày).\n--\n|2|Tác dụng:\n|0|Tiêu diệt toàn bộ quái trong khu Khí Gas để triệu hồi liên hoàn 2 Boss mạnh: Dr. Lychee và Hatchiyack.\n--\n|2|Phần thưởng:\n|1|Rơi nhiều Cải trang Dr. Lychee và Cải trang Hatchiyack chỉ số SĐ / HP / KI cao theo cấp độ."
+        };
+
         public const int TYPE_MAIN = 0;
 
         public const int TYPE_SHOP = 1;
@@ -951,73 +982,99 @@ namespace Game2
             }
         }
 
+        public static int GetEffectiveItemVisualTier(Item item)
+        {
+            if (item == null || item.itemOption == null)
+            {
+                return 0;
+            }
+            bool skipUpgradeCap72 = item.template != null && item.template.id == 570;
+            int bestTier = 0;
+            ItemOption[] itemOption = item.itemOption;
+            for (int i = 0; i < itemOption.Length; i++)
+            {
+                ItemOption io = itemOption[i];
+                if (io == null || io.optionTemplate == null || io.param <= 0)
+                {
+                    continue;
+                }
+                int id = io.optionTemplate.id;
+                int tier = 0;
+                if (id == 102)
+                {
+                    tier = ((io.param >= 9) ? 9 : ((int)io.param));
+                }
+                else if (id == 72 && !skipUpgradeCap72)
+                {
+                    // Trang bị +7 (hoặc +8) có ngoại hình đúng bằng cấp 8 sao pha lê, không che 9 sao pha lê
+                    tier = ((io.param >= 7) ? 8 : ((int)io.param));
+                }
+                else if (id >= 42 && id <= 46)
+                {
+                    tier = ((io.param >= 8) ? 8 : ((int)io.param));
+                }
+                if (tier > bestTier)
+                {
+                    bestTier = tier;
+                }
+            }
+            return bestTier;
+        }
+
         private void paintEffectItem(mGraphics g, Item item, int x, int y)
         {
             try
             {
                 if (!ModFunc.isEffectInven) return;
-                Image[] array = null;
-                Image[] array2 = null;
-                if (item == null || item.itemOption == null)
+                int visualTier = GetEffectiveItemVisualTier(item);
+                if (visualTier <= 0)
                 {
                     return;
                 }
-                ItemOption[] itemOption = item.itemOption;
-                foreach (ItemOption itemOption2 in itemOption)
+                Image[] array = null;
+                Image[] array2 = null;
+                switch (visualTier)
                 {
-                    if (itemOption2 != null && (itemOption2.optionTemplate.id == 102 || itemOption2.optionTemplate.id == 72 || (itemOption2.optionTemplate.id >= 42 && itemOption2.optionTemplate.id <= 46)))
-                    {
-                        switch (itemOption2.param)
-                        {
-                            case 1:
-                                array2 = effxanhnhat;
-                                break;
-                            case 2:
-                                array = bgxanhnhat;
-                                array2 = effxanhnhat;
-                                break;
-                            case 3:
-                                array2 = effxanhla;
-                                break;
-                            case 4:
-                                array = bgxanhla;
-                                array2 = effxanhla;
-                                break;
-                            case 5:
-                                array2 = efftim;
-                                break;
-                            case 6:
-                                array = bgtim;
-                                array2 = efftim;
-                                break;
-                            case 7:
-                                array2 = effcam;
-                                break;
-                            case 8:
-                                array = bgcam;
-                                array2 = effcam;
-                                break;
-                            case 9:
-                                array2 = effdo;
-                                break;
-                            case 10:
-                                array = bgdo;
-                                array2 = effdo;
-                                break;
-                            default:
-                                array = bgdo;
-                                array2 = effdo;
-                                break;
-                        }
-                        if (array2 != null)
-                        {
-                            g.drawImage(array2[GameCanvas.gameTick / 4 % 7], x + 2, y + 2);
-                        }
-                        if (array != null)
-                        {
-                            g.drawImage(array[GameCanvas.gameTick / 4 % 7], x - 1, y - 1);
-                        }
-                    }
+                    case 1:
+                        array2 = effxanhnhat;
+                        break;
+                    case 2:
+                        array = bgxanhnhat;
+                        array2 = effxanhnhat;
+                        break;
+                    case 3:
+                        array2 = effxanhla;
+                        break;
+                    case 4:
+                        array = bgxanhla;
+                        array2 = effxanhla;
+                        break;
+                    case 5:
+                        array2 = efftim;
+                        break;
+                    case 6:
+                        array = bgtim;
+                        array2 = efftim;
+                        break;
+                    case 7:
+                        array2 = effcam;
+                        break;
+                    case 8:
+                        array = bgcam;
+                        array2 = effcam;
+                        break;
+                    default:
+                        array = bgdo;
+                        array2 = effdo;
+                        break;
+                }
+                if (array2 != null)
+                {
+                    g.drawImage(array2[GameCanvas.gameTick / 4 % 7], x + 2, y + 2);
+                }
+                if (array != null)
+                {
+                    g.drawImage(array[GameCanvas.gameTick / 4 % 7], x - 1, y - 1);
                 }
             }
             catch (Exception exception)
@@ -1031,69 +1088,56 @@ namespace Game2
             try
             {
                 if (!ModFunc.isEffectInven) return;
-                if (item == null || item.itemOption == null)
+                int visualTier = GetEffectiveItemVisualTier(item);
+                if (visualTier <= 0)
                 {
                     return;
                 }
                 Image[] array = null;
                 Image[] array2 = null;
-                ItemOption[] itemOption = item.itemOption;
-                foreach (ItemOption itemOption2 in itemOption)
+                switch (visualTier)
                 {
-                    if (itemOption2 != null && itemOption2.optionTemplate != null && itemOption2.param > 0 && (itemOption2.optionTemplate.id == 102 || itemOption2.optionTemplate.id == 72 || (itemOption2.optionTemplate.id >= 42 && itemOption2.optionTemplate.id <= 46)))
-                    {
-                        switch (itemOption2.param)
-                        {
-                            case 1:
-                                array2 = effxanhnhat;
-                                break;
-                            case 2:
-                                array = bgxanhnhat;
-                                array2 = effxanhnhat;
-                                break;
-                            case 3:
-                                array2 = effxanhla;
-                                break;
-                            case 4:
-                                array = bgxanhla;
-                                array2 = effxanhla;
-                                break;
-                            case 5:
-                                array2 = efftim;
-                                break;
-                            case 6:
-                                array = bgtim;
-                                array2 = efftim;
-                                break;
-                            case 7:
-                                array2 = effcam;
-                                break;
-                            case 8:
-                                array = bgcam;
-                                array2 = effcam;
-                                break;
-                            case 9:
-                                array2 = effdo;
-                                break;
-                            case 10:
-                                array = bgdo;
-                                array2 = effdo;
-                                break;
-                            default:
-                                array = bgdo;
-                                array2 = effdo;
-                                break;
-                        }
-                        int frame = GameCanvas.gameTick / 4 % 7;
-                        if (array2 != null && array2[frame] != null)
-                        {
-                            g.drawImageScaleClipped(array2[frame], x, y, w, h);
-                        }
-                        if (array != null && array[frame] != null)
-                        {
-                            g.drawImageScaleClipped(array[frame], x - 1, y - 1, w + 2, h + 2);
-                        }
-                    }
+                    case 1:
+                        array2 = effxanhnhat;
+                        break;
+                    case 2:
+                        array = bgxanhnhat;
+                        array2 = effxanhnhat;
+                        break;
+                    case 3:
+                        array2 = effxanhla;
+                        break;
+                    case 4:
+                        array = bgxanhla;
+                        array2 = effxanhla;
+                        break;
+                    case 5:
+                        array2 = efftim;
+                        break;
+                    case 6:
+                        array = bgtim;
+                        array2 = efftim;
+                        break;
+                    case 7:
+                        array2 = effcam;
+                        break;
+                    case 8:
+                        array = bgcam;
+                        array2 = effcam;
+                        break;
+                    default:
+                        array = bgdo;
+                        array2 = effdo;
+                        break;
+                }
+                int frame = GameCanvas.gameTick / 4 % 7;
+                if (array2 != null && array2[frame] != null)
+                {
+                    g.drawImageScaleClipped(array2[frame], x, y, w, h);
+                }
+                if (array != null && array[frame] != null)
+                {
+                    g.drawImageScaleClipped(array[frame], x - 1, y - 1, w + 2, h + 2);
                 }
             }
             catch (Exception exception)
@@ -1805,27 +1849,33 @@ namespace Game2
                     }
                 }
                 bool flag = false;
+                bool hasUpgrade72 = false;
                 if (item.itemOption != null)
                 {
                     for (int j = 0; j < item.itemOption.Length; j++)
                     {
-                        if (item.itemOption[j].optionTemplate.id == 72)
+                        if (item.itemOption[j] != null && item.itemOption[j].optionTemplate != null && item.itemOption[j].optionTemplate.id == 72 && item.itemOption[j].param > 0)
                         {
-                            flag = true;
-                            if (item.itemOption[j].param >= 1 && item.itemOption[j].param <= 5)
-                            {
-                                text = text + "|2|1|" + item.template.name + text2;
-                            }
-                            if (item.itemOption[j].param >= 6 && item.itemOption[j].param <= 7)
-                            {
-                                text = text + "|8|1|" + item.template.name + text2;
-                            }
-                            if (item.itemOption[j].param >= 8 && item.itemOption[j].param <= 10)
-                            {
-                                text = text + "|7|1|" + item.template.name + text2;
-                            }
+                            hasUpgrade72 = true;
+                            break;
                         }
                     }
+                }
+                int visualTierPopup = GetEffectiveItemVisualTier(item);
+                if (visualTierPopup >= 9)
+                {
+                    flag = true;
+                    text = text + "|7|1|" + item.template.name + text2;
+                }
+                else if (visualTierPopup == 8 || (hasUpgrade72 && visualTierPopup >= 6))
+                {
+                    flag = true;
+                    text = text + "|8|1|" + item.template.name + text2;
+                }
+                else if (hasUpgrade72 && visualTierPopup >= 1)
+                {
+                    flag = true;
+                    text = text + "|2|1|" + item.template.name + text2;
                 }
                 if (!flag)
                 {
@@ -2572,13 +2622,10 @@ namespace Game2
                 Item item = (Item)myVector.elementAt(i);
                 if (item != null)
                 {
-                    for (int j = 0; j < item.itemOption.Length; j++)
+                    int visualTierRow = GetEffectiveItemVisualTier(item);
+                    if (visualTierRow > 0)
                     {
-                        if (item.itemOption[j].optionTemplate.id != 72 || item.itemOption[j].param <= 0)
-                        {
-                            continue;
-                        }
-                        sbyte color_Item_Upgrade = GetColor_Item_Upgrade(item.itemOption[j].param);
+                        sbyte color_Item_Upgrade = GetColor_Item_Upgrade(visualTierRow);
                         if (GetColor_ItemBg(color_Item_Upgrade) != -1)
                         {
                             if (isLock)
@@ -2599,6 +2646,7 @@ namespace Game2
                 }
                 string text = string.Empty;
                 mFont mFont2 = mFont.tahoma_7_green2;
+                bool hasUpgrade72Row = false;
                 if (item.itemOption != null)
                 {
                     for (int k = 0; k < item.itemOption.Length; k++)
@@ -2606,22 +2654,24 @@ namespace Game2
                         if (item.itemOption[k].optionTemplate.id == 72)
                         {
                             text = " [+" + item.itemOption[k].param + "]";
-                        }
-                        if (item.itemOption[k].optionTemplate.id == 72)
-                        {
-                            if (item.itemOption[k].param >= 1 && item.itemOption[k].param <= 5)
+                            if (item.itemOption[k].param > 0)
                             {
-                                mFont2 = GetFont(2);
-                            }
-                            else if (item.itemOption[k].param >= 6 && item.itemOption[k].param <= 7)
-                            {
-                                mFont2 = GetFont(8);
-                            }
-                            else if (item.itemOption[k].param >= 8 && item.itemOption[k].param <= 10)
-                            {
-                                mFont2 = GetFont(7);
+                                hasUpgrade72Row = true;
                             }
                         }
+                    }
+                    int visualTierName = GetEffectiveItemVisualTier(item);
+                    if (visualTierName >= 9)
+                    {
+                        mFont2 = GetFont(7);
+                    }
+                    else if (visualTierName == 8 || (hasUpgrade72Row && visualTierName >= 6))
+                    {
+                        mFont2 = GetFont(8);
+                    }
+                    else if (hasUpgrade72Row && visualTierName >= 1)
+                    {
+                        mFont2 = GetFont(2);
                     }
                 }
                 if (ModFunc.isShowID)
@@ -2657,6 +2707,7 @@ namespace Game2
                     mFont3.drawString(g, text2, num + 5, num2 + 10, mFont.LEFT);
                 }
                 SkhSlotEffect.PaintSlotBg(g, item, num5, num6, num7, num8);
+                paintEffectItemSlot(g, item, num5, num6, num7, num8);
                 SmallImage.drawSmallImage(g, item.template.iconID, num5 + num7 / 2, num6 + num8 / 2, 0, 3);
                 SkhSlotEffect.PaintSlotBorder(g, item, num5, num6, num7, num8);
                 if (item.itemOption != null)
@@ -2665,10 +2716,7 @@ namespace Game2
                     {
                         paintOptItemInventory(g, item.itemOption[m].optionTemplate.id, item.itemOption[m].param, num5, num6, num7, num8, item);
                     }
-                    for (int n = 0; n < item.itemOption.Length; n++)
-                    {
-                        paintOptSlotItem(g, item.itemOption[n].optionTemplate.id, item.itemOption[n].param, num5, num6, num7, num8);
-                    }
+                    paintItemUpgradeSpark(g, item, num5, num6, num7, num8);
                 }
                 if (item.quantity > 1)
                 {
@@ -2870,7 +2918,7 @@ namespace Game2
                 {
                     cSelected = currClanOption.Length - 1;
                 }
-                if (selected > 1 && isMessage && currMess.option != null && cSelected < 0)
+                if (selected > 1 && isMessage && currMess != null && currMess.option != null && cSelected < 0)
                 {
                     cSelected = currMess.option.Length - 1;
                 }
@@ -2883,7 +2931,7 @@ namespace Game2
                 {
                     cSelected = 0;
                 }
-                if (selected > 1 && isMessage && currMess.option != null && cSelected > currMess.option.Length - 1)
+                if (selected > 1 && isMessage && currMess != null && currMess.option != null && cSelected > currMess.option.Length - 1)
                 {
                     cSelected = 0;
                 }
@@ -2907,10 +2955,15 @@ namespace Game2
                 int num = 0;
                 if (selected == 0)
                 {
-                    num = xScroll + wScroll / 2 - clansOption.Length * TAB_W / 2;
-                    cSelected = (GameCanvas.px - num) / TAB_W;
+                    int clanOptW = ((clansOption != null && clansOption.Length > 0) ? System.Math.Min(TAB_W, wScroll / clansOption.Length) : TAB_W);
+                    num = xScroll + wScroll / 2 - clansOption.Length * clanOptW / 2;
+                    cSelected = (GameCanvas.px - num) / clanOptW;
+                    if (cSelected < 0 || cSelected >= clansOption.Length)
+                    {
+                        cSelected = -1;
+                    }
                 }
-                else
+                else if (isMessage && !isViewClanMap)
                 {
                     currMess = getCurrMessage();
                     if (currMess != null && currMess.option != null)
@@ -3981,9 +4034,75 @@ else
             }
         }
 
+        private void openClanMapTab()
+        {
+            isViewClanMap = true;
+            isSearchClan = false;
+            isViewMember = false;
+            isMessage = false;
+            cSelected = -1;
+            selected = -1;
+            cmyLast[currentTabIndex] = 0;
+            initTabClans();
+            getCurrClanOtion();
+        }
+
+        private void showClanMapDetail(int mapIndex)
+        {
+            if (mapIndex < 0 || mapIndex >= CLAN_MAP_DETAILS.Length)
+            {
+                return;
+            }
+            MyVector myVector = new MyVector();
+            myVector.addElement(new Command(mResources.CLOSE, this, 8000, null));
+            GameCanvas.menu.startAt(myVector, X, (selected + 1) * ITEM_HEIGHT - cmy + yScroll);
+            cp = new ChatPopup();
+            cp.isClip = false;
+            cp.sayWidth = 210;
+            cp.cx = 3 + X - ((X != 0) ? (Res.abs(cp.sayWidth - W) + 8) : 0);
+            cp.says = mFont.tahoma_7_red.splitFontArray(CLAN_MAP_DETAILS[mapIndex], cp.sayWidth - 12);
+            cp.delay = 10000000;
+            cp.c = null;
+            cp.sayRun = 7;
+            cp.ch = 15 - cp.sayRun + cp.says.Length * 12 + 10;
+            if (cp.ch > GameCanvas.h - 80)
+            {
+                cp.ch = GameCanvas.h - 80;
+                cp.lim = cp.says.Length * 12 - cp.ch + 17;
+                if (cp.lim < 0)
+                {
+                    cp.lim = 0;
+                }
+                ChatPopup.cmyText = 0;
+                cp.isClip = true;
+            }
+            cp.cy = GameCanvas.menu.menuY - cp.ch;
+            while (cp.cy < 10)
+            {
+                cp.cy++;
+                GameCanvas.menu.menuY++;
+            }
+            cp.mH = 0;
+            cp.strY = 10;
+            idIcon = -1;
+            partID = null;
+            charInfo = null;
+            currItem = null;
+        }
+
         public void initTabClans()
         {
-            if (isSearchClan)
+            if (isSearchClan || isViewMember || isMessage)
+            {
+                isViewClanMap = false;
+            }
+            if (isViewClanMap)
+            {
+                currentListLength = CLAN_MAP_TITLES.Length + 2;
+                clanInfo = "Các Map Bang Hội (Ấn vào để xem)";
+                clanReport = string.Empty;
+            }
+            else if (isSearchClan)
             {
                 currentListLength = ((clans != null) ? (clans.Length + 2) : 2);
                 clanInfo = mResources.clan_list;
@@ -3996,59 +4115,87 @@ else
             }
             else if (isMessage)
             {
-                currentListLength = ClanMessage.vMessage.size() + 2;
+                currentListLength = ClanMessage.vMessage.size() + 3 + CLAN_MAP_TITLES.Length;
                 clanInfo = mResources.msg;
                 clanReport = string.Empty;
             }
-            if (Char.myCharz().clan == null)
+            if (isViewClanMap)
             {
-                clansOption = new string[2][]
+                if (Char.myCharz().clan == null)
+                {
+                    clansOption = new string[2][]
+                    {
+                        mResources.findClan,
+                        mResources.createClan
+                    };
+                }
+                else
+                {
+                    clansOption = new string[2][]
+                    {
+                        mResources.msgg,
+                        mResources.memberr
+                    };
+                }
+            }
+            else if (Char.myCharz().clan == null)
+            {
+                clansOption = new string[3][]
                 {
                     mResources.findClan,
-                    mResources.createClan
+                    mResources.createClan,
+                    CLAN_MAP_OPTION_BTN
                 };
             }
             else if (!isViewMember)
             {
                 if (myMember.size() > 1)
                 {
-                    clansOption = new string[3][]
+                    clansOption = new string[4][]
                     {
                         mResources.chatClan,
                         mResources.request_pea2,
-                        mResources.memberr
+                        mResources.memberr,
+                        CLAN_MAP_OPTION_BTN
                     };
                 }
                 else
                 {
-                    clansOption = new string[1][] { mResources.memberr };
+                    clansOption = new string[2][]
+                    {
+                        mResources.memberr,
+                        CLAN_MAP_OPTION_BTN
+                    };
                 }
             }
             else if (Char.myCharz().role > 0)
             {
-                clansOption = new string[2][]
+                clansOption = new string[3][]
                 {
                     mResources.msgg,
-                    mResources.leaveClan
+                    mResources.leaveClan,
+                    CLAN_MAP_OPTION_BTN
                 };
             }
             else if (myMember.size() > 1)
             {
-                clansOption = new string[4][]
+                clansOption = new string[5][]
                 {
                     mResources.msgg,
                     mResources.leaveClan,
                     mResources.khau_hieuu,
-                    mResources.bieu_tuongg
+                    mResources.bieu_tuongg,
+                    CLAN_MAP_OPTION_BTN
                 };
             }
             else
             {
-                clansOption = new string[3][]
+                clansOption = new string[4][]
                 {
                     mResources.msgg,
                     mResources.khau_hieuu,
-                    mResources.bieu_tuongg
+                    mResources.bieu_tuongg,
+                    CLAN_MAP_OPTION_BTN
                 };
             }
             cmyLim = currentListLength * ITEM_HEIGHT - hScroll;
@@ -4076,6 +4223,7 @@ else
                 lastSelect[3] = -1;
             }
             currentListLength = 2;
+            isViewClanMap = false;
             if (Char.myCharz().clan != null)
             {
                 isMessage = true;
@@ -5289,21 +5437,20 @@ else
                     Item item = arrItemBody[num];
                     if (item != null)
                     {
-                        for (int j = 0; j < item.itemOption.Length; j++)
+                        int visualTierRow = GetEffectiveItemVisualTier(item);
+                        if (visualTierRow > 0)
                         {
-                            if (item.itemOption[j].optionTemplate.id == 72 && item.itemOption[j].param > 0)
+                            sbyte color_Item_Upgrade = GetColor_Item_Upgrade(visualTierRow);
+                            if (GetColor_ItemBg(color_Item_Upgrade) != -1)
                             {
-                                sbyte color_Item_Upgrade = GetColor_Item_Upgrade(item.itemOption[j].param);
-                                if (GetColor_ItemBg(color_Item_Upgrade) != -1)
-                                {
-                                    g.setColor((i != selected) ? GetColor_ItemBg(color_Item_Upgrade) : GetColor_ItemBg(color_Item_Upgrade));
-                                }
+                                g.setColor((i != selected) ? GetColor_ItemBg(color_Item_Upgrade) : GetColor_ItemBg(color_Item_Upgrade));
                             }
                         }
                     }
-                    g.setColor(6047789, 0.3f);
-                    g.fillRect(num5, num6, num7, num8, 5);
-                    paintEffectItem(g, item, num5, num6);
+                    g.setColor((i == selected) ? 16318283 : 9993045);
+                    g.fillRect(num5, num6, num7, num8);
+                    g.setColor(16777215, 0.5f);
+                    g.drawRect(num5 - 1, num6 - 1, num7 + 1, num8 + 1);
                     if (item == null)
                     {
                         continue;
@@ -5350,6 +5497,7 @@ else
                         mFont2.drawString(g, text2, num2 + 5, num3 + 11, mFont.LEFT);
                     }
                     SkhSlotEffect.PaintSlotBg(g, item, num5, num6, num7, num8);
+                    paintEffectItemSlot(g, item, num5, num6, num7, num8);
                     SmallImage.drawSmallImage(g, item.template.iconID, num5 + num7 / 2, num6 + num8 / 2, 0, 3);
                     SkhSlotEffect.PaintSlotBorder(g, item, num5, num6, num7, num8);
                     if (item.itemOption != null)
@@ -5358,10 +5506,7 @@ else
                         {
                             paintOptItem(g, item.itemOption[m].optionTemplate.id, item.itemOption[m].param, num5, num6, num7, num8);
                         }
-                        for (int n = 0; n < item.itemOption.Length; n++)
-                        {
-                            paintOptSlotItem(g, item.itemOption[n].optionTemplate.id, item.itemOption[n].param, num5, num6, num7, num8);
-                        }
+                        paintItemUpgradeSpark(g, item, num5, num6, num7, num8);
                     }
                     if (item.quantity > 1)
                     {
@@ -5785,25 +5930,27 @@ else
                     Item item = arrItemBox[inventorySelect_body];
                     if (item != null)
                     {
+                        int visualTierRow = GetEffectiveItemVisualTier(item);
+                        if (visualTierRow > 0)
+                        {
+                            sbyte color_Item_Upgrade = GetColor_Item_Upgrade(visualTierRow);
+                            if (GetColor_ItemBg(color_Item_Upgrade) != -1)
+                            {
+                                g.setColor((i != selected) ? GetColor_ItemBg(color_Item_Upgrade) : GetColor_ItemBg(color_Item_Upgrade));
+                            }
+                        }
                         for (int k = 0; k < item.itemOption.Length; k++)
                         {
-                            if (item.itemOption[k].optionTemplate.id == 72 && item.itemOption[k].param > 0)
-                            {
-                                sbyte color_Item_Upgrade = GetColor_Item_Upgrade(item.itemOption[k].param);
-                                if (GetColor_ItemBg(color_Item_Upgrade) != -1)
-                                {
-                                    g.setColor((i != selected) ? GetColor_ItemBg(color_Item_Upgrade) : GetColor_ItemBg(color_Item_Upgrade));
-                                }
-                            }
-                            if (item.itemOption[k].optionTemplate.id == 107 && item.itemOption[k].param > 0 && item.itemOption[k].param > 0)
+                            if (item.itemOption[k].optionTemplate.id == 107 && item.itemOption[k].param > 0)
                             {
                                 paintItemStar(g, item.itemOption[k].param.ToString(), num2 + 125, num3);
                             }
                         }
                     }
-                    g.setColor(6047789, 0.3f);
-                    g.fillRect(num5, num6, num7, num8, 5);
-                    paintEffectItem(g, item, num5, num6);
+                    g.setColor((i == selected) ? 16318283 : 9993045);
+                    g.fillRect(num5, num6, num7, num8);
+                    g.setColor(16777215, 0.5f);
+                    g.drawRect(num5 - 1, num6 - 1, num7 + 1, num8 + 1);
                     if (item == null)
                     {
                         continue;
@@ -5853,6 +6000,7 @@ else
                         mFont2.drawString(g, text2, num2 + 5, num3 + 10, mFont.LEFT);
                     }
                     SkhSlotEffect.PaintSlotBg(g, item, num5, num6, num7, num8);
+                    paintEffectItemSlot(g, item, num5, num6, num7, num8);
                     SmallImage.drawSmallImage(g, item.template.iconID, num5 + num7 / 2, num6 + num8 / 2, 0, 3);
                     SkhSlotEffect.PaintSlotBorder(g, item, num5, num6, num7, num8);
                     if (item.itemOption != null)
@@ -5861,10 +6009,7 @@ else
                         {
                             paintOptItemInventory(g, item.itemOption[n].optionTemplate.id, item.itemOption[n].param, num5, num6, num7, num8, item);
                         }
-                        for (int num10 = 0; num10 < item.itemOption.Length; num10++)
-                        {
-                            paintOptSlotItem(g, item.itemOption[num10].optionTemplate.id, item.itemOption[num10].param, num5, num6, num7, num8);
-                        }
+                        paintItemUpgradeSpark(g, item, num5, num6, num7, num8);
                     }
                     if (item.quantity > 1)
                     {
@@ -5912,16 +6057,14 @@ else
                     g.setColor((i != selected) ? 9993045 : 9541120);
                     if (item != null)
                     {
-                        for (int j = 0; j < item.itemOption.Length; j++)
+                        int visualTierRow = GetEffectiveItemVisualTier(item);
+                        if (visualTierRow > 0)
                         {
-                            if (item.itemOption[j].optionTemplate.id == 72 && item.itemOption[j].param > 0)
+                            sbyte color_Item_Upgrade = GetColor_Item_Upgrade(visualTierRow);
+                            int color_ItemBg = GetColor_ItemBg(color_Item_Upgrade);
+                            if (color_ItemBg != -1)
                             {
-                                sbyte color_Item_Upgrade = GetColor_Item_Upgrade(item.itemOption[j].param);
-                                int color_ItemBg = GetColor_ItemBg(color_Item_Upgrade);
-                                if (color_ItemBg != -1)
-                                {
-                                    g.setColor((i != selected) ? GetColor_ItemBg(color_Item_Upgrade) : GetColor_ItemBg(color_Item_Upgrade));
-                                }
+                                g.setColor((i != selected) ? color_ItemBg : color_ItemBg);
                             }
                         }
                     }
@@ -6268,21 +6411,19 @@ else
             g.setClip(xScroll, yScroll, wScroll, hScroll);
             g.translate(-cmx, -cmy);
             g.setColor(0);
-            int num = xScroll + wScroll / 2 - clansOption.Length * TAB_W / 2;
+            int clanOptW = ((clansOption != null && clansOption.Length > 0) ? System.Math.Min(TAB_W, wScroll / clansOption.Length) : TAB_W);
+            int num = xScroll + wScroll / 2 - clansOption.Length * clanOptW / 2;
             if (currentListLength == 2)
             {
                 mFont.tahoma_7_green2.drawString(g, clanReport, xScroll + wScroll / 2, yScroll + 24 + hScroll / 2 - mFont.tahoma_7.getHeight() / 2, 2);
-                if (isMessage && myMember.size() == 1)
-                {
-                    for (int i = 0; i < mResources.clanEmpty.Length; i++)
-                    {
-                        mFont.tahoma_7b_dark.drawString(g, mResources.clanEmpty[i], xScroll + wScroll / 2, yScroll + 24 + hScroll / 2 - mResources.clanEmpty.Length * 12 / 2 + i * 12, mFont.CENTER);
-                    }
-                }
             }
-            if (isMessage)
+            if (isViewClanMap)
             {
-                currentListLength = ClanMessage.vMessage.size() + 2;
+                currentListLength = CLAN_MAP_TITLES.Length + 2;
+            }
+            else if (isMessage)
+            {
+                currentListLength = ClanMessage.vMessage.size() + 3 + CLAN_MAP_TITLES.Length;
             }
             for (int j = 0; j < currentListLength; j++)
             {
@@ -6312,15 +6453,46 @@ else
                         {
                             for (int k = 0; k < clansOption.Length; k++)
                             {
-                                g.setColor((k != cSelected || j != selected) ? 15723751 : 16383818);
-                                g.fillRect(num + k * TAB_W, num7, TAB_W - 1, 23, 5);
+                                bool isMapBtn = clansOption[k] == CLAN_MAP_OPTION_BTN;
+                                g.setColor((k == cSelected && j == selected) ? 16383818 : (isMapBtn ? 16768685 : 15723751));
+                                g.fillRect(num + k * clanOptW, num7, clanOptW - 1, 23, 5);
+                                mFont optFont = (isMapBtn ? mFont.tahoma_7b_red : mFont.tahoma_7_grey);
                                 for (int l = 0; l < clansOption[k].Length; l++)
                                 {
-                                    mFont.tahoma_7_grey.drawString(g, clansOption[k][l], num + k * TAB_W + TAB_W / 2, yScroll + l * 11, mFont.CENTER);
+                                    optFont.drawString(g, clansOption[k][l], num + k * clanOptW + clanOptW / 2, yScroll + l * 11, mFont.CENTER);
                                 }
                             }
                             continue;
                         }
+                }
+                if (isViewClanMap)
+                {
+                    int mapIdx = j - 2;
+                    if (mapIdx >= 0 && mapIdx < CLAN_MAP_TITLES.Length)
+                    {
+                        g.setColor((j != selected) ? 15196114 : 16383818);
+                        g.fillRect(num6, num7, num8, num9, 5);
+                        g.setColor((j != selected) ? 9993045 : 9541120);
+                        g.fillRect(num2, num3, num4, num5, 5);
+                        mFont.tahoma_7b_yellow.drawString(g, (mapIdx + 1).ToString(), num2 + num4 / 2, num3 + 6, mFont.CENTER);
+                        mFont titleFont = ((j == selected) ? mFont.tahoma_7b_red : mFont.tahoma_7b_green2);
+                        titleFont.drawString(g, CLAN_MAP_TITLES[mapIdx], num6 + 5, num7, 0);
+                        g.setClip(num6, num7, num8 - 44, num9);
+                        mFont.tahoma_7_blue.drawString(g, CLAN_MAP_SUBS[mapIdx], num6 + 5, num7 + 11, 0);
+                        g.setClip(xScroll, yScroll + cmy, wScroll, hScroll);
+                        int btnCenterX = xScroll + wScroll - 22;
+                        if (j == selected)
+                        {
+                            g.drawImage(GameScr.imgLbtnFocus2, btnCenterX, num7 + num9 / 2, StaticObj.VCENTER_HCENTER);
+                            mFont.tahoma_7b_green2.drawString(g, "Xem", btnCenterX, num7 + 6, mFont.CENTER);
+                        }
+                        else
+                        {
+                            g.drawImage(GameScr.imgLbtn2, btnCenterX, num7 + num9 / 2, StaticObj.VCENTER_HCENTER);
+                            mFont.tahoma_7b_dark.drawString(g, "Xem", btnCenterX, num7 + 6, mFont.CENTER);
+                        }
+                    }
+                    continue;
                 }
                 if (isSearchClan)
                 {
@@ -6392,8 +6564,45 @@ else
                     mFont.tahoma_7_blue.drawString(g, string.Empty + member.clanPoint, num6 + num8 - 15, num7 + 6, mFont.RIGHT);
                     continue;
                 }
-                if (!isMessage || ClanMessage.vMessage.size() == 0)
+                if (!isMessage)
                 {
+                    continue;
+                }
+                int msgCount = ClanMessage.vMessage.size();
+                if (j == 2 + msgCount)
+                {
+                    g.setColor(16768685);
+                    g.fillRect(xScroll, num7, wScroll, num9, 5);
+                    mFont.tahoma_7b_red.drawString(g, "Các Map Bang Hội (Ấn vào để xem)", xScroll + wScroll / 2, num7 + 6, mFont.CENTER);
+                    continue;
+                }
+                if (j > 2 + msgCount)
+                {
+                    int inlineMapIdx = j - (3 + msgCount);
+                    if (inlineMapIdx >= 0 && inlineMapIdx < CLAN_MAP_TITLES.Length)
+                    {
+                        g.setColor((j != selected) ? 15196114 : 16383818);
+                        g.fillRect(num6, num7, num8, num9, 5);
+                        g.setColor((j != selected) ? 9993045 : 9541120);
+                        g.fillRect(num2, num3, num4, num5, 5);
+                        mFont.tahoma_7b_yellow.drawString(g, (inlineMapIdx + 1).ToString(), num2 + num4 / 2, num3 + 6, mFont.CENTER);
+                        mFont titleFont2 = ((j == selected) ? mFont.tahoma_7b_red : mFont.tahoma_7b_green2);
+                        titleFont2.drawString(g, CLAN_MAP_TITLES[inlineMapIdx], num6 + 5, num7, 0);
+                        g.setClip(num6, num7, num8 - 44, num9);
+                        mFont.tahoma_7_blue.drawString(g, CLAN_MAP_SUBS[inlineMapIdx], num6 + 5, num7 + 11, 0);
+                        g.setClip(xScroll, yScroll + cmy, wScroll, hScroll);
+                        int btnCenterX2 = xScroll + wScroll - 22;
+                        if (j == selected)
+                        {
+                            g.drawImage(GameScr.imgLbtnFocus2, btnCenterX2, num7 + num9 / 2, StaticObj.VCENTER_HCENTER);
+                            mFont.tahoma_7b_green2.drawString(g, "Xem", btnCenterX2, num7 + 6, mFont.CENTER);
+                        }
+                        else
+                        {
+                            g.drawImage(GameScr.imgLbtn2, btnCenterX2, num7 + num9 / 2, StaticObj.VCENTER_HCENTER);
+                            mFont.tahoma_7b_dark.drawString(g, "Xem", btnCenterX2, num7 + 6, mFont.CENTER);
+                        }
+                    }
                     continue;
                 }
                 ClanMessage clanMessage = (ClanMessage)ClanMessage.vMessage.elementAt(j - 2);
@@ -6527,10 +6736,11 @@ else
                 }
                 g.setColor((j != selected) ? 15196114 : 16383818);
                 g.fillRect(num, num2, num3, num4, 5);
-                g.setColor(6047789, 0.3f);
                 Item item = (Item)vItemCombine.elementAt(j);
-                g.fillRect(num5, num6, num7, num8, 5);
-                paintEffectItem(g, item, num5, num6);
+                g.setColor((j == selected) ? 16318283 : 9993045);
+                g.fillRect(num5, num6, num7, num8);
+                g.setColor(16777215, 0.5f);
+                g.drawRect(num5 - 1, num6 - 1, num7 + 1, num8 + 1);
                 if (item == null)
                 {
                     continue;
@@ -6580,6 +6790,7 @@ else
                     mFont2.drawString(g, text2, num + 5, num2 + 10, mFont.LEFT);
                 }
                 SkhSlotEffect.PaintSlotBg(g, item, num5, num6, num7, num8);
+                paintEffectItemSlot(g, item, num5, num6, num7, num8);
                 SmallImage.drawSmallImage(g, item.template.iconID, num5 + num7 / 2, num6 + num8 / 2, 0, 3);
                 SkhSlotEffect.PaintSlotBorder(g, item, num5, num6, num7, num8);
                 if (item.itemOption != null)
@@ -6588,10 +6799,7 @@ else
                     {
                         paintOptItemInventory(g, item.itemOption[m].optionTemplate.id, item.itemOption[m].param, num5, num6, num7, num8, item);
                     }
-                    for (int n = 0; n < item.itemOption.Length; n++)
-                    {
-                        paintOptSlotItem(g, item.itemOption[n].optionTemplate.id, item.itemOption[n].param, num5, num6, num7, num8);
-                    }
+                    paintItemUpgradeSpark(g, item, num5, num6, num7, num8);
                 }
                 if (item.quantity > 1)
                 {
@@ -6659,12 +6867,14 @@ else
                             }
                         }
                     }
-                    g.fillRect(num7, num8, num9, num10, 5);
+                    g.setColor((j == selected) ? 16318283 : 9993045);
+                    g.fillRect(num7, num8, num9, num10);
+                    g.setColor(16777215, 0.5f);
+                    g.drawRect(num7 - 1, num8 - 1, num9 + 1, num10 + 1);
                     if (item == null)
                     {
                         continue;
                     }
-                    paintEffectItem(g, item, num7, num8);
                     string text = string.Empty;
                     mFont tahoma_7_green = mFont.tahoma_7_green2;
                     if (item.itemOption != null)
@@ -6703,6 +6913,7 @@ else
                         mFont2.drawString(g, text2, num4 + 5, num5 + 11, mFont.LEFT);
                     }
                     SkhSlotEffect.PaintSlotBg(g, item, num7, num8, num9, num10);
+                    paintEffectItemSlot(g, item, num7, num8, num9, num10);
                     SmallImage.drawSmallImage(g, item.template.iconID, num7 + num9 / 2, num8 + num10 / 2, 0, 3);
                     SkhSlotEffect.PaintSlotBorder(g, item, num7, num8, num9, num10);
                     if (item.itemOption != null)
@@ -6711,10 +6922,7 @@ else
                         {
                             paintOptItem(g, item.itemOption[n].optionTemplate.id, item.itemOption[n].param, num7, num8, num9, num10);
                         }
-                        for (int num11 = 0; num11 < item.itemOption.Length; num11++)
-                        {
-                            paintOptSlotItem(g, item.itemOption[num11].optionTemplate.id, item.itemOption[num11].param, num7, num8, num9, num10);
-                        }
+                        paintItemUpgradeSpark(g, item, num7, num8, num9, num10);
                     }
                     if (item.quantity > 1)
                     {
@@ -6743,8 +6951,17 @@ Item[] arrItemBag = Char.myCharz().arrItemBag;
 currentListLength = arrItemBody.Length + arrItemBag.Length;
 g.setClip(xScroll, yScroll, wScroll, hScroll);
 g.translate(0, -cmy);
-Char.myCharz().paintCharBody(g, xScroll + wScroll / 2, yScroll + 70, 1, 0, true);
 int xM = (position == 0 ? 36 : 35);
+int fullSetTier = SkhSlotEffect.GetFullSetTierFromBody(arrItemBody);
+if (fullSetTier >= 10)
+{
+    SkhSlotEffect.PaintInventoryFullSetSanctum(g, xScroll + xM, yScroll + 2, 100, 67, xScroll + wScroll / 2, yScroll + 67, Char.myCharz().cgender, fullSetTier);
+}
+Char.myCharz().paintCharBody(g, xScroll + wScroll / 2, yScroll + 70, 1, 0, true);
+if (fullSetTier >= 10)
+{
+    SkhSlotEffect.PaintInventoryFullSetBanner(g, xScroll + wScroll / 2, yScroll + 2, Char.myCharz().cgender, fullSetTier);
+}
 g.setColor(9993045);
 g.fillRect(xScroll + xM, yScroll + 70, 100, 50);
 long totalHP = 0;
@@ -6862,13 +7079,7 @@ for (int i = 0; i < arrItemBody.Length; i++)
                     paintOptItem(g, item.itemOption[k].optionTemplate.id, item.itemOption[k].param, x, y, bodyCellW, bodyCellH - 1);
                 }
             }
-            for (int k = 0; k < item.itemOption.Length; k++)
-            {
-                if (item.itemOption[k] != null && item.itemOption[k].optionTemplate != null)
-                {
-                    paintOptSlotItem(g, item.itemOption[k].optionTemplate.id, item.itemOption[k].param, x, y, bodyCellW, bodyCellH - 1);
-                }
-            }
+            paintItemUpgradeSpark(g, item, x, y, bodyCellW, bodyCellH - 1);
         }
     }
 }
@@ -6906,13 +7117,7 @@ for (int i = 0; i < arrItemBag.Length; i++)
                     paintOptItem(g, item.itemOption[k].optionTemplate.id, item.itemOption[k].param, x, y, bagCellW, bagCellH - 1);
                 }
             }
-            for (int k = 0; k < item.itemOption.Length; k++)
-            {
-                if (item.itemOption[k] != null && item.itemOption[k].optionTemplate != null)
-                {
-                    paintOptSlotItem(g, item.itemOption[k].optionTemplate.id, item.itemOption[k].param, x, y, bagCellW, bagCellH - 1);
-                }
-            }
+            paintItemUpgradeSpark(g, item, x, y, bagCellW, bagCellH - 1);
         }
         if (item.quantity > 1)
         {
@@ -7797,6 +8002,13 @@ paintScrollArrow(g);
             indexRowMax = 0;
             if (indexMenu == 0)
             {
+                string[] vtNoticeLines = mFont.tahoma_7b_red.splitFontArray("Hoàn thành nhanh để đến với võ đài liên vũ trụ", wScroll - 14);
+                for (int n = 0; n < vtNoticeLines.Length; n++)
+                {
+                    mFont.tahoma_7b_red.drawString(g, vtNoticeLines[n], xScroll + wScroll / 2, yPaint - 6 + n * 12, mFont.CENTER);
+                    indexRowMax++;
+                }
+                yPaint += vtNoticeLines.Length * 12 + 4;
                 bool flag = false;
                 if (Char.myCharz().taskMaint != null)
                 {
@@ -9163,10 +9375,32 @@ else
             }
         }
 
+        public static string getStrHideCaiTrang()
+        {
+            string suffix = ((GameScr.voCucTypeVt13 == 1) ? " (Chibi Bản Năng)" : ((GameScr.voCucTypeVt13 == 2) ? " (Chibi Bản Ngã)" : ""));
+            return (GameScr.hideCaiTrangVt13 ? "Ẩn cải trang: BẬT" : "Ẩn cải trang: TẮT") + suffix;
+        }
+
         private void doFireTool()
         {
             if (selected < 0)
             {
+                return;
+            }
+            if (strTool != null && selected < strTool.Length && strTool[selected] != null && strTool[selected].StartsWith("Ẩn cải trang"))
+            {
+                try
+                {
+                    Message msgVt = new Message((sbyte)(-126));
+                    msgVt.writer().writeByte(1);
+                    Session_ME.gI().sendMessage(msgVt);
+                    msgVt.cleanup();
+                }
+                catch (Exception)
+                {
+                }
+                GameScr.hideCaiTrangVt13 = !GameScr.hideCaiTrangVt13;
+                strTool[selected] = getStrHideCaiTrang();
                 return;
             }
             if (SoundMn.IsDelAcc && selected == strTool.Length - 1)
@@ -9665,7 +9899,57 @@ else
                     cSelected = -1;
                     return;
                 }
-                if (Char.myCharz().clan == null)
+                if (isViewClanMap)
+                {
+                    if (selected == 0)
+                    {
+                        if (Char.myCharz().clan == null)
+                        {
+                            if (cSelected == 0)
+                            {
+                                isViewClanMap = false;
+                                isSearchClan = true;
+                                initTabClans();
+                                Service.gI().searchClan(string.Empty);
+                            }
+                            else if (cSelected == 1)
+                            {
+                                isViewClanMap = false;
+                                isSearchClan = true;
+                                initTabClans();
+                                InfoDlg.showWait();
+                                creatClan();
+                                Service.gI().getClan(1, -1, null);
+                            }
+                        }
+                        else if (cSelected == 0)
+                        {
+                            isViewClanMap = false;
+                            isSearchClan = false;
+                            isViewMember = false;
+                            isMessage = true;
+                            currentListLength = ClanMessage.vMessage.size() + 2;
+                            initTabClans();
+                            getCurrClanOtion();
+                        }
+                        else if (cSelected == 1)
+                        {
+                            member = null;
+                            isViewClanMap = false;
+                            isSearchClan = false;
+                            isViewMember = true;
+                            isMessage = false;
+                            currentListLength = myMember.size() + 2;
+                            initTabClans();
+                            getCurrClanOtion();
+                        }
+                    }
+                    else if (selected >= 2)
+                    {
+                        showClanMapDetail(selected - 2);
+                    }
+                }
+                else if (Char.myCharz().clan == null)
                 {
                     if (selected == 0)
                     {
@@ -9678,6 +9962,10 @@ else
                             InfoDlg.showWait();
                             creatClan();
                             Service.gI().getClan(1, -1, null);
+                        }
+                        else if (cSelected == 2)
+                        {
+                            openClanMapTab();
                         }
                     }
                     else if (selected != -1)
@@ -9721,7 +10009,11 @@ else
                 }
                 else if (selected == 0)
                 {
-                    if (isMessage)
+                    if (cSelected >= 0 && clansOption != null && cSelected == clansOption.Length - 1 && clansOption[cSelected] == CLAN_MAP_OPTION_BTN)
+                    {
+                        openClanMapTab();
+                    }
+                    else if (isMessage)
                     {
                         if (cSelected == 0)
                         {
@@ -9857,32 +10149,40 @@ else
                 }
                 else if (isMessage)
                 {
-                    currMess = getCurrMessage();
-                    if (currMess != null)
+                    int msgCount2 = ClanMessage.vMessage.size();
+                    if (selected >= 3 + msgCount2 && selected < 3 + msgCount2 + CLAN_MAP_TITLES.Length)
                     {
-                        if (currMess.type == 0)
+                        showClanMapDetail(selected - (3 + msgCount2));
+                    }
+                    else
+                    {
+                        currMess = getCurrMessage();
+                        if (currMess != null)
                         {
-                            MyVector myVector5 = new MyVector();
-                            myVector5.addElement(new Command(mResources.CLOSE, this, 8000, currMess));
-                            GameCanvas.menu.startAt(myVector5, X, (selected + 1) * ITEM_HEIGHT - cmy + yScroll);
-                            addMessageDetail(currMess);
-                        }
-                        else if (currMess.type == 1)
-                        {
-                            if (currMess.playerId != Char.myCharz().charID && cSelected != -1)
+                            if (currMess.type == 0)
                             {
-                                Service.gI().clanDonate(currMess.id);
+                                MyVector myVector5 = new MyVector();
+                                myVector5.addElement(new Command(mResources.CLOSE, this, 8000, currMess));
+                                GameCanvas.menu.startAt(myVector5, X, (selected + 1) * ITEM_HEIGHT - cmy + yScroll);
+                                addMessageDetail(currMess);
                             }
-                        }
-                        else if (currMess.type == 2 && currMess.option != null)
-                        {
-                            if (cSelected == 0)
+                            else if (currMess.type == 1)
                             {
-                                Service.gI().joinClan(currMess.id, 1);
+                                if (currMess.playerId != Char.myCharz().charID && cSelected != -1)
+                                {
+                                    Service.gI().clanDonate(currMess.id);
+                                }
                             }
-                            else if (cSelected == 1)
+                            else if (currMess.type == 2 && currMess.option != null)
                             {
-                                Service.gI().joinClan(currMess.id, 0);
+                                if (cSelected == 0)
+                                {
+                                    Service.gI().joinClan(currMess.id, 1);
+                                }
+                                else if (cSelected == 1)
+                                {
+                                    Service.gI().joinClan(currMess.id, 0);
+                                }
                             }
                         }
                     }
@@ -10612,6 +10912,11 @@ else
                 Res.outz("remove item");
                 bool inventorySelect_isbody2 = GetInventorySelect_isbody(selected, newSelected, Char.myCharz().arrItemBody);
                 int index2 = (inventorySelect_isbody2 ? GetInventorySelect_body(selected, newSelected) : GetInventorySelect_bag(selected, newSelected, Char.myCharz().arrItemBody));
+                if (isnewInventory && currItem != null)
+                {
+                    index2 = currItem.indexUI;
+                    inventorySelect_isbody2 = newSelected == 0;
+                }
                 Service.gI().useItem(1, (!inventorySelect_isbody2) ? ((sbyte)1) : ((sbyte)0), index2, -1);
             }
             if (idAction == 2004)
@@ -10625,6 +10930,10 @@ else
             if (idAction == 2005)
             {
                 int id3 = GetInventorySelect_bag(selected, newSelected, Char.myCharz().arrItemBody);
+                if (isnewInventory && currItem != null)
+                {
+                    id3 = currItem.indexUI;
+                }
                 Service.gI().getItem(BAG_PET, id3);
             }
             if (idAction == 2006)
@@ -10635,6 +10944,10 @@ else
             if (idAction == 2007)
             {
                 int id5 = GetInventorySelect_bag(selected, newSelected, Char.myCharz().arrItemBody);
+                if (isnewInventory && currItem != null)
+                {
+                    id5 = currItem.indexUI;
+                }
                 Service.gI().getItem(BAG_PET2, id5);
             }
             if (idAction == 2008)
@@ -12428,12 +12741,25 @@ else
             }
         }
 
+        public void paintItemUpgradeSpark(mGraphics g, Item item, int x, int y, int w, int h)
+        {
+            int visualTier = GetEffectiveItemVisualTier(item);
+            if (visualTier > ChatPopup.numSlot)
+            {
+                int cappedTier = ((visualTier >= 9) ? 9 : 8);
+                sbyte color_Item_Upgrade = GetColor_Item_Upgrade(cappedTier);
+                int nline = cappedTier - ChatPopup.numSlot;
+                paintUpgradeEffect(x, y, w, h, nline, color_Item_Upgrade, g);
+            }
+        }
+
         public void paintOptSlotItem(mGraphics g, int idOpt, long param, int x, int y, int w, int h)
         {
             if (idOpt == 102 && param > ChatPopup.numSlot)
             {
-                sbyte color_Item_Upgrade = GetColor_Item_Upgrade(param);
-                int nline = (int)(param - ChatPopup.numSlot);
+                int cappedTier = ((param >= 9) ? 9 : 8);
+                sbyte color_Item_Upgrade = GetColor_Item_Upgrade(cappedTier);
+                int nline = cappedTier - ChatPopup.numSlot;
                 paintUpgradeEffect(x, y, w, h, nline, color_Item_Upgrade, g);
             }
         }

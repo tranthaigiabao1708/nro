@@ -5,8 +5,11 @@ import nro.models.consts.ConstNpc;
 import nro.models.item.Item;
 import nro.models.player.Player;
 import nro.models.services.InventoryService;
+import nro.models.services.ItemService;
 import nro.models.services.Service;
 import nro.models.utils.Util;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -37,15 +40,27 @@ public class GiamDinhSach {
             return;
         }
 
+        ItemService.gI().ensureDefaultOptions(sachTuyetKy);
+
+        if (!sachTuyetKy.isHaveOption(217)) {
+            Service.gI().sendDialogMessage(player, "Sách Tuyệt Kỹ này đã được giám định rồi! Hãy dùng Tẩy Sách nếu muốn giám định lại.");
+            return;
+        }
+
         StringBuilder text = new StringBuilder();
         text.append(ConstFont.BOLD_GREEN)
             .append("Giám định ")
             .append(sachTuyetKy.template.name)
             .append(" ?\n")
-            .append(ConstFont.BOLD_BLUE)
+            .append(buaGiamDinh.quantity >= 1 ? ConstFont.BOLD_BLUE : ConstFont.BOLD_RED)
             .append("Bùa giám định ")
             .append(buaGiamDinh.quantity)
             .append("/1");
+
+        if (buaGiamDinh.quantity < 1) {
+            CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU, text.toString(), "Còn thiếu\nBùa giám định");
+            return;
+        }
 
         CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE, text.toString(), "Giám định", "Từ chối");
     }
@@ -66,17 +81,34 @@ public class GiamDinhSach {
             }
         }
 
-        if (sachTuyetKy == null || buaGiamDinh == null || !sachTuyetKy.isHaveOption(217)) {
-            Service.gI().sendServerMessage(player, "Còn cái nịt mà giám");
+        if (sachTuyetKy == null || buaGiamDinh == null || buaGiamDinh.quantity < 1) {
+            Service.gI().sendThongBao(player, "Cần Sách Tuyệt Kỹ và ít nhất 1 Bùa giám định!");
+            return;
+        }
+
+        ItemService.gI().ensureDefaultOptions(sachTuyetKy);
+
+        if (!sachTuyetKy.isHaveOption(217)) {
+            Service.gI().sendThongBao(player, "Sách Tuyệt Kỹ này đã được giám định rồi!");
             return;
         }
 
         int[] options = {77, 103, 50, 108, 94, 14, 80, 81, 175, 5, 214, 216};
+        Set<Integer> usedOptionIds = new HashSet<>();
+        for (Item.ItemOption io : sachTuyetKy.itemOptions) {
+            if (io != null && io.optionTemplate != null && io.optionTemplate.id != 217) {
+                usedOptionIds.add(io.optionTemplate.id);
+            }
+        }
 
         for (int i = 0; i < sachTuyetKy.itemOptions.size(); i++) {
             Item.ItemOption io = sachTuyetKy.itemOptions.get(i);
-            if (io.optionTemplate.id == 217) {
+            if (io != null && io.optionTemplate != null && io.optionTemplate.id == 217) {
                 int randomOption = options[Util.nextInt(options.length)];
+                for (int tries = 0; tries < 20 && usedOptionIds.contains(randomOption); tries++) {
+                    randomOption = options[Util.nextInt(options.length)];
+                }
+                usedOptionIds.add(randomOption);
                 int randomValue = Util.nextInt(1, 10 / Util.nextInt(1, 3));
                 sachTuyetKy.itemOptions.set(i, new Item.ItemOption(randomOption, randomValue));
             }

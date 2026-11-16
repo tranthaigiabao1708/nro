@@ -33,13 +33,24 @@ public class GhiDanh extends Npc {
     public void openBaseMenu(Player pl) {
         if (canOpenNpc(pl)) {
             switch (this.mapId) {
-                case 42, 43, 44 ->
-                    this.createOtherMenu(pl, ConstNpc.MAY_DAM, "Tính điểm máy đấm nào các thí sinh\nMáy đấm đằng kia không phải tôi.",
+                case 42, 43, 44 -> {
+                    String lastHitText = pl.last_damage_maydam > 0
+                            ? Util.formatNumber(pl.last_damage_maydam) + " (" + Util.numberToMoney(pl.last_damage_maydam) + ")"
+                            : "Chưa ghi nhận";
+                    String comboText = pl.last_combo_damage_maydam > 0 && pl.last_combo_damage_maydam != pl.last_damage_maydam
+                            ? "\nTổng đợt đánh gần nhất: " + Util.formatNumber(pl.last_combo_damage_maydam) + " (" + Util.numberToMoney(pl.last_combo_damage_maydam) + ")"
+                            : "";
+                    this.createOtherMenu(pl, ConstNpc.MAY_DAM,
+                            "Máy đo sức mạnh (200 Tỷ HP - Không giáp)\n"
+                            + "Sát thương gần nhất vừa gây ra: " + lastHitText
+                            + comboText
+                            + "\nĐiểm Máy Đấm hiện tại: " + Util.formatNumber(pl.point_maydam),
                             "Top 100\n Trái đất",
                             "Top 100\nNamek",
                             "Top 100\nXayda",
                             "Xem điểm",
                             "Đóng");
+                }
                 case 52 ->
                     WorldMartialArtsTournamentService.menu(this, pl);
                 case 129 -> {
@@ -188,8 +199,15 @@ public class GhiDanh extends Npc {
                                 Service.gI().showListTopNamek(player, Manager.Topmaydam);
                             case 2 ->
                                 Service.gI().showListTopXayda(player, Manager.Topmaydam);
-                            case 3 ->
-                                Service.gI().sendThongBao(player, "Điểm hiện tại của bạn là: " + player.point_maydam);
+                            case 3 -> {
+                                String lastHit = player.last_damage_maydam > 0
+                                        ? Util.formatNumber(player.last_damage_maydam) + " (" + Util.numberToMoney(player.last_damage_maydam) + ")"
+                                        : "Chưa có";
+                                Service.gI().sendThongBao(player,
+                                        "Sát thương gần nhất: " + lastHit
+                                        + "\nTổng sát thương Máy Đấm: " + Util.formatNumber(player.total_damage_maydam)
+                                        + "\nĐiểm Máy Đấm hiện tại: " + Util.formatNumber(player.point_maydam));
+                            }
                             }
                         }
                     }

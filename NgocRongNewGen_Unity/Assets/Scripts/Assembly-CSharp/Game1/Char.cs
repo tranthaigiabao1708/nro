@@ -845,6 +845,8 @@ namespace Game1
 
 		public static bool isPaintAura2;
 
+		public sbyte voCucType;
+
 		private FrameImage fraEff;
 
 		private FrameImage fraEffSub;
@@ -852,6 +854,8 @@ namespace Game1
 		private string strEff_Set_Item = "set_eff_";
 
 		public short idEff_Set_Item = -1;
+
+		private short lastIdEffSetItem = -1;
 
 		private FrameImage fraHat_behind;
 
@@ -1503,27 +1507,27 @@ namespace Game1
 				}
 				if (danhHieuEff)
 				{
-					if (eDanhHieu == null)
+					string text = (string)GameCanvas.danhHieu.get(charID + string.Empty);
+					if (text != null)
 					{
-						string text = (string)GameCanvas.danhHieu.get(charID + string.Empty);
-						if (text != null)
+						GameCanvas.danhHieu.remove(charID + string.Empty);
+						string[] array = Res.split(text.Trim(), ",", 0);
+						short id = short.Parse(array[0]);
+						short num2 = short.Parse(array[1]);
+						if (eDanhHieu == null || eDanhHieu.effId != id)
 						{
-							string[] array = Res.split(text.Trim(), ",", 0);
-							short id = short.Parse(array[0]);
-							short num2 = short.Parse(array[1]);
-							eDanhHieu = new Effect(id, cx, cH_new + 73, 1, -1, -1);
-							eDanhHieu.timeExist = num2 * 1000 + mSystem.currentTimeMillis();
+							eDanhHieu = new Effect(id, cx, me ? cH_new : (cH_new - 6), 1, -1, -1);
 						}
+						eDanhHieu.timeExist = (long)num2 * 1000L + mSystem.currentTimeMillis();
 					}
 					if (eDanhHieu != null)
 					{
 						eDanhHieu.update();
 						eDanhHieu.x = cx;
-						eDanhHieu.y = cH_new;
+						eDanhHieu.y = (me ? cH_new : (cH_new - 6));
 						if (eDanhHieu.timeExist <= mSystem.currentTimeMillis())
 						{
 							eDanhHieu = null;
-							GameCanvas.danhHieu.remove(charID + string.Empty);
 						}
 					}
 				}
@@ -2869,6 +2873,9 @@ namespace Game1
 				statusMe = 14;
 				if (me)
 				{
+					ischangingMap = false;
+					isLockKey = false;
+					InfoDlg.hide();
 					GameScr.gI().resetButton();
 					Service.gI().charMove();
 				}
@@ -5263,6 +5270,42 @@ namespace Game1
 			}
 		}
 
+		private int GetSatanBadgeTopY(int fallbackHeadTopY)
+		{
+			if (eDanhHieu == null)
+			{
+				return 999999;
+			}
+			int baseY = (eDanhHieu.y != 0) ? eDanhHieu.y : fallbackHeadTopY;
+			int relTop = -36;
+			EffectData ed = Effect.getEffDataById(eDanhHieu.effId);
+			if (ed != null && ed.frame != null && ed.frame.Length > 0)
+			{
+				int minDy = 0;
+				bool found = false;
+				int maxFramesToScan = (ed.frame.Length < 4) ? ed.frame.Length : 4;
+				for (int f = 0; f < maxFramesToScan; f++)
+				{
+					if (ed.frame[f] != null && ed.frame[f].dy != null)
+					{
+						for (int k = 0; k < ed.frame[f].dy.Length; k++)
+						{
+							if (!found || ed.frame[f].dy[k] < minDy)
+							{
+								minDy = ed.frame[f].dy[k];
+								found = true;
+							}
+						}
+					}
+				}
+				if (found)
+				{
+					relTop = (minDy < -26) ? minDy : -26;
+				}
+			}
+			return baseY + relTop;
+		}
+
 		private void PaintCharName_HP_MP_Overhead(mGraphics g)
 		{
 			int fHead = getFHead(head);
@@ -5284,6 +5327,7 @@ namespace Game1
 			{
 				num += 5;
 				paintHp(g, cx, cy - num + 3);
+				int myTagBottom = cy - num - 5;
 				if (fraDanhHieu != null)
 				{
 					int x = cx - fraDanhHieu.frameWidth / 2;
@@ -5297,6 +5341,27 @@ namespace Game1
 						danhHieuFramme = 0;
 					}
 					fraDanhHieu.drawFrame(danhHieuFramme, x, y, 0, mGraphics.TOP | mGraphics.LEFT, g);
+					if (y - 3 < myTagBottom)
+					{
+						myTagBottom = y - 3;
+					}
+				}
+				if (eDanhHieu != null)
+				{
+					int satanTop = GetSatanBadgeTopY(cy - num + 10);
+					if (satanTop - 4 < myTagBottom)
+					{
+						myTagBottom = satanTop - 4;
+					}
+				}
+				int myFullSetTier = SkhSlotEffect.GetFullSetTierFromBody(arrItemBody);
+				if (myFullSetTier < 10)
+				{
+					myFullSetTier = idEff_Set_Item;
+				}
+				if (myFullSetTier >= 10 && myFullSetTier <= 12)
+				{
+					SkhSlotEffect.PaintOverheadFullSetTag(g, cx, myTagBottom, myFullSetTier, cgender);
 				}
 				return;
 			}
@@ -5376,6 +5441,23 @@ namespace Game1
 					ModFunc.PaintTicks(g, cx + width / 2, cy - num + 1);
 				}
 				num += mFont.tahoma_7.getHeight();
+			}
+			if (!isPet && !isMiniPet && charID > 0 && idEff_Set_Item >= 10 && idEff_Set_Item <= 12)
+			{
+				int otherTagBottom = cy - num - 2;
+				if (fraDanhHieu != null && myCharz().charFocus != null && myCharz().charFocus.Equals(this))
+				{
+					otherTagBottom -= fraDanhHieu.frameHeight + 4;
+				}
+				if (eDanhHieu != null)
+				{
+					int satanTopOther = GetSatanBadgeTopY(cy - num + 12);
+					if (satanTopOther - 4 < otherTagBottom)
+					{
+						otherTagBottom = satanTopOther - 4;
+					}
+				}
+				SkhSlotEffect.PaintOverheadFullSetTag(g, cx, otherTagBottom, idEff_Set_Item, cgender);
 			}
 			if (!flag)
 			{
@@ -5944,6 +6026,10 @@ namespace Game1
 				timeFocusToMob--;
 				return;
 			}
+			if (charFocus != null && charFocus.isFollowPet())
+			{
+				charFocus = null;
+			}
 			if (isManualFocus && charFocus != null && (charFocus.statusMe == 15 || charFocus.isInvisiblez))
 			{
 				charFocus = null;
@@ -6154,7 +6240,7 @@ namespace Game1
 				for (int num23 = 0; num23 < GameScr.vCharInMap.size(); num23++)
 				{
 					Char @char = (Char)GameScr.vCharInMap.elementAt(num23);
-					if (@char.statusMe != 15 && !@char.isInvisiblez && wdx == 0 && wdy == 0)
+					if (@char.statusMe != 15 && !@char.isInvisiblez && !@char.isFollowPet() && wdx == 0 && wdy == 0)
 					{
 						int num24 = Math.abs(myCharz().cx - @char.cx);
 						int num25 = Math.abs(myCharz().cy - @char.cy);
@@ -6169,7 +6255,7 @@ namespace Game1
 			}
 			else
 			{
-				if (num2 <= charFocus.cx && charFocus.cx <= num3 && cmy <= charFocus.cy && charFocus.cy <= num4 && charFocus.statusMe != 15 && !charFocus.isInvisiblez)
+				if (num2 <= charFocus.cx && charFocus.cx <= num3 && cmy <= charFocus.cy && charFocus.cy <= num4 && charFocus.statusMe != 15 && !charFocus.isInvisiblez && !charFocus.isFollowPet())
 				{
 					ClearFocus(2);
 					return;
@@ -6178,7 +6264,7 @@ namespace Game1
 				for (int num27 = 0; num27 < GameScr.vCharInMap.size(); num27++)
 				{
 					Char char2 = (Char)GameScr.vCharInMap.elementAt(num27);
-					if (char2.statusMe != 15 && !char2.isInvisiblez && wdx == 0 && wdy == 0)
+					if (char2.statusMe != 15 && !char2.isInvisiblez && !char2.isFollowPet() && wdx == 0 && wdy == 0)
 					{
 						int num28 = Math.abs(myCharz().cx - char2.cx);
 						int num29 = Math.abs(myCharz().cy - char2.cy);
@@ -6311,7 +6397,7 @@ namespace Game1
 			for (int i = 0; i < GameScr.vCharInMap.size(); i++)
 			{
 				Char @char = (Char)GameScr.vCharInMap.elementAt(i);
-				if (@char.statusMe != 15 && !@char.isInvisiblez && num2 <= @char.cx && @char.cx <= num3 && num4 <= @char.cy && @char.cy <= num5 && @char.charID != -114 && (TileMap.mapID != 129 || (TileMap.mapID == 129 && myCharz().cy > 264)))
+				if (@char.statusMe != 15 && !@char.isInvisiblez && !@char.isFollowPet() && num2 <= @char.cx && @char.cx <= num3 && num4 <= @char.cy && @char.cy <= num5 && @char.charID != -114 && (TileMap.mapID != 129 || (TileMap.mapID == 129 && myCharz().cy > 264)))
 				{
 					focus.addElement(@char);
 					if (charFocus != null && @char.Equals(charFocus))
@@ -6570,7 +6656,7 @@ namespace Game1
 
 		public bool isMeCanAttackOtherPlayer(Char cAtt)
 		{
-			if (cAtt != null && myCharz().myskill != null && myCharz().myskill.template.type != 2 && (myCharz().myskill.template.type != 4 || cAtt.statusMe == 14 || cAtt.statusMe == 5) && ((cAtt.cTypePk == 3 && myCharz().cTypePk == 3) || myCharz().cTypePk == 5 || cAtt.cTypePk == 5 || (myCharz().cTypePk == 1 && cAtt.cTypePk == 1) || (myCharz().cTypePk == 4 && cAtt.cTypePk == 4) || (myCharz().testCharId >= 0 && myCharz().testCharId == cAtt.charID) || (myCharz().killCharId >= 0 && myCharz().killCharId == cAtt.charID && !isLang()) || (cAtt.killCharId >= 0 && cAtt.killCharId == myCharz().charID && !isLang()) || (myCharz().cFlag == 8 && cAtt.cFlag != 0) || (myCharz().cFlag != 0 && cAtt.cFlag == 8) || (myCharz().cFlag != cAtt.cFlag && myCharz().cFlag != 0 && cAtt.cFlag != 0)) && cAtt.statusMe != 14)
+			if (cAtt != null && !cAtt.isFollowPet() && myCharz().myskill != null && myCharz().myskill.template.type != 2 && (myCharz().myskill.template.type != 4 || cAtt.statusMe == 14 || cAtt.statusMe == 5) && ((cAtt.cTypePk == 3 && myCharz().cTypePk == 3) || myCharz().cTypePk == 5 || cAtt.cTypePk == 5 || (myCharz().cTypePk == 1 && cAtt.cTypePk == 1) || (myCharz().cTypePk == 4 && cAtt.cTypePk == 4) || (myCharz().testCharId >= 0 && myCharz().testCharId == cAtt.charID) || (myCharz().killCharId >= 0 && myCharz().killCharId == cAtt.charID && !isLang()) || (cAtt.killCharId >= 0 && cAtt.killCharId == myCharz().charID && !isLang()) || (myCharz().cFlag == 8 && cAtt.cFlag != 0) || (myCharz().cFlag != 0 && cAtt.cFlag == 8) || (myCharz().cFlag != cAtt.cFlag && myCharz().cFlag != 0 && cAtt.cFlag != 0)) && cAtt.statusMe != 14)
 			{
 				return cAtt.statusMe != 5;
 			}
@@ -6629,6 +6715,10 @@ namespace Game1
 			}
 			else if (objectz is Char @char)
 			{
+				if (@char.isFollowPet())
+				{
+					return;
+				}
 				myCharz().mobFocus = null;
 				myCharz().deFocusNPC();
 				myCharz().charFocus = @char;
@@ -6652,9 +6742,14 @@ namespace Game1
 		{
 		}
 
+		public bool isFollowPet()
+		{
+			return isMiniPet || charID <= -300000000 || (cName != null && (cName == "#" || cName == "$" || cName.StartsWith("#") || (isPet && cName.Length == 0)));
+		}
+
 		public bool isInvisible()
 		{
-			return false;
+			return isFollowPet();
 		}
 
 		public bool focusToAttack()
@@ -7072,46 +7167,112 @@ namespace Game1
 			return idHead;
 		}
 
+		private static bool IsAuraSingleLayerInSub1(int id)
+		{
+			return id == 6 || id == 7 || id == 11 || id == 13 || id == 64 || id == 65 || id == 66 || (id >= 82 && id <= 94);
+		}
+
+		private bool ShouldSkipAuraFrontOverlay(int id)
+		{
+			if (IsAuraSingleLayerInSub1(id) || id == 2 || id == 5 || id == 12 || id == 24 || id == 29 || id == 30)
+			{
+				return true;
+			}
+			if (me && arrItemBody != null && arrItemBody.Length > 10 && arrItemBody[10] != null && arrItemBody[10].template != null && arrItemBody[10].template.type == 35 && arrItemBody[10].template.part == id)
+			{
+				return true;
+			}
+			return false;
+		}
+
 		public void paintAuraBehind(mGraphics g)
 		{
-			if ((!me || !isPaintAura) && idAuraEff > -1 && (statusMe == 1 || statusMe == 6) && !GameCanvas.panel.isShow && mSystem.currentTimeMillis() - timeBlue > 0)
+			bool hideByFullPanel = GameCanvas.panel != null && GameCanvas.panel.isShow && GameCanvas.w <= Panel.WIDTH_PANEL;
+			if ((!me || isPaintAura) && (statusMe == 1 || statusMe == 6) && !hideByFullPanel && mSystem.currentTimeMillis() - timeBlue > 0)
 			{
-				FrameImage fraImage = mSystem.getFraImage(strEffAura + idAuraEff + "_0");
-				fraImage?.drawFrame(GameCanvas.gameTick / 4 % fraImage.nFrame, cx, cy, (cdir != 1) ? 2 : 0, mGraphics.BOTTOM | mGraphics.HCENTER, g);
+				if (voCucType == 1 || voCucType == 2)
+				{
+					string outerAuraName = ((voCucType == 1) ? "aura_vt13_ui_0" : "aura_vt13_ue_0");
+					FrameImage fraOuter = mSystem.getFraImage(outerAuraName);
+					if (fraOuter != null && fraOuter.nFrame > 0)
+					{
+						fraOuter.drawFrame(GameCanvas.gameTick / 4 % fraOuter.nFrame, cx, cy + 4, (cdir != 1) ? 2 : 0, mGraphics.BOTTOM | mGraphics.HCENTER, g);
+					}
+				}
+				if (idAuraEff > -1)
+				{
+					FrameImage fraImage;
+					if (IsAuraSingleLayerInSub1(idAuraEff))
+					{
+						fraImage = mSystem.getFraImage(strEffAura + idAuraEff + "_1");
+					}
+					else
+					{
+						fraImage = mSystem.getFraImage(strEffAura + idAuraEff + "_0");
+						if (fraImage != null && (fraImage.frameWidth <= 4 || fraImage.frameHeight <= 4))
+						{
+							fraImage = mSystem.getFraImage(strEffAura + idAuraEff + "_1");
+						}
+					}
+					if (fraImage != null && fraImage.nFrame > 0)
+					{
+						fraImage.drawFrame(GameCanvas.gameTick / 4 % fraImage.nFrame, cx, cy, (cdir != 1) ? 2 : 0, mGraphics.BOTTOM | mGraphics.HCENTER, g);
+					}
+				}
 			}
 		}
 
 		public void paintAuraFront(mGraphics g)
 		{
-			if ((me && !isPaintAura) || idAuraEff <= -1)
+			if ((me && !isPaintAura) || (idAuraEff <= -1 && voCucType <= 0))
 			{
 				return;
 			}
 			if (statusMe == 1 || statusMe == 6)
 			{
-				if (!GameCanvas.panel.isShow && !GameCanvas.lowGraphic)
+				bool hideByFullPanel = GameCanvas.panel != null && GameCanvas.panel.isShow && GameCanvas.w <= Panel.WIDTH_PANEL;
+				if (!hideByFullPanel && !GameCanvas.lowGraphic)
 				{
-					bool flag = false;
-					if (mSystem.currentTimeMillis() - timeBlue > -1000 && IsAddDust1)
+					if (idAuraEff > -1)
 					{
-						flag = true;
-						IsAddDust1 = false;
+						bool flag = false;
+						if (mSystem.currentTimeMillis() - timeBlue > -1000 && IsAddDust1)
+						{
+							flag = true;
+							IsAddDust1 = false;
+						}
+						if (mSystem.currentTimeMillis() - timeBlue > -500 && IsAddDust2)
+						{
+							flag = true;
+							IsAddDust2 = false;
+						}
+						if (flag)
+						{
+							GameCanvas.gI().startDust(-1, cx - -8, cy);
+							GameCanvas.gI().startDust(1, cx - 8, cy);
+							addDustEff(1);
+						}
+						if (mSystem.currentTimeMillis() - timeBlue > 0 && !ShouldSkipAuraFrontOverlay(idAuraEff))
+						{
+							FrameImage fraBack = mSystem.getFraImage(strEffAura + idAuraEff + "_0");
+							if (fraBack == null || (fraBack.frameWidth > 4 && fraBack.frameHeight > 4))
+							{
+								FrameImage fraImage = mSystem.getFraImage(strEffAura + idAuraEff + "_1");
+								if (fraImage != null && fraImage.nFrame > 0)
+								{
+									fraImage.drawFrame(GameCanvas.gameTick / 4 % fraImage.nFrame, cx, cy + 2, (cdir != 1) ? 2 : 0, mGraphics.BOTTOM | mGraphics.HCENTER, g);
+								}
+							}
+						}
 					}
-					if (mSystem.currentTimeMillis() - timeBlue > -500 && IsAddDust2)
+					if (mSystem.currentTimeMillis() - timeBlue > 0 && (voCucType == 1 || voCucType == 2))
 					{
-						flag = true;
-						IsAddDust2 = false;
-					}
-					if (flag)
-					{
-						GameCanvas.gI().startDust(-1, cx - -8, cy);
-						GameCanvas.gI().startDust(1, cx - 8, cy);
-						addDustEff(1);
-					}
-					if (mSystem.currentTimeMillis() - timeBlue > 0)
-					{
-						FrameImage fraImage = mSystem.getFraImage(strEffAura + idAuraEff + "_1");
-						fraImage?.drawFrame(GameCanvas.gameTick / 4 % fraImage.nFrame, cx, cy + 2, (cdir != 1) ? 2 : 0, mGraphics.BOTTOM | mGraphics.HCENTER, g);
+						string outerFrontName = ((voCucType == 1) ? "aura_vt13_ui_1" : "aura_vt13_ue_1");
+						FrameImage fraOuterFront = mSystem.getFraImage(outerFrontName);
+						if (fraOuterFront != null && fraOuterFront.nFrame > 0)
+						{
+							fraOuterFront.drawFrame(GameCanvas.gameTick / 4 % fraOuterFront.nFrame, cx, cy + 4, (cdir != 1) ? 2 : 0, mGraphics.BOTTOM | mGraphics.HCENTER, g);
+						}
 					}
 				}
 			}
@@ -7125,7 +7286,32 @@ namespace Game1
 
 		public void paintEff_Lvup_behind(mGraphics g)
 		{
-			if (idEff_Set_Item != -1)
+			short curEff = idEff_Set_Item;
+			if (me)
+			{
+				int localTier = SkhSlotEffect.GetFullSetTierFromBody(arrItemBody);
+				if (localTier >= 10)
+				{
+					curEff = (short)localTier;
+				}
+			}
+			if (curEff != lastIdEffSetItem)
+			{
+				fraEff = null;
+				fraEffSub = null;
+				lastIdEffSetItem = curEff;
+			}
+			if (curEff >= 10 && curEff <= 12)
+			{
+				SkhSlotEffect.PaintMapFullSetBehind(g, cx, cy, curEff);
+				int spriteId = (curEff == 12) ? 8 : ((curEff == 11) ? 7 : 6);
+				if (fraEff == null)
+				{
+					fraEff = mSystem.getFraImage(strEff_Set_Item + spriteId + "_0");
+				}
+				fraEff?.drawFrame(GameCanvas.gameTick / 4 % fraEff.nFrame, cx, cy + 3, (cdir != 1) ? 2 : 0, mGraphics.BOTTOM | mGraphics.HCENTER, g);
+			}
+			else if (curEff != -1)
 			{
 				if (fraEff != null)
 				{
@@ -7133,14 +7319,42 @@ namespace Game1
 				}
 				else
 				{
-					fraEff = mSystem.getFraImage(strEff_Set_Item + idEff_Set_Item + "_0");
+					fraEff = mSystem.getFraImage(strEff_Set_Item + curEff + "_0");
 				}
 			}
 		}
 
 		public void paintEff_Lvup_front(mGraphics g)
 		{
-			if (idEff_Set_Item != -1)
+			short curEff = idEff_Set_Item;
+			if (me)
+			{
+				int localTier = SkhSlotEffect.GetFullSetTierFromBody(arrItemBody);
+				if (localTier >= 10)
+				{
+					curEff = (short)localTier;
+				}
+			}
+			if (curEff != lastIdEffSetItem)
+			{
+				fraEff = null;
+				fraEffSub = null;
+				lastIdEffSetItem = curEff;
+			}
+			if (curEff >= 10 && curEff <= 12)
+			{
+				if (curEff >= 11 && !GameCanvas.lowGraphic)
+				{
+					int spriteId = (curEff == 12) ? 8 : 7;
+					if (fraEffSub == null)
+					{
+						fraEffSub = mSystem.getFraImage(strEff_Set_Item + spriteId + "_1");
+					}
+					fraEffSub?.drawFrame(GameCanvas.gameTick / 4 % fraEffSub.nFrame, cx, cy + 8, (cdir != 1) ? 2 : 0, mGraphics.BOTTOM | mGraphics.HCENTER, g);
+				}
+				SkhSlotEffect.PaintMapFullSetFront(g, cx, cy, curEff);
+			}
+			else if (curEff != -1)
 			{
 				if (fraEffSub != null)
 				{
@@ -7148,7 +7362,7 @@ namespace Game1
 				}
 				else
 				{
-					fraEffSub = mSystem.getFraImage(strEff_Set_Item + idEff_Set_Item + "_1");
+					fraEffSub = mSystem.getFraImage(strEff_Set_Item + curEff + "_1");
 				}
 			}
 		}

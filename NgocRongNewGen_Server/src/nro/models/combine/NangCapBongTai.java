@@ -47,6 +47,7 @@ public class NangCapBongTai {
                 player.combineNew.ratioCombine = RATIO_BONG_TAI;
 
                 String npcSay = "|2|Bông tai Porata [+2]" + "\n\n";
+                npcSay += "|1|Nội tại hợp thể: +10% Sức đánh\n";
                 npcSay += "|2|Tỉ lệ thành công: " + RATIO_BONG_TAI + "%\n";
 
                 int currentMvp = InventoryService.gI().getParam(player, ITEM_PARAM_INDEX, ITEM_ID_MANH_VO_BT);
@@ -119,6 +120,11 @@ public class NangCapBongTai {
             }
 
             if (bongTai != null && manhVo != null) {
+                int currentMvp = InventoryService.gI().getParam(player, ITEM_PARAM_INDEX, ITEM_ID_MANH_VO_BT);
+                if (currentMvp < REQUIRED_MANH_VO_FULL) {
+                    Service.gI().sendThongBao(player, "Không đủ Mảnh vỡ bông tai để thực hiện");
+                    return;
+                }
                 Item bongTaiCap2 = InventoryService.gI().findItemBag(player, ITEM_ID_BONG_TAI_C2);
                 if (bongTaiCap2 != null) {
                     Service.gI().sendThongBao(player, "Ngươi đã có bông tai Porata cấp 2 trong hành trang rồi, không thể nâng cấp nữa.");
@@ -131,6 +137,7 @@ public class NangCapBongTai {
                 if (Util.isTrue(RATIO_BONG_TAI, 100)) {
                     bongTai.template = ItemService.gI().getTemplate(ITEM_ID_BONG_TAI_C2);
                     bongTai.itemOptions.clear();
+                    bongTai.itemOptions.add(new ItemOption(255, 10));
                     bongTai.itemOptions.add(new ItemOption(ITEM_OPTION_ID_CAP, ITEM_OPTION_VALUE_CAP_2));
                     InventoryService.gI().subParamItemsBag(player, ITEM_ID_MANH_VO_BT, ITEM_PARAM_INDEX, REQUIRED_MANH_VO_FULL);
                     CombineService.gI().sendEffectSuccessCombine(player);

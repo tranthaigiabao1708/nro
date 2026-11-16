@@ -71,7 +71,7 @@ public class NPoint {
     public long bossRealHp, bossRealHpMax;
     public long mp, mpMax, mpg;
     public long dame, dameg;
-    public int def, defg;
+    public int def, defg, bossFlatDef;
     public int crit, critg, critdragon;
     public int luckDragon;
     public byte speed = 8;
@@ -435,30 +435,42 @@ public class NPoint {
 
         // Bông tai cấp 2
         if (this.player.fusion.typeFusion == ConstPlayer.HOP_THE_PORATA2) {
-            this.player.inventory.itemsBag.stream()
-                    .filter(it -> it.isNotNullItem() && it.template.id == 921)
+            Item btc2 = this.player.inventory.itemsBag.stream()
+                    .filter(it -> it != null && it.isNotNullItem() && it.template.id == 921)
                     .findFirst()
-                    .ifPresent(btc2 -> {
-                        for (ItemOption io : btc2.itemOptions) {
-                            addOption(io);
-                            if (io.optionTemplate.id == 72) {
-                                this.levelBT = io.param;
-                            }
+                    .orElseGet(() -> this.player.inventory.itemsBox.stream()
+                            .filter(it -> it != null && it.isNotNullItem() && it.template.id == 921)
+                            .findFirst()
+                            .orElse(null));
+            if (btc2 != null && btc2.itemOptions != null) {
+                for (ItemOption io : btc2.itemOptions) {
+                    if (io != null && io.optionTemplate != null) {
+                        addOption(io);
+                        if (io.optionTemplate.id == 72) {
+                            this.levelBT = io.param;
                         }
-                    });
+                    }
+                }
+            }
         }
         if (this.player.fusion.typeFusion == ConstPlayer.HOP_THE_PORATA3) {
-            this.player.inventory.itemsBag.stream()
-                    .filter(it -> it.isNotNullItem() && it.template.id == 1819)
+            Item btc3 = this.player.inventory.itemsBag.stream()
+                    .filter(it -> it != null && it.isNotNullItem() && it.template.id == 1819)
                     .findFirst()
-                    .ifPresent(btc3 -> {
-                        for (ItemOption io : btc3.itemOptions) {
-                            addOption(io);
-                            if (io.optionTemplate.id == 72) {
-                                this.levelBT = io.param;
-                            }
+                    .orElseGet(() -> this.player.inventory.itemsBox.stream()
+                            .filter(it -> it != null && it.isNotNullItem() && it.template.id == 1819)
+                            .findFirst()
+                            .orElse(null));
+            if (btc3 != null && btc3.itemOptions != null) {
+                for (ItemOption io : btc3.itemOptions) {
+                    if (io != null && io.optionTemplate != null) {
+                        addOption(io);
+                        if (io.optionTemplate.id == 72) {
+                            this.levelBT = io.param;
                         }
-                    });
+                    }
+                }
+            }
         }
 
         boolean isFused = (this.player.fusion != null && this.player.fusion.typeFusion != ConstPlayer.NON_FUSION)
@@ -521,6 +533,32 @@ public class NPoint {
             }
         }
         setDameTrainArmor();
+        if (this.player.isPl() && this.player.unlockVuTru13) {
+            this.tlDame.add(15);
+            this.tlHp.add(15);
+            this.tlMp.add(15);
+        }
+        if (this.player.isPl() && this.player.voCucType > 0) {
+            boolean inVuTru13 = this.player.zone != null && this.player.zone.map != null
+                    && nro.models.services.VuTru13Service.isMapVuTru13(this.player.zone.map.mapId);
+            int div = inVuTru13 ? 1 : 10;
+            int lv = Math.max(1, Math.min(5, this.player.voCucLevel));
+            if (this.player.voCucType == 1) {
+                // Bản Năng Vô Cực: Tăng tỉ lệ né đòn + tăng dame + tăng sát thương chí mạng (còn 1/10 ở hành tinh thường)
+                this.tlNeDon += (10 + lv * 10) / div;
+                this.tlDame.add((20 + lv * 10) / div);
+                int sdcmBonus = (30 + lv * 10) / div;
+                this.tlDameCrit.add(sdcmBonus);
+                this.tlSDCM += sdcmBonus;
+            } else if (this.player.voCucType == 2) {
+                // Bản Ngã Vô Cực: Tăng giáp + tăng HP & KI (%) (còn 1/10 ở hành tinh thường)
+                this.tlGiap += (10 + lv * 10) / div;
+                this.defAdd += (30_000L * lv) / div;
+                int hpKiPct = (30 + lv * 10) / div;
+                this.tlHp.add(hpKiPct);
+                this.tlMp.add(hpKiPct);
+            }
+        }
         if (this.player.isPet && ((Pet) this.player).master != null
                 && ((Pet) this.player).master.inventory != null
                 && ((Pet) this.player).master.inventory.itemsBody != null
@@ -1011,7 +1049,7 @@ public class NPoint {
         }
 
         // Xử lý map lạnh
-        if (this.player.zone != null && MapService.gI().isMapCold(this.player.zone.map) && !this.isKhongLanh) {
+        if (!this.player.isBoss && this.player.zone != null && MapService.gI().isMapCold(this.player.zone.map) && !this.isKhongLanh) {
             hpMax /= 2;
         }
 
@@ -1293,6 +1331,11 @@ public class NPoint {
             } else {
                 dame += this.player.pet.nPoint.dame;
             }
+            if (this.player.fusion.typeFusion == ConstPlayer.HOP_THE_PORATA2) {
+                dame += (dame * 10L / 100L);
+            } else if (this.player.fusion.typeFusion == ConstPlayer.HOP_THE_PORATA3) {
+                dame += (dame * 20L / 100L);
+            }
         }
 
         // Lấy tất cả option danh hiệu
@@ -1332,7 +1375,7 @@ public class NPoint {
         dame -= (dame * tlSubSD / 100L);
 
         // Xử lý map cold
-        if (this.player.zone != null && MapService.gI().isMapCold(this.player.zone.map) && !this.isKhongLanh) {
+        if (!this.player.isBoss && this.player.zone != null && MapService.gI().isMapCold(this.player.zone.map) && !this.isKhongLanh) {
             dame /= 2;
         }
 
@@ -1352,7 +1395,7 @@ public class NPoint {
     }
 
     private void setDef() {
-        long totalDef = (long) this.defg * 4L + this.defAdd;
+        long totalDef = (long) this.defg * 4L + this.defAdd + this.bossFlatDef;
         if (totalDef > Integer.MAX_VALUE) {
             totalDef = Integer.MAX_VALUE;
         } else if (totalDef < 0L) {
@@ -1504,6 +1547,20 @@ public class NPoint {
     public long getDameAttackLong(boolean isAttackMob) {
         setIsCrit();
         long dameAttack = this.dame;
+        boolean isBanNgaVoCuc = this.player != null && this.player.isPl() && this.player.voCucType == 2;
+        long ueDiv = 10L;
+        int ueLv = 1;
+        if (isBanNgaVoCuc) {
+            boolean inVt13 = this.player.zone != null && this.player.zone.map != null
+                    && nro.models.services.VuTru13Service.isMapVuTru13(this.player.zone.map.mapId);
+            ueDiv = inVt13 ? 1L : 10L;
+            ueLv = Math.max(1, Math.min(5, this.player.voCucLevel));
+            // Bản Ngã Vô Cực: Cộng thẳng Sức đánh dựa trên lượng HP thực tế đang có (giảm còn 1/10 ở hành tinh thường)
+            long currHp = Math.max(0L, this.hp);
+            long pctFromCurrHp = 10L + ueLv * 5L; // 15%..35% HP hiện tại tại VT13 (1.5%..3.5% ở hành tinh thường)
+            long flatCurrHpDame = ((currHp / 100L) * pctFromCurrHp + ((currHp % 100L) * pctFromCurrHp / 100L)) / ueDiv;
+            dameAttack += flatCurrHpDame;
+        }
         if (this.frostPoisonUntil > System.currentTimeMillis()
                 && (this.player.itemTime == null || !this.player.itemTime.isUseThuocGiaiVt6)) {
             dameAttack = dameAttack * 70L / 100L;
@@ -1619,6 +1676,7 @@ public class NPoint {
                 long hppl = 0;
                 for (Mob mob : this.player.zone.mobs) {
                     if (!mob.isDie()
+                            && mob.tempId != nro.models.consts.ConstMob.MAY_DO_SUC_MANH
                             && Util.getDistance(this.player, mob) <= SkillUtil.getRangeQCKK(this.player.playerSkill.skillSelect.point)) {
                         hpmob += mob.point.hp;
                     }
@@ -1670,6 +1728,18 @@ public class NPoint {
         }
 
         dameAfter = 0;
+
+        if (isBanNgaVoCuc) {
+            // Bản Ngã Vô Cực: Tăng dame dựa trên % HP đã mất + tăng thêm dame theo tỉ lệ HP đang có (1/10 ở hành tinh thường)
+            int currPct = Math.max(0, Math.min(100, getCurrPercentHP()));
+            int missingPct = Math.max(0, 100 - currPct);
+            long maxMissingBonusPct = 50L + ueLv * 10L; // Tối đa +60%..+100% khi cạn máu ở VT13 (+6%..+10% ở hành tinh thường)
+            long maxCurrBonusPct = 10L + ueLv * 10L;    // Tối đa +20%..+60% khi đầy máu ở VT13 (+2%..+6% ở hành tinh thường)
+            long bonusPct = (missingPct * maxMissingBonusPct + currPct * maxCurrBonusPct) / (100L * ueDiv);
+            if (bonusPct > 0L) {
+                dameAttack += (dameAttack / 100L) * bonusPct + ((dameAttack % 100L) * bonusPct / 100L);
+            }
+        }
 
         if (isCrit) {
             dameAttack *= 2L;
@@ -2241,7 +2311,9 @@ public class NPoint {
 
     private boolean doUseTiemNang(long tiemNang) {
         if (this.tiemNang < tiemNang) {
-            Service.gI().sendThongBaoOK(player, "Bạn không đủ tiềm năng");
+            if (!player.isPet) {
+                Service.gI().sendThongBaoOK(player, "Bạn không đủ tiềm năng");
+            }
             return false;
         }
         if (this.tiemNang >= tiemNang && this.tiemNang - tiemNang >= 0) {

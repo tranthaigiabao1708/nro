@@ -127,9 +127,20 @@ public class Zone {
     }
 
     private void udMob() {
+        if (this.mobs.isEmpty()) {
+            return;
+        }
+        boolean hasActiveEntity = !this.players.isEmpty() || !this.bosses.isEmpty() || !this.bots.isEmpty();
         for (int i = this.mobs.size() - 1; i >= 0; i--) {
             try {
-                mobs.get(i).update();
+                Mob mob = mobs.get(i);
+                if (mob == null) {
+                    continue;
+                }
+                if (!hasActiveEntity && !mob.isDie() && !mob.isBigBoss()) {
+                    continue;
+                }
+                mob.update();
             } catch (Exception e) {
                 Logger.logException(Zone.class, e, "Lỗi update mobs");
             }
@@ -247,7 +258,14 @@ public class Zone {
         }
     }
 
+    private long lastTimeUdPlayer = 0L;
+
     private void udPlayer() {
+        long now = System.currentTimeMillis();
+        if (now - this.lastTimeUdPlayer < 1000L) {
+            return;
+        }
+        this.lastTimeUdPlayer = now;
         for (Player pl : this.notBosses) {
             try {
                 if (pl != null && !pl.isPet && !pl.isBot && !pl.isNewPet && !pl.beforeDispose && !pl.isDisposed) {
@@ -299,9 +317,6 @@ public class Zone {
                     continue;
                 }
             }
-            if (item.itemTemplate.id == 726 && item.playerId != player.id) {
-                continue;
-            }
             list.add(item);
         }
         return list;
@@ -326,6 +341,10 @@ public class Zone {
     }
 
     public void pickItem(Player player, int itemMapId) {
+        if (player == null || player.beforeDispose || player.isDisposed
+                || nro.models.services_func.TransactionService.gI().check(player)) {
+            return;
+        }
         ItemMap itemMap = getItemMapByItemMapId(itemMapId);
         if (itemMap != null && !itemMap.isPickedUp) {
             synchronized (itemMap) {
@@ -600,6 +619,9 @@ public class Zone {
                 if (plInfo.effectSkill != null && plInfo.effectSkill.isChibi) {
                     Service.gI().sendChibiFollowToMe(plReceive, plInfo);
                 }
+                if (plInfo.voCucType > 0) {
+                    nro.models.services.VuTru13Service.gI().sendVoCucAuraToPlayer(plReceive, plInfo);
+                }
             }
         } catch (Exception e) {
         }
@@ -668,7 +690,7 @@ public class Zone {
                     msg.writer().writeBoolean(false); //is ice
                     msg.writer().writeBoolean(false); //is wind
                     msg.writer().writeByte(mob.tempId);
-                    msg.writer().writeByte(0); // sys
+                    msg.writer().writeByte((mob.tempId == ConstMob.HIRUDEGARN && mob.lvMob >= 0 && mob.lvMob <= 2) ? mob.lvMob : 0); // sys
                     msg.writer().writeLong(mob.point.gethp());
                     msg.writer().writeByte(mob.level);
                     msg.writer().writeLong(mob.point.getHpFull());

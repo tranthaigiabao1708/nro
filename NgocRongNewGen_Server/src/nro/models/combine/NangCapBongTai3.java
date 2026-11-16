@@ -45,6 +45,7 @@ public class NangCapBongTai3 {
                 player.combineNew.ratioCombine = RATIO_BONG_TAI;
 
                 String npcSay = "|2|Bông tai Porata [+3]\n\n";
+                npcSay += "|1|Nội tại hợp thể: +20% Sức đánh (Giữ dòng chỉ số BT2)\n";
                 npcSay += "|2|Tỉ lệ thành công: " + RATIO_BONG_TAI + "%\n";
 
                 int currentMvp = InventoryService.gI().getParam(player, ITEM_PARAM_INDEX, ITEM_ID_MANH_VO_BT3);
@@ -117,6 +118,11 @@ public class NangCapBongTai3 {
             }
 
             if (bongTai != null && manhVo != null) {
+                int currentMvp = InventoryService.gI().getParam(player, ITEM_PARAM_INDEX, ITEM_ID_MANH_VO_BT3);
+                if (currentMvp < REQUIRED_MANH_VO_FULL) {
+                    Service.gI().sendThongBao(player, "Không đủ Mảnh vỡ bông tai cấp 3 để thực hiện");
+                    return;
+                }
                 Item bongTaiCap3 = InventoryService.gI().findItemBag(player, ITEM_ID_BONG_TAI_C3);
                 if (bongTaiCap3 != null) {
                     Service.gI().sendThongBao(player, "Ngươi đã có bông tai Porata cấp 3 trong hành trang rồi, không thể nâng cấp nữa.");
@@ -128,9 +134,22 @@ public class NangCapBongTai3 {
                 player.inventory.gem -= gem;
 
                 if (Util.isTrue(RATIO_BONG_TAI, 100)) {
-                    // Thành công: nâng template + set option cấp 3
+                    // Thành công: giữ dòng mở chỉ số của BT2 + nâng lên nội tại cấp 3 (+20% Sức đánh)
+                    java.util.List<Item.ItemOption> preservedOpts = new java.util.ArrayList<>();
+                    if (bongTai.itemOptions != null) {
+                        for (Item.ItemOption io : bongTai.itemOptions) {
+                            if (io != null && io.optionTemplate != null) {
+                                int opId = io.optionTemplate.id;
+                                if (opId != ITEM_OPTION_ID_CAP && opId != 73 && opId != 255) {
+                                    preservedOpts.add(new Item.ItemOption(opId, io.param));
+                                }
+                            }
+                        }
+                    }
                     bongTai.template = ItemService.gI().getTemplate(ITEM_ID_BONG_TAI_C3);
                     bongTai.itemOptions.clear();
+                    bongTai.itemOptions.add(new Item.ItemOption(255, 20));
+                    bongTai.itemOptions.addAll(preservedOpts);
                     bongTai.itemOptions.add(new Item.ItemOption(ITEM_OPTION_ID_CAP, ITEM_OPTION_VALUE_CAP_3));
 
                     // Trừ đủ mảnh vỡ yêu cầu

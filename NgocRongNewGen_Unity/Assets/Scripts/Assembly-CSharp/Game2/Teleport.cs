@@ -234,13 +234,13 @@ namespace Game2
 					GameScr.findCharInMap(id).cy = y - 30;
 					GameScr.findCharInMap(id).statusMe = 4;
 				}
-				if (Res.abs(y - y2) < 50 && TileMap.tileTypeAt(x, y, 2))
+				if ((Res.abs(y - y2) < 50 && TileMap.tileTypeAt(x, y, 2)) || y >= y2)
 				{
 					tHole = true;
 					if (planet < 3)
 					{
 						SoundMn.gI().pauseAirShip();
-						if (y % 24 != 0)
+						if (y % 24 != 0 && TileMap.tileTypeAt(x, y, 2))
 						{
 							y -= y % 24;
 						}

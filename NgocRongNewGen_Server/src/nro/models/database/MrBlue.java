@@ -100,66 +100,79 @@ public class MrBlue {
             }
             if (hasAccount) {
                 session.userId = rs.getInt("account.id");
-                session.isAdmin = rs.getBoolean("is_admin");
-                session.lastTimeLogout = rs.getTimestamp("last_time_logout").getTime();
-                session.actived = rs.getBoolean("active");
-                session.goldBar = rs.getInt("account.thoi_vang");
-                session.luotquay = rs.getInt("account.luotquay");
-                session.gold = rs.getLong("account.vang");
-                session.eventPoint = rs.getInt("account.event_point");
-                session.bdPlayer = rs.getDouble("account.bd_player");
-                session.vnd = rs.getInt("vnd");
-                session.tongnap = rs.getInt("tongnap");
-                session.vip = rs.getInt("vip");
-                long lastTimeLogin = rs.getTimestamp("last_time_login").getTime();
-                int secondsPass1 = (int) ((System.currentTimeMillis() - lastTimeLogin) / 1000);
-                long lastTimeLogout = rs.getTimestamp("last_time_logout").getTime();
-                int secondsPass = (int) ((System.currentTimeMillis() - lastTimeLogout) / 1000);
-                long createTime = rs.getTimestamp("create_time").getTime();
-                int deltaTime = (int) ((System.currentTimeMillis() - createTime) / 1000);
-
-                if (rs.getBoolean("ban")) {
-                    Service.gI().sendThongBaoOK(session, "Tài khoản này đang bị khóa. Liên hệ Admin để biết thêm thông tin");
-                } else if ((plInGame = Client.gI().getPlayerByUser(session.userId)) != null) {
-                    Client.gI().kickSession(plInGame.getSession());
-                    Service.gI().sendThongBaoOK(session, "Tài khoản đang được đăng nhập ở nơi khác, vui lòng thử lại!");
-                    Service.gI().sendLoginFail(session, false);
-                    return null;
-                } else if (secondsPass1 < Manager.SECOND_WAIT_LOGIN) {
-                    if (secondsPass < secondsPass1) {
-                        Service.gI().sendWaitToLogin(session, Manager.SECOND_WAIT_LOGIN - secondsPass);
+                synchronized (Client.gI().getUserLock(session.userId)) {
+                    rs.dispose();
+                    rs = LocalManager.executeQuery("select * from account where id = ? limit 1", session.userId);
+                    if (!rs.first()) {
                         return null;
                     }
-                    Service.gI().sendWaitToLogin(session, Manager.SECOND_WAIT_LOGIN - secondsPass1);
-                    return null;
-                } else {
-                    if (secondsPass < Manager.SECOND_WAIT_LOGIN) {
-                        Service.gI().sendWaitToLogin(session, Manager.SECOND_WAIT_LOGIN - secondsPass);
+                    session.isAdmin = rs.getBoolean("is_admin");
+                    session.lastTimeLogout = rs.getTimestamp("last_time_logout").getTime();
+                    session.actived = rs.getBoolean("active");
+                    session.goldBar = rs.getInt("account.thoi_vang");
+                    session.luotquay = rs.getInt("account.luotquay");
+                    session.gold = rs.getLong("account.vang");
+                    session.eventPoint = rs.getInt("account.event_point");
+                    session.bdPlayer = rs.getDouble("account.bd_player");
+                    session.vnd = rs.getInt("vnd");
+                    session.tongnap = rs.getInt("tongnap");
+                    session.vip = rs.getInt("vip");
+                    long lastTimeLogin = rs.getTimestamp("last_time_login").getTime();
+                    int secondsPass1 = (int) ((System.currentTimeMillis() - lastTimeLogin) / 1000);
+                    long lastTimeLogout = rs.getTimestamp("last_time_logout").getTime();
+                    int secondsPass = (int) ((System.currentTimeMillis() - lastTimeLogout) / 1000);
+                    long createTime = rs.getTimestamp("create_time").getTime();
+                    int deltaTime = (int) ((System.currentTimeMillis() - createTime) / 1000);
+
+                    if (rs.getBoolean("ban")) {
+                        Service.gI().sendThongBaoOK(session, "Tài khoản này đang bị khóa. Liên hệ Admin để biết thêm thông tin");
+                    } else if ((plInGame = Client.gI().getPlayerByUser(session.userId)) != null) {
+                        Client.gI().kickSession(plInGame.getSession());
+                        Service.gI().sendThongBaoOK(session, "Tài khoản đang được đăng nhập ở nơi khác, vui lòng thử lại!");
+                        Service.gI().sendLoginFail(session, false);
+                        return null;
+                    } else if (secondsPass1 < Manager.SECOND_WAIT_LOGIN) {
+                        if (secondsPass < secondsPass1) {
+                            Service.gI().sendWaitToLogin(session, Manager.SECOND_WAIT_LOGIN - secondsPass);
+                            return null;
+                        }
+                        Service.gI().sendWaitToLogin(session, Manager.SECOND_WAIT_LOGIN - secondsPass1);
+                        return null;
                     } else {
-                        rs = LocalManager.executeQuery("select * from player where account_id = ? limit 1", session.userId);
-                        if (!rs.first()) {
-                            //-28 -4 version data game
-                            DataGame.sendVersionGame(session);
-                            //-31 data item background
-                            DataGame.sendDataItemBG(session);
-                            Service.gI().switchToCreateChar(session);
+                        if (secondsPass < Manager.SECOND_WAIT_LOGIN) {
+                            Service.gI().sendWaitToLogin(session, Manager.SECOND_WAIT_LOGIN - secondsPass);
                         } else {
-                            if ((player = loadPlayer(rs, false)) != null) {
-                                player.isPlayer = true;
-                                player.deltaTime = deltaTime;
-                                player.point_sukien = rs.getInt("point_sukien");
-                                player.point_sukien1 = rs.getInt("point_sukien1");
-                                player.point_sukien2 = rs.getInt("point_sukien2");
-                                player.thachdauwhis = rs.getInt("thachdauwhis");
-                                player.point_maydam = rs.getInt("point_maydam");
-                                player.total_damage_maydam = rs.getLong("total_damage_maydam");
-                                player.isNewMember = !Util.isTimeDifferenceGreaterThanNDays(createTime, 35);
-                                LocalManager.executeUpdate("update account set last_time_login = '" + new Timestamp(System.currentTimeMillis()) + "', ip_address = '" + session.ipAddress + "' where id = " + session.userId);
+                            rs.dispose();
+                            rs = LocalManager.executeQuery("select * from player where account_id = ? limit 1", session.userId);
+                            if (!rs.first()) {
+                                //-28 -4 version data game
+                                DataGame.sendVersionGame(session);
+                                //-31 data item background
+                                DataGame.sendDataItemBG(session);
+                                Service.gI().switchToCreateChar(session);
+                            } else {
+                                if ((player = loadPlayer(rs, false)) != null) {
+                                    player.isPlayer = true;
+                                    player.deltaTime = deltaTime;
+                                    player.point_sukien = rs.getInt("point_sukien");
+                                    player.point_sukien1 = rs.getInt("point_sukien1");
+                                    player.point_sukien2 = rs.getInt("point_sukien2");
+                                    player.thachdauwhis = rs.getInt("thachdauwhis");
+                                    player.point_maydam = rs.getInt("point_maydam");
+                                    player.total_damage_maydam = rs.getLong("total_damage_maydam");
+                                    try {
+                                        player.last_damage_maydam = rs.getLong("last_damage_maydam");
+                                    } catch (Exception ignored) {
+                                    }
+                                    player.isNewMember = !Util.isTimeDifferenceGreaterThanNDays(createTime, 35);
+                                    LocalManager.executeUpdate("update account set last_time_login = ?, ip_address = ? where id = ?",
+                                            new Timestamp(System.currentTimeMillis()), session.ipAddress, session.userId);
+                                }
                             }
                         }
                     }
+                    al.reset();
                 }
-                al.reset();
             } else {
                 Service.gI().sendThongBaoOK(session, "Thông tin tài khoản hoặc mật khẩu không chính xác");
                 Service.gI().sendLoginFail(session, false);
@@ -383,6 +396,7 @@ public class MrBlue {
                 short tempId = Short.parseShort(String.valueOf(dataItem.get(0)));
                 if (tempId != -1) {
                     item = ItemService.gI().createNewItem(tempId, Integer.parseInt(String.valueOf(dataItem.get(1))));
+                    item.itemOptions.clear();
                     JSONArray options = (JSONArray) JSONValue.parse(String.valueOf(dataItem.get(2)).replaceAll("\"", ""));
                     for (int j = 0; j < options.size(); j++) {
                         JSONArray opt = (JSONArray) JSONValue.parse(String.valueOf(options.get(j)));
@@ -422,6 +436,7 @@ public class MrBlue {
                         tempId = 1423;
                     }
                     item = ItemService.gI().createNewItem(tempId, Integer.parseInt(String.valueOf(dataItem.get(1))));
+                    item.itemOptions.clear();
                     JSONArray options = (JSONArray) JSONValue.parse(String.valueOf(dataItem.get(2)).replaceAll("\"", ""));
                     for (int j = 0; j < options.size(); j++) {
                         JSONArray opt = (JSONArray) JSONValue.parse(String.valueOf(options.get(j)));
@@ -451,6 +466,7 @@ public class MrBlue {
                         tempId = 1423;
                     }
                     item = ItemService.gI().createNewItem(tempId, Integer.parseInt(String.valueOf(dataItem.get(1))));
+                    item.itemOptions.clear();
                     JSONArray options = (JSONArray) JSONValue.parse(String.valueOf(dataItem.get(2)).replaceAll("\"", ""));
                     for (int j = 0; j < options.size(); j++) {
                         JSONArray opt = (JSONArray) JSONValue.parse(String.valueOf(options.get(j)));
@@ -491,12 +507,14 @@ public class MrBlue {
                 short tempId = Short.parseShort(String.valueOf(dataItem.get(0)));
                 if (tempId != -1) {
                     item = ItemService.gI().createNewItem(tempId, Integer.parseInt(String.valueOf(dataItem.get(1))));
+                    item.itemOptions.clear();
                     JSONArray options = (JSONArray) JSONValue.parse(String.valueOf(dataItem.get(2)).replaceAll("\"", ""));
                     for (int j = 0; j < options.size(); j++) {
                         JSONArray opt = (JSONArray) JSONValue.parse(String.valueOf(options.get(j)));
                         item.itemOptions.add(new Item.ItemOption(Integer.parseInt(String.valueOf(opt.get(0))),
                                 Integer.parseInt(String.valueOf(opt.get(1)))));
                     }
+                    ItemService.gI().ensureDefaultOptions(item);
                     player.inventory.itemsBoxCrackBall.add(item);
                 }
             }
@@ -510,12 +528,14 @@ public class MrBlue {
                 short tempId = Short.parseShort(String.valueOf(dataItem.get(0)));
                 if (tempId != -1) {
                     item = ItemService.gI().createNewItem(tempId, Integer.parseInt(String.valueOf(dataItem.get(1))));
+                    item.itemOptions.clear();
                     JSONArray options = (JSONArray) JSONValue.parse(String.valueOf(dataItem.get(2)).replaceAll("\"", ""));
                     for (int j = 0; j < options.size(); j++) {
                         JSONArray opt = (JSONArray) JSONValue.parse(String.valueOf(options.get(j)));
                         item.itemOptions.add(new Item.ItemOption(Integer.parseInt(String.valueOf(opt.get(0))),
                                 Integer.parseInt(String.valueOf(opt.get(1)))));
                     }
+                    ItemService.gI().ensureDefaultOptions(item);
                     item.createTime = Long.parseLong(String.valueOf(dataItem.get(3)));
                     if (item.template.id == 2322) {
                         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -765,7 +785,16 @@ public class MrBlue {
             dataArray = (JSONArray) JSONValue.parse(rs.getString("data_task"));
             TaskMain taskMain = TaskService.gI().getTaskMainById(player, Byte.parseByte(String.valueOf(dataArray.get(0))));
             taskMain.index = Byte.parseByte(String.valueOf(dataArray.get(1)));
-            taskMain.subTasks.get(taskMain.index).count = Short.parseShort(String.valueOf(dataArray.get(2)));
+            if (taskMain.subTasks != null && !taskMain.subTasks.isEmpty()) {
+                if (taskMain.index < 0) {
+                    taskMain.index = 0;
+                }
+                if (taskMain.index < taskMain.subTasks.size()) {
+                    taskMain.subTasks.get(taskMain.index).count = Short.parseShort(String.valueOf(dataArray.get(2)));
+                } else {
+                    taskMain.subTasks.get(taskMain.subTasks.size() - 1).count = Short.parseShort(String.valueOf(dataArray.get(2)));
+                }
+            }
             if (dataArray.size() > 3) {
                 taskMain.lastTime = Long.parseLong(String.valueOf(dataArray.get(3)));
             } else {
@@ -835,6 +864,9 @@ public class MrBlue {
                 if (dataSkill.size() > 3) {
                     skill.currLevel = Short.parseShort(String.valueOf(dataSkill.get(3)));
                 }
+                if (dataSkill.size() > 4) {
+                    skill.masteryDamageRemainder = Long.parseLong(String.valueOf(dataSkill.get(4)));
+                }
                 player.playerSkill.skills.add(skill);
             }
             dataArray.clear();
@@ -897,6 +929,7 @@ public class MrBlue {
                     short tempId = Short.parseShort(String.valueOf(dataItem.get(0)));
                     if (tempId != -1) {
                         item = ItemService.gI().createNewItem(tempId, Integer.parseInt(String.valueOf(dataItem.get(1))));
+                        item.itemOptions.clear();
                         JSONArray options = (JSONArray) JSONValue.parse(String.valueOf(dataItem.get(2)).replaceAll("\"", ""));
                         for (int j = 0; j < options.size(); j++) {
                             JSONArray opt = (JSONArray) JSONValue.parse(String.valueOf(options.get(j)));
@@ -979,6 +1012,9 @@ public class MrBlue {
                     if (skillTemp.size() > 3) {
                         skill.currLevel = Short.parseShort(String.valueOf(skillTemp.get(3)));
                     }
+                    if (skillTemp.size() > 4) {
+                        skill.masteryDamageRemainder = Long.parseLong(String.valueOf(skillTemp.get(4)));
+                    }
                     switch (skill.template.id) {
                         case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC ->
                             skill.coolDown = 1000;
@@ -1042,7 +1078,7 @@ public class MrBlue {
                 player.lastTimeJoinCDRD = Long.parseLong(dataArray.get(1).toString());
                 player.talkToThuongDe = Boolean.parseBoolean(dataArray.get(2).toString());
                 player.talkToThanMeo = Boolean.parseBoolean(dataArray.get(2).toString());
-                if (player.clan.ConDuongRanDoc == null || player.lastTimeJoinCDRD != player.clan.lastTimeOpenConDuongRanDoc) {
+                if (player.clan == null || player.clan.ConDuongRanDoc == null || player.lastTimeJoinCDRD != player.clan.lastTimeOpenConDuongRanDoc) {
                     player.joinCDRD = false;
                     player.talkToThuongDe = false;
                     player.talkToThanMeo = false;
@@ -1086,11 +1122,14 @@ public class MrBlue {
                     player.goldSuperChallenge = Long.parseLong(dataArray.get(6).toString());
                     player.gemSuperChallenge = Long.parseLong(dataArray.get(7).toString());
                     player.lastTimePKVoDaiVt6 = Long.parseLong(dataArray.get(8).toString());
+                    player.lastTimeClaimSuperChest = dataArray.size() >= 10
+                            ? Long.parseLong(dataArray.get(9).toString()) : 0L;
                 } else {
                     player.levelSuperChest = 0;
                     player.goldSuperChallenge = 50_000_000L;
                     player.gemSuperChallenge = 10L;
                     player.lastTimePKVoDaiVt6 = 0L;
+                    player.lastTimeClaimSuperChest = 0L;
                 }
             } catch (Exception e) {
                 player.levelWoodChest = 0;
@@ -1102,6 +1141,7 @@ public class MrBlue {
                 player.goldSuperChallenge = 50_000_000L;
                 player.gemSuperChallenge = 10L;
                 player.lastTimePKVoDaiVt6 = 0L;
+                player.lastTimeClaimSuperChest = 0L;
             }
 
             //data Siêu Thần Thủy
@@ -1416,6 +1456,27 @@ public class MrBlue {
                 player.dailySuperHardQuestCompletionCount = 0;
                 player.bossBabyDefeatParticipationCount = 0;
                 player.monsterKillCountAutoTrain = 0;
+            }
+
+            // Vũ Trụ 13 state
+            try {
+                player.unlockVuTru13 = rs.getBoolean("unlock_vu_tru_13");
+                player.hideCaiTrang = rs.getBoolean("hide_cai_trang");
+                player.vuTru13Stage = rs.getInt("vu_tru_13_stage");
+                player.voCucType = (byte) Math.max(0, Math.min(2, rs.getInt("vo_cuc_type")));
+                player.voCucLevel = Math.max(1, Math.min(5, rs.getInt("vo_cuc_level")));
+            } catch (Exception e) {
+                player.unlockVuTru13 = false;
+                player.hideCaiTrang = false;
+                player.vuTru13Stage = 0;
+                player.voCucType = 0;
+                player.voCucLevel = 1;
+            }
+            if (!player.unlockVuTru13 && player.playerTask != null && player.playerTask.taskMain != null
+                    && player.playerTask.taskMain.id >= 29) {
+                TaskMain migrated = TaskService.gI().getTaskMainById(player, 28);
+                migrated.index = 8;
+                player.playerTask.taskMain = migrated;
             }
 
             PlayerService.gI().dailyLogin(player);// RESET DATA KHI QUA 12H ĐÊM

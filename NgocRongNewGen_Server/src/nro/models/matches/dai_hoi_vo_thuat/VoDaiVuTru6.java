@@ -10,6 +10,7 @@ import nro.models.consts.BossStatus;
 import nro.models.consts.ConstPlayer;
 import nro.models.map.ItemMap;
 import nro.models.map.Zone;
+import nro.models.map.service.ChangeMapService;
 import nro.models.map.service.ItemMapService;
 import nro.models.matches.DHVT;
 import nro.models.matches.giai_dau.VoDaiVuTru6Manager;
@@ -77,6 +78,7 @@ public class VoDaiVuTru6 {
                     if (round == 0 || round == 3 || round == 6 || round == 8) {
                         Service.gI().releaseCooldownSkill(player);
                     }
+                    ensureArenaBossPresent();
                     if (boss != null) {
                         EffectSkillService.gI().startStun(boss, System.currentTimeMillis(), 9500);
                         Service.gI().sendInfoPlayerEatPea(boss);
@@ -86,6 +88,10 @@ public class VoDaiVuTru6 {
                     healFullPlayerAndPet();
                 }
                 case 8 -> {
+                    ensureArenaBossPresent();
+                    if (boss != null && zone != null) {
+                        zone.load_Me_To_Another(boss);
+                    }
                     if (npc != null && boss != null) {
                         PlayerService.gI().playerMove(npc, 768, 504);
                         Service.gI().chat(npc, "Vòng " + (round + 1) + "/" + VoDaiVt6Boss.TOTAL_ROUNDS
@@ -109,6 +115,7 @@ public class VoDaiVuTru6 {
                 }
                 case 1 -> {
                     EffectSkillService.gI().removeStun(player);
+                    ensureArenaBossPresent();
                     if (boss != null) {
                         EffectSkillService.gI().removeStun(boss);
                         VoDaiVuTru6Service.gI().sendTypePK(player, boss);
@@ -166,14 +173,38 @@ public class VoDaiVuTru6 {
         }
     }
 
+    private void ensureArenaBossPresent() {
+        try {
+            if (zone == null || player == null) {
+                return;
+            }
+            if (boss == null) {
+                VoDaiVt6Boss recreated = new VoDaiVt6Boss(player, zone, round);
+                recreated.spawnIntoArena(zone);
+                setBoss(recreated);
+            } else if (boss.zone == null || !boss.zone.equals(zone)) {
+                if (boss instanceof VoDaiVt6Boss vt6Boss) {
+                    vt6Boss.spawnIntoArena(zone);
+                } else {
+                    ChangeMapService.gI().changeMap(boss, zone, 870, 504);
+                    zone.load_Me_To_Another(boss);
+                }
+            }
+        } catch (Exception e) {
+            Logger.logException(VoDaiVuTru6.class, e);
+        }
+    }
+
     public void toTheNextRound() {
+        VoDaiVt6Boss nextBoss = null;
         try {
             if (round >= VoDaiVt6Boss.TOTAL_ROUNDS) {
                 champion();
                 return;
             }
             PlayerService.gI().changeAndSendTypePK(player, ConstPlayer.NON_PK);
-            VoDaiVt6Boss nextBoss = new VoDaiVt6Boss(player, round);
+            nextBoss = new VoDaiVt6Boss(player, zone, round);
+            nextBoss.spawnIntoArena(zone);
             Service.gI().setPos(player, 670, 504);
             if (player.pet != null && !player.pet.isDie() && player.zone != null && player.zone.equals(player.pet.zone)) {
                 Service.gI().setPos(player.pet, 640, 504);
@@ -181,6 +212,12 @@ public class VoDaiVuTru6 {
             setBoss(nextBoss);
             setTimeWait(10);
         } catch (Exception e) {
+            if (nextBoss != null && boss != nextBoss) {
+                try {
+                    nextBoss.leaveMap();
+                } catch (Exception ignored) {
+                }
+            }
             Logger.logException(VoDaiVuTru6.class, e);
             endChallenge();
         }
@@ -283,6 +320,12 @@ public class VoDaiVuTru6 {
                 if (player != null) {
                     clearArenaDebuffs();
                     player.isPKDHVT = false;
+                    if (player.pvp != null) {
+                        try {
+                            player.pvp.dispose();
+                        } catch (Exception ignored) {
+                        }
+                    }
                     if (player.effectSkill != null && player.nPoint != null) {
                         EffectSkillService.gI().removeStun(player);
                         if (player.zone != null) {
@@ -311,6 +354,8 @@ public class VoDaiVuTru6 {
                 zone = null;
                 VoDaiVuTru6Manager.gI().remove(this);
             }
+        } else {
+            VoDaiVuTru6Manager.gI().remove(this);
         }
     }
 }

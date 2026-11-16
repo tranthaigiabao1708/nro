@@ -29,11 +29,11 @@ import nro.models.player_system.Template.BgItem;
 
 public class DataGame {
 
-    public static byte vsData = 11;
-    public static byte vsMap = 5;
+    public static byte vsData = 17;
+    public static byte vsMap = 11;
     public static byte vsSkill = 2;
-    public static byte vsItem = 56;
-    public static int vsRes = 1;
+    public static byte vsItem = 67;
+    public static int vsRes = 4;
     public static short maxSmallVersion = 32767;
 
     public static String LINK_IP_PORT = "Ngọc Rồng NewGen:127.0.0.1:14445:0";

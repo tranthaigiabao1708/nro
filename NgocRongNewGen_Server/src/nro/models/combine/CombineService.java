@@ -86,7 +86,11 @@ public class CombineService {
      * @param index
      */
     public void showInfoCombine(Player player, int[] index) {
-        if (player.combineNew == null) {
+        if (player == null || player.combineNew == null) {
+            return;
+        }
+        if (nro.models.services_func.TransactionService.gI().check(player)) {
+            nro.models.services.Service.gI().sendThongBao(player, "Không thể thực hiện khi đang giao dịch");
             return;
         }
         player.combineNew.clearItemCombine();
@@ -189,107 +193,125 @@ public class CombineService {
      * @param player
      */
     public void startCombine(Player player) {
-        switch (player.combineNew.typeCombine) {
-            case EP_SAO_TRANG_BI:
-                EpSaoTrangBi.epSaoTrangBi(player);
-                break;
-            case PHA_LE_HOA_TRANG_BI:
-                PhaLeHoaTrangBi.phaLeHoa(player);
-                break;
-            case CHUYEN_HOA_TRANG_BI_VANG:
-                ChuyenHoaTrangBi_Vang.thucHienChuyenHoa(player);
-                break;
-            case CHUYEN_HOA_TRANG_BI_NGOC:
-                ChuyenHoaTrangBi_Ngoc.thucHienChuyenHoa(player);
-                break;
-            case PHAN_RA_TRANG_BI_KH:
-                PhanRaTrangBi.ThucHienPhanRa(player);
-                break;
-            case TAI_TAO_CAPSULE_KH:
-            case TAI_TAO_CAPSULE_KH_VIP:
-                TaiTaoCapsuleKichHoat.thucHienTaiTao(player);
-                break;
-            case NANG_CAP_THAN_LINH_SKH:
-                NangCapTrangBiKichHoat.thucHienThanLinhSKH(player);
-                break;
-            case NANG_CAP_HUY_DIET_SKH:
-                NangCapTrangBiKichHoat.thucHienHuyDietSKH(player);
-                break;
-            case NANG_CAP_THIEN_SU_SKH:
-                NangCapTrangBiKichHoat.thucHienThienSuSKH(player);
-                break;
-            case NHAP_NGOC_RONG:
-                NhapNgocRong.nhapNgocRong(player);
-                break;
-            case NANG_CAP_VAT_PHAM:
-                NangCapVatPham.nangCapVatPham(player);
-                break;
-            case NANG_CAP_BONG_TAI:
-                NangCapBongTai.nangCapBongTai(player);
-                break;
-            case NANG_CHI_SO_BONG_TAI:
-                NangChiSoBongTai.nangChiSoBongTai(player);
-                break;
-            case NANG_CAP_BONG_TAI3:
-                NangCapBongTai3.nangCapBongTai(player);
-                break;
-            case NANG_CHI_SO_BONG_TAI3:
-                NangChiSoBongTai3.nangChiSoBongTai(player);
-                break;
-            case NANG_CAP_SAO_PHA_LE:
-                NangCapSaoPhaLe.nangCapSaoPhaLe(player);
-                break;
-            case DANH_BONG_SAO_PHA_LE:
-                DanhBongSaoPhaLe.danhBongSaoPhaLe(player);
-                break;
-            case CUONG_HOA_LO_SAO_PHA_LE:
-                CuongHoaLoSaoPhaLe.cuongHoaLoSaoPhaLe(player);
-                break;
-            case TAO_DA_HEMATITE:
-                TaoDaHematite.taoDaHematite(player);
-                break;
-            case GIAM_DINH_SACH:
-                GiamDinhSach.giamDinhSach(player);
-                break;
-            case TAY_SACH:
-                TaySach.taySach(player);
-                break;
-            case NANG_CAP_SACH_TUYET_KY:
-                NangCapSachTuyetKy.nangCapSachTuyetKy(player);
-                break;
-            case HOI_PHUC_SACH:
-                HoiPhucSach.hoiPhucSach(player);
-                break;
-            case PHAN_RA_SACH:
-                PhanRaSach.phanRaSach(player);
-                break;
-            case CHE_TAO_TRANG_BI_THIEN_SU:
-                CheTaoTrangBiThienSu.cheTaoTrangBiThienSu(player);
-                break;
-            case DUI_DUC:
-                CheTaoDuiDuc.CheTaoDuiDuc(player);
-                break;
-            case DA_MAI:
-                TaoDaMai.CheTaoDuiDuc(player);
-                break;
+        if (player == null || player.combineNew == null || player.beforeDispose || player.isDisposed) {
+            return;
         }
-        
-        player.idMark.setIndexMenu(ConstNpc.IGNORE_MENU);
-        player.combineNew.clearParamCombine();
-        player.combineNew.lastTimeCombine = System.currentTimeMillis();
+        if (nro.models.services_func.TransactionService.gI().check(player)) {
+            nro.models.services.Service.gI().sendThongBao(player, "Không thể thực hiện khi đang giao dịch");
+            return;
+        }
+        synchronized (player.saveLock) {
+            switch (player.combineNew.typeCombine) {
+                case EP_SAO_TRANG_BI:
+                    EpSaoTrangBi.epSaoTrangBi(player);
+                    break;
+                case PHA_LE_HOA_TRANG_BI:
+                    PhaLeHoaTrangBi.phaLeHoa(player);
+                    break;
+                case CHUYEN_HOA_TRANG_BI_VANG:
+                    ChuyenHoaTrangBi_Vang.thucHienChuyenHoa(player);
+                    break;
+                case CHUYEN_HOA_TRANG_BI_NGOC:
+                    ChuyenHoaTrangBi_Ngoc.thucHienChuyenHoa(player);
+                    break;
+                case PHAN_RA_TRANG_BI_KH:
+                    PhanRaTrangBi.ThucHienPhanRa(player);
+                    break;
+                case TAI_TAO_CAPSULE_KH:
+                case TAI_TAO_CAPSULE_KH_VIP:
+                    TaiTaoCapsuleKichHoat.thucHienTaiTao(player);
+                    break;
+                case NANG_CAP_THAN_LINH_SKH:
+                    NangCapTrangBiKichHoat.thucHienThanLinhSKH(player);
+                    break;
+                case NANG_CAP_HUY_DIET_SKH:
+                    NangCapTrangBiKichHoat.thucHienHuyDietSKH(player);
+                    break;
+                case NANG_CAP_THIEN_SU_SKH:
+                    NangCapTrangBiKichHoat.thucHienThienSuSKH(player);
+                    break;
+                case NHAP_NGOC_RONG:
+                    NhapNgocRong.nhapNgocRong(player);
+                    break;
+                case NANG_CAP_VAT_PHAM:
+                    NangCapVatPham.nangCapVatPham(player);
+                    break;
+                case NANG_CAP_BONG_TAI:
+                    NangCapBongTai.nangCapBongTai(player);
+                    break;
+                case NANG_CHI_SO_BONG_TAI:
+                    NangChiSoBongTai.nangChiSoBongTai(player);
+                    break;
+                case NANG_CAP_BONG_TAI3:
+                    NangCapBongTai3.nangCapBongTai(player);
+                    break;
+                case NANG_CHI_SO_BONG_TAI3:
+                    NangChiSoBongTai3.nangChiSoBongTai(player);
+                    break;
+                case NANG_CAP_SAO_PHA_LE:
+                    NangCapSaoPhaLe.nangCapSaoPhaLe(player);
+                    break;
+                case DANH_BONG_SAO_PHA_LE:
+                    DanhBongSaoPhaLe.danhBongSaoPhaLe(player);
+                    break;
+                case CUONG_HOA_LO_SAO_PHA_LE:
+                    CuongHoaLoSaoPhaLe.cuongHoaLoSaoPhaLe(player);
+                    break;
+                case TAO_DA_HEMATITE:
+                    TaoDaHematite.taoDaHematite(player);
+                    break;
+                case GIAM_DINH_SACH:
+                    GiamDinhSach.giamDinhSach(player);
+                    break;
+                case TAY_SACH:
+                    TaySach.taySach(player);
+                    break;
+                case NANG_CAP_SACH_TUYET_KY:
+                    NangCapSachTuyetKy.nangCapSachTuyetKy(player);
+                    break;
+                case HOI_PHUC_SACH:
+                    HoiPhucSach.hoiPhucSach(player);
+                    break;
+                case PHAN_RA_SACH:
+                    PhanRaSach.phanRaSach(player);
+                    break;
+                case CHE_TAO_TRANG_BI_THIEN_SU:
+                    CheTaoTrangBiThienSu.cheTaoTrangBiThienSu(player);
+                    break;
+                case DUI_DUC:
+                    CheTaoDuiDuc.CheTaoDuiDuc(player);
+                    break;
+                case DA_MAI:
+                    TaoDaMai.CheTaoDuiDuc(player);
+                    break;
+            }
+
+            player.idMark.setIndexMenu(ConstNpc.IGNORE_MENU);
+            player.combineNew.clearParamCombine();
+            player.combineNew.lastTimeCombine = System.currentTimeMillis();
+        }
         nro.models.database.PlayerDAO.savePlayerAsync(player);
     }
     
     public void startCombineVip(Player player, int n) {
-        switch (player.combineNew.typeCombine) {
-            case PHA_LE_HOA_TRANG_BI:
-                PhaLeHoaTrangBi.phaLeHoa(player, n);
-                break;
+        if (player == null || player.combineNew == null || player.beforeDispose || player.isDisposed) {
+            return;
         }
-        
-        player.idMark.setIndexMenu(ConstNpc.IGNORE_MENU);
-        player.combineNew.clearParamCombine();
-        player.combineNew.lastTimeCombine = System.currentTimeMillis();
+        if (nro.models.services_func.TransactionService.gI().check(player)) {
+            nro.models.services.Service.gI().sendThongBao(player, "Không thể thực hiện khi đang giao dịch");
+            return;
+        }
+        synchronized (player.saveLock) {
+            switch (player.combineNew.typeCombine) {
+                case PHA_LE_HOA_TRANG_BI:
+                    PhaLeHoaTrangBi.phaLeHoa(player, n);
+                    break;
+            }
+
+            player.idMark.setIndexMenu(ConstNpc.IGNORE_MENU);
+            player.combineNew.clearParamCombine();
+            player.combineNew.lastTimeCombine = System.currentTimeMillis();
+        }
         nro.models.database.PlayerDAO.savePlayerAsync(player);
     }
 
@@ -735,10 +757,10 @@ public class CombineService {
     private String getTextInfoTabCombine(int type) {
         switch (type) {
             case EP_SAO_TRANG_BI:
-                return "Chọn trang bị\n(Áo, quần, găng, giày hoặc rađa) có ô đặt sao pha lê\nChọn loại sao pha lê\n"
+                return "Chọn trang bị có ô đặt sao pha lê\n(Trang bị, Cải trang, Giáp TL, Pet, Cánh, Ván bay)\nChọn loại sao pha lê hoặc Ngọc Rồng\n"
                         + "Sau đó chọn 'Nâng cấp'";
             case PHA_LE_HOA_TRANG_BI:
-                return "Chọn trang bị\n(Áo, quần, găng, giày hoặc rađa)\nSau đó chọn 'Nâng cấp' (Max 9 sao)";
+                return "Chọn trang bị cần đục lỗ sao\n(Trang bị, Cải trang, Giáp TL, Pet, Cánh, Ván bay)\nSau đó chọn 'Nâng cấp' (Max 9 sao)";
             case PHAN_RA_TRANG_BI_KH:
                 return "Vào hành trang\nChọn 1 hoặc nhiều Trang bị kích hoạt thường\n(CHỈ ĐƯỢC ĐẶT ĐỒ KÍCH HOẠT)\nMỗi món: 200 Tr vàng -> 1 Khoáng tái chế\nĐặt bao nhiêu món nhận bấy nhiêu Khoáng!";
             case TAI_TAO_CAPSULE_KH:
@@ -771,23 +793,23 @@ public class CombineService {
                         + "Chỉ số gốc tăng +0% đến +35%, phí 200 Tr vàng\n"
                         + "Xem thông tin rồi chọn 'Chế tạo'";
             case NANG_CAP_BONG_TAI:
-                return "Vào hành trang\nChọn bông tai Porata\nChọn mảnh bông tai để nâng cấp, Số lượng 9999 cái"
+                return "Vào hành trang\nChọn bông tai Porata cấp 1\nChọn 9999 Mảnh vỡ bông tai\n(BT2: Hợp thể +10% Sức đánh nền)"
                         + "\nSau đó chọn 'Nâng cấp'";
             case NANG_CHI_SO_BONG_TAI:
-                return "Vào hành trang\nChọn bông tai Porata\nChọn mảnh hồn porata số lượng 99"
-                        + "\ncái và đá xanh lam để nâng cấp.\nSau đó chọn 'Nâng cấp chỉ số'";
+                return "Vào hành trang\nChọn bông tai Porata cấp 2 (+10% SĐ hợp thể)\nChọn 99 Mảnh hồn bông tai + 1 Đá xanh lam"
+                        + "\nTỉ lệ 50%: Mở 1 dòng chỉ số chiến đấu (10% - 25%)\nSau đó chọn 'Nâng cấp chỉ số'";
             case NANG_CAP_BONG_TAI3:
-                return "Vào hành trang\nChọn bông tai Porata cấp 2\nChọn mảnh bông tai để nâng cấp, Số lượng 19999 cái"
+                return "Vào hành trang\nChọn bông tai Porata cấp 2\nChọn 20000 Mảnh vỡ bông tai cấp 3\n(BT3: Hợp thể +20% Sức đánh nền, giữ dòng BT2)"
                         + "\nSau đó chọn 'Nâng cấp'";
             case NANG_CHI_SO_BONG_TAI3:
-                return "Vào hành trang\nChọn bông tai Porata Cấp 3\nChọn mảnh hồn porata số lượng 199"
-                        + "\ncái và đá xanh lam để nâng cấp.\nSau đó chọn 'Nâng cấp chỉ số'";    
+                return "Vào hành trang\nChọn bông tai Porata cấp 3 (+20% SĐ hợp thể)\nChọn 99 Mảnh hồn bông tai + 1 Đá xanh lam"
+                        + "\nTỉ lệ 35%: Mở 2 dòng chỉ số chiến đấu (15% - 30%)\nSau đó chọn 'Nâng cấp chỉ số'";    
             case NANG_CAP_SAO_PHA_LE:
                 return "Vào hành trang\nChọn đá Hematite\nChọn sao pha lê cấp 1 (hoặc x20 Ngọc Rồng 6s/7s)\nSau đó chọn 'Nâng cấp'";
             case DANH_BONG_SAO_PHA_LE:
                 return "Vào hành trang\nChọn loại sao pha lê cấp 2 có từ 2 viên trở lên\nChọn 1 đá mài\nSau đó chọn 'Đánh bóng'";
             case CUONG_HOA_LO_SAO_PHA_LE:
-                return "Vào hành trang\nChọn trang bị có Ô sao thứ 8 trở lên chưa cường hóa\nChọn đá Hematite\nChọn dùi đục\nSau đó chọn 'Cường hóa'";
+                return "Vào hành trang\nChọn trang bị (hoặc Pet, Cánh, Ván bay) có Ô sao thứ 8 trở lên chưa cường hóa\nChọn đá Hematite + dùi đục\nSau đó chọn 'Cường hóa'";
             case TAO_DA_HEMATITE:
                 return "Vào hành trang\nChọn 20 sao pha lê cấp 1 cùng loại\nPhí: 50 Tr vàng\nChọn 'Tạo đá Hematite'";
             case DUI_DUC:

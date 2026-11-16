@@ -53,7 +53,7 @@ public class Map implements Runnable {
     public static final byte T_EMPTY = 0;
     public static final byte T_TOP = 2;
     private static final int SIZE = 24;
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private ScheduledExecutorService scheduler;
     public final List<BotAttackplayer> bots = new ArrayList<>();
     public List<Player> players = new ArrayList<>();
 
@@ -177,6 +177,9 @@ public class Map implements Runnable {
     }
 
     public void run() {
+        if (scheduler == null) {
+            scheduler = Executors.newScheduledThreadPool(1);
+        }
         scheduler.scheduleAtFixedRate(() -> {
             try {
                 for (Zone zone : this.zones) {
@@ -368,34 +371,169 @@ public class Map implements Runnable {
     //--------------------------------------------------------------------------
     public int yPhysicInTop(int x, int y) {
         try {
-            int rX = x / SIZE;
-            int rY = 0;
-
-            if (rX < 0 || rX >= tileMap[0].length) {
+            if (tileMap == null || tileMap.length == 0 || tileMap[0].length == 0) {
                 return y;
             }
-
-            int rYIndex = y / SIZE;
-
-            if (rYIndex < 0 || rYIndex >= tileMap.length) {
-                return y;
-            }
+            int maxCol = tileMap[0].length - 1;
+            int maxRow = tileMap.length - 1;
+            int rX = Math.max(0, Math.min(maxCol, x / SIZE));
+            int rYIndex = Math.max(0, Math.min(maxRow, y / SIZE));
 
             if (isTileTop(tileMap[rYIndex][rX])) {
-                return y;
+                return rYIndex * SIZE;
             }
 
-            for (int i = rYIndex; i < tileMap.length; i++) {
+            for (int i = rYIndex + 1; i <= maxRow; i++) {
                 if (isTileTop(tileMap[i][rX])) {
-                    rY = i * SIZE;
-                    break;
+                    return i * SIZE;
                 }
             }
-            return rY;
+
+            // Nếu tọa độ truyền vào đã bị tụt xuống dưới mặt đất, kéo ngược lên bề mặt tileTop gần nhất phía trên
+            for (int i = rYIndex - 1; i >= 0; i--) {
+                if (isTileTop(tileMap[i][rX])) {
+                    return i * SIZE;
+                }
+            }
+
+            // Nếu đúng cột hố/khe không có tileTop, tìm cột lân cận gần nhất có mặt đất
+            for (int offset = 1; offset <= 8; offset++) {
+                int leftCol = rX - offset;
+                if (leftCol >= 0) {
+                    int found = findClosestTileTopInCol(leftCol, rYIndex, maxRow);
+                    if (found != -1) {
+                        return found;
+                    }
+                }
+                int rightCol = rX + offset;
+                if (rightCol <= maxCol) {
+                    int found = findClosestTileTopInCol(rightCol, rYIndex, maxRow);
+                    if (found != -1) {
+                        return found;
+                    }
+                }
+            }
+            return rYIndex * SIZE;
         } catch (Exception e) {
             e.printStackTrace();
             return y;
         }
+    }
+
+    private int findClosestTileTopInCol(int col, int refRow, int maxRow) {
+        int safeMaxRow = Math.max(0, maxRow - 1);
+        int clampedRef = Math.max(0, Math.min(safeMaxRow, refRow));
+        for (int i = clampedRef; i <= safeMaxRow; i++) {
+            if (isTileTop(tileMap[i][col])) {
+                return i * SIZE;
+            }
+        }
+        for (int i = clampedRef - 1; i >= 0; i--) {
+            if (isTileTop(tileMap[i][col])) {
+                return i * SIZE;
+            }
+        }
+        if (isTileTop(tileMap[maxRow][col])) {
+            return maxRow * SIZE;
+        }
+        return -1;
+    }
+
+    public boolean hasWalkableSurfaceInCol(int col) {
+        if (tileMap == null || tileMap.length == 0 || col < 0 || col >= tileMap[0].length) {
+            return false;
+        }
+        int safeMaxRow = Math.max(0, tileMap.length - 2);
+        for (int i = 0; i <= safeMaxRow; i++) {
+            if (isTileTop(tileMap[i][col])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int clampBossX(int x) {
+        if (tileMap == null || tileMap.length == 0 || tileMap[0].length == 0) {
+            return x;
+        }
+        int margin = Math.min(48, Math.max(24, mapWidth / 8));
+        int minX = margin;
+        int maxX = Math.max(minX, mapWidth - margin);
+        int clampedX = Math.max(minX, Math.min(maxX, x));
+        int col = Math.max(0, Math.min(tileMap[0].length - 1, clampedX / SIZE));
+        if (hasWalkableSurfaceInCol(col)) {
+            return clampedX;
+        }
+        int minCol = minX / SIZE;
+        int maxCol = Math.min(tileMap[0].length - 1, maxX / SIZE);
+        for (int offset = 1; offset <= 12; offset++) {
+            int left = col - offset;
+            if (left >= minCol && hasWalkableSurfaceInCol(left)) {
+                return left * SIZE + SIZE / 2;
+            }
+            int right = col + offset;
+            if (right <= maxCol && hasWalkableSurfaceInCol(right)) {
+                return right * SIZE + SIZE / 2;
+            }
+        }
+        return clampedX;
+    }
+
+    public int resolveBossGroundY(int x, int refY) {
+        if (tileMap == null || tileMap.length == 0 || tileMap[0].length == 0) {
+            return refY;
+        }
+        int maxCol = tileMap[0].length - 1;
+        int maxRow = tileMap.length - 1;
+        int col = Math.max(0, Math.min(maxCol, x / SIZE));
+        int refRow = Math.max(0, Math.min(maxRow, refY / SIZE));
+        int found = findClosestTileTopInCol(col, refRow, maxRow);
+        if (found != -1) {
+            return found;
+        }
+        return yPhysicInTop(x, refY);
+    }
+
+    public int clampBossMoveY(int x, int desiredY) {
+        int groundY = resolveBossGroundY(x, desiredY);
+        // Luôn giữ chân Boss bám đúng mặt đất tileTop (bội số của 24) trừ khi mục tiêu đang bay cao hẳn trên không
+        if (desiredY > groundY - 72) {
+            return groundY;
+        }
+        if (tileMap == null || tileMap.length == 0 || tileMap[0].length == 0) {
+            return groundY;
+        }
+        int col = Math.max(0, Math.min(tileMap[0].length - 1, x / SIZE));
+        int airRow = Math.max(1, Math.min(tileMap.length - 2, desiredY / SIZE));
+        if (tileMap[airRow][col] != 0) {
+            return groundY;
+        }
+        return airRow * SIZE;
+    }
+
+    public boolean hasSlopeOrGapBetween(int x1, int x2, int targetY) {
+        if (tileMap == null || tileMap.length == 0 || tileMap[0].length == 0) {
+            return false;
+        }
+        if (targetY % SIZE != 0) {
+            return true;
+        }
+        int row = targetY / SIZE;
+        if (row < 0 || row >= tileMap.length) {
+            return true;
+        }
+        int maxCol = tileMap[0].length - 1;
+        int startCol = Math.max(0, Math.min(maxCol, Math.min(x1, x2) / SIZE));
+        int endCol = Math.max(0, Math.min(maxCol, Math.max(x1, x2) / SIZE));
+        for (int c = startCol; c <= endCol; c++) {
+            if (!isTileTop(tileMap[row][c])) {
+                return true;
+            }
+            if (row > 0 && tileMap[row - 1][c] != 0 && !isTileTop(tileMap[row - 1][c])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public int LastY(int cx, int cy) {

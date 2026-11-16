@@ -141,16 +141,16 @@ public class Whis extends Npc {
         };
 
         int requiredBk = canLearn ? 9999 : 999;
+        int currentBk = biKiep != null ? biKiep.quantity : 0;
+        String bkColor = currentBk >= requiredBk ? "|2|" : "|7|";
+        String goldColor = player.inventory.gold >= 10_000_000 ? "|2|" : "|7|";
+        String gemColor = player.inventory.gem >= 99 ? "|2|" : "|7|";
+
         String message = "|1|Ta sẽ dạy ngươi tuyệt kỹ " + skillName
-                + (canLearn ? " 1" : " " + (currentSkill.point + 1));
-
-        if (biKiep != null) {
-            message += "\n|7|Bí kiếp tuyệt kỹ: " + biKiep.quantity + "/" + requiredBk;
-        } else {
-            message += "\n|7|Bí kiếp tuyệt kỹ: 0/" + requiredBk;
-        }
-
-        message += "\n|2|Giá vàng: 10.000.000\n|2|Giá ngọc: 99";
+                + (canLearn ? " 1" : " " + (currentSkill.point + 1))
+                + "\n" + bkColor + "Bí kiếp tuyệt kỹ: " + currentBk + "/" + requiredBk
+                + "\n" + goldColor + "Giá vàng: 10.000.000"
+                + "\n" + gemColor + "Giá ngọc: 99";
         createOtherMenu(player, 6, message, "Đồng ý", "Từ chối");
 
     }
@@ -162,11 +162,16 @@ public class Whis extends Npc {
 
         Item sach = InventoryService.gI().findItemBag(player, 1229);
         if (sach == null) {
+            Service.gI().sendThongBao(player, "Bạn chưa có Bí kiếp tuyệt kỹ trong hành trang!");
             return;
         }
 
-        if (player.inventory.gold < 10_000_000 || player.inventory.gem < 99 || player.nPoint.power < 60_000_000_000L) {
-            Service.gI().sendThongBao(player, "Bạn không đủ điều kiện học tuyệt kỹ!");
+        if (player.inventory.gold < 10_000_000) {
+            Service.gI().sendThongBao(player, "Bạn còn thiếu vàng (cần 10.000.000 vàng) để học tuyệt kỹ!");
+            return;
+        }
+        if (player.inventory.gem < 99) {
+            Service.gI().sendThongBao(player, "Bạn cần ít nhất 99 ngọc xanh để học tuyệt kỹ!");
             return;
         }
 
@@ -190,7 +195,7 @@ public class Whis extends Npc {
                 } else if (currentSkill.point >= 9) {
                     npcChat(player, "Skill của ngươi đã đạt cấp tối đa.");
                 } else {
-                    upgradeSkill(player, sach, currentSkill);
+                    upgradeSkill(player, sach, currentSkill, iconSkill);
                 }
             } else {
                 int missing = 999 - sach.quantity;
@@ -218,6 +223,7 @@ public class Whis extends Npc {
             InventoryService.gI().subQuantityItemsBag(player, sach, usedBk);
             player.inventory.gold -= 10_000_000;
             player.inventory.gem -= 99;
+            Service.gI().sendMoney(player);
             InventoryService.gI().sendItemBags(player);
 
         } catch (IOException e) {
@@ -225,23 +231,43 @@ public class Whis extends Npc {
         }
     }
 
-    private void upgradeSkill(Player player, Item sach, Skill currentSkill) {
+    private void upgradeSkill(Player player, Item sach, Skill currentSkill, int iconSkill) {
         try {
             boolean success = Util.isTrue(1, 30);
             String message = success ? "Nâng skill thành công!" : "Tư chất kém!";
             String npcMessage = success ? "Chúc mừng con nhé!" : "Ngu dốt!";
             int usedBk = success ? 999 : 99;
             if (success) {
-                currentSkill.point++;
+                Skill upgraded = SkillUtil.createSkill(currentSkill.template.id, currentSkill.point + 1);
+                if (upgraded != null) {
+                    upgraded.currLevel = 0;
+                    upgraded.masteryDamageRemainder = 0;
+                    SkillUtil.setSkill(player, upgraded);
+                    Message msgSkill = Service.gI().messageSubCommand((byte) 62);
+                    msgSkill.writer().writeShort(upgraded.skillId);
+                    player.sendMessage(msgSkill);
+                    msgSkill.cleanup();
+                    SkillService.gI().sendCurrLevelSpecial(player, upgraded);
+                    nro.models.database.PlayerDAO.savePlayerAsync(player);
+                } else {
+                    currentSkill.point++;
+                    currentSkill.currLevel = 0;
+                    currentSkill.masteryDamageRemainder = 0;
+                    SkillService.gI().sendCurrLevelSpecial(player, currentSkill);
+                    nro.models.database.PlayerDAO.savePlayerAsync(player);
+                }
+            } else {
+                iconSkill = 15313;
             }
 
-            sendLearnSkillEffect(player, 15313, usedBk);
+            sendLearnSkillEffect(player, iconSkill, usedBk);
             npcChat(player, npcMessage);
             Service.gI().sendThongBao(player, message);
 
             InventoryService.gI().subQuantityItemsBag(player, sach, usedBk);
             player.inventory.gold -= 10_000_000;
             player.inventory.gem -= 99;
+            Service.gI().sendMoney(player);
             InventoryService.gI().sendItemBags(player);
 
         } catch (IOException e) {

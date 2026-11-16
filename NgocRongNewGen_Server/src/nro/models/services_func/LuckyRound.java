@@ -40,74 +40,15 @@ public class LuckyRound {
     }
 
     public void openCrackBallUI(Player pl, byte type) {
-        pl.idMark.setTypeLuckyRound(type);
-        Message msg = null;
-        try {
-            msg = new Message(-127);
-            msg.writer().writeByte(0);
-            msg.writer().writeByte(7);
-            for (int i = 0; i < 7; i++) {
-                msg.writer().writeShort(419 + i);
-            }
-            msg.writer().writeByte(type);
-            msg.writer().writeInt(type == USING_GEM ? PRICE_GEM : PRICE_GOLD);
-            msg.writer().writeShort(-1);
-            pl.sendMessage(msg);
-        } catch (IOException e) {
-        } finally {
-            if (msg != null) {
-                msg.cleanup();
-            }
-        }
+        Service.gI().sendThongBao(pl, "Chức năng Vòng quay may mắn đã đóng!");
     }
 
     public void openCrackBallVipUI(Player pl, byte type) {
-        pl.idMark.setTypeLuckyRound(type);
-        Message msg = null;
-        try {
-            msg = new Message(-127);
-            msg.writer().writeByte(0);
-            msg.writer().writeByte(7);
-            for (int i = 0; i < 7; i++) {
-                msg.writer().writeShort(419);
-            }
-            msg.writer().writeByte(type);
-            msg.writer().writeInt(type == USING_GEM ? PRICE_GEM : PRICE_GOLD);
-            msg.writer().writeShort(-1);
-            pl.sendMessage(msg);
-        } catch (IOException e) {
-        } finally {
-            if (msg != null) {
-                msg.cleanup();
-            }
-        }
+        Service.gI().sendThongBao(pl, "Chức năng Vòng quay may mắn đã đóng!");
     }
 
     public void readOpenBall(Player player, Message msg) {
-        try {
-            msg.reader().readByte();
-            byte count = msg.reader().readByte();
-            switch (player.idMark.getTypeLuckyRound()) {
-                case USING_GEM:
-                    openBallByGem(player, count);
-                    break;
-                case USING_GOLD:
-                    openBallByGold(player, count);
-                    break;
-                case USING_TICKET:
-                    openBallByTicket(player, count);
-                    break;
-            }
-        } catch (Exception e) {
-            switch (player.idMark.getTypeLuckyRound()) {
-                case USING_GEM:
-                    openCrackBallVipUI(player, player.idMark.getTypeLuckyRound());
-                    break;
-                default:
-                    openCrackBallUI(player, player.idMark.getTypeLuckyRound());
-                    break;
-            }
-        }
+        Service.gI().sendThongBao(player, "Chức năng Vòng quay may mắn đã đóng!");
     }
 
     private void openBallByGem(Player player, byte count) {

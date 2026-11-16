@@ -174,6 +174,7 @@ public class Broly extends Boss {
 
     @Override
     public void die(Player plKill) {
+        tryDropManhGiay726(this.zone, this.location.x, this.location.y, plKill);
         this.changeStatus(BossStatus.DIE);
     }
 

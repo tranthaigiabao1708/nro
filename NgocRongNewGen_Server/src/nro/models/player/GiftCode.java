@@ -22,7 +22,15 @@ public class GiftCode {
     }
 
     public boolean isUsedGiftCode(String code) {
-        return rewards.contains(code);
+        if (code == null || rewards == null) {
+            return false;
+        }
+        for (String used : rewards) {
+            if (used != null && used.equalsIgnoreCase(code)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void dispose() {

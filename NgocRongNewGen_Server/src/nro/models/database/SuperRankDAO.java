@@ -243,6 +243,16 @@ public class SuperRankDAO {
     }
 
     public static void updateData(Player player) {
+        if (player == null || player.superRank == null || player.superRank.rank < 1 || player.nPoint == null) {
+            return;
+        }
+        String snapshot = player.superRank.rank + "|" + player.superRank.ticket + "|"
+                + player.superRank.win + "|" + player.superRank.lose + "|"
+                + player.superRank.lastPKTime + "|" + player.superRank.lastRewardTime + "|"
+                + (player.superRank.history != null ? player.superRank.history.size() : 0);
+        if (!player.isOffline && snapshot.equals(player.superRank.lastSavedSnapshot)) {
+            return;
+        }
         JSONArray historyList = new JSONArray();
         for (int i = 0; i < player.superRank.history.size(); i++) {
             JSONObject history = new JSONObject();
@@ -270,7 +280,7 @@ public class SuperRankDAO {
                     player.superRank.lose,
                     historyList.toString(),
                     player.id);
-            Logger.successln(Logger.PURPLE + player.name + ": Data update successfully....");
+            player.superRank.lastSavedSnapshot = snapshot;
         } catch (Exception e) {
             Logger.logException(SuperRank.class, e);
         }

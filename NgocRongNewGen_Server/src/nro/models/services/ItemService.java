@@ -408,7 +408,15 @@ public class ItemService {
 
     public Item createItemFromItemMap(ItemMap itemMap) {
         Item item = createNewItem(itemMap.itemTemplate.id, itemMap.quantity);
-        item.itemOptions = itemMap.options;
+        item.itemOptions = new ArrayList<>();
+        if (itemMap.options != null) {
+            for (Item.ItemOption io : itemMap.options) {
+                if (io != null && io.optionTemplate != null) {
+                    item.itemOptions.add(new Item.ItemOption(io.optionTemplate.id, io.param));
+                }
+            }
+        }
+        ensureDefaultOptions(item);
         return item;
     }
 
@@ -755,6 +763,64 @@ public class ItemService {
         return list;
     }
 
+    private void ensureSachTuyetKyOptions(Item item) {
+        if (item == null || item.itemOptions == null) {
+            return;
+        }
+        item.itemOptions.removeIf(io -> io == null || io.optionTemplate == null
+                || io.optionTemplate.id == 73 || io.optionTemplate.id == 218);
+
+        boolean hasAppraisalOrStat = false;
+        boolean hasOpt21 = false;
+        boolean hasOpt30 = false;
+        boolean hasOpt87 = false;
+        boolean hasOpt219 = false;
+        boolean hasOpt212 = false;
+
+        for (Item.ItemOption io : item.itemOptions) {
+            int id = io.optionTemplate.id;
+            switch (id) {
+                case 217, 77, 103, 50, 108, 94, 14, 80, 81, 175, 5, 214, 216 -> hasAppraisalOrStat = true;
+                case 21 -> hasOpt21 = true;
+                case 30 -> hasOpt30 = true;
+                case 87 -> hasOpt87 = true;
+                case 219 -> hasOpt219 = true;
+                case 212 -> hasOpt212 = true;
+            }
+        }
+
+        if (!hasAppraisalOrStat) {
+            int defaultSlots = item.isSachTuyetKy2() ? 2 : 1;
+            for (int i = 0; i < defaultSlots; i++) {
+                item.itemOptions.add(0, new Item.ItemOption(217, 0));
+            }
+        }
+
+        if (!hasOpt21) {
+            int insertIdx = 0;
+            for (int i = 0; i < item.itemOptions.size(); i++) {
+                int id = item.itemOptions.get(i).optionTemplate.id;
+                if (id == 217 || id == 77 || id == 103 || id == 50 || id == 108 || id == 94
+                        || id == 14 || id == 80 || id == 81 || id == 175 || id == 5 || id == 214 || id == 216) {
+                    insertIdx = i + 1;
+                }
+            }
+            item.itemOptions.add(insertIdx, new Item.ItemOption(21, 40));
+        }
+        if (!hasOpt30) {
+            item.itemOptions.add(new Item.ItemOption(30, 0));
+        }
+        if (!hasOpt87) {
+            item.itemOptions.add(new Item.ItemOption(87, 0));
+        }
+        if (!hasOpt219) {
+            item.itemOptions.add(new Item.ItemOption(219, 5));
+        }
+        if (!hasOpt212) {
+            item.itemOptions.add(new Item.ItemOption(212, 1000));
+        }
+    }
+
     public void ensureDefaultOptions(Item item) {
         if (item == null || !item.isNotNullItem() || item.template == null) {
             return;
@@ -762,6 +828,8 @@ public class ItemService {
         if (item.itemOptions == null) {
             item.itemOptions = new ArrayList<>();
         }
+        item.itemOptions.removeIf(io -> io != null && io.optionTemplate != null
+                && (io.optionTemplate.id == 206 || io.optionTemplate.id == 207));
         if (item.template.id == 1441) {
             item.template = getTemplate(1423);
         }
@@ -781,10 +849,28 @@ public class ItemService {
             return;
         }
         if (item.template.id == 1795) {
-            item.itemOptions.removeIf(io -> io == null || io.optionTemplate == null || io.optionTemplate.id == 73);
-            if (item.getOptionById(250) == null) {
-                item.itemOptions.add(0, new Item.ItemOption(250, 0));
+            int maxKilis = 0;
+            for (Item.ItemOption io : item.itemOptions) {
+                if (io != null && io.optionTemplate != null && io.optionTemplate.id == 250 && io.param > maxKilis) {
+                    maxKilis = io.param;
+                }
             }
+            item.itemOptions.removeIf(io -> io == null || io.optionTemplate == null
+                    || io.optionTemplate.id == 73 || io.optionTemplate.id == 250);
+            item.itemOptions.add(0, new Item.ItemOption(250, Math.max(0, Math.min(3000, maxKilis))));
+            return;
+        }
+        if (item.isSachTuyetKy() || item.isSachTuyetKy2()) {
+            ensureSachTuyetKyOptions(item);
+            return;
+        }
+        if (item.template.id == 921 || item.template.id == 1819) {
+            int passiveParam = (item.template.id == 1819) ? 20 : 10;
+            int capParam = (item.template.id == 1819) ? 3 : 2;
+            item.itemOptions.removeIf(io -> io == null || io.optionTemplate == null
+                    || io.optionTemplate.id == 73 || io.optionTemplate.id == 255 || io.optionTemplate.id == 72);
+            item.itemOptions.add(0, new Item.ItemOption(255, passiveParam));
+            item.itemOptions.add(new Item.ItemOption(72, capParam));
             return;
         }
         // Mở khóa giao dịch (gỡ Opt 30) cho Trang bị Thần Linh / Hủy Diệt / Thiên Sứ Kích Hoạt
@@ -849,6 +935,7 @@ public class ItemService {
         // Sửa trang bị đã ép sao bằng SPL thiếu chỉ số (bị dính option 73 thay vì chỉ số SPL)
         int socketedStars = 0;
         boolean hasPhaLeStat = false;
+        boolean hasOtherSplStat = false;
         boolean hasDummy73 = false;
         for (Item.ItemOption io : item.itemOptions) {
             if (io == null || io.optionTemplate == null) {
@@ -859,13 +946,45 @@ public class ItemService {
                 socketedStars = io.param;
             } else if (opId == 73) {
                 hasDummy73 = true;
-            } else if ((opId >= 95 && opId <= 101) || opId == 50 || opId == 77 || opId == 80 || opId == 81 || opId == 103 || opId == 153 || opId == 160) {
+            } else if (opId == 50) {
                 hasPhaLeStat = true;
+            } else if ((opId >= 95 && opId <= 101) || opId == 77 || opId == 80 || opId == 81 || opId == 103 || opId == 153 || opId == 160) {
+                hasPhaLeStat = true;
+                hasOtherSplStat = true;
             }
         }
         if (socketedStars > 0 && hasDummy73 && !hasPhaLeStat) {
             item.itemOptions.removeIf(io -> io != null && io.optionTemplate != null && io.optionTemplate.id == 73);
             item.itemOptions.add(new Item.ItemOption(101, socketedStars * 5));
+            hasOtherSplStat = true;
+        }
+        // Gộp dòng trùng (Option 50 / 77 / 103) và nâng cấp trang bị đã ép Ngọc Rồng 2 sao / 1 sao từ mốc cũ (4% / 5%) lên (6% / 9%)
+        if (socketedStars > 0 && ((item.template.type >= 0 && item.template.type <= 5)
+                || item.template.type == 11 || item.template.type == 23 || item.template.type == 24
+                || item.template.type == 32 || item.isLinhThu())) {
+            int[] mergeableIds = {50, 77, 103};
+            for (int mId : mergeableIds) {
+                Item.ItemOption firstOpt = null;
+                Iterator<Item.ItemOption> mergeIt = item.itemOptions.iterator();
+                while (mergeIt.hasNext()) {
+                    Item.ItemOption io = mergeIt.next();
+                    if (io != null && io.optionTemplate != null && io.optionTemplate.id == mId) {
+                        if (firstOpt == null) {
+                            firstOpt = io;
+                        } else {
+                            firstOpt.param += io.param;
+                            mergeIt.remove();
+                        }
+                    }
+                }
+            }
+            boolean isPureCoreGear = (item.template.type >= 0 && item.template.type <= 4) || item.template.type == 32;
+            if (isPureCoreGear && !hasOtherSplStat && !item.isHaveOption(41)) {
+                Item.ItemOption opt50 = item.getOptionById(50);
+                if (opt50 != null && opt50.param > 3 * socketedStars && opt50.param <= 5 * socketedStars) {
+                    opt50.param = 3 * opt50.param - 6 * socketedStars;
+                }
+            }
         }
         // Bù lại ô cường hóa thứ 9 cho CT Goku Bản Năng Vô Cực [1870] đã bị báo thành công ảo trước đó
         if (item.template.id == 1870) {
@@ -1070,87 +1189,51 @@ public class ItemService {
         switch (idTempTL) {
             case 555:
                 itemoptions.add(new ItemOption(47, 800 * tiLe / 100));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(206, tiLe - 100)); // Vật phẩm hiếm rơi từ quái
-                }
                 break;
             case 557: // Áo Thần Linh NM
                 itemoptions.add(new ItemOption(47, 850 * tiLe / 100));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(206, tiLe - 100));
-                }
                 break;
             case 559: // Áo Thần Linh XD
                 itemoptions.add(new ItemOption(47, 900 * tiLe / 100));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(206, tiLe - 100));
-                }
                 break;
             case 556: // Quần Thần Linh TD
                 int chiso = 52000 * tiLe / 100;
                 itemoptions.add(new ItemOption(22, chiso / 1000));
                 itemoptions.add(new ItemOption(27, chiso / 20));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(206, tiLe - 100));
-                }
                 break;
             case 558: // Quần Thần Linh NM
                 chiso = 50000 * tiLe / 100;
                 itemoptions.add(new ItemOption(22, chiso / 1000));
                 itemoptions.add(new ItemOption(27, chiso / 20));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(206, tiLe - 100));
-                }
                 break;
             case 560: // Quần Thần Linh XD
                 chiso = 48000 * tiLe / 100;
                 itemoptions.add(new ItemOption(22, chiso / 1000));
                 itemoptions.add(new ItemOption(27, chiso / 20));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(206, tiLe - 100));
-                }
                 break;
             case 562: // Găng tay Thần Linh TD
                 itemoptions.add(new ItemOption(0, 4400 * tiLe / 100));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(206, tiLe - 100));
-                }
                 break;
             case 564: // Găng tay Thần Linh NM
                 itemoptions.add(new ItemOption(0, 4300 * tiLe / 100));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(206, tiLe - 100));
-                }
                 break;
             case 566: // Găng tay Thần Linh
                 itemoptions.add(new ItemOption(0, 4500 * tiLe / 100));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(206, tiLe - 100));
-                }
                 break;
             case 563: // Giày Thần Linh TD
                 chiso = 48000 * tiLe / 100;
                 itemoptions.add(new ItemOption(23, chiso / 1000));
                 itemoptions.add(new ItemOption(28, chiso / 20));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(206, tiLe - 100));
-                }
                 break;
             case 565: // Giày Thần Linh NM
                 chiso = 50000 * tiLe / 100;
                 itemoptions.add(new ItemOption(23, chiso / 1000));
                 itemoptions.add(new ItemOption(28, chiso / 20));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(206, tiLe - 100));
-                }
                 break;
             case 567: // Giày Thần Linh XD
                 chiso = 46000 * tiLe / 100;
                 itemoptions.add(new ItemOption(23, chiso / 1000));
                 itemoptions.add(new ItemOption(28, chiso * 150 / 1000));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(206, tiLe - 100));
-                }
                 break;
             case 561: // Nhẫn Thần Linh
                 itemoptions.add(new ItemOption(14, 14 * tiLe / 100));
@@ -1197,87 +1280,51 @@ public class ItemService {
         switch (idTempTL) {
             case 555: // Áo Thần Linh TD
                 itemoptions.add(new ItemOption(47, 800 * tiLe / 100));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(207, tiLe - 100)); // Vật phẩm hiếm rơi từ quái
-                }
                 break;
             case 557: // Áo Thần Linh NM
                 itemoptions.add(new ItemOption(47, 850 * tiLe / 100));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(207, tiLe - 100));
-                }
                 break;
             case 559: // Áo Thần Linh XD
                 itemoptions.add(new ItemOption(47, 900 * tiLe / 100));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(207, tiLe - 100));
-                }
                 break;
             case 556: // Quần Thần Linh TD
                 int chiso = 52000 * tiLe / 100;
                 itemoptions.add(new ItemOption(22, chiso / 1000));
                 itemoptions.add(new ItemOption(27, chiso / 20));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(207, tiLe - 100));
-                }
                 break;
             case 558: // Quần Thần Linh NM
                 chiso = 50000 * tiLe / 100;
                 itemoptions.add(new ItemOption(22, chiso / 1000));
                 itemoptions.add(new ItemOption(27, chiso / 20));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(207, tiLe - 100));
-                }
                 break;
             case 560: // Quần Thần Linh XD
                 chiso = 48000 * tiLe / 100;
                 itemoptions.add(new ItemOption(22, chiso / 1000));
                 itemoptions.add(new ItemOption(27, chiso / 20));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(207, tiLe - 100));
-                }
                 break;
             case 562: // Găng tay Thần Linh TD
                 itemoptions.add(new ItemOption(0, 4400 * tiLe / 100));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(207, tiLe - 100));
-                }
                 break;
             case 564: // Găng tay Thần Linh NM
                 itemoptions.add(new ItemOption(0, 4300 * tiLe / 100));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(207, tiLe - 100));
-                }
                 break;
             case 566: // Găng tay Thần Linh
                 itemoptions.add(new ItemOption(0, 4500 * tiLe / 100));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(207, tiLe - 100));
-                }
                 break;
             case 563: // Giày Thần Linh TD
                 chiso = 48000 * tiLe / 100;
                 itemoptions.add(new ItemOption(23, chiso / 1000));
                 itemoptions.add(new ItemOption(28, chiso / 20));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(207, tiLe - 100));
-                }
                 break;
             case 565: // Giày Thần Linh NM
                 chiso = 50000 * tiLe / 100;
                 itemoptions.add(new ItemOption(23, chiso / 1000));
                 itemoptions.add(new ItemOption(28, chiso / 20));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(207, tiLe - 100));
-                }
                 break;
             case 567: // Giày Thần Linh XD
                 chiso = 46000 * tiLe / 100;
                 itemoptions.add(new ItemOption(23, chiso / 1000));
                 itemoptions.add(new ItemOption(28, chiso * 150 / 1000));
-                if (tiLe > 100) {
-                    itemoptions.add(new ItemOption(207, tiLe - 100));
-                }
                 break;
             case 561: // Nhẫn Thần Linh
                 itemoptions.add(new ItemOption(14, 14 * tiLe / 100));

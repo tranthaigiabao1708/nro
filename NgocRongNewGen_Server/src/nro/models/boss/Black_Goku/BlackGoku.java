@@ -40,12 +40,12 @@ public class BlackGoku extends Boss {
             if (plAtt != null && plAtt.idNRNM != -1) {
                 return 1;
             }
-            if (this.currentLevel != 0) {
-                damage = Math.max(1L, damage / 2L);
-            }
             if (!piercing) {
                 long reduced = damage > 100_000L ? (damage - Util.nextInt(100_000)) : damage;
                 damage = this.nPoint.subDameInjureWithDeff(Math.max(1L, reduced), plAtt);
+            }
+            if (this.currentLevel != 0) {
+                damage = Math.max(1L, damage / 2L);
             }
             if (!piercing && effectSkill.isShielding) {
                 if (damage > Math.max(1, nPoint.hpMax / 20)) {

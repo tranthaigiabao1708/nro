@@ -81,9 +81,8 @@ public final class Manager {
     public static boolean DAO_AUTO_UPDATER = false;
     public static MapTemplate[] MAP_TEMPLATES;
     public static final List<nro.models.map.Map> MAPS = new ArrayList<>();
-    private final ScheduledExecutorService mapUpdater = Executors.newSingleThreadScheduledExecutor();
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
-    private static final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
+    private static final ExecutorService executor = Executors.newFixedThreadPool(Math.max(4, Runtime.getRuntime().availableProcessors()));
     public static final List<ItemOptionTemplate> ITEM_OPTION_TEMPLATES = new ArrayList<>();
     public static final List<ArrHead2Frames> ARR_HEAD_2_FRAMES = new ArrayList<>();
     public static final Map<String, Byte> IMAGES_BY_NAME = new HashMap<>();
@@ -197,47 +196,58 @@ public final class Manager {
         }
         new NonInteractiveNPC().initNonInteractiveNPC();
 
+        final List<Callable<Void>> cachedZoneTasks = new ArrayList<>();
+        final int[] cachedZoneCount = {-1};
+        final CompletionService<Void> completionService = new ExecutorCompletionService<>(executor);
+
         scheduler.scheduleAtFixedRate(() -> {
             try {
-                List<Callable<Void>> tasks = new ArrayList<>();
-                for (nro.models.map.Map map : MAPS) {
-                    List<Zone> batch = new ArrayList<>();
-                    for (Zone zone : map.zones) {
-                        batch.add(zone);
-                        if (batch.size() >= 10) {
-                            List<Zone> finalBatch = new ArrayList<>(batch);
-                            tasks.add(() -> {
-                                for (Zone z : finalBatch) {
-                                    z.update();
-                                }
-                                return null;
-                            });
-                            batch.clear();
+                int currentTotalZones = 0;
+                for (int m = 0; m < MAPS.size(); m++) {
+                    currentTotalZones += MAPS.get(m).zones.size();
+                }
+                if (currentTotalZones != cachedZoneCount[0]) {
+                    cachedZoneTasks.clear();
+                    List<Zone> batch = new ArrayList<>(16);
+                    for (nro.models.map.Map map : MAPS) {
+                        for (Zone zone : map.zones) {
+                            batch.add(zone);
+                            if (batch.size() >= 16) {
+                                final Zone[] finalBatch = batch.toArray(new Zone[0]);
+                                cachedZoneTasks.add(() -> {
+                                    for (Zone z : finalBatch) {
+                                        z.update();
+                                    }
+                                    return null;
+                                });
+                                batch.clear();
+                            }
                         }
                     }
                     if (!batch.isEmpty()) {
-                        List<Zone> finalBatch = new ArrayList<>(batch);
-                        tasks.add(() -> {
+                        final Zone[] finalBatch = batch.toArray(new Zone[0]);
+                        cachedZoneTasks.add(() -> {
                             for (Zone z : finalBatch) {
                                 z.update();
                             }
                             return null;
                         });
                     }
+                    cachedZoneCount[0] = currentTotalZones;
                 }
 
-                CompletionService<Void> completionService = new ExecutorCompletionService<>(executor);
-                for (Callable<Void> task : tasks) {
-                    completionService.submit(task);
+                int submitted = cachedZoneTasks.size();
+                for (int i = 0; i < submitted; i++) {
+                    completionService.submit(cachedZoneTasks.get(i));
                 }
-                for (int i = 0; i < tasks.size(); i++) {
+                for (int i = 0; i < submitted; i++) {
                     completionService.take();
                 }
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }, 0, 1, TimeUnit.SECONDS);
+        }, 0, 500, TimeUnit.MILLISECONDS);
 
         Logger.success(Logger.RED + "Update maps thread started success!\n");
     }
@@ -245,14 +255,14 @@ public final class Manager {
     public static void loadPart() {
         JSONValue jv = new JSONValue();
         JSONArray dataArray = null;
-        JSONObject dataObject = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         try (Connection con = LocalManager.getConnection();) {
-            //load part
-            ps = con.prepareStatement("select * from part");
+            //load part strictly indexed by id
+            ps = con.prepareStatement("select * from part order by id asc");
             rs = ps.executeQuery();
-            List<Part> parts = new ArrayList<>();
+            java.util.Map<Integer, Part> partMap = new java.util.HashMap<>();
+            int maxId = -1;
             while (rs.next()) {
                 Part part = new Part();
                 part.id = rs.getShort("id");
@@ -265,17 +275,51 @@ public final class Manager {
                             Byte.parseByte(String.valueOf(pd.get(2)))));
                     pd.clear();
                 }
-                parts.add(part);
+                int expectedSize = switch (part.type) {
+                    case 0 -> 3;
+                    case 1 -> 17;
+                    case 2 -> 14;
+                    case 3 -> 2;
+                    default -> 3;
+                };
+                if (part.type < 0 || part.type > 3) {
+                    part.type = 0;
+                }
+                while (part.partDetails.size() < expectedSize) {
+                    PartDetail fill = part.partDetails.isEmpty()
+                            ? new PartDetail((short) 0, (byte) 0, (byte) 0)
+                            : part.partDetails.get(0);
+                    part.partDetails.add(new PartDetail(fill.iconId, fill.dx, fill.dy));
+                }
+                while (part.partDetails.size() > expectedSize) {
+                    part.partDetails.remove(part.partDetails.size() - 1);
+                }
+                if (part.id >= 0) {
+                    partMap.put((int) part.id, part);
+                    if (part.id > maxId) {
+                        maxId = part.id;
+                    }
+                }
                 dataArray.clear();
             }
             DataOutputStream dos = new DataOutputStream(new FileOutputStream("data/update_data/part"));
-            dos.writeShort(parts.size());
-            for (Part part : parts) {
-                dos.writeByte(part.type);
-                for (PartDetail partDetail : part.partDetails) {
-                    dos.writeShort(partDetail.iconId);
-                    dos.writeByte(partDetail.dx);
-                    dos.writeByte(partDetail.dy);
+            dos.writeShort(maxId + 1);
+            for (int id = 0; id <= maxId; id++) {
+                Part part = partMap.get(id);
+                if (part == null) {
+                    dos.writeByte(0);
+                    for (int k = 0; k < 3; k++) {
+                        dos.writeShort(2955);
+                        dos.writeByte(0);
+                        dos.writeByte(0);
+                    }
+                } else {
+                    dos.writeByte(part.type);
+                    for (PartDetail partDetail : part.partDetails) {
+                        dos.writeShort(partDetail.iconId);
+                        dos.writeByte(partDetail.dx);
+                        dos.writeByte(partDetail.dy);
+                    }
                 }
             }
             dos.flush();
@@ -293,10 +337,11 @@ public final class Manager {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try (Connection ConnectionDatabase = LocalManager.getConnection()) {
-            //load part
+            //load part strictly indexed by id
             ps = ConnectionDatabase.prepareStatement("select * from part order by id asc");
             rs = ps.executeQuery();
-            List<Part> parts = new ArrayList<>();
+            java.util.Map<Integer, Part> partMap = new java.util.HashMap<>();
+            int maxPartId = -1;
             while (rs.next()) {
                 Part part = new Part();
                 part.id = rs.getShort("id");
@@ -328,22 +373,37 @@ public final class Manager {
                 while (part.partDetails.size() > expectedSize) {
                     part.partDetails.remove(part.partDetails.size() - 1);
                 }
-                parts.add(part);
+                if (part.id >= 0) {
+                    partMap.put((int) part.id, part);
+                    if (part.id > maxPartId) {
+                        maxPartId = part.id;
+                    }
+                }
                 dataArray.clear();
             }
             DataOutputStream dos = new DataOutputStream(new FileOutputStream("data/update_data/part"));
-            dos.writeShort(parts.size());
-            for (Part part : parts) {
-                dos.writeByte(part.type);
-                for (PartDetail partDetail : part.partDetails) {
-                    dos.writeShort(partDetail.iconId);
-                    dos.writeByte(partDetail.dx);
-                    dos.writeByte(partDetail.dy);
+            dos.writeShort(maxPartId + 1);
+            for (int id = 0; id <= maxPartId; id++) {
+                Part part = partMap.get(id);
+                if (part == null) {
+                    dos.writeByte(0);
+                    for (int k = 0; k < 3; k++) {
+                        dos.writeShort(2955);
+                        dos.writeByte(0);
+                        dos.writeByte(0);
+                    }
+                } else {
+                    dos.writeByte(part.type);
+                    for (PartDetail partDetail : part.partDetails) {
+                        dos.writeShort(partDetail.iconId);
+                        dos.writeByte(partDetail.dx);
+                        dos.writeByte(partDetail.dy);
+                    }
                 }
             }
             dos.flush();
             dos.close();
-            Logger.success(Logger.PURPLE + "Successfully loaded part (" + parts.size() + ")\n");
+            Logger.success(Logger.PURPLE + "Successfully loaded part (" + (maxPartId + 1) + ")\n");
 
             //load bg item template
             ps = ConnectionDatabase.prepareStatement("select * from bg_item_template");
@@ -550,7 +610,7 @@ public final class Manager {
             ps = ConnectionDatabase.prepareStatement("SELECT id, task_main_template.name, detail, "
                     + "task_sub_template.name AS 'sub_name', max_count, notify, npc_id, map "
                     + "FROM task_main_template JOIN task_sub_template ON task_main_template.id = "
-                    + "task_sub_template.task_main_id");
+                    + "task_sub_template.task_main_id ORDER BY task_main_template.id ASC, task_sub_template.ducvupro ASC");
             rs = ps.executeQuery();
             int taskId = -1;
             TaskMain task = null;
@@ -764,7 +824,7 @@ public final class Manager {
             Logger.success(Logger.RED + "Successfully loaded Consign Item (" + ConsignShopManager.gI().listItem.size() + ")\n");
 
             //load mob template
-            ps = ConnectionDatabase.prepareStatement("select * from mob_template");
+            ps = ConnectionDatabase.prepareStatement("select * from mob_template order by id asc");
             rs = ps.executeQuery();
             while (rs.next()) {
                 MobTemplate mobTemp = new MobTemplate();
@@ -782,7 +842,7 @@ public final class Manager {
             Logger.success(Logger.PURPLE + "Successfully loaded mob template (" + MOB_TEMPLATES.size() + ")\n");
 
             //load npc template
-            ps = ConnectionDatabase.prepareStatement("select * from npc_template");
+            ps = ConnectionDatabase.prepareStatement("select * from npc_template order by id asc");
             rs = ps.executeQuery();
             while (rs.next()) {
                 NpcTemplate npcTemp = new NpcTemplate();
@@ -822,7 +882,7 @@ public final class Manager {
             if (rs.next()) {
                 int countRow = rs.getShort(1);
                 MAP_TEMPLATES = new MapTemplate[countRow];
-                ps = ConnectionDatabase.prepareStatement("select * from map_template");
+                ps = ConnectionDatabase.prepareStatement("select * from map_template order by id asc");
                 rs = ps.executeQuery();
                 short i = 0;
                 while (rs.next()) {

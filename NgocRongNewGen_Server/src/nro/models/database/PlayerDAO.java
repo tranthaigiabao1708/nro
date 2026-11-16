@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import nro.models.player_system.Template;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
@@ -32,6 +33,25 @@ public class PlayerDAO {
 
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(8);
 
+    private static void scheduleImmediateSaveWorker(Player player) {
+        scheduler.execute(() -> {
+            try {
+                while (player.pendingAsyncSave && !player.beforeDispose && !player.isDisposed) {
+                    player.pendingAsyncSave = false;
+                    updatePlayer(player, true);
+                }
+            } catch (Exception e) {
+                Logger.logException(PlayerDAO.class, e, "Lỗi savePlayerAsync");
+            } finally {
+                player.savingAsync.set(false);
+                if (player.pendingAsyncSave && !player.beforeDispose && !player.isDisposed
+                        && player.savingAsync.compareAndSet(false, true)) {
+                    scheduleImmediateSaveWorker(player);
+                }
+            }
+        });
+    }
+
     public static void savePlayerAsync(Player player) {
         if (player == null || !player.isPl() || player.beforeDispose || player.isDisposed
                 || player.idMark == null || !player.idMark.isLoadedAllDataPlayer()) {
@@ -39,18 +59,7 @@ public class PlayerDAO {
         }
         player.pendingAsyncSave = true;
         if (player.savingAsync.compareAndSet(false, true)) {
-            scheduler.execute(() -> {
-                try {
-                    while (player.pendingAsyncSave && !player.beforeDispose && !player.isDisposed) {
-                        player.pendingAsyncSave = false;
-                        updatePlayer(player, true);
-                    }
-                } catch (Exception e) {
-                    Logger.logException(PlayerDAO.class, e, "Lỗi savePlayerAsync");
-                } finally {
-                    player.savingAsync.set(false);
-                }
-            });
+            scheduleImmediateSaveWorker(player);
         }
     }
 
@@ -429,6 +438,73 @@ public class PlayerDAO {
         return result.toJSONString();
     }
 
+    private static final String UPDATE_PLAYER_SQL = "update player set head = ?, have_tennis_space_ship = ?, "
+            + "clan_id = ?, data_inventory = ?, data_location = ?, data_point = ?, data_magic_tree = ?, "
+            + "items_body = ?, items_bag = ?, items_box = ?, items_box_lucky_round = ?, items_daban = ?, friends = ?, "
+            + "enemies = ?, data_intrinsic = ?, data_item_time = ?, data_task = ?, data_mabu_egg = ?, pet = ?, "
+            + "data_black_ball = ?, data_side_task = ?, data_charm = ?, skills = ?, skills_shortcut = ?, notify = ?, "
+            + "baovetaikhoan = ?, data_card = ?, lasttimepkcommeson = ?, bandokhobau = ?, doanhtrai = ?, conduongrandoc = ?, masterDoesNotAttack = ?, "
+            + "nhanthoivang = ?, ruonggo = ?, sieuthanthuy = ?, vodaisinhtu = ?, rongxuong = ?, data_item_event = ?, data_luyentap = ?, data_clan_task = ?, data_vip = ?, "
+            + "rank = ?, data_achievement = ?, giftcode = ?, event_point = ?, data_event = ?, dataBadges = ?, dataTaskBadges = ?, BoughtSkill = ?, LearnSkill = ?, "
+            + "firstTimeLogin = ?,  dailyGift = ?, point_sukien = ?, thachdauwhis = ?, point_sukien1 = ?, point_maydam = ?, total_damage_maydam = ?, last_damage_maydam = ?, data_duahau_egg = ?, checkNhanQua = ?, nhiem_vu_kol = ?, point_sukien2 = ?, data_skh_collection = ?, unlock_vu_tru_13 = ?, hide_cai_trang = ?, vu_tru_13_stage = ?, vo_cuc_type = ?, vo_cuc_level = ? where id = ?";
+
+    private static void executeUpdateOnConnection(Connection con, String sql, Object... objs) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            for (int i = 0; i < objs.length; i++) {
+                ps.setObject(i + 1, objs[i]);
+            }
+            ps.executeUpdate();
+        }
+    }
+
+    public static void saveTradeAtomic(Player p1, Player p2) {
+        if (p1 == null && p2 == null) {
+            return;
+        }
+        if (p1 == null || !p1.isPl()) {
+            if (p2 != null && p2.isPl()) {
+                updatePlayer(p2, true);
+            }
+            return;
+        }
+        if (p2 == null || !p2.isPl() || p1 == p2) {
+            updatePlayer(p1, true);
+            return;
+        }
+        Object firstLock = p1.id <= p2.id ? p1.saveLock : p2.saveLock;
+        Object secondLock = p1.id <= p2.id ? p2.saveLock : p1.saveLock;
+        synchronized (firstLock) {
+            synchronized (secondLock) {
+                p1.pendingAsyncSave = false;
+                p2.pendingAsyncSave = false;
+                try (Connection con = LocalManager.getConnection()) {
+                    boolean prevAutoCommit = con.getAutoCommit();
+                    con.setAutoCommit(false);
+                    try {
+                        updatePlayerInternal(con, p1, true, false);
+                        updatePlayerInternal(con, p2, true, false);
+                        con.commit();
+                    } catch (Exception ex) {
+                        try {
+                            con.rollback();
+                        } catch (SQLException ignored) {
+                        }
+                        throw ex;
+                    } finally {
+                        try {
+                            con.setAutoCommit(prevAutoCommit);
+                        } catch (SQLException ignored) {
+                        }
+                    }
+                    SuperRankDAO.updateData(p1);
+                    SuperRankDAO.updateData(p2);
+                } catch (Exception e) {
+                    Logger.logException(PlayerDAO.class, e, "Lỗi saveTradeAtomic giữa " + p1.name + " và " + p2.name);
+                }
+            }
+        }
+    }
+
     public static void updatePlayer(Player player) {
         updatePlayer(player, false);
     }
@@ -438,6 +514,15 @@ public class PlayerDAO {
             return;
         }
         synchronized (player.saveLock) {
+            updatePlayerInternal(null, player, silent, true);
+        }
+    }
+
+    private static void updatePlayerInternal(Connection sharedCon, Player player, boolean silent, boolean syncSuperRank) {
+        if (player == null) {
+            return;
+        }
+        {
             if (!player.isDisposed && player.idMark != null && player.idMark.isLoadedAllDataPlayer()
                     && player.inventory != null && player.nPoint != null && player.playerTask != null) {
                 long st = System.currentTimeMillis();
@@ -604,9 +689,18 @@ public class PlayerDAO {
                 dataArray.clear();
 
                 //data nhiệm vụ
+                int taskIndex = player.playerTask.taskMain.index;
+                int subTaskCount = 0;
+                if (player.playerTask.taskMain.subTasks != null && !player.playerTask.taskMain.subTasks.isEmpty()) {
+                    if (taskIndex >= 0 && taskIndex < player.playerTask.taskMain.subTasks.size()) {
+                        subTaskCount = player.playerTask.taskMain.subTasks.get(taskIndex).count;
+                    } else {
+                        subTaskCount = player.playerTask.taskMain.subTasks.get(player.playerTask.taskMain.subTasks.size() - 1).count;
+                    }
+                }
                 dataArray.add(player.playerTask.taskMain.id);
-                dataArray.add(player.playerTask.taskMain.index);
-                dataArray.add(player.playerTask.taskMain.subTasks.get(player.playerTask.taskMain.index).count);
+                dataArray.add(taskIndex);
+                dataArray.add(subTaskCount);
                 dataArray.add(player.playerTask.taskMain.lastTime);
                 String task = dataArray.toJSONString();
                 dataArray.clear();
@@ -665,6 +759,7 @@ public class PlayerDAO {
                     dataSkill.add(skill.point);
                     dataSkill.add(skill.lastTimeUseThisSkill);
                     dataSkill.add(skill.currLevel);
+                    dataSkill.add(skill.masteryDamageRemainder);
                     dataArray.add(dataSkill.toJSONString());
                     dataSkill.clear();
                 }
@@ -723,8 +818,10 @@ public class PlayerDAO {
                             pskill.add(s.point);
                             pskill.add(s.lastTimeUseThisSkill);
                             pskill.add(s.currLevel);
+                            pskill.add(s.masteryDamageRemainder);
                         } else {
                             pskill.add(-1);
+                            pskill.add(0);
                             pskill.add(0);
                             pskill.add(0);
                             pskill.add(0);
@@ -794,6 +891,7 @@ public class PlayerDAO {
                 dataArray.add(player.goldSuperChallenge);
                 dataArray.add(player.gemSuperChallenge);
                 dataArray.add(player.lastTimePKVoDaiVt6);
+                dataArray.add(player.lastTimeClaimSuperChest);
                 String dataRuongGo = dataArray.toJSONString();
                 dataArray.clear();
 
@@ -934,16 +1032,7 @@ public class PlayerDAO {
 
                 String dataDailyGift = JSONValue.toJSONString(player.dailyGiftData);
                 String dataSkhCollection = nro.models.services.SkhCollectionService.toJson(player);
-                String query = "update player set head = ?, have_tennis_space_ship = ?, "
-                        + "clan_id = ?, data_inventory = ?, data_location = ?, data_point = ?, data_magic_tree = ?, "
-                        + "items_body = ?, items_bag = ?, items_box = ?, items_box_lucky_round = ?, items_daban = ?, friends = ?, "
-                        + "enemies = ?, data_intrinsic = ?, data_item_time = ?, data_task = ?, data_mabu_egg = ?, pet = ?, "
-                        + "data_black_ball = ?, data_side_task = ?, data_charm = ?, skills = ?, skills_shortcut = ?, notify = ?, "
-                        + "baovetaikhoan = ?, data_card = ?, lasttimepkcommeson = ?, bandokhobau = ?, doanhtrai = ?, conduongrandoc = ?, masterDoesNotAttack = ?, "
-                        + "nhanthoivang = ?, ruonggo = ?, sieuthanthuy = ?, vodaisinhtu = ?, rongxuong = ?, data_item_event = ?, data_luyentap = ?, data_clan_task = ?, data_vip = ?, "
-                        + "rank = ?, data_achievement = ?, giftcode = ?, event_point = ?, data_event = ?, dataBadges = ?, dataTaskBadges = ?, BoughtSkill = ?, LearnSkill = ?, "
-                        + "firstTimeLogin = ?,  dailyGift = ?, point_sukien = ?, thachdauwhis = ?, point_sukien1 = ?, point_maydam = ?, total_damage_maydam = ?, data_duahau_egg = ?, checkNhanQua = ?, nhiem_vu_kol = ?, point_sukien2 = ?, data_skh_collection = ? where id = ?";
-                LocalManager.executeUpdate(query,
+                Object[] updateArgs = new Object[]{
                         player.head,
                         player.haveTennisSpaceShip,
                         (player.clan != null ? player.clan.id : -1),
@@ -989,7 +1078,7 @@ public class PlayerDAO {
                         achievement,
                         giftCode,
                         player.event.getEventPoint(),
-                        dataEvent, // Thêm data_event vào đây
+                        dataEvent,
                         dataBadges,
                         dataTaskBadges,
                         BoughtSkill,
@@ -1001,13 +1090,27 @@ public class PlayerDAO {
                         player.point_sukien1,
                         player.point_maydam,
                         player.total_damage_maydam,
+                        player.last_damage_maydam,
                         DuaHauEgg,
                         checkNhanQua,
                         dataKol,
                         player.point_sukien2,
                         dataSkhCollection,
-                        player.id);
-                SuperRankDAO.updateData(player);
+                        player.unlockVuTru13 ? 1 : 0,
+                        player.hideCaiTrang ? 1 : 0,
+                        player.vuTru13Stage,
+                        (int) player.voCucType,
+                        Math.max(1, player.voCucLevel),
+                        player.id
+                };
+                if (sharedCon != null) {
+                    executeUpdateOnConnection(sharedCon, UPDATE_PLAYER_SQL, updateArgs);
+                } else {
+                    LocalManager.executeUpdate(UPDATE_PLAYER_SQL, updateArgs);
+                }
+                if (syncSuperRank) {
+                    SuperRankDAO.updateData(player);
+                }
                 if (player.isOffline) {
                     if (!silent) {
                         Logger.log(Logger.PURPLE, TimeUtil.getCurrHour() + "h" + TimeUtil.getCurrMin() + "m: Player " + player.name + " updated successfully! " + (System.currentTimeMillis() - st) + "ms\n");
@@ -1017,6 +1120,9 @@ public class PlayerDAO {
                     Logger.success(Logger.PURPLE + TimeUtil.getCurrHour() + "h" + TimeUtil.getCurrMin() + "m: Player " + player.name + " save successfully! " + (System.currentTimeMillis() - st) + "ms\n");
                 }
             } catch (Exception e) {
+                if (sharedCon != null) {
+                    throw new RuntimeException(e);
+                }
                 Logger.logException(PlayerDAO.class, e, "Lỗi save player " + player.name);
             }
 

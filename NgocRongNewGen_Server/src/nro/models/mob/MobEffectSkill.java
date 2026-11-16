@@ -39,16 +39,26 @@ public class MobEffectSkill {
             }
             if (Util.canDoWithTime(lastTimeMaPhongBa, 500) && !mob.isDie()) {
                 if (playerUseMafuba != null && playerUseMafuba.playerSkill != null) {
-                    double param = playerUseMafuba.playerSkill.getSkillbyId(Skill.MA_PHONG_BA).point;
-                    long subHpLong = (long) (playerUseMafuba.nPoint.hpMax * param * (this.typeBinh == 0 ? 1 : 2) / 100);
-                    if (playerUseMafuba.nPoint != null && playerUseMafuba.nPoint.tlDameTuyetKy > 0) {
-                        subHpLong += subHpLong * playerUseMafuba.nPoint.tlDameTuyetKy / 100L;
+                    Skill mafubaSkill = playerUseMafuba.playerSkill.getSkillbyId(Skill.MA_PHONG_BA);
+                    if (mafubaSkill != null && mafubaSkill.point > 0) {
+                        double param = mafubaSkill.point;
+                        long subHpLong = (long) (playerUseMafuba.nPoint.hpMax * param * (this.typeBinh == 0 ? 1 : 2) / 100);
+                        if (playerUseMafuba.nPoint != null && playerUseMafuba.nPoint.tlDameTuyetKy > 0) {
+                            subHpLong += subHpLong * playerUseMafuba.nPoint.tlDameTuyetKy / 100L;
+                        }
+                        boolean isMayDo = (this.mob instanceof nro.models.mob_bigboss.MayDoSucManh)
+                                || this.mob.tempId == nro.models.consts.ConstMob.MAY_DO_SUC_MANH;
+                        long subHp = subHpLong;
+                        if (!isMayDo && subHp >= this.mob.point.hp) {
+                            subHp = Math.max(0L, this.mob.point.hp - 1L);
+                        }
+                        if (subHp > 0) {
+                            long hpBefore = this.mob.point.gethp();
+                            this.mob.injured(playerUseMafuba, subHp, false);
+                            long dealt = isMayDo ? subHp : Math.max(0L, hpBefore - this.mob.point.gethp());
+                            nro.models.services.SkillService.gI().addSkillSpecialMasteryByDamage(playerUseMafuba, mafubaSkill, dealt);
+                        }
                     }
-                    long subHp = subHpLong;
-                    if (subHp >= this.mob.point.hp) {
-                        subHp = this.mob.point.hp - 1;
-                    }
-                    this.mob.injured(null, subHp, false);
                 }
                 this.lastTimeMaPhongBa = System.currentTimeMillis();
             }

@@ -47,13 +47,18 @@ public class SnakeWayService {
         if (clan != null) {
             ClanMember cm = clan.getClanMember((int) player.id);
             if (cm != null) {
-                if (player.clanMember.getNumDateFromJoinTimeToToday() < 2) {
+                if (player.clanMember.getNumDateFromJoinTimeToToday() < 1) {
+                    Service.gI().sendThongBao(player, "Gia nhập bang hội trên 1 ngày mới được tham gia");
                     return;
                 }
-                if (!player.joinCDRD && !Util.isTimeDifferenceGreaterThanNDays(player.lastTimeJoinCDRD, 7)) {
-                    Service.gI().sendThongBao(player, "Vui lòng đợi " + TimeUtil.getDateLeft(player.lastTimeJoinCDRD, 7 * 24 * 60 * 60) + " nữa");
+                boolean sameActiveSession = player.clan.ConDuongRanDoc != null
+                        && player.lastTimeJoinCDRD == player.clan.lastTimeOpenConDuongRanDoc;
+                if (!sameActiveSession && player.lastTimeJoinCDRD > 0 && !Util.isAfterMidnight(player.lastTimeJoinCDRD)) {
+                    Service.gI().sendThongBao(player, "Mỗi ngày mỗi thành viên chỉ được đi Con Đường Rắn Độc 1 lần, hẹn gặp lại ngày mai");
                     return;
-                } else if (!player.joinCDRD) {
+                }
+                if (!sameActiveSession) {
+                    player.joinCDRD = false;
                     player.talkToThuongDe = false;
                     player.talkToThanMeo = false;
                 }

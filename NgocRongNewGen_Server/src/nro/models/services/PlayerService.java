@@ -146,6 +146,24 @@ public class PlayerService {
             if (player.effectSkill.useTroi) {
                 EffectSkillService.gI().removeUseTroi(player);
             }
+            int oldX = player.location.x;
+            int oldY = player.location.y;
+            boolean forceBossSetPos = false;
+            if (player instanceof nro.models.boss.Boss boss && boss.shouldClampToGround() && player.zone.map != null) {
+                nro.models.map.Map map = player.zone.map;
+                x = map.clampBossX(x);
+                y = map.clampBossMoveY(x, y);
+                if ((y != oldY || map.hasSlopeOrGapBetween(oldX, x, y)) && Math.abs(x - oldX) <= 104) {
+                    int dir = (x >= oldX) ? 1 : -1;
+                    int dashX = map.clampBossX(oldX + dir * 112);
+                    if (Math.abs(dashX - oldX) > 104) {
+                        x = dashX;
+                        y = map.clampBossMoveY(x, y);
+                    } else {
+                        forceBossSetPos = true;
+                    }
+                }
+            }
             player.location.x = x;
             player.location.y = y;
             player.location.lastTimeplayerMove = System.currentTimeMillis();
@@ -198,7 +216,11 @@ public class PlayerService {
                     }
                 }
             }
-            MapService.gI().sendPlayerMove(player);
+            if (forceBossSetPos) {
+                Service.gI().setPos(player, player.location.x, player.location.y);
+            } else {
+                MapService.gI().sendPlayerMove(player);
+            }
             TaskService.gI().checkDoneTaskGoToMap(player, player.zone);
         }
     }

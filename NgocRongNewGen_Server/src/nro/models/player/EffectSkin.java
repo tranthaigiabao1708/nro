@@ -411,19 +411,28 @@ public class EffectSkin {
             if (this.player.effectSkill != null && this.player.effectSkill.isBinh && this.player.effectSkill.playerUseMafuba != null) {
                 if (Util.canDoWithTime(lastTimeMaPhongBa, 500) && this.player.effectSkill.playerUseMafuba.playerSkill != null) {
                     Player caster = this.player.effectSkill.playerUseMafuba;
-                    double param = caster.playerSkill.getSkillbyId(Skill.MA_PHONG_BA).point * (this.player.effectSkill.typeBinh == 0 ? 1 : 2);
-                    long subHpLong = (long) (caster.nPoint.hpMax * param / 100);
-                    if (caster.nPoint != null && caster.nPoint.tlDameTuyetKy > 0) {
-                        subHpLong += subHpLong * caster.nPoint.tlDameTuyetKy / 100L;
-                    }
-                    long subHp = subHpLong;
-                    long curActualHp = this.player.nPoint.getActualHp();
-                    if (subHp >= curActualHp) {
-                        subHp = Math.max(0L, curActualHp - 1L);
-                    }
-                    if (subHp > 0) {
-                        this.player.injured(caster, subHp, true, false);
-                        Service.gI().reload_HP_NV(this.player);
+                    Skill mafubaSkill = caster.playerSkill.getSkillbyId(Skill.MA_PHONG_BA);
+                    if (mafubaSkill != null && mafubaSkill.point > 0) {
+                        double param = mafubaSkill.point * (this.player.effectSkill.typeBinh == 0 ? 1 : 2);
+                        long subHpLong = (long) (caster.nPoint.hpMax * param / 100);
+                        if (caster.nPoint != null && caster.nPoint.tlDameTuyetKy > 0) {
+                            subHpLong += subHpLong * caster.nPoint.tlDameTuyetKy / 100L;
+                        }
+                        long subHp = subHpLong;
+                        long curActualHp = this.player.nPoint.getActualHp();
+                        if (subHp >= curActualHp) {
+                            subHp = Math.max(0L, curActualHp - 1L);
+                        }
+                        if (subHp > 0) {
+                            long hpBefore = this.player.nPoint.getActualHp();
+                            long dameInjured = this.player.injured(caster, subHp, true, false);
+                            long dealt = Math.max(0L, Math.min(dameInjured, Math.max(0L, hpBefore - this.player.nPoint.getActualHp())));
+                            if (dealt <= 0 && dameInjured > 0) {
+                                dealt = dameInjured;
+                            }
+                            nro.models.services.SkillService.gI().addSkillSpecialMasteryByDamage(caster, mafubaSkill, dealt);
+                            Service.gI().reload_HP_NV(this.player);
+                        }
                     }
                     PlayerService.gI().sendInfoHpMpMoney(this.player);
                     Service.gI().Send_Info_NV(this.player);

@@ -32,9 +32,9 @@ public class EpSaoTrangBi {
                 int optionIdCheck = CombineSystem.getOptionDaPhaLe(daPhaLe);
                 if (CombineSystem.isPhuKienMoRong(trangBi) && !CombineSystem.isSplDaDungChoPhuKien(optionIdCheck)) {
                     CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
-                            "|7|Phụ kiện mở rộng (Đeo lưng, Thú cưỡi, Linh thú, Sách tuyệt kỹ) chỉ được ép Sao Pha Lê Đa Dụng:\n"
+                            "|7|Sách tuyệt kỹ chỉ được ép Sao Pha Lê Đa Dụng:\n"
                             + "|2|- Hút HP / Hút KI\n- Phản sát thương\n- Xuyên giáp chưởng / cận chiến\n- % Vàng / % Tiềm năng sức mạnh\n"
-                            + "|1|(Ngọc Rồng & SPL % SĐ, % HP, % KI chỉ ép vào 7 Trang bị chính: Áo, Quần, Găng, Giày, Rada, Cải trang, Giáp tập luyện)",
+                            + "|1|(Ngọc Rồng & SPL % SĐ, % HP, % KI ép cho Trang bị, Cải trang, Giáp TL, Pet, Cánh và Ván bay)",
                             "Đóng");
                     return;
                 }
@@ -120,7 +120,7 @@ public class EpSaoTrangBi {
                 return;
             }
             if (CombineSystem.isPhuKienMoRong(trangBi) && !CombineSystem.isSplDaDungChoPhuKien(optionId)) {
-                Service.gI().sendThongBao(player, "Phụ kiện mở rộng chỉ được ép Sao Pha Lê Đa Dụng (% TNSM, Vàng, Hút HP/KI, Xuyên giáp, Phản ST)!");
+                Service.gI().sendThongBao(player, "Sách tuyệt kỹ chỉ được ép Sao Pha Lê Đa Dụng (% TNSM, Vàng, Hút HP/KI, Xuyên giáp, Phản ST)!");
                 return;
             }
 
@@ -149,6 +149,7 @@ public class EpSaoTrangBi {
             }
 
             player.inventory.subGem(gem);
+            trangBi.itemOptions.removeIf(io -> io != null && io.optionTemplate != null && io.optionTemplate.id == 73);
 
             // Gộp tất cả các ô từ 1 đến 9 vào chung 1 dòng % trên từng món trang bị
             boolean merged = false;

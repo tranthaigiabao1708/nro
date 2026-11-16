@@ -110,5 +110,7 @@ public class ConstMob {
     public static final byte BLIZZARD_BIRD = 109;
     public static final byte MAY_DO_SUC_MANH = 117;
     public static final byte CADIC_M = 118;
+    public static final byte CHIEN_BINH_AM_ANH_VT13 = 119;
+    public static final byte THUC_THE_NGUYEN_RUA_VT13 = 120;
 
 }

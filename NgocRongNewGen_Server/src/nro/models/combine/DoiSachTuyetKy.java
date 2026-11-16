@@ -131,7 +131,7 @@ public class DoiSachTuyetKy {
         short itemId = SACH_IDS[Util.nextInt(SACH_IDS.length)];
 
         Item sach = ItemService.gI().createNewItem(itemId);
-        sach.itemOptions.removeIf(opt -> opt.optionTemplate.id == 218);
+        sach.itemOptions.clear();
 
         if (useConDau) {
             if (Util.isTrue(EXTRA_OPTION_CHANCE, 100)) {

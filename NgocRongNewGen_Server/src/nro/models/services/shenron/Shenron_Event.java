@@ -295,8 +295,13 @@ public class Shenron_Event {
                     case 1: // Thay đổi chiêu 4 đệ tử
                         if (player.pet != null) {
                             if (player.pet.playerSkill.skills.size() > 3 && player.pet.playerSkill.skills.get(3).skillId != -1) {
+                                String oldSkillName = player.pet.playerSkill.skills.get(3).template != null
+                                        ? player.pet.playerSkill.skills.get(3).template.name : "Chiêu 4";
                                 player.pet.openSkill4();
-                                Service.gI().sendThongBao(player, "Đã thay đổi chiêu 4 cho đệ tử!");
+                                String newSkillName = player.pet.playerSkill.skills.get(3).template != null
+                                        ? player.pet.playerSkill.skills.get(3).template.name : "Chiêu 4";
+                                Service.gI().showInfoPet(player);
+                                Service.gI().sendThongBao(player, "Đã đổi chiêu 4 đệ tử: " + oldSkillName + " -> " + newSkillName + "!");
                             } else {
                                 Service.gI().sendThongBao(player, "Đệ tử của ngươi chưa mở chiêu 4!");
                                 sendBlackGokuhesShenron();

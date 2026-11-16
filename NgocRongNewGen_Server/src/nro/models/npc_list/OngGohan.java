@@ -1,12 +1,14 @@
 package nro.models.npc_list;
 
 import nro.models.consts.ConstNpc;
+import nro.models.map.service.ChangeMapService;
 import nro.models.npc.Npc;
 import nro.models.player.Player;
 import nro.models.services.PetService;
 import nro.models.services.Service;
 import nro.models.services.SkhCollectionService;
 import nro.models.services.TaskService;
+import nro.models.services.VuTru13Service;
 import nro.models.services_func.Input;
 
 public class OngGohan extends Npc {
@@ -27,8 +29,39 @@ public class OngGohan extends Npc {
                         "Bảng Sưu Tập\nSet Kích Hoạt",
                         "Nhận Hào Quang\n(Đủ 5 Set)",
                         "Hướng dẫn\nSet Kích Hoạt",
+                        "Vũ Trụ 13\n& Cải Trang",
                         "Đóng");
             }
+        }
+    }
+
+    protected void openVuTru13Menu(Player player) {
+        if (VuTru13Service.gI().canAwakenAtHome(player)) {
+            if (!player.unlockVuTru13) {
+                this.createOtherMenu(player, ConstNpc.MENU_VU_TRU_13_HOME,
+                        "|7|KHAI MỞ SỨC MẠNH VŨ TRỤ 13 - VŨ TRỤ BỊ NGUYỀN RỦA\n"
+                        + "|2|Con đã hoàn thành nhiệm vụ cuối! Hãy tiếp nhận Huyết Ấn Thức Tỉnh để mở khóa Ngoại Hình Vũ Trụ 13, +15% HP/KI/SĐ và nhận [Ấn Khai Mở Vũ Trụ 13]!",
+                        "Thức Tỉnh\nVũ Trụ 13",
+                        player.hideCaiTrang ? "Hiện lại\nCải Trang" : "Ẩn Cải Trang",
+                        "Đóng");
+            } else {
+                this.createOtherMenu(player, ConstNpc.MENU_VU_TRU_13_HOME,
+                        "|8|SỨC MẠNH VŨ TRỤ 13 (ĐÃ THỨC TỈNH: +15% HP/KI/SĐ)\n"
+                        + "|2|- Trạng thái hiển thị: " + (player.hideCaiTrang ? "Đang ẨN Cải Trang (Mọi người thấy Ngoại Hình VT13)" : "Đang HIỆN Cải Trang / Hợp thể") + "\n"
+                        + "|1|- Có thể dùng [Ấn Khai Mở Vũ Trụ 13] trong hành trang bất cứ lúc nào!",
+                        "Đến Vũ Trụ 13\nNgay",
+                        player.hideCaiTrang ? "Hiện lại\nCải Trang" : "Ẩn Cải Trang\n(Hiện VT13)",
+                        "Nhận lại Ấn\nVũ Trụ 13",
+                        "Xem lại Cảnh\nThức Tỉnh",
+                        "Đóng");
+            }
+        } else {
+            this.createOtherMenu(player, ConstNpc.MENU_VU_TRU_13_HOME,
+                    "|7|PHONG ẤN VŨ TRỤ 13 CHƯA MỞ!\n"
+                    + "|2|Con cần hoàn thành nhiệm vụ chính tuyến cuối cùng (Cuộc đối đầu không cân sức) rồi quay về gặp ta để khai mở Sức Mạnh Vũ Trụ 13!\n"
+                    + "|1|Con vẫn có thể bật/tắt Ẩn Cải Trang ngay bên dưới:",
+                    player.hideCaiTrang ? "Hiện lại\nCải Trang" : "Ẩn Cải Trang",
+                    "Đóng");
         }
     }
 
@@ -53,6 +86,25 @@ public class OngGohan extends Npc {
                     case 2 -> SkhCollectionService.gI().openCollectionUI(player, 0);
                     case 3 -> SkhCollectionService.gI().claimFiveSetAuraReward(player, false);
                     case 4 -> SkhCollectionService.gI().showGuide(player);
+                    case 5 -> openVuTru13Menu(player);
+                }
+            } else if (player.idMark.getIndexMenu() == ConstNpc.MENU_VU_TRU_13_HOME) {
+                if (VuTru13Service.gI().canAwakenAtHome(player)) {
+                    if (!player.unlockVuTru13) {
+                        switch (select) {
+                            case 0 -> VuTru13Service.gI().triggerHomeAwakening(player, this);
+                            case 1 -> VuTru13Service.gI().toggleHideCaiTrang(player);
+                        }
+                    } else {
+                        switch (select) {
+                            case 0 -> ChangeMapService.gI().changeMapBySpaceShip(player, VuTru13Service.MAP_THANH_DIEN_ZENO_VT13, -1, 300);
+                            case 1 -> VuTru13Service.gI().toggleHideCaiTrang(player);
+                            case 2 -> VuTru13Service.gI().ensureRelicItem(player, true);
+                            case 3 -> VuTru13Service.gI().triggerHomeAwakening(player, this);
+                        }
+                    }
+                } else if (select == 0) {
+                    VuTru13Service.gI().toggleHideCaiTrang(player);
                 }
             } else if (player.idMark.getIndexMenu() == ConstNpc.MENU_NHAN_DE_TU) {
                 switch (select) {

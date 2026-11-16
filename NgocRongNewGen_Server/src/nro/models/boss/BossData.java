@@ -19,6 +19,8 @@ public class BossData {
 
     private long dame;
 
+    private int def;
+
     private long[] hp;
 
     private int[] mapJoin;
@@ -115,5 +117,10 @@ public class BossData {
             int[] mapJoin, int[][] skillTemp, String[] textS, String[] textM,
             String[] textE, int secondsRest, AppearType typeAppear) {
         this(name, gender, outfit, dame, toLongArray(hp), mapJoin, skillTemp, textS, textM, textE, secondsRest, typeAppear);
+    }
+
+    public BossData withDef(int def) {
+        this.def = Math.max(0, def);
+        return this;
     }
 }

@@ -169,6 +169,41 @@ public class Mob {
                     TaskService.gI().checkDoneSideTaskKillMob(plAtt, this);
                     TaskService.gI().checkDoneClanTaskKillMob(plAtt, this);
                     AchievementService.gI().checkDoneTaskKillMob(plAtt, this);
+                    if (MapService.gI().isMapCadic(this.zone.map.mapId)) {
+                        Player owner = (plAtt.isPet && ((nro.models.player.Pet) plAtt).master != null)
+                                ? ((nro.models.player.Pet) plAtt).master
+                                : plAtt;
+                        if (owner != null && owner.isPl() && owner.inventory != null) {
+                            Item targetJar = null;
+                            for (Item bagItem : owner.inventory.itemsBag) {
+                                if (bagItem != null && bagItem.isNotNullItem() && bagItem.template.id == 1795) {
+                                    Item.ItemOption opt = bagItem.getOptionById(250);
+                                    int cur = (opt != null) ? opt.param : 0;
+                                    if (cur < 3000) {
+                                        targetJar = bagItem;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (targetJar != null) {
+                                boolean hasKilisBuff = owner.itemTime != null && owner.itemTime.isUseKilis;
+                                int addKilis = hasKilisBuff ? 2 : 1;
+                                Item.ItemOption kilisOption = targetJar.getOptionById(250);
+                                if (kilisOption != null) {
+                                    kilisOption.param = Math.min(3000, kilisOption.param + addKilis);
+                                } else {
+                                    kilisOption = new Item.ItemOption(250, addKilis);
+                                    targetJar.itemOptions.add(0, kilisOption);
+                                }
+                                InventoryService.gI().sendItemBags(owner);
+                                if (kilisOption.param >= 3000) {
+                                    Service.gI().sendThongBao(owner, "Bình hút năng lượng đã đầy (3000/3000 Kilis)!");
+                                } else {
+                                    Service.gI().sendThongBao(owner, "Bình hút năng lượng +" + addKilis + " Kilis (" + kilisOption.param + "/3000)!");
+                                }
+                            }
+                        }
+                    }
                 }
                 if (this.id == 13) {
                     this.zone.isbulon1Alive = false;
@@ -191,30 +226,6 @@ public class Mob {
                 long realDamage = this.point.hp / 100 > 0 ? this.point.hp / 100 : 1;
 
                 damage = this.point.hp / 100 > 0 ? this.point.hp / 100 : 1;
-            }
-        }
-        if (MapService.gI().isMapCadic(this.zone.map.mapId) && plAtt != null) {
-            Player owner = (plAtt.isPet && ((nro.models.player.Pet) plAtt).master != null)
-                    ? ((nro.models.player.Pet) plAtt).master
-                    : plAtt;
-            if (owner != null && !owner.isPet && !owner.isBoss) {
-                boolean hasKilisBuff = owner.itemTime != null && owner.itemTime.isUseKilis;
-                int successRate = hasKilisBuff ? 10 : 1;
-
-                if (Util.isTrue(successRate, 333)) {
-                    Item item = InventoryService.gI().findItemBag(owner, 1795);
-                    if (item != null) {
-                        Item.ItemOption kilisOption = item.getOptionById(250);
-                        if (kilisOption != null) {
-                            kilisOption.param += 1;
-                        } else {
-                            kilisOption = new Item.ItemOption(250, 1);
-                            item.itemOptions.add(0, kilisOption);
-                        }
-                        InventoryService.gI().sendItemBags(owner);
-                        Service.gI().sendThongBao(owner, "Bình hút năng lượng +1 Kilis (" + kilisOption.param + "/3000)!");
-                    }
-                }
             }
         }
     }
@@ -339,15 +350,30 @@ public class Mob {
     }
 
     public Player getPlayerCanAttack() {
+        boolean isVt13 = this.zone != null && this.zone.map != null
+                && nro.models.services.VuTru13Service.isMapVuTru13(this.zone.map.mapId);
         Player plAttack = getFirstPlayerCanAttack();
         if (plAttack != null) {
             return plAttack;
         }
-        int distance = 100;
+        int distance = isVt13 ? 65 : 100;
         try {
             List<Player> players = this.zone.getNotBosses();
             for (Player pl : players) {
-                if (!pl.isDie() && !pl.isBoss && !pl.isNewPet && (pl.satellite == null || !pl.satellite.isDefend) && (pl.effectSkin == null || !pl.effectSkin.isVoHinh) && (this.tempId > 18 || (this.tempId > 9 && this.type == 4)) || isBigBoss()) {
+                if (pl == null) {
+                    continue;
+                }
+                if (this.zone != null && this.zone.map != null
+                        && (pl.location.x <= 180 || pl.location.x >= this.zone.map.mapWidth - 180)) {
+                    continue;
+                }
+                if ((!pl.isDie() && !pl.isBoss && !pl.isNewPet
+                        && (pl.satellite == null || !pl.satellite.isDefend)
+                        && (pl.effectSkin == null || !pl.effectSkin.isVoHinh)
+                        && (this.tempId > 18 || (this.tempId > 9 && this.type == 4))) || isBigBoss()) {
+                    if (pl.isDie()) {
+                        continue;
+                    }
                     int dis = Util.getDistance(pl, this);
                     if (dis <= distance || isBigBoss()) {
                         plAttack = pl;
@@ -355,7 +381,7 @@ public class Mob {
                     }
                 }
             }
-            this.timeAttack = 2000;
+            this.timeAttack = isVt13 ? 3500 : 2000;
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -365,26 +391,41 @@ public class Mob {
 
     private Player getFirstPlayerCanAttack() {
         Player plAtt = null;
+        boolean isVt13 = this.zone != null && this.zone.map != null
+                && nro.models.services.VuTru13Service.isMapVuTru13(this.zone.map.mapId);
         try {
             List<Player> playersMap = zone.getHumanoids();
-            int dis = 300;
+            int dis = isVt13 ? 115 : 220;
             if (playersMap != null) {
                 for (Player plAttt : playersMap) {
                     if (plAttt == null) {
                         continue;
                     }
-                    if (plAttt.isDie() || plAttt.isBoss || (plAttt.satellite != null && plAttt.satellite.isDefend)
+                    if (plAttt.isDie() || plAttt.zone != this.zone) {
+                        this.temporaryEnemies.remove(plAttt);
+                        continue;
+                    }
+                    if (this.zone != null && this.zone.map != null
+                            && (plAttt.location.x <= 180 || plAttt.location.x >= this.zone.map.mapWidth - 180)) {
+                        this.temporaryEnemies.remove(plAttt);
+                        continue;
+                    }
+                    if (plAttt.isBoss || (plAttt.satellite != null && plAttt.satellite.isDefend)
                             || (plAttt.effectSkin != null && plAttt.effectSkin.isVoHinh) || !this.temporaryEnemies.contains(plAttt)) {
                         continue;
                     }
                     int d = Util.getDistance(plAttt, this);
+                    if (d > (isVt13 ? 140 : 280)) {
+                        this.temporaryEnemies.remove(plAttt);
+                        continue;
+                    }
                     if (d <= dis) {
                         dis = d;
                         plAtt = plAttt;
                     }
                 }
             }
-            this.timeAttack = 1000;
+            this.timeAttack = isVt13 ? 3000 : 1800;
         } catch (Exception e) {
         }
         return plAtt;
@@ -396,7 +437,10 @@ public class Mob {
         }
 
         long dameMob = this.point.getDameAttack();
-        if (this.zone != null && this.zone.map != null && MapService.gI().isMapVuTru6(this.zone.map.mapId)) {
+        if (this.zone != null && this.zone.map != null && nro.models.services.VuTru13Service.isMapVuTru13(this.zone.map.mapId)) {
+            long scaledHpDame = Math.max(12_000L, player.nPoint.hpMax / 25L);
+            dameMob = Math.min(scaledHpDame, 95_000L) + Util.nextInt(1_000, 6_000);
+        } else if (this.zone != null && this.zone.map != null && MapService.gI().isMapVuTru6(this.zone.map.mapId)) {
             int mapId = this.zone.map.mapId;
             int pctHp = (mapId == 145) ? 8 : (mapId == 176 || mapId == 177 ? 7 : 5);
             long u6Dame = Math.max(dameMob, 180_000L) + (player.nPoint.hpMax / 100L * pctHp);
@@ -1104,17 +1148,18 @@ public class Mob {
 
         //========================Đồ Thần + Thức Ăn========================
         Item ownerAura = getActiveOwnerAura(owner);
-        if (MapService.gI().isMapCold(mapid)) {
-            // Tỉ lệ gốc rơi Đồ Thần tại Cold: 1.5% (15.000 / 1.000.000), nhân thêm Hào quang Vô Cực (x1.25) và May mắn
+        if (MapService.gI().isMapCold(mapid) || nro.models.services.VuTru13Service.isMapVuTru13(mapid)) {
+            // Tỉ lệ gốc rơi Đồ Thần tại Cold (1.5%) & Vũ Trụ 13 (2.0%), nhân thêm Hào quang Vô Cực (x1.25) và May mắn
+            double baseGodRate = nro.models.services.VuTru13Service.isMapVuTru13(mapid) ? 20_000.0 : 15_000.0;
             double coldAuraMult = (ownerAura != null && (ownerAura.template.id == 2007 || ownerAura.isHaveOption(249))) ? 1.25 : 1.0;
-            long coldGodChance = scalePerMillion(15_000.0 * dropMult * coldAuraMult, generalLuckWithClover);
+            long coldGodChance = scalePerMillion(baseGodRate * dropMult * coldAuraMult, generalLuckWithClover);
             if (Util.isTrue(coldGodChance, 1_000_000L)) {
                 ItemMap it = ItemService.gI().randDoTL(this.zone, 1, x, yEnd, owner.id);
                 list.add(it);
             }
         }
 
-        if (MapService.gI().isMapCold(mapid) && killerHasGodSet
+        if ((MapService.gI().isMapCold(mapid) || nro.models.services.VuTru13Service.isMapVuTru13(mapid)) && (killerHasGodSet || killerHasDesSet)
                 && Util.isTrue(scalePerMillion(100_000.0 * dropMult * upgradeMatMult, luckNoGohanWithClover), 1_000_000L)) {
             ItemMap it = new ItemMap(zone, Util.nextInt(663, 667), 1, x, yEnd, owner.id);
             list.add(it);
@@ -1156,6 +1201,14 @@ public class Mob {
             if (Util.isTrue(scalePerMillion(baseNgucTu, generalLuckWithClover), 1_000_000L)) {
                 list.add(new ItemMap(zone, 1229, 1, x, yEnd, owner.id));
             }
+        }
+
+        //======================== Mảnh giấy có chữ MA (726) - Hành tinh Ngục Tù & Map Nhẫn Thời Không ========================
+        if ((MapService.gI().isMapNgucTu(mapid) || MapService.gI().isMapHanhTinhThucVat(mapid))
+                && Util.isTrue(scalePerMillion(10_000.0 * dropMult * upgradeMatMult, generalLuckWithClover), 1_000_000L)) {
+            ItemMap manhGiayIt = new ItemMap(zone, 726, 1, x, yEnd, owner.id);
+            manhGiayIt.options.add(new Item.ItemOption(73, 0));
+            list.add(manhGiayIt);
         }
 
         //======================== Trang Sách Cũ (1281) - Tương Lai / Cold / Ngục Tù ========================
@@ -1262,7 +1315,7 @@ public class Mob {
         return null;
     }
 
-    private void sendMobStillAliveAffterAttacked(long dameHit, boolean crit) {
+    protected void sendMobStillAliveAffterAttacked(long dameHit, boolean crit) {
         Message msg;
         try {
             msg = new Message(-9);

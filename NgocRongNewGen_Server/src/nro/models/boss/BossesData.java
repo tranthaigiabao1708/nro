@@ -718,7 +718,7 @@ public class BossesData {
             ConstPlayer.XAYDA,
             new short[]{234, 235, 236, -1, -1, -1},
             35000,
-            new int[]{150000000},
+            new long[]{2_000_000_000L},
             new int[]{103},
             new int[][]{
                 {Skill.KAMEJOKO, 7, 10000},
@@ -738,7 +738,7 @@ public class BossesData {
             ConstPlayer.XAYDA,
             new short[]{234, 235, 236, -1, -1, -1},
             40000,
-            new int[]{200000000},
+            new long[]{5_000_000_000L},
             new int[]{103},
             new int[][]{
                 {Skill.KAMEJOKO, 7, 5000},
@@ -757,7 +757,7 @@ public class BossesData {
             ConstPlayer.XAYDA, //gender
             new short[]{264, 265, 266, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             15000, //dame
-            new int[]{5000000}, //hp
+            new long[]{600_000_000L}, //hp
             new int[]{103}, //map join
             new int[][]{
                 {Skill.KAMEJOKO, 7, 5000},
@@ -774,7 +774,7 @@ public class BossesData {
             ConstPlayer.XAYDA, //gender
             new short[]{264, 265, 266, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             15000, //dame
-            new int[]{5000000}, //hp
+            new long[]{600_000_000L}, //hp
             new int[]{103}, //map join
             new int[][]{
                 {Skill.KAMEJOKO, 7, 5000},
@@ -791,7 +791,7 @@ public class BossesData {
             ConstPlayer.XAYDA, //gender
             new short[]{264, 265, 266, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             15000, //dame
-            new int[]{5000000}, //hp
+            new long[]{600_000_000L}, //hp
             new int[]{103}, //map join
             new int[][]{
                 {Skill.KAMEJOKO, 7, 5000},
@@ -808,7 +808,7 @@ public class BossesData {
             ConstPlayer.XAYDA, //gender
             new short[]{264, 265, 266, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             15000, //dame
-            new int[]{5000000}, //hp
+            new long[]{600_000_000L}, //hp
             new int[]{103}, //map join
             new int[][]{
                 {Skill.KAMEJOKO, 7, 5000},
@@ -825,7 +825,7 @@ public class BossesData {
             ConstPlayer.XAYDA, //gender
             new short[]{264, 265, 266, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             15000, //dame
-            new int[]{5000000}, //hp
+            new long[]{600_000_000L}, //hp
             new int[]{103}, //map join
             new int[][]{
                 {Skill.KAMEJOKO, 7, 5000},
@@ -842,7 +842,7 @@ public class BossesData {
             ConstPlayer.XAYDA, //gender
             new short[]{264, 265, 266, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             15000, //dame
-            new int[]{5000000}, //hp
+            new long[]{600_000_000L}, //hp
             new int[]{103}, //map join
             new int[][]{
                 {Skill.KAMEJOKO, 7, 5000},
@@ -859,7 +859,7 @@ public class BossesData {
             ConstPlayer.XAYDA, //gender
             new short[]{264, 265, 266, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             15000, //dame
-            new int[]{5000000}, //hp
+            new long[]{600_000_000L}, //hp
             new int[]{103}, //map join
             new int[][]{
                 {Skill.KAMEJOKO, 7, 5000},
@@ -877,7 +877,7 @@ public class BossesData {
             ConstPlayer.TRAI_DAT, //gender
             new short[]{550, 551, 552, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             50000, //dame
-            new int[]{500000000}, //hp
+            new long[]{1_000_000_000L}, //hp (x2 từ 500M)
             new int[]{102, 92, 93, 94, 96, 97, 98, 99, 100}, //map join
             new int[][]{
                 {Skill.KAMEJOKO, 7, 100},
@@ -900,14 +900,14 @@ public class BossesData {
             }, //text chat 2
             new String[]{"|-1|Biến hình! Super Saiyan Rose"}, //text chat 3
             REST_5_M //second rest
-    );
+    ).withDef(600_000 * 2);
 
     public static final BossData SUPER_BLACK_GOKU = new BossData(
             "Super Black Goku", //name
             ConstPlayer.TRAI_DAT, //gender
             new short[]{553, 551, 552, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             100000, //dame
-            new int[]{2_000_000_000}, //hp
+            new long[]{4_000_000_000L}, //hp (x2 từ 2B)
             new int[]{102, 92, 93, 94, 96, 97, 98, 99, 100}, //map join
             new int[][]{
                 {Skill.THAI_DUONG_HA_SAN, 7, 30000},
@@ -927,7 +927,7 @@ public class BossesData {
             new String[]{"|-1|Chúng ta sẽ gặp lại nhau sớm thôi",
                 "|-2|Ngươi nói gì chứ?"}, //text chat 3
             AppearType.ANOTHER_LEVEL //type appear
-    );
+    ).withDef(1_250_000 * 2);
 
     //========================CUMBER========================
     public static final BossData CUMBER = new BossData(
@@ -935,7 +935,7 @@ public class BossesData {
             ConstPlayer.TRAI_DAT, //gender
             new short[]{1254, 1255, 1256, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             50000, //dame
-            new int[]{500000000}, //hp
+            new long[]{1_000_000_000L}, //hp (x2 từ 500M)
             new int[]{155}, //map join
             new int[][]{
                 {Skill.KAMEJOKO, 7, 100},
@@ -958,14 +958,14 @@ public class BossesData {
             }, //text chat 2
             new String[]{"|-1|Biến hình! Super Saiyan SSJ"}, //text chat 3
             REST_5_M //second rest
-    );
+    ).withDef(750_000 * 2);
 
     public static final BossData SUPER_CUMBER = new BossData(
             "Super Cumber", //name
             ConstPlayer.TRAI_DAT, //gender
             new short[]{1257, 1255, 1256, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             100000, //dame
-            new int[]{2_000_000_000}, //hp
+            new long[]{4_000_000_000L}, //hp (x2 từ 2B)
             new int[]{155}, //map join
             new int[][]{
                 {Skill.THAI_DUONG_HA_SAN, 7, 300000},
@@ -985,7 +985,7 @@ public class BossesData {
             new String[]{"|-1|Chúng ta sẽ gặp lại nhau sớm thôi",
                 "|-2|Ngươi nói gì chứ?"}, //text chat 3
             AppearType.ANOTHER_LEVEL //type appear
-    );
+    ).withDef(1_500_000 * 2);
 
     public static final BossData MABU = new BossData(
             "Mabư mập",
@@ -2239,7 +2239,7 @@ public class BossesData {
             ConstPlayer.XAYDA, //gender
             new short[]{317, 318, 319, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             32000, //dame
-            new int[]{200000000}, //hp
+            new long[]{400_000_000L}, //hp (x2 từ 200M)
             new int[]{110}, //map join
             new int[][]{
                 {Skill.GALICK, 1, 2000},
@@ -2260,14 +2260,14 @@ public class BossesData {
             new String[]{"|-1|Nãy giờ ta chưa thèm tung hết sức đâu",
                 "|-1|Biến hình, hây aaaa..."}, //text chat 3
             REST_30_M //second rest
-    );
+    ).withDef(250_000 * 2);
 
     public static final BossData COOLER_2 = new BossData(
             "Cooler 2", //name
             ConstPlayer.XAYDA, //gender
             new short[]{320, 321, 322, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             50000, //dame
-            new int[]{500000000}, //hp
+            new long[]{1_000_000_000L}, //hp (x2 từ 500M)
             new int[]{110}, //map join
             new int[][]{
                 {Skill.GALICK, 1, 2000},
@@ -2287,7 +2287,7 @@ public class BossesData {
             new String[]{"|-1|Mọi chuyện chưa kết thúc đâu",
                 "|-1|Mọi chuyện chưa kết thúc đâu"},
             AppearType.ANOTHER_LEVEL //type appear
-    );
+    ).withDef(500_000 * 2);
 
     public static final BossData ONG_GIA_NOEL = new BossData(
             "Ông già Noel", //name
@@ -2513,7 +2513,7 @@ public class BossesData {
             ConstPlayer.XAYDA, //gender
             new short[]{502, 503, 504, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             100000, //dame
-            new int[]{1000000000}, //hp
+            new long[]{2_000_000_000L}, //hp (x2 từ 1B)
             new int[]{6}, //map join
             new int[][]{
                 {Skill.TAI_TAO_NANG_LUONG, 1, 120000}, {Skill.GALICK, 7, 1000},
@@ -2527,7 +2527,7 @@ public class BossesData {
             new String[]{}, //text chat 3
             REST_5_M,
             new int[]{BossID.DEATH_BEAM_1, BossID.DEATH_BEAM_2, BossID.DEATH_BEAM_3, BossID.DEATH_BEAM_4, BossID.DEATH_BEAM_5}
-    );
+    ).withDef(1_000_000 * 2);
 
     public static final BossData DEATH_BEAM = new BossData(
             "$", //name
@@ -2616,7 +2616,7 @@ public class BossesData {
             ConstPlayer.XAYDA,
             new short[]{1715, 1716, 1717, -1, -1, -1},
             200000,
-            new int[]{2000000000},
+            new long[]{4_000_000_000L}, //hp (x2 từ 2B)
             new int[]{14},
             new int[][]{
                 {Skill.GALICK, 7, 100},
@@ -2650,14 +2650,14 @@ public class BossesData {
             }, //text chat 2
             new String[]{"|-2|Khốn kiếp, vegeta.. hắn bị baby kí sinh rồi!!"}, //text chat 3
             REST_15_M
-    );
+    ).withDef(1_250_000 * 2);
 
     public static final BossData BABY_2 = new BossData(
             "Baby",
             ConstPlayer.XAYDA,
             new short[]{1718, 1719, 1720, -1, -1, -1},
             250000,
-            new int[]{2000000000},
+            new long[]{4_000_000_000L}, //hp (x2 từ 2B)
             new int[]{14},
             new int[][]{
                 {Skill.GALICK, 7, 100},
@@ -2682,14 +2682,14 @@ public class BossesData {
                 "|-1|Muốn chạy à!!? Ta sẽ không để ngươi thoát đâu!!",}, //text chat 2
             new String[]{"|-1|Đến lúc rồi!"}, //text chat 3
             AppearType.ANOTHER_LEVEL
-    );
+    ).withDef(1_750_000 * 2);
 
     public static final BossData BABY_3 = new BossData(
             "Baby",
             ConstPlayer.XAYDA,
             new short[]{1721, 1722, 1723, -1, -1, -1},
             30000,
-            new int[]{2000000000},
+            new long[]{4_000_000_000L}, //hp (x2 từ 2B)
             new int[]{14},
             new int[][]{
                 {Skill.GALICK, 7, 100},
@@ -2719,7 +2719,7 @@ public class BossesData {
                 "|-1|Đồ khốn kiếp!! Rồi ngươi sẽ phải trả giá"
             }, //text chat 3
             AppearType.ANOTHER_LEVEL
-    );
+    ).withDef(2_250_000 * 2);
 
     //************************************************************************** Giải Đấu Liên Vũ Trụ 6 & 7
     public static final BossData FROST_VT6_1 = new BossData(
@@ -2893,7 +2893,7 @@ public class BossesData {
                 {Skill.DRAGON, 7, 350},
                 {Skill.LIEN_HOAN, 7, 900},
                 {Skill.KAMEJOKO, 7, 900},
-                {Skill.SUPER_KAME, 5, 12000}
+                {Skill.MASENKO, 7, 1200}
             },
             new String[]{
                 "|-1|Hây aaaaa! Tia chớp Super Saiyan 2 bùng nổ! Chuẩn bị đo ván đi!"
@@ -2949,7 +2949,7 @@ public class BossesData {
                 {Skill.GALICK, 7, 350},
                 {Skill.LIEN_HOAN, 7, 800},
                 {Skill.ANTOMIC, 7, 800},
-                {Skill.SUPER_KAME, 7, 10000}
+                {Skill.KAMEJOKO, 7, 1000}
             },
             new String[]{
                 "|-1|LÁO XƯỢC! Cả Hit cũng chịu thua lũ sâu bọ Vũ Trụ 7 sao?!",
@@ -2964,5 +2964,62 @@ public class BossesData {
                 "|-1|Hự... Đợi đấy Beerus! Lần tới trước mặt Ngài Zeno ta sẽ đòi lại cả vốn lẫn lãi!"
             },
             AppearType.CALL_BY_ANOTHER
+    );
+
+    //========================VŨ TRỤ 13 - ĐẠI ĐẾ FIDE -> BLACK FIDE========================
+    public static final BossData DAI_DE_FIDE_VT13 = new BossData(
+            "Đại Đế Fide",
+            ConstPlayer.XAYDA,
+            new short[]{189, 190, 191, -1, -1, -1},
+            180000,
+            new int[]{2000000000},
+            new int[]{180},
+            new int[][]{
+                {Skill.GALICK, 7, 450},
+                {Skill.LIEN_HOAN, 7, 1100},
+                {Skill.ANTOMIC, 7, 1000},
+                {Skill.MASENKO, 7, 1200}
+            },
+            new String[]{
+                "|-1|Hô hô hô! Cuối cùng ta đã tìm thấy Bia Phong Ấn Thần Hủy Diệt của Vũ Trụ 13!",
+                "|-1|Son Goku đã bị xiềng xích khóa chặt ở ngục tối... chẳng còn ai cản nổi bản đế nữa!"
+            },
+            new String[]{
+                "|-1|Lũ sâu bọ dám mò sang tận Vũ Trụ 13 cơ à?!",
+                "|-1|Hãy trở thành vật hiến tế để mở khóa Phong Ấn Cổ Thần đi!",
+                "|-1|Tia Chết Chóc Hoàng Kim! Tan xác đi!"
+            },
+            new String[]{
+                "|-1|Khá lắm... Ngươi buộc bản đế phải phô diễn hình thái tối thượng vừa tu luyện trong Dị Giới!"
+            },
+            REST_1_M
+    );
+
+    public static final BossData BLACK_FIDE_VT13 = new BossData(
+            "Black Fide",
+            ConstPlayer.XAYDA,
+            new short[]{2114, 2115, 2116, -1, -1, -1},
+            260000,
+            new int[]{2000000000},
+            new int[]{180},
+            new int[][]{
+                {Skill.GALICK, 7, 350},
+                {Skill.LIEN_HOAN, 7, 850},
+                {Skill.ANTOMIC, 7, 850},
+                {Skill.KAMEJOKO, 7, 950}
+            },
+            new String[]{
+                "|-1|QUỲ XUỐNG ĐI! Đây chính là BLACK FIDE — Ác Mộng Tối Thượng của 13 Vũ Trụ!",
+                "|-1|Bia Phong Ấn Thần Hủy Diệt đang cộng hưởng với luồng hắc khí của ta!"
+            },
+            new String[]{
+                "|-1|Hắc Ám Đế Vương! Một đấm này từng nghiền nát cả Bản Năng Vô Cực!",
+                "|-1|Mỗi giọt máu đổ xuống Điện Thờ này đều làm xiềng xích Thần Hủy Diệt rạn nứt!",
+                "|-1|Chết đi! Và chiêm ngưỡng thời khắc Cổ Thần Vũ Trụ 13 thức giấc!"
+            },
+            new String[]{
+                "|-1|Khặc khặc... Muộn rồi!! Huyết Tế đã đủ... PHONG ẤN THẦN HỦY DIỆT MỞ RA!!"
+            },
+            AppearType.ANOTHER_LEVEL
     );
 }

@@ -160,6 +160,9 @@ public class Item {
         if (this.template.type != 27) {
             return false;
         }
+        if (this.template.head > 0 && this.template.body > 0 && this.template.leg > 0) {
+            return true;
+        }
         return switch (this.template.id) {
             case 892, 893, 908, 909, 910, 916, 917, 918, 919, 936,
                  942, 943, 944, 967, 1008, 1039, 1040, 1046, 1107, 1114,

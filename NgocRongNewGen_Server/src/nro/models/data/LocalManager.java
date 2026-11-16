@@ -185,7 +185,9 @@ public class LocalManager {
         config.setPassword(DB_PASSWORD);
         config.setMinimumIdle(MIN_CONN);
         config.setMaximumPoolSize(MAX_CONN);
-        config.setMaxLifetime(MAX_LIFE_TIME);
+        long effectiveLifetime = Math.max(300_000L, MAX_LIFE_TIME);
+        config.setMaxLifetime(effectiveLifetime);
+        config.setIdleTimeout(effectiveLifetime / 2);
         config.setPoolName(poolName);
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");

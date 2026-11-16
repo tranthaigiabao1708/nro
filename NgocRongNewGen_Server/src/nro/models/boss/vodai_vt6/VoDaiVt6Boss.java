@@ -7,6 +7,7 @@ import nro.models.boss.BossesData;
 import nro.models.consts.BossStatus;
 import nro.models.consts.BossType;
 import nro.models.consts.ConstPlayer;
+import nro.models.map.Zone;
 import nro.models.map.service.ChangeMapService;
 import nro.models.player.Player;
 import nro.models.services.EffectSkillService;
@@ -23,6 +24,7 @@ public class VoDaiVt6Boss extends Universe6Boss {
 
     private final Player challenger;
     private final int roundIndex;
+    private Zone arenaZone;
 
     // Trạng thái riêng theo từng cao thủ Vũ Trụ 6
     private long lastMagmaEruptTime;
@@ -37,10 +39,15 @@ public class VoDaiVt6Boss extends Universe6Boss {
     private long hakaiDetonateAt;
 
     public VoDaiVt6Boss(Player challenger, int roundIndex) throws Exception {
+        this(challenger, challenger != null ? challenger.zone : null, roundIndex);
+    }
+
+    public VoDaiVt6Boss(Player challenger, Zone arenaZone, int roundIndex) throws Exception {
         super(BossType.PHOBAN, allocateArenaBossId(), resolveBossDataForRound(roundIndex));
         this.challenger = challenger;
+        this.arenaZone = arenaZone;
         this.roundIndex = Math.max(0, Math.min(TOTAL_ROUNDS - 1, roundIndex));
-        this.bossStatus = BossStatus.RESPAWN;
+        this.bossStatus = BossStatus.REST;
     }
 
     private static int allocateArenaBossId() {
@@ -137,60 +144,60 @@ public class VoDaiVt6Boss extends Universe6Boss {
     @Override
     protected long getRealHpForCurrentStage() {
         return switch (this.roundIndex) {
-            case 0 -> 6_000_000_000L;
-            case 1 -> 10_000_000_000L;
-            case 2 -> 16_000_000_000L;
-            case 3 -> 28_000_000_000L;
-            case 4 -> 35_000_000_000L;
-            case 5 -> 42_000_000_000L;
-            case 6 -> 55_000_000_000L;
-            case 7 -> 75_000_000_000L;
-            default -> 110_000_000_000L;
+            case 0 -> 3_000_000_000L;
+            case 1 -> 5_000_000_000L;
+            case 2 -> 8_000_000_000L;
+            case 3 -> 14_000_000_000L;
+            case 4 -> 17_500_000_000L;
+            case 5 -> 21_000_000_000L;
+            case 6 -> 27_500_000_000L;
+            case 7 -> 37_500_000_000L;
+            default -> 55_000_000_000L;
         };
     }
 
     @Override
     protected long getFlatArmorForCurrentStage() {
         return switch (this.roundIndex) {
-            case 0 -> 16_000_000L;
-            case 1 -> 22_000_000L;
-            case 2 -> 28_000_000L;
-            case 3 -> isInsultedVulnerable() ? 20_000_000L : 42_000_000L;
-            case 4 -> 35_000_000L;
-            case 5 -> 38_000_000L;
-            case 6 -> 44_000_000L;
-            case 7 -> 50_000_000L;
-            default -> 65_000_000L;
+            case 0 -> 5_333_333L;
+            case 1 -> 7_333_333L;
+            case 2 -> 9_333_333L;
+            case 3 -> isInsultedVulnerable() ? 6_666_667L : 14_000_000L;
+            case 4 -> 11_666_667L;
+            case 5 -> 12_666_667L;
+            case 6 -> 14_666_667L;
+            case 7 -> 16_666_667L;
+            default -> 21_666_667L;
         };
     }
 
     @Override
     protected int getArmorPercentForCurrentStage() {
         return switch (this.roundIndex) {
-            case 0 -> 70;
-            case 1 -> 72;
-            case 2 -> 74;
-            case 3 -> isInsultedVulnerable() ? 66 : 77;
-            case 4 -> 75;
-            case 5 -> 75;
-            case 6 -> 77;
-            case 7 -> 78;
-            default -> 80;
+            case 0 -> 23;
+            case 1 -> 24;
+            case 2 -> 25;
+            case 3 -> isInsultedVulnerable() ? 22 : 26;
+            case 4 -> 25;
+            case 5 -> 25;
+            case 6 -> 26;
+            case 7 -> 26;
+            default -> 27;
         };
     }
 
     @Override
-    protected int getBonusPercentMaxHpPerHit() {
+    public int getHitPercentMaxHp() {
         return switch (this.roundIndex) {
-            case 0 -> 5;
-            case 1 -> 6;
-            case 2 -> 8;
-            case 3 -> 8;
-            case 4 -> this.awakenedSuperSaiyan ? 11 : 7;
-            case 5 -> 8;
-            case 6 -> 11;
-            case 7 -> 11;
-            default -> 13;
+            case 0 -> 10;
+            case 1 -> 14;
+            case 2 -> 18;
+            case 3 -> 21;
+            case 4 -> this.awakenedSuperSaiyan ? 28 : 25;
+            case 5 -> 29;
+            case 6 -> 33;
+            case 7 -> 36;
+            default -> 40;
         };
     }
 
@@ -236,7 +243,7 @@ public class VoDaiVt6Boss extends Universe6Boss {
     protected long alterDamageAfterArmor(Player plAtt, long damageAfterArmor) {
         if (this.roundIndex == 3 && !isInsultedVulnerable()) {
             if (plAtt != null && plAtt.nPoint != null && !plAtt.nPoint.isCrit) {
-                return Math.max(1L, damageAfterArmor * 65L / 100L);
+                return Math.max(1L, damageAfterArmor * 88L / 100L);
             }
         }
         return damageAfterArmor;
@@ -349,9 +356,9 @@ public class VoDaiVt6Boss extends Universe6Boss {
                             Service.gI().sendThongBao(this.challenger, "Khiên Năng Lượng đã đỡ đòn Hakai của Champa và vỡ tan!");
                         } else {
                             this.challenger.nPoint.hakaiNoPeaUntil = now + 5_000L;
-                            applyPercentMaxHpStrike(this.challenger, 75, false, false);
+                            applyPercentMaxHpStrike(this.challenger, 40, false, false);
                             Service.gI().sendThongBao(this.challenger,
-                                    "Trúng trực diện HAKAI của Champa (-75% HP & Phong ấn Đậu Thần 5 giây)!");
+                                    "Trúng trực diện HAKAI của Champa (-40% HP & Phong ấn Đậu Thần 5 giây)!");
                         }
                     }
                 }
@@ -367,10 +374,36 @@ public class VoDaiVt6Boss extends Universe6Boss {
         return null;
     }
 
+    public void spawnIntoArena(Zone targetZone) {
+        Zone dest = targetZone != null ? targetZone : (this.arenaZone != null ? this.arenaZone : (this.challenger != null ? this.challenger.zone : null));
+        if (dest == null) {
+            return;
+        }
+        this.arenaZone = dest;
+        if (this.nPoint == null || this.nPoint.hp <= 0 || this.bossStatus == BossStatus.REST || this.bossStatus == BossStatus.RESPAWN) {
+            this.respawn();
+        }
+        if (this.zone == null) {
+            this.zone = dest;
+        }
+        ChangeMapService.gI().changeMap(this, dest, 870, 504);
+        this.zone = dest;
+        this.lastTimeJoinZone = System.currentTimeMillis();
+        if (this.nPoint != null) {
+            this.nPoint.mp = this.nPoint.mpg;
+        }
+        this.typePk = ConstPlayer.NON_PK;
+        if (this.bossStatus != BossStatus.ACTIVE) {
+            this.changeStatus(BossStatus.AFK);
+        }
+        dest.load_Me_To_Another(this);
+    }
+
     @Override
     public void joinMap() {
-        if (this.challenger != null && this.challenger.zone != null) {
-            this.zone = this.challenger.zone;
+        Zone dest = this.arenaZone != null ? this.arenaZone : (this.challenger != null ? this.challenger.zone : null);
+        if (dest != null) {
+            this.zone = dest;
             ChangeMapService.gI().changeMap(this, this.zone, 870, 504);
             this.lastTimeJoinZone = System.currentTimeMillis();
         }
@@ -387,10 +420,6 @@ public class VoDaiVt6Boss extends Universe6Boss {
     public void update() {
         try {
             super.updateInfo();
-            if ((this.effectSkill != null && this.effectSkill.isHaveEffectSkill())
-                    || (this.newSkill != null && this.newSkill.isStartSkillSpecial)) {
-                return;
-            }
             switch (this.bossStatus) {
                 case RESPAWN -> {
                     this.respawn();
@@ -408,6 +437,10 @@ public class VoDaiVt6Boss extends Universe6Boss {
                 case ACTIVE -> {
                     if (this.effectSkill != null && this.effectSkill.isBinh && this.nPoint.tlKhangKhongChe >= 100) {
                         EffectSkillService.gI().BinhDown(this);
+                    }
+                    if ((this.effectSkill != null && this.effectSkill.isHaveEffectSkill())
+                            || (this.newSkill != null && this.newSkill.isStartSkillSpecial)) {
+                        return;
                     }
                     this.nPoint.mp = this.nPoint.mpg;
                     onSpecialTick();

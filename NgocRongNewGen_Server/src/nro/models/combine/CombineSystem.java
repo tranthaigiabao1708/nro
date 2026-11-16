@@ -15,18 +15,34 @@ public class CombineSystem {
         return isTrangBiCotLoi(item) || isPhuKienMoRong(item);
     }
 
+    public static boolean isCanhDeoLung(Item item) {
+        if (item == null || !item.isNotNullItem() || item.template == null || item.template.type != 11) {
+            return false;
+        }
+        int id = item.template.id;
+        // Loại trừ Đứa bé & các Ngọc Rồng Namek / Sao Đen đeo lưng nhiệm vụ
+        return !(id == 78 || (id >= 353 && id <= 360) || id == 362 || (id >= 372 && id <= 378));
+    }
+
+    public static boolean isVanBayThuCuoi(Item item) {
+        if (item == null || !item.isNotNullItem() || item.template == null) {
+            return false;
+        }
+        int t = item.template.type;
+        return t == 23 || t == 24;
+    }
+
     public static boolean isTrangBiCotLoi(Item item) {
         if (item != null && item.isNotNullItem() && item.template != null) {
             int t = item.template.type;
-            return (t >= 0 && t <= 5) || t == 32;
+            return (t >= 0 && t <= 5) || t == 32 || isCanhDeoLung(item) || isVanBayThuCuoi(item) || item.isLinhThu();
         }
         return false;
     }
 
     public static boolean isPhuKienMoRong(Item item) {
         if (item != null && item.isNotNullItem() && item.template != null) {
-            int t = item.template.type;
-            return t == 11 || t == 23 || t == 24 || t == 25 || item.isLinhThu();
+            return item.template.type == 25;
         }
         return false;
     }
@@ -145,9 +161,9 @@ public class CombineSystem {
             case 16 ->
                 3;
             case 15 ->
-                4;
+                6;
             case 14 ->
-                5;
+                9;
             case 441, 1416 ->
                 5;
             case 442, 1417 ->

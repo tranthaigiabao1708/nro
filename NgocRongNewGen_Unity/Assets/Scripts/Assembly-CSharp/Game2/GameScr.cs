@@ -2089,7 +2089,12 @@ namespace Game2
 				{
 					Char.myCharz().cdir = -1;
 				}
-				if (Char.myCharz().cx < Char.myCharz().npcFocus.cx)
+				bool isMonGoku85 = Char.myCharz().npcFocus.template != null && Char.myCharz().npcFocus.template.npcTemplateId == 85;
+				if (isMonGoku85)
+				{
+					Char.myCharz().npcFocus.cdir = 1;
+				}
+				else if (Char.myCharz().cx < Char.myCharz().npcFocus.cx)
 				{
 					Char.myCharz().npcFocus.cdir = -1;
 				}
@@ -2102,7 +2107,7 @@ namespace Game2
 				{
 					Char.myCharz().cy = Char.myCharz().npcFocus.cy - 40;
 				}
-				if (num8 < 60)
+				if (num8 < (isMonGoku85 ? 150 : 60))
 				{
 					GameCanvas.clearKeyHold();
 					GameCanvas.clearKeyPressed();
@@ -2127,7 +2132,8 @@ namespace Game2
 				}
 				else
 				{
-					int num9 = (20 + Res.r.nextInt(20)) * ((Char.myCharz().cx > Char.myCharz().npcFocus.cx) ? 1 : (-1));
+					int stopDist = (isMonGoku85 ? (96 + Res.r.nextInt(16)) : (20 + Res.r.nextInt(20)));
+					int num9 = stopDist * ((Char.myCharz().cx > Char.myCharz().npcFocus.cx) ? 1 : (-1));
 					Char.myCharz().currentMovePoint = new MovePoint(Char.myCharz().npcFocus.cx + num9, Char.myCharz().cy);
 					Char.myCharz().endMovePointCommand = new Command(null, null, 8002, null);
 					GameCanvas.clearKeyHold();
@@ -2346,6 +2352,11 @@ namespace Game2
 
 		public override void updateKey()
 		{
+			if (isCutsceneVt13)
+			{
+				handleCutsceneVt13Key();
+				return;
+			}
 			if (Controller.isStopReadMessage || Char.myCharz().isTeleport || Char.myCharz().isPaintNewSkill || InfoDlg.isLock)
 			{
 				return;
@@ -4533,6 +4544,7 @@ namespace Game2
 				checkRemoveImage();
 			}
 			EffectManager.update();
+			updateCutsceneVt13();
 		}
 
 		public bool isRongThanMenu()
@@ -4728,6 +4740,7 @@ namespace Game2
 			{
 				((Npc)vNpc.elementAt(m)).paint(g);
 			}
+			paintVuTru13World(g);
 			g.translate(0, GameCanvas.transY);
 			GameCanvas.debug("PA7", 1);
 			GameCanvas.debug("PA8", 1);
@@ -5113,6 +5126,7 @@ namespace Game2
 			paintPhuBanBar(g, num27 + GameCanvas.w / 2, 0, num28);
 			EffectManager.hiEffects.paintAll(g);
 			AdminPopup.gI().paint(g);
+			paintCutsceneVt13Overlay(g);
 		}
 
 		private void paintXoSo(mGraphics g)
@@ -5567,6 +5581,10 @@ namespace Game2
 					if (Char.myCharz().mobFocus.templateId != 0)
 					{
 						mFont.tahoma_7b_green2.drawString(g, NinjaUtil.getMoneys(Char.myCharz().mobFocus.hp) + string.Empty, imgScrW / 2, 22 + mGraphics.addYWhenOpenKeyBoard, mFont.CENTER);
+						if (Char.myCharz().mobFocus.templateId == 117 && Char.myCharz().mobFocus.lastHitDame > 0)
+						{
+							mFont.tahoma_7b_yellow.drawString(g, "ST gần nhất: " + NinjaUtil.getMoneys(Char.myCharz().mobFocus.lastHitDame), imgScrW / 2, 35 + mGraphics.addYWhenOpenKeyBoard, mFont.CENTER);
+						}
 					}
 				}
 				else if (Char.myCharz().npcFocus != null)
@@ -7035,6 +7053,333 @@ namespace Game2
 				{
 					imgBgIOS = GameCanvas.loadImage("/bg/bg_ios_" + ((TileMap.bgID % 2 != 0) ? 1 : 2) + ".png");
 				}
+			}
+		}
+
+		// ================== VŨ TRỤ 13 - VŨ TRỤ BỊ NGUYỀN RỦA & CUTSCENE ("CASSIN") ==================
+		public static bool unlockVuTru13;
+
+		public static bool hideCaiTrangVt13;
+
+		public static int vt13Stage;
+
+		public static bool isCutsceneVt13;
+
+		public static sbyte voCucTypeVt13;
+
+		public static int voCucLevelVt13 = 1;
+
+		private int cutsceneIdVt13;
+
+		private int cutsceneFocusX;
+
+		private int cutsceneFocusY;
+
+		private string cutsceneTitle = string.Empty;
+
+		private string[] cutsceneSpeakers;
+
+		private string[] cutsceneTexts;
+
+		private int[] cutsceneDurations;
+
+		private int cutsceneStepIdx;
+
+		private int cutsceneStepTick;
+
+		private int cutsceneTotalTick;
+
+		private int changingMapWatchdogTicks;
+
+		public void onVuTru13Message(Message msg)
+		{
+			try
+			{
+				sbyte subCmd = msg.reader().readByte();
+				if (subCmd == 0)
+				{
+					unlockVuTru13 = msg.reader().readBoolean();
+					hideCaiTrangVt13 = msg.reader().readBoolean();
+					vt13Stage = msg.reader().readByte();
+					if (msg.reader().available() > 0)
+					{
+						voCucTypeVt13 = msg.reader().readByte();
+					}
+					if (msg.reader().available() > 0)
+					{
+						voCucLevelVt13 = msg.reader().readByte();
+					}
+					if (Char.myCharz() != null)
+					{
+						Char.myCharz().voCucType = voCucTypeVt13;
+					}
+					if (SoundMn.gI() != null)
+					{
+						SoundMn.gI().getSoundOption();
+					}
+				}
+				else if (subCmd == 2)
+				{
+					int charId = msg.reader().readInt();
+					sbyte vcType = msg.reader().readByte();
+					if (Char.myCharz() != null && Char.myCharz().charID == charId)
+					{
+						voCucTypeVt13 = vcType;
+						Char.myCharz().voCucType = vcType;
+					}
+					else
+					{
+						Char cInMap = findCharInMap(charId);
+						if (cInMap != null)
+						{
+							cInMap.voCucType = vcType;
+						}
+					}
+				}
+				else if (subCmd == 1)
+				{
+					cutsceneIdVt13 = msg.reader().readByte();
+					cutsceneFocusX = msg.reader().readShort();
+					cutsceneFocusY = msg.reader().readShort();
+					cutsceneTitle = msg.reader().readUTF();
+					int stepCount = msg.reader().readByte();
+					if (stepCount <= 0)
+					{
+						return;
+					}
+					cutsceneSpeakers = new string[stepCount];
+					cutsceneTexts = new string[stepCount];
+					cutsceneDurations = new int[stepCount];
+					for (int i = 0; i < stepCount; i++)
+					{
+						cutsceneSpeakers[i] = msg.reader().readUTF();
+						cutsceneTexts[i] = msg.reader().readUTF();
+						int dur = msg.reader().readShort();
+						cutsceneDurations[i] = ((dur < 80) ? 200 : dur);
+					}
+					cutsceneStepIdx = 0;
+					cutsceneStepTick = 0;
+					cutsceneTotalTick = 0;
+					isCutsceneVt13 = true;
+					shock_scr = 24;
+					if (GameCanvas.menu != null)
+					{
+						GameCanvas.menu.doCloseMenu();
+					}
+					if (GameCanvas.panel != null && GameCanvas.panel.isShow)
+					{
+						GameCanvas.panel.hide();
+					}
+					ChatPopup.currChatPopup = null;
+					InfoDlg.hide();
+				}
+			}
+			catch (Exception ex)
+			{
+				Cout.LogError("Loi onVuTru13Message: " + ex.ToString());
+			}
+		}
+
+		private void handleCutsceneVt13Key()
+		{
+			bool nextTriggered = false;
+			if (GameCanvas.isPointerJustRelease || GameCanvas.isPointerClick)
+			{
+				nextTriggered = true;
+			}
+			for (int i = 0; i < GameCanvas.keyPressed.Length; i++)
+			{
+				if (GameCanvas.keyPressed[i])
+				{
+					nextTriggered = true;
+					GameCanvas.keyPressed[i] = false;
+				}
+			}
+			GameCanvas.isPointerJustRelease = false;
+			GameCanvas.isPointerClick = false;
+			if (nextTriggered && cutsceneStepTick >= 18)
+			{
+				advanceCutsceneVt13();
+			}
+		}
+
+		private void advanceCutsceneVt13()
+		{
+			cutsceneStepIdx++;
+			cutsceneStepTick = 0;
+			if (cutsceneTexts == null || cutsceneStepIdx >= cutsceneTexts.Length)
+			{
+				isCutsceneVt13 = false;
+				return;
+			}
+			if ((cutsceneIdVt13 == 1 && (cutsceneStepIdx == 2 || cutsceneStepIdx == 4)) || (cutsceneIdVt13 == 2 && (cutsceneStepIdx == 2 || cutsceneStepIdx == 3)))
+			{
+				shock_scr = 20;
+			}
+		}
+
+		private void updateCutsceneVt13()
+		{
+			if (Char.ischangingMap)
+			{
+				changingMapWatchdogTicks++;
+				if (changingMapWatchdogTicks > 90)
+				{
+					Char.ischangingMap = false;
+					Char.isLockKey = false;
+					InfoDlg.hide();
+					changingMapWatchdogTicks = 0;
+				}
+			}
+			else
+			{
+				changingMapWatchdogTicks = 0;
+			}
+			if (!isCutsceneVt13)
+			{
+				return;
+			}
+			if (cutsceneTexts == null || cutsceneStepIdx >= cutsceneTexts.Length)
+			{
+				isCutsceneVt13 = false;
+				return;
+			}
+			cutsceneStepTick++;
+			cutsceneTotalTick++;
+			int targetX = cutsceneFocusX - GameCanvas.w / 2;
+			int targetY = cutsceneFocusY - GameCanvas.h / 2;
+			int maxX = TileMap.pxw - GameCanvas.w;
+			int maxY = TileMap.pxh - GameCanvas.h;
+			if (maxX < 0)
+			{
+				maxX = 0;
+			}
+			if (maxY < 0)
+			{
+				maxY = 0;
+			}
+			if (targetX < 0)
+			{
+				targetX = 0;
+			}
+			else if (targetX > maxX)
+			{
+				targetX = maxX;
+			}
+			if (targetY < 0)
+			{
+				targetY = 0;
+			}
+			else if (targetY > maxY)
+			{
+				targetY = maxY;
+			}
+			cmtoX = targetX;
+			cmtoY = targetY;
+			cmx += (cmtoX - cmx) / 4;
+			cmy += (cmtoY - cmy) / 4;
+			int maxDur = ((cutsceneDurations != null && cutsceneStepIdx < cutsceneDurations.Length) ? cutsceneDurations[cutsceneStepIdx] : 240);
+			if (cutsceneStepTick >= maxDur)
+			{
+				advanceCutsceneVt13();
+			}
+		}
+
+		private void paintVuTru13World(mGraphics g)
+		{
+			if (Char.myCharz() != null && Char.myCharz().voCucType != voCucTypeVt13)
+			{
+				Char.myCharz().voCucType = voCucTypeVt13;
+			}
+			if (TileMap.mapID == 181)
+			{
+				for (int n = 0; n < vNpc.size(); n++)
+				{
+					Npc npc = (Npc)vNpc.elementAt(n);
+					if (npc != null && npc.template != null)
+					{
+						if (npc.template.npcTemplateId == 86)
+						{
+							mFont.tahoma_7b_yellow.drawString(g, "« TU LUYỆN VÔ CỰC »", npc.cx, npc.cy - 76, mFont.CENTER);
+						}
+						else if (npc.template.npcTemplateId == 87)
+						{
+							mFont.tahoma_7b_yellow.drawString(g, "« MAP HOME VŨ TRỤ 13 »", npc.cx, npc.cy - 72, mFont.CENTER);
+						}
+					}
+				}
+			}
+			else if (TileMap.mapID == 179)
+			{
+				int gx = 840;
+				int gy = 456;
+				for (int n = 0; n < vNpc.size(); n++)
+				{
+					Npc npc = (Npc)vNpc.elementAt(n);
+					if (npc != null && npc.template != null && npc.template.npcTemplateId == 85)
+					{
+						gx = npc.cx;
+						gy = npc.cy;
+						break;
+					}
+				}
+				mFont.tahoma_7b_red.drawString(g, "« PHONG ẤN CỔ THẦN »", gx, gy - 162, mFont.CENTER);
+			}
+			else if (TileMap.mapID == 180)
+			{
+				int altarX = 960;
+				int altarY = 456;
+				bool sealBroken = vt13Stage >= 2 || (isCutsceneVt13 && cutsceneIdVt13 == 2 && cutsceneStepIdx >= 2);
+				if (!sealBroken)
+				{
+					mFont.tahoma_7b_yellow.drawString(g, "« BIA PHONG ẤN THẦN HỦY DIỆT VT13 »", altarX, altarY - 92, mFont.CENTER);
+				}
+				else
+				{
+					mFont.tahoma_7b_red.drawString(g, "« PHONG ẤN THẦN HỦY DIỆT ĐÃ MỞ! »", altarX, altarY - 92, mFont.CENTER);
+				}
+			}
+		}
+
+		private void paintCutsceneVt13Overlay(mGraphics g)
+		{
+			if (!isCutsceneVt13 || cutsceneTexts == null || cutsceneStepIdx >= cutsceneTexts.Length)
+			{
+				return;
+			}
+			g.reset();
+			int topBarH = 40;
+			int botBarH = 84;
+			int botBarY = GameCanvas.h - botBarH;
+			g.FillRect(0, 0, GameCanvas.w, topBarH, 524300, 0.9f);
+			g.FillRect(0, botBarY, GameCanvas.w, botBarH, 524300, 0.92f);
+			g.setColor(13107240);
+			g.fillRect(0, topBarH - 2, GameCanvas.w, 2);
+			g.fillRect(0, botBarY, GameCanvas.w, 2);
+			g.setColor(16755200);
+			g.fillRect(24, topBarH - 1, GameCanvas.w - 48, 1);
+			g.fillRect(24, botBarY + 2, GameCanvas.w - 48, 1);
+			string stepBadge = " (" + (cutsceneStepIdx + 1) + "/" + cutsceneTexts.Length + ")";
+			mFont.tahoma_7b_yellow.drawString(g, "« " + cutsceneTitle + " »" + stepBadge, GameCanvas.w / 2, 13, mFont.CENTER);
+			string speaker = ((cutsceneSpeakers != null && cutsceneStepIdx < cutsceneSpeakers.Length) ? cutsceneSpeakers[cutsceneStepIdx] : string.Empty);
+			if (!string.IsNullOrEmpty(speaker))
+			{
+				int spkW = mFont.tahoma_7b_yellow.getWidth(speaker) + 24;
+				g.FillRect(18, botBarY - 18, spkW, 20, 3801158, 0.95f);
+				g.setColor(16755200);
+				g.drawRect(18, botBarY - 18, spkW, 20);
+				mFont.tahoma_7b_yellow.drawString(g, speaker, 18 + spkW / 2, botBarY - 14, mFont.CENTER);
+			}
+			string rawLine = cutsceneTexts[cutsceneStepIdx];
+			string[] wrapped = mFont.tahoma_7b_white.splitFontArray(rawLine, GameCanvas.w - 44);
+			for (int i = 0; i < wrapped.Length && i < 4; i++)
+			{
+				mFont.tahoma_7b_white.drawString(g, wrapped[i], 22, botBarY + 12 + i * 14, mFont.LEFT);
+			}
+			if (cutsceneStepTick >= 18 && GameCanvas.gameTick % 20 < 14)
+			{
+				string hint = ((cutsceneStepIdx + 1 < cutsceneTexts.Length) ? "Nhấn màn hình / Phím bất kỳ để tiếp tục >>" : "Nhấn màn hình / Phím bất kỳ để hoàn tất >>");
+				mFont.tahoma_7b_red.drawString(g, hint, GameCanvas.w - 18, GameCanvas.h - 16, mFont.RIGHT);
 			}
 		}
 	}

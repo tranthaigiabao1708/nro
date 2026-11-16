@@ -90,9 +90,7 @@ public abstract class TrainingBoss extends Boss {
     protected void goToXY(int x, int y) {
         byte dir = (byte) (this.location.x - x < 0 ? 1 : -1);
         byte move = (byte) Util.nextInt(50, 100);
-        this.location.x = this.location.x + (dir == 1 ? move : -move);
-        this.location.y = y;
-        MapService.gI().sendPlayerMove(this);
+        PlayerService.gI().playerMove(this, this.location.x + (dir == 1 ? move : -move), y);
     }
 
     @Override

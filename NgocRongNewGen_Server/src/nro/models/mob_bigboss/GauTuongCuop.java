@@ -159,6 +159,7 @@ public class GauTuongCuop extends Mob {
         Player topContributor = Collections.max(damageMap.entrySet(), Map.Entry.comparingByValue()).getKey();
         if (topContributor != null) {
             nro.models.boss.Boss.dropBossSoulStatic(this.zone, this.location.x, this.location.y, topContributor, nro.models.boss.Boss.ITEM_HON_BOSS_LUC);
+            nro.models.boss.Boss.tryDropManhGiay726Static(this.zone, this.location.x, this.location.y, topContributor);
         }
 
         Map<Clan, Integer> clanCapsuleMap = new HashMap<>();

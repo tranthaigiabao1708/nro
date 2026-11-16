@@ -169,15 +169,18 @@ public class Boss extends Player implements IBoss {
     public static final int ITEM_MA_HON_HUY_DIET = 2019;
 
     protected boolean soulDroppedForCurrentLife;
+    protected boolean manhGiay726DroppedForCurrentLife;
 
     @Override
     public void initBase() {
         this.soulDroppedForCurrentLife = false;
+        this.manhGiay726DroppedForCurrentLife = false;
         BossData data = this.data[this.currentLevel];
         this.name = String.format(data.getName(), Util.nextInt(0, 100));
         this.gender = data.getGender();
         this.nPoint.mpg = 31_07_2002;
         this.nPoint.dameg = data.getDame();
+        this.nPoint.bossFlatDef = Math.max(0, data.getDef());
         long baseHp = data.getHp()[Util.nextInt(0, data.getHp().length - 1)];
         this.nPoint.hpg = baseHp;
         this.nPoint.hp = baseHp;
@@ -452,17 +455,20 @@ public class Boss extends Player implements IBoss {
                                 this.zone = this.zone.map.zones.get(0);
                             }
                         }
-                        int x = this.zone.map.mapWidth > 100 ? Util.nextInt(100, this.zone.map.mapWidth - 100) : Util.nextInt(100);
-                        int y = this.zone.map.yPhysicInTop(x, 100);
+                        int rawX = this.zone.map.mapWidth > 100 ? Util.nextInt(100, this.zone.map.mapWidth - 100) : Util.nextInt(100);
+                        int x = this.zone.map.clampBossX(rawX);
+                        int y = this.zone.map.resolveBossGroundY(x, 100);
                         ChangeMapService.gI().changeMap(this, this.zone, x, y);
                     } else {
-                        int x = this.parentBoss.location.x - (this.lv + 1) * 30;
-                        int y = this.zone.map.yPhysicInTop(x, 100);
+                        int x = this.zone.map.clampBossX(this.parentBoss.location.x - (this.lv + 1) * 30);
+                        int y = this.zone.map.resolveBossGroundY(x, this.parentBoss.location.y > 0 ? this.parentBoss.location.y : 100);
                         ChangeMapService.gI().changeMap(this, this.zone, x, y);
                     }
                     this.wakeupAnotherBossWhenAppear();
                 } else {
-                    ChangeMapService.gI().changeMap(this, this.zone, this.location.x, this.location.y);
+                    int spawnX = this.zone.map.clampBossX(this.location.x);
+                    int spawnY = this.zone.map.resolveBossGroundY(spawnX, this.location.y > 0 ? this.location.y : 100);
+                    ChangeMapService.gI().changeMap(this, this.zone, spawnX, spawnY);
                 }
                 Service.gI().sendFlagBag(this);
                 this.notifyJoinMap();
@@ -481,10 +487,12 @@ public class Boss extends Player implements IBoss {
 
     public void joinMapByZone(Zone zone) {
         this.soulDroppedForCurrentLife = false;
+        this.manhGiay726DroppedForCurrentLife = false;
         if (zone != null) {
             this.zone = zone;
-            int x = this.zone.map.mapWidth > 100 ? Util.nextInt(100, this.zone.map.mapWidth - 100) : Util.nextInt(100);
-            int y = this.zone.map.yPhysicInTop(x, 100);
+            int rawX = this.zone.map.mapWidth > 100 ? Util.nextInt(100, this.zone.map.mapWidth - 100) : Util.nextInt(100);
+            int x = this.zone.map.clampBossX(rawX);
+            int y = this.zone.map.resolveBossGroundY(x, 100);
             ChangeMapService.gI().changeMap(this, this.zone, x, y);
         }
     }
@@ -559,6 +567,11 @@ public class Boss extends Player implements IBoss {
 
     protected long lastTimeAttack;
     protected long lastTimeSyncTypePk;
+    protected long lastTimeBossMove;
+
+    public boolean shouldClampToGround() {
+        return !this.getClass().getSimpleName().startsWith("DeathBeam");
+    }
 
     @Override
     public void attack() {
@@ -571,19 +584,17 @@ public class Boss extends Player implements IBoss {
                 }
                 this.playerSkill.skillSelect = this.playerSkill.skills.get(Util.nextInt(0, this.playerSkill.skills.size() - 1));
                 if (Util.getDistance(this, pl) <= this.getRangeCanAttackWithSkillSelect()) {
-                    if (Util.isTrue(5, 20)) {
+                    if (Util.isTrue(3, 20) && Util.canDoWithTime(this.lastTimeBossMove, 450)) {
                         if (SkillUtil.isUseSkillChuong(this)) {
-                            this.moveTo(pl.location.x + (Util.getOne(-1, 1) * Util.nextInt(20, 200)),
-                                    Util.nextInt(10) % 2 == 0 ? pl.location.y : pl.location.y - Util.nextInt(0, 70));
+                            this.moveTo(pl.location.x + (Util.getOne(-1, 1) * Util.nextInt(40, 140)), pl.location.y);
                         } else {
-                            this.moveTo(pl.location.x + (Util.getOne(-1, 1) * Util.nextInt(10, 40)),
-                                    Util.nextInt(10) % 2 == 0 ? pl.location.y : pl.location.y - Util.nextInt(0, 50));
+                            this.moveTo(pl.location.x + (Util.getOne(-1, 1) * Util.nextInt(24, 48)), pl.location.y);
                         }
                     }
                     SkillService.gI().useSkill(this, pl, null, -1, null);
                     checkPlayerDie(pl);
                 } else {
-                    if (Util.isTrue(1, 2)) {
+                    if (Util.canDoWithTime(this.lastTimeBossMove, 350)) {
                         this.moveToPlayer(pl);
                     }
                 }
@@ -634,12 +645,21 @@ public class Boss extends Player implements IBoss {
                  BossID.CAULIFLA_VT6,
                  BossID.HIT_VT6,
                  BossID.CHAMPA_VT6 -> ITEM_MA_HON_HUY_DIET;
-            // Hồn Boss Tím (2018) - Dàn Boss Cấp Cao
+            // Hồn Boss Tím (2018) - Dàn Boss Cấp Cao & Võ Đài Xên Bọ Hung
             case BossID.COOLER,
                  BossID.BLACK_GOKU,
                  BossID.CUMBER,
                  BossID.BABY,
-                 BossID.GOLDEN_FRIEZA -> ITEM_HON_BOSS_TIM;
+                 BossID.GOLDEN_FRIEZA,
+                 BossID.DAI_DE_FIDE_VT13,
+                 BossID.SIEU_BO_HUNG,
+                 BossID.XEN_CON_1,
+                 BossID.XEN_CON_2,
+                 BossID.XEN_CON_3,
+                 BossID.XEN_CON_4,
+                 BossID.XEN_CON_5,
+                 BossID.XEN_CON_6,
+                 BossID.XEN_CON_7 -> ITEM_HON_BOSS_TIM;
             // Hồn Boss Lục (2017) - Boss Sự Kiện Khung Giờ & BigBoss
             case BossID.DRABURA,
                  BossID.BUI_BUI,
@@ -685,14 +705,6 @@ public class Boss extends Player implements IBoss {
                  BossID.SUPER_BOJACK,
                  BossID.SUPER_BROLY,
                  BossID.XEN_BO_HUNG,
-                 BossID.SIEU_BO_HUNG,
-                 BossID.XEN_CON_1,
-                 BossID.XEN_CON_2,
-                 BossID.XEN_CON_3,
-                 BossID.XEN_CON_4,
-                 BossID.XEN_CON_5,
-                 BossID.XEN_CON_6,
-                 BossID.XEN_CON_7,
                  BossID.TRUNG_UY_TRANG,
                  BossID.TRUNG_UY_THEP,
                  BossID.TRUNG_UY_XANH_LO,
@@ -704,16 +716,34 @@ public class Boss extends Player implements IBoss {
         };
     }
 
+    public int getBossSoulQuantity() {
+        return switch ((int) this.id) {
+            case BossID.SIEU_BO_HUNG,
+                 BossID.XEN_CON_1,
+                 BossID.XEN_CON_2,
+                 BossID.XEN_CON_3,
+                 BossID.XEN_CON_4,
+                 BossID.XEN_CON_5,
+                 BossID.XEN_CON_6,
+                 BossID.XEN_CON_7 -> 5;
+            default -> 1;
+        };
+    }
+
     public static void dropBossSoulStatic(Zone targetZone, int baseX, int baseY, Player plKill, int soulItemId) {
+        dropBossSoulStatic(targetZone, baseX, baseY, plKill, soulItemId, 1);
+    }
+
+    public static void dropBossSoulStatic(Zone targetZone, int baseX, int baseY, Player plKill, int soulItemId, int quantity) {
         try {
-            if (soulItemId <= 0 || targetZone == null || targetZone.map == null || plKill == null || plKill.isBot) {
+            if (soulItemId <= 0 || quantity <= 0 || targetZone == null || targetZone.map == null || plKill == null || plKill.isBot) {
                 return;
             }
             Player owner = resolveRewardOwner(plKill);
             long ownerId = (owner != null) ? owner.id : plKill.id;
             int xDrop = clampDropX(targetZone, baseX + 8);
             int yDrop = targetZone.map.yPhysicInTop(xDrop, baseY - 24);
-            nro.models.map.ItemMap soulMap = new nro.models.map.ItemMap(targetZone, soulItemId, 1, xDrop, yDrop, ownerId);
+            nro.models.map.ItemMap soulMap = new nro.models.map.ItemMap(targetZone, soulItemId, quantity, xDrop, yDrop, ownerId);
             soulMap.options.add(new nro.models.item.Item.ItemOption(73, 0));
             Service.gI().dropItemMap(targetZone, soulMap);
         } catch (Exception e) {
@@ -721,7 +751,47 @@ public class Boss extends Player implements IBoss {
         }
     }
 
+    public static void tryDropManhGiay726Static(Zone targetZone, int baseX, int baseY, Player plKill) {
+        try {
+            if (targetZone == null || targetZone.map == null || plKill == null || plKill.isBot) {
+                return;
+            }
+            if (Util.isTrue(10, 100)) {
+                Player owner = resolveRewardOwner(plKill);
+                long ownerId = (owner != null) ? owner.id : plKill.id;
+                int xDrop = clampDropX(targetZone, baseX - 10);
+                int yDrop = targetZone.map.yPhysicInTop(xDrop, baseY - 24);
+                nro.models.map.ItemMap manhGiay = new nro.models.map.ItemMap(targetZone, 726, 1, xDrop, yDrop, ownerId);
+                manhGiay.options.add(new nro.models.item.Item.ItemOption(73, 0));
+                Service.gI().dropItemMap(targetZone, manhGiay);
+            }
+        } catch (Exception e) {
+            Logger.logException(Boss.class, e);
+        }
+    }
+
+    public void tryDropManhGiay726(Zone targetZone, int baseX, int baseY, Player plKill) {
+        if (this.manhGiay726DroppedForCurrentLife) {
+            return;
+        }
+        if (targetZone == null || targetZone.map == null || plKill == null || plKill.isBot) {
+            return;
+        }
+        if (this instanceof nro.models.boss.luyen_tap_tu_dong.TrainingBoss
+                || this instanceof nro.models.boss.dai_hoi_vo_thuat.The23rdMartialArtCongress
+                || this instanceof nro.models.boss.sieu_hang.SuperRank
+                || this instanceof nro.models.boss.vo_dai_hat_mit.DeathOrAliveArena
+                || this instanceof nro.models.boss.nhan_ban.NhanBan
+                || this instanceof nro.models.boss.ma_vuong_picolo.Pocolo
+                || this instanceof nro.models.boss.doanh_trai.NinjaClone) {
+            return;
+        }
+        this.manhGiay726DroppedForCurrentLife = true;
+        tryDropManhGiay726Static(targetZone, baseX, baseY, plKill);
+    }
+
     public void dropBossSoul(Zone targetZone, int baseX, int baseY, Player plKill) {
+        tryDropManhGiay726(targetZone, baseX, baseY, plKill);
         if (this.soulDroppedForCurrentLife) {
             return;
         }
@@ -730,7 +800,7 @@ public class Boss extends Player implements IBoss {
             return;
         }
         this.soulDroppedForCurrentLife = true;
-        dropBossSoulStatic(targetZone, baseX, baseY, plKill, soulId);
+        dropBossSoulStatic(targetZone, baseX, baseY, plKill, soulId, getBossSoulQuantity());
     }
 
     @Override
@@ -1110,7 +1180,15 @@ public class Boss extends Player implements IBoss {
                  BossID.DRABURA_3,
                  BossID.MABU_12H,
                  BossID.MABU,
-                 BossID.SUPERBU -> true;
+                 BossID.SUPERBU,
+                 BossID.SIEU_BO_HUNG,
+                 BossID.XEN_CON_1,
+                 BossID.XEN_CON_2,
+                 BossID.XEN_CON_3,
+                 BossID.XEN_CON_4,
+                 BossID.XEN_CON_5,
+                 BossID.XEN_CON_6,
+                 BossID.XEN_CON_7 -> true;
             default -> false;
         };
     }
@@ -1235,9 +1313,27 @@ public class Boss extends Player implements IBoss {
 
     @Override
     public void moveTo(int x, int y) {
-        byte dir = (byte) (this.location.x - x < 0 ? 1 : -1);
-        byte move = (byte) Util.nextInt(40, 60);
-        PlayerService.gI().playerMove(this, this.location.x + (dir == 1 ? move : -move), y + (Util.isTrue(3, 10) ? -50 : 0));
+        int oldX = this.location.x;
+        int oldY = this.location.y;
+        int dir = (oldX <= x ? 1 : -1);
+        int distX = Math.abs(x - oldX);
+        int step = Math.min(Math.max(distX, 36), Util.nextInt(45, 65));
+        int nextX = oldX + dir * step;
+        int nextY = y;
+        if (this.zone != null && this.zone.map != null && shouldClampToGround()) {
+            nro.models.map.Map map = this.zone.map;
+            nextX = map.clampBossX(nextX);
+            nextY = map.clampBossMoveY(nextX, y);
+            if (nextY != oldY || map.hasSlopeOrGapBetween(oldX, nextX, nextY)) {
+                int dashX = map.clampBossX(oldX + dir * 112);
+                if (Math.abs(dashX - oldX) > 104) {
+                    nextX = dashX;
+                    nextY = map.clampBossMoveY(nextX, y);
+                }
+            }
+        }
+        this.lastTimeBossMove = System.currentTimeMillis();
+        PlayerService.gI().playerMove(this, nextX, nextY);
     }
 
     public void chat(String text) {

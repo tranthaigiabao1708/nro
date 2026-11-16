@@ -113,14 +113,24 @@ public class RadarService {
     }
 
     public void sendAura(Player pl, int id_Aura, int id_Eff_Set_Item) {
+        if (pl == null) {
+            return;
+        }
         try {
             Message message = new Message(127);
             message.writer().writeByte(4);
             message.writer().writeInt((int) pl.id);
             message.writer().writeShort(id_Aura);
             message.writer().writeByte(id_Eff_Set_Item);
-            Service.gI().sendMessAllPlayer(message);
-            message.cleanup();
+            message.writer().flush();
+            Player sender = (pl.isPet && ((nro.models.player.Pet) pl).master != null)
+                    ? ((nro.models.player.Pet) pl).master : pl;
+            if (sender.zone != null) {
+                Service.gI().sendMessAllPlayerInMap(sender, message);
+            } else {
+                sender.sendMessage(message);
+                message.cleanup();
+            }
         } catch (Exception e) {
         }
     }

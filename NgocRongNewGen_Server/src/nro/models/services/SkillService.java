@@ -273,6 +273,67 @@ public class SkillService {
         }
     }
 
+    public void addSkillSpecialMasteryByDamage(Player plAtt, Skill usedSkill, long damageDealt) {
+        if (plAtt == null || !plAtt.isPl() || plAtt.playerSkill == null || usedSkill == null
+                || usedSkill.template == null || damageDealt <= 0) {
+            return;
+        }
+        byte tempId = usedSkill.template.id;
+        if (tempId != Skill.SUPER_KAME && tempId != Skill.LIEN_HOAN_CHUONG && tempId != Skill.MA_PHONG_BA) {
+            return;
+        }
+        Skill canonicalSkill = plAtt.playerSkill.getSkillbyId(tempId);
+        if (canonicalSkill == null || canonicalSkill.point <= 0) {
+            return;
+        }
+        boolean levelChanged = false;
+        boolean remainderChanged = false;
+        synchronized (canonicalSkill) {
+            if (canonicalSkill.currLevel >= 1000) {
+                canonicalSkill.currLevel = 1000;
+                canonicalSkill.masteryDamageRemainder = 0L;
+                return;
+            }
+            // Mỗi 10.000.000 HP sát thương = +1% thông thạo (+10 currLevel) => 1.000.000 HP = +0.1% (+1 currLevel)
+            final long unitDamage = 1_000_000L;
+            long remainBefore = Math.max(0L, canonicalSkill.masteryDamageRemainder);
+            long addUnits;
+            long newRemainder;
+            if (Long.MAX_VALUE - remainBefore < damageDealt) {
+                addUnits = 1000L;
+                newRemainder = 0L;
+            } else {
+                long total = remainBefore + damageDealt;
+                addUnits = total / unitDamage;
+                newRemainder = total % unitDamage;
+            }
+            short prevLevel = canonicalSkill.currLevel;
+            if (addUnits > 0) {
+                long updatedLevel = Math.min(1000L, (long) prevLevel + addUnits);
+                canonicalSkill.currLevel = (short) updatedLevel;
+                canonicalSkill.masteryDamageRemainder = (canonicalSkill.currLevel >= 1000) ? 0L : newRemainder;
+                if (usedSkill != canonicalSkill) {
+                    usedSkill.currLevel = canonicalSkill.currLevel;
+                    usedSkill.masteryDamageRemainder = canonicalSkill.masteryDamageRemainder;
+                }
+                levelChanged = true;
+            } else if (canonicalSkill.masteryDamageRemainder != newRemainder) {
+                canonicalSkill.masteryDamageRemainder = newRemainder;
+                if (usedSkill != canonicalSkill) {
+                    usedSkill.masteryDamageRemainder = newRemainder;
+                }
+                remainderChanged = true;
+            }
+        }
+        if (levelChanged) {
+            sendCurrLevelSpecial(plAtt, canonicalSkill);
+            AchievementService.gI().checkDoneTask(plAtt, ConstAchievement.TUYET_KY_THANH_THAO);
+        }
+        if (levelChanged || remainderChanged) {
+            nro.models.database.PlayerDAO.savePlayerAsync(plAtt);
+        }
+    }
+
     // _______________________________NEW_SKILL_NOT_FOCUS_______________________________
     public void newSkillNotFocus(Player player, int status) {
         Message msg = null;
@@ -1008,6 +1069,12 @@ public class SkillService {
         phanSatThuong(plAtt, plInjure, miss ? 0 : damePST);
         long actualDameDealt = miss ? 0L : Math.max(0L, Math.min(dameHit, Math.max(0L, hpBefore - plInjure.nPoint.getActualHp())));
         hutHPMP(plAtt, actualDameDealt, plInjure, null);
+        if (!miss && actualDameDealt > 0) {
+            Skill activeSkill = (plAtt.newSkill != null && plAtt.newSkill.isStartSkillSpecial && plAtt.newSkill.skillSelect != null)
+                    ? plAtt.newSkill.skillSelect
+                    : skillSelect;
+            addSkillSpecialMasteryByDamage(plAtt, activeSkill, actualDameDealt);
+        }
         long dameShow = dameHit;
         Message msg = null;
         try {
@@ -1067,8 +1134,9 @@ public class SkillService {
             }
         }
 
-        boolean isBossMob = (mob instanceof nro.models.mob.BigBoss)
-                || (mob.isBigBoss() && mob.tempId != nro.models.consts.ConstMob.MAY_DO_SUC_MANH);
+        boolean isMayDoSucManh = (mob instanceof nro.models.mob_bigboss.MayDoSucManh)
+                || mob.tempId == nro.models.consts.ConstMob.MAY_DO_SUC_MANH;
+        boolean isBossMob = !isMayDoSucManh && ((mob instanceof nro.models.mob.BigBoss) || mob.isBigBoss());
 
         if (!isBossMob && plAtt.charms != null && plAtt.charms.tdManhMe > System.currentTimeMillis()) {
             dameHit += (dameHit * 150 / 100);
@@ -1085,11 +1153,18 @@ public class SkillService {
             dameHit = 0;
         }
 
+        Skill activeSkill = (plAtt.newSkill != null && plAtt.newSkill.isStartSkillSpecial && plAtt.newSkill.skillSelect != null)
+                ? plAtt.newSkill.skillSelect
+                : plAtt.playerSkill.skillSelect;
+
         long hpMobBefore = mob.point.gethp();
         sendPlayerAttackMob(plAtt, mob);
         mob.injured(plAtt, dameHit, dieWhenHpFull);
-        long actualDameDealt = miss ? 0L : Math.max(0L, hpMobBefore - mob.point.gethp());
+        long actualDameDealt = miss ? 0L : (isMayDoSucManh ? Math.max(0L, dameHit) : Math.max(0L, hpMobBefore - mob.point.gethp()));
         hutHPMP(plAtt, actualDameDealt, null, mob);
+        if (!miss && actualDameDealt > 0) {
+            addSkillSpecialMasteryByDamage(plAtt, activeSkill, actualDameDealt);
+        }
     }
 
     public void sendPlayerPrepareSkill(Player player, int affterMiliseconds) {

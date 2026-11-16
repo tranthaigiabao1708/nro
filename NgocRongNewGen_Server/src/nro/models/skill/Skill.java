@@ -67,6 +67,8 @@ public class Skill {
 
     public short currLevel;
 
+    public long masteryDamageRemainder;
+
     public String moreInfo;
 
     public short price;
@@ -88,6 +90,8 @@ public class Skill {
         this.maxFight = skill.maxFight;
         this.manaUse = skill.manaUse;
         this.damage = skill.damage;
+        this.currLevel = skill.currLevel;
+        this.masteryDamageRemainder = skill.masteryDamageRemainder;
         this.moreInfo = skill.moreInfo;
         this.price = skill.price;
         this.template = skill.template;

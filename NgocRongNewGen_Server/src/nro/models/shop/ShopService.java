@@ -106,7 +106,15 @@ public class ShopService {
         if (shop.tagName != null && (shop.tagName.equals("BUA_1H") || shop.tagName.equals("BUA_8H") || shop.tagName.equals("BUA_1M"))) {
             return this.resolveShopBua(player, new Shop(shop));
         }
-        return allGender ? new Shop(shop) : new Shop(shop, player);
+        Shop resolved = allGender ? new Shop(shop) : new Shop(shop, player);
+        if (shop.tagName == null || !shop.tagName.equals("THIEN_SU")) {
+            for (TabShop tab : resolved.tabShops) {
+                tab.itemShops.removeIf(item -> item != null && item.temp != null
+                        && (item.temp.id == 1071 || item.temp.id == 1072 || item.temp.id == 1073
+                        || item.temp.id == 1084 || item.temp.id == 1085 || item.temp.id == 1086));
+            }
+        }
+        return resolved;
     }
 
     private Shop resolveShopBua(Player player, Shop s) {
@@ -496,11 +504,8 @@ public class ShopService {
         if (tagName.equals("BUA_1H") || tagName.equals("BUA_8H") || tagName.equals("BUA_1M")) {
             buyItemBua(player, tempId);
         } else if (tagName.equals("SANTA_HEAD")) {
-            Item itS = ItemService.gI().createNewItem((short) tempId);
-            player.head = (short) itS.template.head;
-            Service.gI().Send_Caitrang(player);
-            Service.gI().point(player);
-            Service.gI().sendThongBao(player, "Đổi kiểu tóc thành công");
+            Service.gI().sendThongBao(player, "Tiệm hớt tóc đã ngừng hoạt động!");
+            return;
         } else {
             buyItem(player, tempId);
         }
@@ -1031,7 +1036,11 @@ public class ShopService {
             pl.lastTimeChangeBadges = System.currentTimeMillis() + 3000;
             return;
         }
-        BadgesService.turnOnBadges(pl, BagesTemplate.fineIdEffectbyIdItem(is.temp.id));
+        int newBadgeEff = BagesTemplate.fineIdEffectbyIdItem(is.temp.id);
+        BadgesService.turnOnBadges(pl, newBadgeEff);
+        pl.badges.idBadges = newBadgeEff;
+        pl.badges.lastTimeSendBadges = System.currentTimeMillis();
+        Service.gI().sendBadgesPlayer(pl, 15, newBadgeEff);
         Service.gI().sendThongBao(pl, "Đã đổi danh hiệu sang " + is.temp.name);
         pl.lastTimeChangeBadges = System.currentTimeMillis() + 3000;
         pl.nPoint.calPoint();

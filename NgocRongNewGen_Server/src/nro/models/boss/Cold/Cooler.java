@@ -32,11 +32,16 @@ public class Cooler extends Boss {
     @Override
     public synchronized long injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
-            if (Util.isTrue(10, 1000)) {
+            if (damage <= 0) {
+                return 0;
+            }
+            if (!piercing && Util.isTrue(10, 1000)) {
                 this.chat("Xí hụt");
                 return 0;
             }
-            damage = this.nPoint.subDameInjureWithDeff(damage);
+            if (!piercing) {
+                damage = this.nPoint.subDameInjureWithDeff(damage, plAtt);
+            }
             this.nPoint.subHP(damage);
             if (isDie()) {
                 this.setDie(plAtt);

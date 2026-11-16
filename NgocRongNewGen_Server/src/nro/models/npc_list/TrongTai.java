@@ -72,7 +72,10 @@ public class TrongTai extends Npc {
         }
     }
 
-    private void refreshDailyArenaFeesIfNeeded(Player player) {
+    public static void refreshDailyArenaFeesIfNeeded(Player player) {
+        if (player == null) {
+            return;
+        }
         if (player.goldSuperChallenge <= 0) {
             player.goldSuperChallenge = 50_000_000L;
         }
@@ -80,9 +83,15 @@ public class TrongTai extends Npc {
             player.gemSuperChallenge = 10L;
         }
         if (Util.isAfterMidnight(player.lastTimePKVoDaiVt6)) {
+            player.levelSuperChest = 0;
             player.goldSuperChallenge = 50_000_000L;
             player.gemSuperChallenge = 10L;
+            player.lastTimePKVoDaiVt6 = System.currentTimeMillis();
         }
+    }
+
+    public static boolean canClaimSuperChestToday(Player player) {
+        return player != null && player.levelSuperChest > 0 && Util.isAfterMidnight(player.lastTimeClaimSuperChest);
     }
 
     private String buildArenaGreeting(Player player) {
@@ -90,15 +99,20 @@ public class TrongTai extends Npc {
         int maHon = InventoryService.gI().getTotalQuantityBag(player, Boss.ITEM_MA_HON_HUY_DIET);
         int zenoSeal = InventoryService.gI().getTotalQuantityBag(player, 2029);
         int lv = Math.max(0, Math.min(VoDaiVt6Boss.TOTAL_ROUNDS, player.levelSuperChest));
+        boolean claimedToday = !Util.isAfterMidnight(player.lastTimeClaimSuperChest);
         String progressLine = (lv >= VoDaiVt6Boss.TOTAL_ROUNDS)
-                ? "ĐÃ VÔ ĐỊCH 9/9 VÒNG (Sẵn sàng nhận Rương Siêu Cấp Cấp 9!)"
-                : ("Cấp " + lv + "/9 - Đối thủ kế tiếp: Vòng " + (lv + 1) + " (" + VoDaiVt6Boss.getRoundFighterTitle(lv) + ")");
+                ? "ĐÃ VÔ ĐỊCH 9/9 VÒNG HÔM NAY (Tự reset sau 1 ngày / qua 0h00)"
+                : ("Vòng " + lv + "/9 - Đối thủ kế tiếp: Vòng " + (lv + 1) + " (" + VoDaiVt6Boss.getRoundFighterTitle(lv) + ")");
+        String chestStatus = claimedToday
+                ? "Đã nhận hôm nay (Reset qua 0h00)"
+                : (lv > 0 ? ("Sẵn sàng nhận Cấp " + lv + "/9 (1 lần/ngày)") : "Vượt ít nhất 1 vòng để mở khóa");
         return "|7|VÕ ĐÀI LIÊN VŨ TRỤ 6 & 7 - ĐẤU TRƯỜNG 9 VÒNG"
-                + "\n|2|Tiến độ Rương Siêu Cấp: " + progressLine
+                + "\n|2|Tiến trình hôm nay: " + progressLine
+                + "\n|5|Rương Siêu Cấp: " + chestStatus
                 + "\n|1|Ma Hồn Hủy Diệt: " + Util.numberToMoney(maHon)
                 + " | Hồn Tím: " + Util.numberToMoney(honTim)
                 + " | Ấn Zeno: " + Util.numberToMoney(zenoSeal)
-                + "\n|0|Hạ mỗi Boss trên võ đài đều rơi trực tiếp vật phẩm + tăng cấp Rương Siêu Cấp!";
+                + "\n|0|Tiến trình đánh Boss tự động reset sau 1 ngày (qua 0h00)!";
     }
 
     @Override
@@ -125,7 +139,7 @@ public class TrongTai extends Npc {
             refreshDailyArenaFeesIfNeeded(player);
             String goldBtn = "Thi đấu\n" + Util.numberToMoney(player.goldSuperChallenge) + " vàng";
             String gemBtn = "Thi đấu\n" + Util.numberToMoney(player.gemSuperChallenge) + " ngọc";
-            if (player.levelSuperChest > 0) {
+            if (canClaimSuperChestToday(player)) {
                 createOtherMenu(player, ConstNpc.BASE_MENU,
                         buildArenaGreeting(player),
                         "Hướng dẫn\nGiải Đấu",
@@ -180,16 +194,17 @@ public class TrongTai extends Npc {
             int idxMenu = player.idMark.getIndexMenu();
             if (idxMenu == ConstNpc.BASE_MENU) {
                 refreshDailyArenaFeesIfNeeded(player);
-                boolean hasChestProgress = player.levelSuperChest > 0;
+                boolean hasChestProgress = canClaimSuperChestToday(player);
                 if (select == 0) {
                     NpcService.gI().createTutorial(player, tempId, avartar, TUTORIAL_VODAI_VT6);
                 } else if (select == 1 || select == 2) {
                     handleStartArenaChallenge(player, select == 1);
                 } else if (hasChestProgress && select == 3) {
                     createOtherMenu(player, MENU_CLAIM_SUPER_CHEST,
-                            "|7|NHẬN THƯỞNG RƯƠNG SIÊU CẤP"
+                            "|7|NHẬN THƯỞNG RƯƠNG SIÊU CẤP (1 LẦN/NGÀY)"
                             + "\n|2|Phần thưởng hiện tại của bạn đang ở Cấp " + player.levelSuperChest + " / " + VoDaiVt6Boss.TOTAL_ROUNDS
-                            + "\n|0|- Sau khi nhận rương, tiến độ vòng sẽ đặt lại về 0 để bạn mở rương lấy thưởng."
+                            + "\n|0|- Mỗi ngày chỉ được nhận Rương Siêu Cấp 1 lần (hãy vượt cao nhất có thể trước khi chốt nhận)."
+                            + "\n|0|- Tiến trình đánh Boss trong ngày sẽ tự động reset sau 1 ngày (qua 0h00)."
                             + "\n|5|Bạn có chắc chắn muốn chốt nhận Rương Siêu Cấp Cấp " + player.levelSuperChest + " ngay bây giờ?",
                             "Nhận Rương", "Từ chối");
                 } else if ((hasChestProgress && select == 4) || (!hasChestProgress && select == 3)) {
@@ -206,8 +221,13 @@ public class TrongTai extends Npc {
     }
 
     private void handleStartArenaChallenge(Player player, boolean payWithGold) {
+        refreshDailyArenaFeesIfNeeded(player);
         if (player.levelSuperChest >= VoDaiVt6Boss.TOTAL_ROUNDS) {
-            Service.gI().sendThongBao(player, "Bạn đã vô địch cả 9/9 vòng! Hãy nhận thưởng Rương Siêu Cấp Cấp 9 trước nhé!");
+            if (canClaimSuperChestToday(player)) {
+                Service.gI().sendThongBao(player, "Bạn đã vô địch cả 9/9 vòng hôm nay! Hãy nhận thưởng Rương Siêu Cấp Cấp 9 trước nhé!");
+            } else {
+                Service.gI().sendThongBao(player, "Bạn đã hoàn thành toàn bộ 9/9 vòng đấu hôm nay! Tiến trình sẽ tự động reset vào ngày mai (qua 0h00).");
+            }
             return;
         }
         if (!InventoryService.gI().findItemSuperChest(player)) {
@@ -244,8 +264,13 @@ public class TrongTai extends Npc {
     }
 
     private void handleClaimSuperChest(Player player) {
+        refreshDailyArenaFeesIfNeeded(player);
         if (player.levelSuperChest <= 0) {
-            Service.gI().sendThongBao(player, "Bạn chưa vượt qua vòng đấu nào để nhận Rương Siêu Cấp!");
+            Service.gI().sendThongBao(player, "Bạn chưa vượt qua vòng đấu nào hôm nay để nhận Rương Siêu Cấp!");
+            return;
+        }
+        if (!Util.isAfterMidnight(player.lastTimeClaimSuperChest)) {
+            Service.gI().sendThongBao(player, "Hôm nay bạn đã nhận Rương Siêu Cấp rồi! Tiến trình và lượt nhận rương sẽ reset vào ngày mai (qua 0h00).");
             return;
         }
         if (!InventoryService.gI().findItemSuperChest(player)) {
@@ -263,10 +288,10 @@ public class TrongTai extends Npc {
         chest.createTime = System.currentTimeMillis();
         InventoryService.gI().addItemBag(player, chest);
         InventoryService.gI().sendItemBags(player);
-        player.levelSuperChest = 0;
+        player.lastTimeClaimSuperChest = System.currentTimeMillis();
         PlayerDAO.savePlayerAsync(player);
         NpcService.gI().createMenuConMeo(player, -1, -1,
-                "Bạn nhận được\n|1|Rương Siêu Cấp (Cấp " + lv + ")\n|2|Hãy mở ngay trong hành trang để thu hoạch kho báu Liên Vũ Trụ!",
+                "Bạn nhận được\n|1|Rương Siêu Cấp (Cấp " + lv + ")\n|2|Hãy mở ngay trong hành trang để thu hoạch kho báu Liên Vũ Trụ!\n|0|(Tiến trình đánh Boss sẽ reset sau 1 ngày / qua 0h00)",
                 "OK");
     }
 }

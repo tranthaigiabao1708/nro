@@ -26,20 +26,27 @@ public class XENCON3 extends Boss {
     @Override
     public void reward(Player plKill) {
         BadgesTaskService.updateCountBagesTask(plKill, ConstTaskBadges.TRUM_SAN_BOSS, 1);
-        int diem = 5;
         TaskService.gI().checkDoneTaskKillBoss(plKill, this);
+        if (plKill == null || this.zone == null) {
+            return;
+        }
+        Player owner = resolveRewardOwner(plKill);
+        long ownerId = (owner != null) ? owner.id : plKill.id;
+        tryDropGodItemStatic(this.zone, this.location.x, this.location.y, plKill, 5, true, false);
         Service.gI().dropItemMap(this.zone, new ItemMap(this.zone, 190, Util.nextInt(20000, 30001),
-          this.location.x, this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24), plKill.id));
+                this.location.x, this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24), ownerId));
         if (Util.isTrue(80, 100)) {
-            int[] items = Util.isTrue(50, 100) ? new int[]{18, 19, 20} : new int[]{18,19,20};
+            int[] items = new int[]{18, 19, 20};
             int randomItem = items[new Random().nextInt(items.length)];
             Service.gI().dropItemMap(this.zone, new ItemMap(this.zone, randomItem, 1,
-          this.location.x, this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24), plKill.id));
+                    this.location.x, this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24), ownerId));
         }
     }
 
     @Override
     public void joinMap() {
+        this.soulDroppedForCurrentLife = false;
+        this.manhGiay726DroppedForCurrentLife = false;
         st = System.currentTimeMillis();
         this.zone = this.parentBoss.zone;
         ChangeMapService.gI().changeMap(this, this.zone,

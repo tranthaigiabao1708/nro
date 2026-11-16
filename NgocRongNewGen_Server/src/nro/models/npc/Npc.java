@@ -169,8 +169,9 @@ public abstract class Npc implements IAtionNpc {
                 return false;
             }
         }
+        int maxNpcDist = (this.tempId == ConstNpc.GOKU_BI_PHONG_AN) ? 200 : 60;
         if (player.zone.map.mapId == this.mapId
-                && (Util.getDistance(this.cx, this.cy, player.location.x, player.location.y) <= 60 || !MapService.gI().isMapBlackBallWar(mapId))) {
+                && (Util.getDistance(this.cx, this.cy, player.location.x, player.location.y) <= maxNpcDist || !MapService.gI().isMapBlackBallWar(mapId))) {
             player.idMark.setNpcChose(this);
             return true;
         } else if (this.tempId == ConstNpc.LY_TIEU_NUONG) {

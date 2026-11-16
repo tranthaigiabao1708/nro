@@ -3,14 +3,15 @@ package nro.models.managers;
 import nro.models.matches.PVP;
 import nro.models.player.Player;
 import nro.models.utils.Functions;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class PVPManager implements Runnable {
 
     private static PVPManager i;
-    private ArrayList<PVP> pvps;
+    private final List<PVP> pvps;
     private boolean isRunning;
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -22,7 +23,7 @@ public class PVPManager implements Runnable {
     }
 
     public PVPManager() {
-        this.pvps = new ArrayList<>();
+        this.pvps = new CopyOnWriteArrayList<>();
         this.isRunning = true;
         executor.submit(this); 
     }

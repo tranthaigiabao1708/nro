@@ -27,15 +27,7 @@ public class GiftCodeService {
     public void giftCode(Player player, String code) {
         GiftCode giftcode = GiftCodeManager.gI().checkUseGiftCode(player, code);
         if (giftcode == null) {
-//            int itemId = 190;
-//            Item item = ItemService.gI().createNewItem(((short) itemId));
-//            ItemShop it = new Shop().getItemShop(itemId);
-//            if (it != null && !it.options.isEmpty()) {
-//                item.itemOptions.addAll(it.options);
-//            }
-//            InventoryService.gI().addItemBag(player, item);
-//            InventoryService.gI().sendItemBags(player);
-            Service.gI().sendThongBao(player, "Code không chính xác!");
+            return;
         } else if (giftcode.timeCode()) {
             Service.gI().sendThongBao(player, "Code đã hết hạn");
         } else {
@@ -72,6 +64,7 @@ public class GiftCodeService {
                                 itemGift.itemOptions.clear();
                                 itemGift.itemOptions.add(new Item.ItemOption(30, 0));
                             }
+                            ItemService.gI().ensureDefaultOptions(itemGift);
                             itemGift.quantity = quantity;
                             InventoryService.gI().addItemBag(player, itemGift);
                             textGift += "|1|x" + quantity + " " + itemGift.template.name + "\b";
@@ -80,6 +73,8 @@ public class GiftCodeService {
                 }
             }
             InventoryService.gI().sendItemBags(player);
+            Service.gI().sendMoney(player);
+            nro.models.database.PlayerDAO.savePlayerAsync(player);
             NpcService.gI().createTutorial(player, 1139, textGift);
         }
     }

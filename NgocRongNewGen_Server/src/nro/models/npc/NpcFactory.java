@@ -58,6 +58,9 @@ import nro.models.npc_list.DaiThienSu;
 import nro.models.npc_list.GokuSSJ2;
 import nro.models.npc_list.DuongTang;
 import nro.models.npc_list.NgoKhong;
+import nro.models.npc_list.DaiThanQuan;
+import nro.models.npc_list.ZenoSama;
+import nro.models.npc_list.GokuPhongAn;
 import nro.models.services.ClanService;
 import nro.models.services.Service;
 import nro.models.services.ItemService;
@@ -219,6 +222,12 @@ public class NpcFactory {
                     new NgoKhong(mapId, status, cx, cy, tempId, avatar);
                 case ConstNpc.CHI_CHI ->
                     new ChiChi(mapId, status, cx, cy, tempId, avatar);
+                case ConstNpc.GOKU_BI_PHONG_AN ->
+                    new GokuPhongAn(mapId, status, cx, cy, tempId, avatar);
+                case ConstNpc.DAI_THAN_QUAN ->
+                    new DaiThanQuan(mapId, status, cx, cy, tempId, avatar);
+                case ConstNpc.ZENO_SAMA ->
+                    new ZenoSama(mapId, status, cx, cy, tempId, avatar);
                 default ->
                     new Npc(mapId, status, cx, cy, tempId, avatar) {
                         @Override

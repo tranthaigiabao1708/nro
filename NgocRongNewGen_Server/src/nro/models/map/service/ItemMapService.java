@@ -20,10 +20,15 @@ public class ItemMapService {
 
     public void pickItem(Player player, int itemMapId, boolean isThuHut) {
         if (player != null && player.zone != null && player.idMark != null) {
+            if (nro.models.services_func.TransactionService.gI().check(player)) {
+                if (!isThuHut) {
+                    Service.gI().sendThongBao(player, "Không thể nhặt vật phẩm khi đang giao dịch");
+                }
+                return;
+            }
             if (isThuHut || player.isBot || Util.canDoWithTime(player.idMark.getLastTimePickItem(), 1000)) {
                 player.zone.pickItem(player, itemMapId);
                 player.idMark.setLastTimePickItem(System.currentTimeMillis());
-                nro.models.database.PlayerDAO.savePlayerAsync(player);
             }
         }
     }

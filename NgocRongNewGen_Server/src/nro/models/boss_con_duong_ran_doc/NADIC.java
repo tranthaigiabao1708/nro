@@ -47,11 +47,30 @@ public class NADIC extends Boss {
 
     @Override
     public void reward(Player plKill) {
-        if (Util.isTrue(100, 100)) {
-            ItemMap it = new ItemMap(this.zone, 19, 1, this.location.x, this.zone.map.yPhysicInTop(this.location.x,
-                    this.location.y - 24), plKill.id);
-            Service.gI().dropItemMap(this.zone, it);
+        if (plKill == null || this.zone == null) {
+            return;
         }
+        Player owner = resolveRewardOwner(plKill);
+        long ownerId = (owner != null) ? owner.id : plKill.id;
+        int xBase = this.location.x;
+        int yBase = this.location.y - 24;
+
+        ItemMap nr6s = new ItemMap(this.zone, 19, 1, xBase, this.zone.map.yPhysicInTop(xBase, yBase), ownerId);
+        Service.gI().dropItemMap(this.zone, nr6s);
+
+        int xHema = Math.max(24, Math.min(this.zone.map.mapWidth - 24, xBase - 18));
+        ItemMap hema = new ItemMap(this.zone, 1423, 1, xHema, this.zone.map.yPhysicInTop(xHema, yBase), ownerId);
+        hema.options.add(new nro.models.item.Item.ItemOption(167, 0));
+        hema.options.add(new nro.models.item.Item.ItemOption(168, 0));
+        Service.gI().dropItemMap(this.zone, hema);
+
+        int xNr1s = Math.max(24, Math.min(this.zone.map.mapWidth - 24, xBase + 18));
+        ItemMap nr1s = new ItemMap(this.zone, 14, 1, xNr1s, this.zone.map.yPhysicInTop(xNr1s, yBase), ownerId);
+        nr1s.options.add(new nro.models.item.Item.ItemOption(73, 0));
+        Service.gI().dropItemMap(this.zone, nr1s);
+
+        // Nappa (Nađíc) có tỉ lệ 15% rơi Đồ Thần Linh
+        tryDropGodItemStatic(this.zone, xBase, this.location.y, plKill, 15, true, false);
     }
 
     @Override
@@ -73,14 +92,19 @@ public class NADIC extends Boss {
 
     @Override
     public void die(Player plKill) {
-        for (Boss boss : clan.ConDuongRanDoc.bosses) {
-            if (boss.id == BossID.CADICH) {
-                boss.moveTo(boss.location.x + this.location.x > boss.location.x ? - 100 : 100, this.location.y);
-                break;
+        if (clan != null && clan.ConDuongRanDoc != null) {
+            for (Boss boss : clan.ConDuongRanDoc.bosses) {
+                if (boss.id == BossID.CADICH && this.zone != null && this.zone.map != null) {
+                    int targetX = Math.max(100, Math.min(this.zone.map.mapWidth - 100,
+                            boss.location.x + (this.location.x > boss.location.x ? -100 : 100)));
+                    boss.moveTo(targetX, this.location.y);
+                    break;
+                }
             }
         }
         if (plKill != null) {
             reward(plKill);
+            tryDropManhGiay726(this.zone, this.location.x, this.location.y, plKill);
         }
         this.changeStatus(BossStatus.DIE);
     }

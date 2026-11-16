@@ -77,6 +77,13 @@ namespace Game1
 				isShadown = false;
 				duaHauIndex = status;
 			}
+			if (templateId == 85)
+			{
+				isShadown = false;
+				cw = 188;
+				ch = 130;
+				cdir = 1;
+			}
 			if (template != null)
 			{
 				if (template.name == null)
@@ -161,6 +168,11 @@ namespace Game1
 				}
 			}
 			base.update();
+			if (template != null && template.npcTemplateId == 85)
+			{
+				cdir = 1;
+				cf = (GameCanvas.gameTick / 14) % 2;
+			}
 			if (TileMap.mapID != 51)
 			{
 				return;
@@ -220,7 +232,7 @@ namespace Game1
 				{
 					return;
 				}
-				if (template.npcTemplateId != 4 && template.npcTemplateId != 51 && template.npcTemplateId != 50)
+				if (template.npcTemplateId != 4 && template.npcTemplateId != 51 && template.npcTemplateId != 50 && template.npcTemplateId != 85)
 				{
 					g.drawImage(TileMap.bong, cx, cy, 3);
 				}
@@ -289,6 +301,21 @@ namespace Game1
 						}
 						mFont.tahoma_7b_white.drawString(g, TileMap.zoneID + string.Empty, cx, cy - ch + 19 - mFont.tahoma_7.getHeight(), mFont.CENTER);
 					}
+					else if (template.npcTemplateId == 85 && template.headId == -2)
+					{
+						FrameImage fraNpc = mSystem.getFraImage("npc_vt13_goku");
+						if (fraNpc != null && fraNpc.imgFrame != null)
+						{
+							int nF = ((fraNpc.nFrame > 0) ? fraNpc.nFrame : 1);
+							fraNpc.drawFrame(GameCanvas.gameTick / 6 % nF, cx, cy, 0, mGraphics.BOTTOM | mGraphics.HCENTER, g);
+							int hImg = fraNpc.frameHeight;
+							if (Char.myCharz().npcFocus != null && Char.myCharz().npcFocus.Equals(this) && ChatPopup.currChatPopup == null)
+							{
+								g.drawRegion(Mob.imgHP, 0, 0, 9, 6, 0, cx, cy - hImg - 8, mGraphics.BOTTOM | mGraphics.HCENTER);
+							}
+							dyEff = hImg + 18;
+						}
+					}
 					else
 					{
 						PaintAuraBehind(g);
@@ -299,10 +326,11 @@ namespace Game1
 						Part part = GameScr.parts[headId];
 						Part part2 = GameScr.parts[legId];
 						Part part3 = GameScr.parts[bodyId];
-						if (cdir == 1)
+						if (cdir == 1 || template.npcTemplateId == 85)
 						{
+							int legDrawId = ((template.npcTemplateId == 85 && GameCanvas.gameTick / 16 % 2 == 1) ? 27215 : part2.pi[Char.CharInfo[cf][1][0]].id);
 							SmallImage.drawSmallImage(g, part.pi[Char.CharInfo[cf][0][0]].id, cx + Char.CharInfo[cf][0][1] + part.pi[Char.CharInfo[cf][0][0]].dx, cy - Char.CharInfo[cf][0][2] + part.pi[Char.CharInfo[cf][0][0]].dy, 0, 0);
-							SmallImage.drawSmallImage(g, part2.pi[Char.CharInfo[cf][1][0]].id, cx + Char.CharInfo[cf][1][1] + part2.pi[Char.CharInfo[cf][1][0]].dx, cy - Char.CharInfo[cf][1][2] + part2.pi[Char.CharInfo[cf][1][0]].dy, 0, 0);
+							SmallImage.drawSmallImage(g, legDrawId, cx + Char.CharInfo[cf][1][1] + part2.pi[Char.CharInfo[cf][1][0]].dx, cy - Char.CharInfo[cf][1][2] + part2.pi[Char.CharInfo[cf][1][0]].dy, 0, 0);
 							SmallImage.drawSmallImage(g, part3.pi[Char.CharInfo[cf][2][0]].id, cx + Char.CharInfo[cf][2][1] + part3.pi[Char.CharInfo[cf][2][0]].dx, cy - Char.CharInfo[cf][2][2] + part3.pi[Char.CharInfo[cf][2][0]].dy, 0, 0);
 						}
 						else
@@ -330,7 +358,7 @@ namespace Game1
 								g.drawRegion(Mob.imgHP, 0, 0, 9, 6, 0, cx + num3, cy - ch - (num2 - 8) + num4, mGraphics.BOTTOM | mGraphics.HCENTER);
 							}
 						}
-						dyEff = 65;
+						dyEff = ((template.npcTemplateId == 85) ? 148 : 65);
 					}
 				}
 				if (indexEffTask < 0 || effTask == null || cTypePk != 0)
@@ -396,6 +424,14 @@ namespace Game1
 							mFont.tahoma_7_yellow.drawStringBorder(g, text, cx, cy - ch - 8 - mFont.tahoma_7.getHeight() - num + 16, mFont.CENTER, mFont.tahoma_7_grey);
 						}
 					}
+				}
+				else if (template.npcTemplateId == 85 && template.headId == -2)
+				{
+					FrameImage fraNpc = mSystem.getFraImage("npc_vt13_goku");
+					int hImg = ((fraNpc != null && fraNpc.imgFrame != null) ? fraNpc.frameHeight : ch);
+					int extraY = ((Char.myCharz().npcFocus != null && Char.myCharz().npcFocus.Equals(this)) ? 16 : 8);
+					mFont.tahoma_7_yellow.drawStringBorder(g, text, cx, cy - hImg - extraY - mFont.tahoma_7.getHeight(), mFont.CENTER, mFont.tahoma_7_grey);
+					dyEff = hImg + 18;
 				}
 				else if (template.npcTemplateId != 6)
 				{

@@ -39,25 +39,44 @@ public class SuperDivineWaterService {
 
     public void joinMapThanhThuy(Player player) {
         if (player.winSTT && !Util.isAfterMidnight(player.lastTimeWinSTT)) {
-            Service.gI().sendThongBao(player, "Hãy gặp thần mèo Karin để sử dụng");
+            Service.gI().sendThongBao(player, "Bạn đã hạ Đại Ma Vương Pôcôlô! Hãy lên Tháp Karin gặp Thần Mèo để nhận Siêu thần thủy.");
             return;
-        } else if (player.winSTT && Util.isAfterMidnight(player.lastTimeWinSTT)) {
+        }
+        if (!player.winSTT && player.lastTimeWinSTT > 0 && !Util.isAfterMidnight(player.lastTimeWinSTT)) {
+            Service.gI().sendThongBao(player, "Hôm nay bạn đã hoàn thành và nhận Siêu thần thủy rồi, hãy quay lại vào ngày mai!");
+            return;
+        }
+        if (player.lastTimeWinSTT > 0 && Util.isAfterMidnight(player.lastTimeWinSTT)) {
             player.winSTT = false;
             player.callBossPocolo = false;
             player.zoneSieuThanhThuy = null;
         }
+        boolean isReenterActiveSession = (player.zoneSieuThanhThuy != null);
         Zone zoneJoin = null;
-        for (Zone zone : this.zones) {
-            if (zone.getNumOfPlayers() + zone.getNumOfBosses() == 0) {
-                zoneJoin = zone;
-                break;
+        if (isReenterActiveSession) {
+            zoneJoin = player.zoneSieuThanhThuy;
+        } else {
+            for (Zone zone : this.zones) {
+                if (zone.getNumOfPlayers() + zone.getNumOfBosses() == 0) {
+                    zoneJoin = zone;
+                    break;
+                }
             }
         }
-        if (player.zoneSieuThanhThuy != null) {
-            zoneJoin = player.zoneSieuThanhThuy;
-        }
         if (zoneJoin != null) {
-            init(zoneJoin, player);
+            if (!isReenterActiveSession) {
+                nro.models.item.Item manhGiay = nro.models.services.InventoryService.gI().findItemBag(player, 726);
+                if (manhGiay == null || !manhGiay.isNotNullItem()) {
+                    Service.gI().sendThongBao(player, "Bạn không có Mảnh giấy có chữ MA [726]!");
+                    return;
+                }
+                nro.models.services.InventoryService.gI().subQuantityItemsBag(player, manhGiay, 1);
+                nro.models.services.InventoryService.gI().sendItemBags(player);
+                init(zoneJoin, player);
+                nro.models.database.PlayerDAO.savePlayerAsync(player);
+            } else if (!player.callBossPocolo) {
+                init(zoneJoin, player);
+            }
             EffectSkillService.gI().setPKSTT(player, 900000);
             ChangeMapService.gI().changeMap(player, zoneJoin, 70, 336);
         } else {

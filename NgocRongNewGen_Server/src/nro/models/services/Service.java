@@ -2093,24 +2093,8 @@ public class Service {
     }
 
     public void sendEffPlayer(Player pl) {
-        if (pl.isPl()) {
-            if (pl.setClothes.songoku >= 5
-                    || pl.setClothes.kaioken >= 5
-                    || pl.setClothes.kirin >= 5
-                    || pl.setClothes.thienXinHang >= 5) {
-                Service.gI().sendEffAllPlayer(pl, 1200, 1, -1, 1);
-            } else if (pl.setClothes.ocTieu >= 5
-                    || pl.setClothes.pikkoroDaimao >= 5
-                    || pl.setClothes.picolo >= 5) {
-                Service.gI().sendEffAllPlayer(pl, 10277, 1, -1, 1);
-            } else if (pl.setClothes.thanVuTruKaio >= 5) {
-                Service.gI().sendEffAllPlayer(pl, 10277, 1, -1, 1);
-                Service.gI().sendEffAllPlayer(pl, 5017, 1, -1, 1);
-            } else if (pl.setClothes.kakarot >= 5
-                    || pl.setClothes.nappa >= 5
-                    || pl.setClothes.cadic >= 5) {
-                Service.gI().sendEffAllPlayer(pl, 1202, 1, -1, 1);
-            }
+        if (pl != null && pl.isPl()) {
+            RadarService.gI().sendAura(pl, pl.getAura(), pl.getEffFront());
         }
     }
 

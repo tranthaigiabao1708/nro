@@ -222,7 +222,7 @@ public class UseItem {
                             item = player.inventory.itemsBag.get(index);
                         }
 
-                        if (item.isNotNullItem() && (item.template.id == 570 || item.template.id == 2030)) {
+                        if (item.isNotNullItem() && (item.template.id == 570 || item.template.id == 2030 || item.template.id == 2031)) {
                             Service.gI().sendThongBao(player, "Không thể bỏ vật phẩm này.");
                             return;
                         }
@@ -270,6 +270,34 @@ public class UseItem {
             }
             if (item.template.id == 2030) {
                 openRuongSieuCap(pl);
+                return;
+            }
+            if (item.template.id == 2031) {
+                if (!pl.unlockVuTru13) {
+                    Service.gI().sendThongBao(pl, "Bạn cần hoàn thành nhiệm vụ cuối và về Nhà khai mở Sức Mạnh Vũ Trụ 13 trước!");
+                    return;
+                }
+                if (pl.zone != null && pl.zone.map != null) {
+                    int curMap = pl.zone.map.mapId;
+                    if (curMap == nro.models.services.VuTru13Service.MAP_THANH_DIEN_ZENO_VT13) {
+                        ChangeMapService.gI().changeMapBySpaceShip(pl, pl.gender + 21, -1, 250);
+                        Service.gI().sendThongBao(pl, "Đã rời Thánh Điện Toàn Vương VT13 trở về Quê Nhà hành tinh thường!");
+                    } else if (nro.models.services.VuTru13Service.isCombatMapVuTru13(curMap)) {
+                        ChangeMapService.gI().changeMapBySpaceShip(pl, nro.models.services.VuTru13Service.MAP_THANH_DIEN_ZENO_VT13, -1, 300);
+                        Service.gI().sendThongBao(pl, "Ấn Khai Mở đưa bạn về Map Home [Thánh Điện Toàn Vương VT13] (gặp Zeno-Sama hoặc dùng Ấn thêm lần nữa để về hành tinh thường)!");
+                    } else {
+                        ChangeMapService.gI().changeMapBySpaceShip(pl, nro.models.services.VuTru13Service.MAP_THANH_DIEN_ZENO_VT13, -1, 300);
+                        Service.gI().sendThongBao(pl, "Cổng không gian mở ra — tiến vào Thánh Điện Toàn Vương VT13 (Map Home Vũ Trụ 13)!");
+                    }
+                }
+                return;
+            }
+            if (item.template.id == 726) {
+                ItemManhGiay(pl, item);
+                return;
+            }
+            if (item.template.id == 727 || item.template.id == 728) {
+                ItemSieuThanThuy(pl, item);
                 return;
             }
             if (item.template.strRequire <= pl.nPoint.power) {
@@ -721,7 +749,7 @@ public class UseItem {
                                 break;
                             case 2004:
                                 InventoryService.gI().itemBagToBody(pl, indexBag);
-                                PetService.Pet2(pl, 2102, 2103, 2104);
+                                PetService.Pet2(pl, 1662, 1663, 1664);
                                 Service.gI().point(pl);
                                 break;
                             case 1655: // Capsule Kích Hoạt Thường
@@ -782,7 +810,7 @@ public class UseItem {
                                 break;
                             case 1594:
                             case 1591:
-                                UseItem.gI().OpenHopQuaGokuDayVangNgoc(pl, item.template.id);
+                                UseItem.gI().OpenHopQuaGokuDayVangNgoc(pl, item);
                                 break;
                             case 1840:
                                 UseItem.gI().OpenHopQuaGokuDayVip(pl, item.template.id);
@@ -2385,36 +2413,43 @@ public class UseItem {
         }
     }
 
-    public void OpenHopQuaGokuDayVangNgoc(Player player, int itemUseiD) {
-        if (InventoryService.gI().getCountEmptyBag(player) > 1) {
-            Item itemused = InventoryService.gI().findItemBag(player, itemUseiD);
-
-            int[] itemIds = {1588, 1589, 1595, 1587, 1593, 1590};
-            int randomIndex = (int) (Math.random() * itemIds.length);
-            short randomItemId = (short) itemIds[randomIndex];
-
-            Item newItem = ItemService.gI().createNewItem(randomItemId);
-            RewardService.gI().initChiSoItem(newItem);
-
-            newItem.itemOptions.add(new ItemOption(50, 20));   // HP
-            newItem.itemOptions.add(new ItemOption(77, 20));   // KI
-            newItem.itemOptions.add(new ItemOption(103, 20)); // Sức đánh
-            newItem.itemOptions.add(new ItemOption(210, 2));  // May mắn
-
-            int randomOption = (int) (Math.random() * 100);
-            if (randomOption < 0.5) {
-                newItem.itemOptions.add(new ItemOption(93, 0));
-            } else {
-                newItem.itemOptions.add(new ItemOption(93, 3));
-            }
-
-            InventoryService.gI().addItemBag(player, newItem);
-            InventoryService.gI().subQuantityItemsBag(player, itemused, 1);
-            InventoryService.gI().sendItemBags(player);
-            Service.gI().sendThongBao(player, "Bạn đã nhận được item ngẫu nhiên");
-        } else {
-            Service.gI().sendThongBao(player, "Yêu cầu có 5 ô trống trong hành trang.");
+    public void OpenHopQuaGokuDayVangNgoc(Player player, Item itemused) {
+        if (itemused == null || !itemused.isNotNullItem()) {
+            return;
         }
+        if (InventoryService.gI().getCountEmptyBag(player) <= 0 && itemused.quantity > 1) {
+            Service.gI().sendThongBao(player, "Cần ít nhất 1 ô trống trong hành trang!");
+            return;
+        }
+        int roll = Util.nextInt(4);
+        Item rewardItem;
+        String rewardLabel;
+        switch (roll) {
+            case 0 -> {
+                rewardItem = ItemService.gI().createNewItem((short) 457, 20);
+                rewardItem.itemOptions.add(new ItemOption(30, 0));
+                rewardLabel = "20 Thỏi vàng khóa";
+            }
+            case 1 -> {
+                rewardItem = ItemService.gI().createNewItem((short) 1423, 10);
+                ItemService.gI().ensureDefaultOptions(rewardItem);
+                rewardLabel = "10 Đá Hematite";
+            }
+            case 2 -> {
+                rewardItem = ItemService.gI().createNewItem((short) 15, 1);
+                ItemService.gI().ensureDefaultOptions(rewardItem);
+                rewardLabel = "Ngọc Rồng 2 sao";
+            }
+            default -> {
+                rewardItem = ItemService.gI().createNewItem((short) 987, 1);
+                ItemService.gI().ensureDefaultOptions(rewardItem);
+                rewardLabel = "Đá bảo vệ";
+            }
+        }
+        InventoryService.gI().subQuantityItemsBag(player, itemused, 1);
+        InventoryService.gI().addItemBag(player, rewardItem);
+        InventoryService.gI().sendItemBags(player);
+        Service.gI().sendThongBao(player, "Bạn đã mở " + itemused.template.name + " nhận được " + rewardLabel + "!");
     }
 
     public void OpenHopQuaGokuDayVip(Player player, int itemUseId) {
@@ -2491,14 +2526,22 @@ public class UseItem {
 
     private void ItemManhGiay(Player pl, Item item) {
         if (pl.winSTT && !Util.isAfterMidnight(pl.lastTimeWinSTT)) {
-            Service.gI().sendThongBao(pl, "Hãy gặp thần mèo Karin để sử dụng");
+            Service.gI().sendThongBao(pl, "Bạn đã hạ Đại Ma Vương Pôcôlô! Hãy lên Tháp Karin gặp Thần Mèo để nhận Siêu thần thủy.");
             return;
-        } else if (pl.winSTT && Util.isAfterMidnight(pl.lastTimeWinSTT)) {
+        }
+        if (!pl.winSTT && pl.lastTimeWinSTT > 0 && !Util.isAfterMidnight(pl.lastTimeWinSTT)) {
+            Service.gI().sendThongBao(pl, "Hôm nay bạn đã hoàn thành và nhận Siêu thần thủy rồi, hãy quay lại vào ngày mai!");
+            return;
+        }
+        if (pl.lastTimeWinSTT > 0 && Util.isAfterMidnight(pl.lastTimeWinSTT)) {
             pl.winSTT = false;
             pl.callBossPocolo = false;
             pl.zoneSieuThanhThuy = null;
         }
-        NpcService.gI().createMenuConMeo(pl, item.template.id, 564, "Đây chính là dấu hiệu riêng của...\nĐại Ma Vương Pôcôlô\nĐó là một tên quỷ dữ đội lốt người, một kẻ đại gian ác\ncó sức mạnh vô địch và lòng tham không đáy...\nĐối phó với hắn không phải dễ\nCon có chắc chắn muốn tìm hắn không?", "Đồng ý", "Từ chối");
+        String note = (pl.zoneSieuThanhThuy != null)
+                ? "Phụ bản Đại Ma Vương Pôcôlô của con vẫn đang mở.\nCon có muốn quay lại chiến đấu tiếp không?"
+                : "Đây chính là dấu hiệu riêng của Đại Ma Vương Pôcôlô!\nSử dụng 1 Mảnh giấy có chữ MA để vào khiêu chiến (1 lần/ngày).\nChiến thắng gặp Thần Mèo Karin nhận Siêu thần thủy (buff 2 tỷ TNSM cho đệ hoặc sư phụ).";
+        NpcService.gI().createMenuConMeo(pl, item.template.id, 564, note, "Đồng ý", "Từ chối");
     }
 
     private void XuongCho(Player pl, Item item) {
@@ -2998,27 +3041,55 @@ public class UseItem {
         }
     }
 
+    private static final long SIEU_THAN_THUY_BONUS = 2_000_000_000L;
+
     private void ItemSieuThanThuy(Player pl, Item item) {
-        long tnsm = 5_000_000;
-        int n = 0;
-        switch (item.template.id) {
-            case 727:
-                n = 2;
-                break;
-            case 728:
-                n = 10;
-                break;
+        if (pl == null || pl.nPoint == null || item == null || !item.isNotNullItem()) {
+            return;
+        }
+        long maxPower = pl.nPoint.getPowerLimit();
+        if (pl.nPoint.power >= maxPower) {
+            Service.gI().sendThongBao(pl, "Sức mạnh của bạn đã đạt giới hạn, hãy mở giới hạn trước khi dùng Siêu thần thủy!");
+            return;
         }
         InventoryService.gI().subQuantityItemsBag(pl, item, 1);
         InventoryService.gI().sendItemBags(pl);
-        if (Util.isTrue(90, 100)) {
-            Service.gI().sendThongBao(pl, "Bạn đã bị chết vì độc của thuốc tăng lực siêu thần thủy.");
-            pl.setDie();
-        } else {
-            for (int i = 0; i < n; i++) {
-                Service.gI().addSMTN(pl, (byte) 2, tnsm, true);
-            }
+        long powerGain = Math.min(SIEU_THAN_THUY_BONUS, maxPower - pl.nPoint.power);
+        pl.nPoint.powerUp(powerGain);
+        pl.nPoint.tiemNangUp(SIEU_THAN_THUY_BONUS);
+        PlayerService.gI().sendTNSM(pl, (byte) 2, powerGain);
+        Service.gI().point(pl);
+        if (pl.clan != null) {
+            pl.clan.addSMTNClan(pl, powerGain);
         }
+        Service.gI().sendThongBao(pl, "Sử dụng Siêu thần thủy thành công: +2 tỷ Sức mạnh và +2 tỷ Tiềm năng!");
+        nro.models.database.PlayerDAO.savePlayerAsync(pl);
+    }
+
+    public void useSieuThanThuyForPet(Player pl, Item item) {
+        if (pl == null || item == null || !item.isNotNullItem()) {
+            return;
+        }
+        if (pl.pet == null || pl.pet.nPoint == null) {
+            Service.gI().sendThongBao(pl, "Bạn chưa có đệ tử!");
+            return;
+        }
+        long petMaxPower = pl.pet.nPoint.getPowerLimit();
+        if (pl.pet.nPoint.power >= petMaxPower) {
+            Service.gI().sendThongBao(pl, "Sức mạnh đệ tử đã đạt giới hạn, hãy mở giới hạn cho đệ tử trước khi dùng Siêu thần thủy!");
+            return;
+        }
+        InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+        InventoryService.gI().sendItemBags(pl);
+        long petPowerGain = Math.min(SIEU_THAN_THUY_BONUS, petMaxPower - pl.pet.nPoint.power);
+        pl.pet.nPoint.powerUp(petPowerGain);
+        pl.pet.nPoint.tiemNangUp(SIEU_THAN_THUY_BONUS);
+        pl.pet.unlockSkillsByPower();
+        pl.pet.nPoint.calPoint();
+        Service.gI().point(pl);
+        Service.gI().showInfoPet(pl);
+        Service.gI().sendThongBao(pl, "Đệ tử đã dùng Siêu thần thủy: +2 tỷ Sức mạnh và +2 tỷ Tiềm năng!");
+        nro.models.database.PlayerDAO.savePlayerAsync(pl);
     }
 
     public void UseCard(Player pl, Item item) {

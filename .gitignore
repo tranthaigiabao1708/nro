@@ -21,3 +21,6 @@ NgocRongNewGen_Server/build/
 
 # Nhật ký thao tác Web Admin Panel (chỉ lưu trên máy chủ)
 NgocRongNewGen_Server/log/admin_panel.log
+
+# Thư mục dự án tạm dừng đã tách biệt hoàn toàn dữ liệu khỏi NewGen
+/pending/

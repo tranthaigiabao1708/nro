@@ -283,10 +283,14 @@ namespace Game2
 				tahoma_7_whiteSmall = tahoma_7_white;
 				tahoma_7b_greenSmall = tahoma_7b_green;
 				tahoma_7_blue1Small = tahoma_7_blue1;
+				tahoma_7b_pink = tahoma_7b_red;
 				return;
 			}
 			gI = new mFont(0);
 			tahoma_7b_red = new mFont(1);
+			tahoma_7b_pink = new mFont(1);
+			tahoma_7b_pink.color1 = new Color(1f, 0.45f, 0.92f);
+			tahoma_7b_pink.color2 = tahoma_7b_pink.color1;
 			tahoma_7b_blue = new mFont(2);
 			tahoma_7b_white = new mFont(3);
 			tahoma_7b_yellow = new mFont(4);

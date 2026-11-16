@@ -24,6 +24,7 @@ public class SuperRank {
     public long lastPKTime;
     public long lastRewardTime;
     public int ticket = 3;
+    public transient String lastSavedSnapshot = "";
 
     public SuperRank(Player player) {
         this.player = player;

@@ -105,6 +105,90 @@ namespace Game1
 			return id >= 650 && id <= 662;
 		}
 
+		public static bool IsDoThienSu(Item item)
+		{
+			if (item == null || item.template == null)
+			{
+				return false;
+			}
+			int id = item.template.id;
+			return id >= 1048 && id <= 1062;
+		}
+
+		public static int GetFullSetTierFromBody(Item[] arrItemBody)
+		{
+			if (arrItemBody == null || arrItemBody.Length < 5)
+			{
+				return -1;
+			}
+			bool fullTS = true;
+			bool fullHD = true;
+			bool fullTL = true;
+			for (int i = 0; i < 5; i++)
+			{
+				Item it = arrItemBody[i];
+				if (it == null || it.template == null)
+				{
+					return -1;
+				}
+				if (!IsDoThienSu(it))
+				{
+					fullTS = false;
+				}
+				if (!IsDoHuyDiet(it))
+				{
+					fullHD = false;
+				}
+				if (!IsDoThanLinh(it))
+				{
+					fullTL = false;
+				}
+			}
+			if (fullTS)
+			{
+				return 12;
+			}
+			if (fullHD)
+			{
+				return 11;
+			}
+			if (fullTL)
+			{
+				return 10;
+			}
+			return -1;
+		}
+
+		public static string GetFullSetTagName(int effSetId, int gender)
+		{
+			string planet;
+			switch (gender)
+			{
+			case 0:
+				planet = "Trái Đất";
+				break;
+			case 1:
+				planet = "Namếc";
+				break;
+			case 2:
+				planet = "Xayda";
+				break;
+			default:
+				return null;
+			}
+			switch (effSetId)
+			{
+			case 10:
+				return "Thần " + planet;
+			case 11:
+				return "Thần Hủy Diệt " + planet;
+			case 12:
+				return "Thiên Sứ " + planet;
+			default:
+				return null;
+			}
+		}
+
 		public static void GetSetColors(int skhId, out int coreColor, out int mainColor, out int trailColor, out int pastelBg)
 		{
 			pastelBg = -1;
@@ -256,6 +340,42 @@ namespace Game1
 			{
 				return;
 			}
+			bool isTS = IsDoThienSu(item);
+			bool isHD = IsDoHuyDiet(item);
+			bool isTL = IsDoThanLinh(item);
+			if (isTS)
+			{
+				// Đồ Thiên Sứ: Nền Lam Ngọc Bạch Kim - Ánh Vàng Thánh Quang
+				g.setColor(0x00E5FF, 0.22f);
+				g.fillRect(x + 1, y + 1, w - 2, h - 2);
+				g.setColor(0xFFF59D, 0.14f);
+				g.fillRect(x + 3, y + 3, w - 6, h - 6);
+				g.setColor(0x80FFFF, 0.72f);
+				g.drawRect(x + 1, y + 1, w - 3, h - 3);
+				return;
+			}
+			if (isHD)
+			{
+				// Đồ Hủy Diệt: Nền Neon Tím Hồng Hakai
+				g.setColor(0xE040FB, 0.22f);
+				g.fillRect(x + 1, y + 1, w - 2, h - 2);
+				g.setColor(0x7C4DFF, 0.14f);
+				g.fillRect(x + 3, y + 3, w - 6, h - 6);
+				g.setColor(0xFF4081, 0.68f);
+				g.drawRect(x + 1, y + 1, w - 3, h - 3);
+				return;
+			}
+			if (isTL)
+			{
+				// Đồ Thần Linh: Nền Hoàng Kim Thần Khí
+				g.setColor(0xFFD54F, 0.20f);
+				g.fillRect(x + 1, y + 1, w - 2, h - 2);
+				g.setColor(0x00E5FF, 0.10f);
+				g.fillRect(x + 3, y + 3, w - 6, h - 6);
+				g.setColor(0xFFCA28, 0.64f);
+				g.drawRect(x + 1, y + 1, w - 3, h - 3);
+				return;
+			}
 			if (HasStarAura(item))
 			{
 				return;
@@ -266,30 +386,7 @@ namespace Game1
 				return;
 			}
 			GetSetColors(skhId, out int _, out int mainColor, out int _, out int pastelBg);
-			bool isTL = IsDoThanLinh(item);
-			bool isHD = IsDoHuyDiet(item);
-
-			if (isHD)
-			{
-				// Đồ Hủy Diệt SKH: Nền Neon Tím Hồng trong suốt nhẹ (tôn icon trang bị nổi bật)
-				g.setColor(0xE040FB, 0.20f);
-				g.fillRect(x + 1, y + 1, w - 2, h - 2);
-				g.setColor(0x7C4DFF, 0.12f);
-				g.fillRect(x + 3, y + 3, w - 6, h - 6);
-				g.setColor(0xFF4081, 0.65f);
-				g.drawRect(x + 1, y + 1, w - 3, h - 3);
-			}
-			else if (isTL)
-			{
-				// Đồ Thần Linh SKH: Nền Neon Xanh Ngọc - Ánh Kim trong suốt nhẹ
-				g.setColor(0x00F5FF, 0.18f);
-				g.fillRect(x + 1, y + 1, w - 2, h - 2);
-				g.setColor(0xFFE57F, 0.10f);
-				g.fillRect(x + 3, y + 3, w - 6, h - 6);
-				g.setColor(0x00E5FF, 0.60f);
-				g.drawRect(x + 1, y + 1, w - 3, h - 3);
-			}
-			else if (IsNewSkhSet(skhId) && pastelBg != -1)
+			if (IsNewSkhSet(skhId) && pastelBg != -1)
 			{
 				// Set Kích Hoạt Mới: Nền màu nhạt thanh lịch
 				g.setColor(pastelBg, 0.34f);
@@ -305,12 +402,326 @@ namespace Game1
 			{
 				return;
 			}
+			bool isTS = IsDoThienSu(item);
+			bool isHD = IsDoHuyDiet(item);
+			bool isTL = IsDoThanLinh(item);
 			int skhId = GetItemSkhId(item);
-			if (skhId == -1)
+			if (skhId != -1)
+			{
+				PaintElectricBorderBySkhId(g, skhId, isTL, isHD || isTS, x, y, w, h);
+				return;
+			}
+			if (isTS || isHD || isTL)
+			{
+				int core = isTS ? 0xFFFFFF : (isHD ? 0xFFE8FF : 0xFFFFE0);
+				int main = isTS ? 0x80FFFF : (isHD ? 0xE040FB : 0xFFD54F);
+				int trail = isTS ? 0xFFD740 : (isHD ? 0x7C4DFF : 0xFFA000);
+				PaintTierShimmerBorder(g, core, main, trail, isTS ? 3 : 2, x, y, w, h);
+			}
+		}
+
+		private static void PaintTierShimmerBorder(mGraphics g, int coreColor, int mainColor, int trailColor, int cometCount, int x, int y, int w, int h)
+		{
+			g.setColor(trailColor, 0.45f);
+			g.drawRect(x, y, w - 1, h - 1);
+			int perim = (w + h) * 2;
+			if (perim <= 8)
 			{
 				return;
 			}
-			PaintElectricBorderBySkhId(g, skhId, IsDoThanLinh(item), IsDoHuyDiet(item), x, y, w, h);
+			int baseTick = GameCanvas.gameTick * 2;
+			int spacing = perim / cometCount;
+			for (int c = 0; c < cometCount; c++)
+			{
+				int headPos = (baseTick + c * spacing) % perim;
+				for (int seg = 3; seg >= 0; seg--)
+				{
+					int pos = (headPos - seg * 2 + perim * 4) % perim;
+					GetPerimeterPoint(pos, x, y, w, h, out int px, out int py);
+					if (seg == 0)
+					{
+						g.setColor(coreColor, 0.90f);
+						g.fillRect(px, py, 2, 2);
+					}
+					else
+					{
+						g.setColor((seg == 1) ? mainColor : trailColor, (seg == 1) ? 0.75f : 0.45f);
+						g.fillRect(px, py, 1, 1);
+					}
+				}
+			}
+		}
+
+		private static void GetTierPalette(int effSetId, out int primary, out int secondary, out int core, out int badgeBorder)
+		{
+			switch (effSetId)
+			{
+			case 12: // Thiên Sứ
+				primary = 0x00E5FF;
+				secondary = 0xFFD740;
+				core = 0xE8FFFF;
+				badgeBorder = 0x80FFFF;
+				break;
+			case 11: // Hủy Diệt
+				primary = 0xD500F9;
+				secondary = 0xFF1744;
+				core = 0xFF80AB;
+				badgeBorder = 0xEA80FC;
+				break;
+			default: // 10: Thần Linh
+				primary = 0xFFD700;
+				secondary = 0x00E5FF;
+				core = 0xFFF9C4;
+				badgeBorder = 0xFFE57F;
+				break;
+			}
+		}
+
+		public static void PaintMapFullSetBehind(mGraphics g, int cx, int cy, int effSetId)
+		{
+			if (effSetId < 10 || effSetId > 12)
+			{
+				return;
+			}
+			GetTierPalette(effSetId, out int primary, out int secondary, out int core, out int _);
+			int tick = GameCanvas.gameTick;
+			float pulse = 0.85f + 0.15f * (float)System.Math.Sin(tick * 0.14);
+
+			// Cột sáng / vầng nền thần khí phía sau lưng nhân vật
+			if (!GameCanvas.lowGraphic)
+			{
+				if (effSetId == 12)
+				{
+					// Thiên Sứ: Trụ thánh quang thẳng đứng nhẹ nhàng
+					g.setColor(primary, 0.10f * pulse);
+					g.fillRect(cx - 16, cy - 58, 32, 60);
+					g.setColor(core, 0.14f * pulse);
+					g.fillRect(cx - 9, cy - 64, 18, 66);
+				}
+				else if (effSetId == 11)
+				{
+					// Hủy Diệt: Vầng năng lượng Hakai tím sẫm
+					g.setColor(0x4A148C, 0.18f * pulse);
+					g.fillRect(cx - 18, cy - 46, 36, 48);
+					g.setColor(primary, 0.12f * pulse);
+					g.fillRect(cx - 11, cy - 50, 22, 52);
+				}
+				else
+				{
+					// Thần Linh: Hào quang hoàng kim ấm
+					g.setColor(primary, 0.12f * pulse);
+					g.fillRect(cx - 15, cy - 44, 30, 46);
+				}
+			}
+
+			// Pháp trận năng lượng elip dưới chân (vẽ bằng dải ngang mượt)
+			int rxOuter = (effSetId == 12) ? 28 : ((effSetId == 11) ? 26 : 24);
+			int ryOuter = 6;
+			for (int dy = -ryOuter; dy <= ryOuter; dy++)
+			{
+				double norm = (double)dy / ryOuter;
+				int halfW = (int)(rxOuter * System.Math.Sqrt(System.Math.Max(0.0, 1.0 - norm * norm)));
+				if (halfW > 0)
+				{
+					g.setColor(primary, 0.16f * pulse);
+					g.fillRect(cx - halfW, cy + dy - 1, halfW * 2, 1);
+				}
+			}
+			int rxInner = rxOuter - 7;
+			int ryInner = 4;
+			for (int dy = -ryInner; dy <= ryInner; dy++)
+			{
+				double norm = (double)dy / ryInner;
+				int halfW = (int)(rxInner * System.Math.Sqrt(System.Math.Max(0.0, 1.0 - norm * norm)));
+				if (halfW > 0)
+				{
+					g.setColor(secondary, 0.22f * pulse);
+					g.fillRect(cx - halfW, cy + dy - 1, halfW * 2, 1);
+				}
+			}
+			g.setColor(core, 0.55f * pulse);
+			g.fillRect(cx - rxOuter + 3, cy - 1, (rxOuter - 3) * 2, 2);
+
+			// Các hạt tinh cầu quay nửa vòng sau lưng (sin < 0)
+			if (!GameCanvas.lowGraphic)
+			{
+				int orbCount = (effSetId == 12) ? 6 : ((effSetId == 11) ? 5 : 4);
+				double baseAngle = tick * ((effSetId == 12) ? 0.11 : 0.09);
+				for (int i = 0; i < orbCount; i++)
+				{
+					double ang = baseAngle + i * (System.Math.PI * 2.0 / orbCount);
+					double s = System.Math.Sin(ang);
+					if (s < 0.0)
+					{
+						int ox = cx + (int)(System.Math.Cos(ang) * (rxOuter - 2));
+						int oy = cy - 2 + (int)(s * 5.0);
+						g.setColor((i % 2 == 0) ? primary : secondary, 0.75f);
+						g.fillRect(ox - 1, oy - 1, 3, 3);
+						g.setColor(core, 0.95f);
+						g.fillRect(ox, oy, 1, 1);
+					}
+				}
+			}
+		}
+
+		public static void PaintMapFullSetFront(mGraphics g, int cx, int cy, int effSetId)
+		{
+			if (effSetId < 10 || effSetId > 12 || GameCanvas.lowGraphic)
+			{
+				return;
+			}
+			GetTierPalette(effSetId, out int primary, out int secondary, out int core, out int _);
+			int tick = GameCanvas.gameTick;
+			int rxOuter = (effSetId == 12) ? 28 : ((effSetId == 11) ? 26 : 24);
+			int orbCount = (effSetId == 12) ? 6 : ((effSetId == 11) ? 5 : 4);
+			double baseAngle = tick * ((effSetId == 12) ? 0.11 : 0.09);
+
+			// Các hạt tinh cầu quay nửa vòng phía trước nhân vật (sin >= 0)
+			for (int i = 0; i < orbCount; i++)
+			{
+				double ang = baseAngle + i * (System.Math.PI * 2.0 / orbCount);
+				double s = System.Math.Sin(ang);
+				if (s >= 0.0)
+				{
+					int ox = cx + (int)(System.Math.Cos(ang) * (rxOuter - 2));
+					int oy = cy - 1 + (int)(s * 5.0);
+					g.setColor((i % 2 == 0) ? primary : secondary, 0.85f);
+					g.fillRect(ox - 1, oy - 1, 3, 3);
+					g.setColor(core);
+					g.fillRect(ox, oy, 2, 2);
+				}
+			}
+
+			// Hạt quang năng bay lên nhẹ quanh thân
+			int moteCount = (effSetId == 12) ? 4 : 3;
+			for (int m = 0; m < moteCount; m++)
+			{
+				int life = (tick * 2 + m * 17) % 44;
+				float progress = life / 44f;
+				int mx = cx + (int)(System.Math.Sin(tick * 0.08 + m * 2.1) * 15.0);
+				int my = cy - 4 - (int)(progress * 42f);
+				float alpha = (progress < 0.7f) ? 0.80f : ((1f - progress) * 2.6f);
+				g.setColor((m % 2 == 0) ? core : primary, alpha);
+				g.fillRect(mx, my, 2, 2);
+			}
+		}
+
+		public static void PaintOverheadFullSetTag(mGraphics g, int cx, int yBottom, int effSetId, int gender)
+		{
+			string tag = GetFullSetTagName(effSetId, gender);
+			if (string.IsNullOrEmpty(tag))
+			{
+				return;
+			}
+			GetTierPalette(effSetId, out int primary, out int secondary, out int core, out int badgeBorder);
+			mFont font = (effSetId == 12) ? mFont.tahoma_7b_white : ((effSetId == 11) ? (mFont.tahoma_7b_pink ?? mFont.tahoma_7b_red) : mFont.tahoma_7b_yellow);
+			if (font == null)
+			{
+				font = mFont.tahoma_7b_white;
+			}
+			int textW = font.getWidth(tag);
+			int padX = 6;
+			int boxW = textW + padX * 2;
+			int boxH = 12;
+			int bx = cx - boxW / 2;
+			int by = yBottom - boxH;
+
+			// Nền pill tối trong suốt + viền sáng theo bậc Set
+			g.setColor(0x0B0E17, 0.78f);
+			g.fillRect(bx, by, boxW, boxH);
+			g.setColor(primary, 0.22f);
+			g.fillRect(bx + 1, by + 1, boxW - 2, 4);
+			g.setColor(badgeBorder, 0.88f);
+			g.drawRect(bx, by, boxW - 1, boxH - 1);
+
+			// Điểm nhấn 2 đầu hiệu hiệu ứng thần khí
+			g.setColor(core, 0.95f);
+			g.fillRect(bx - 1, by + boxH / 2 - 1, 2, 2);
+			g.fillRect(bx + boxW - 1, by + boxH / 2 - 1, 2, 2);
+
+			// Vệt sáng chạy ngang nhẹ trên viền trên của tag
+			if (!GameCanvas.lowGraphic && boxW > 12)
+			{
+				int sweep = (GameCanvas.gameTick * 2) % (boxW - 6);
+				g.setColor(secondary, 0.85f);
+				g.fillRect(bx + 3 + sweep, by, 4, 1);
+			}
+
+			font.drawStringBorder(g, tag, cx, by + 1, mFont.CENTER, mFont.tahoma_7_greySmall);
+		}
+
+		public static void PaintInventoryFullSetSanctum(mGraphics g, int boxX, int boxY, int boxW, int boxH, int charX, int charY, int gender, int effSetId)
+		{
+			if (effSetId < 10 || effSetId > 12)
+			{
+				return;
+			}
+			GetTierPalette(effSetId, out int primary, out int secondary, out int core, out int badgeBorder);
+			int tick = GameCanvas.gameTick;
+			float pulse = 0.85f + 0.15f * (float)System.Math.Sin(tick * 0.12);
+
+			// Khung điện thờ nền tối sang trọng phía sau nhân vật trong Hành Trang
+			int bgDark = (effSetId == 12) ? 0x091E2C : ((effSetId == 11) ? 0x1A0926 : 0x241A06);
+			g.setColor(bgDark, 0.78f);
+			g.fillRect(boxX, boxY, boxW, boxH);
+			g.setColor(primary, 0.14f * pulse);
+			g.fillRect(boxX + 4, boxY + 4, boxW - 8, boxH - 8);
+			g.setColor(secondary, 0.10f * pulse);
+			g.fillRect(charX - 18, boxY + 6, 36, boxH - 10);
+
+			// Viền khung + góc trang trí
+			g.setColor(badgeBorder, 0.70f);
+			g.drawRect(boxX, boxY, boxW - 1, boxH - 1);
+			g.setColor(core, 0.90f);
+			g.fillRect(boxX, boxY, 4, 1);
+			g.fillRect(boxX, boxY, 1, 4);
+			g.fillRect(boxX + boxW - 4, boxY, 4, 1);
+			g.fillRect(boxX + boxW - 1, boxY, 1, 4);
+
+			// Vòng pháp trận dưới chân nhân vật trong Hành Trang
+			g.setColor(primary, 0.35f * pulse);
+			g.fillRect(charX - 24, charY - 3, 48, 5);
+			g.setColor(secondary, 0.45f * pulse);
+			g.fillRect(charX - 16, charY - 2, 32, 3);
+			g.setColor(core, 0.75f * pulse);
+			g.fillRect(charX - 10, charY - 1, 20, 2);
+
+			// Hạt sao lấp lánh trong khung nền
+			for (int i = 0; i < 4; i++)
+			{
+				int life = (tick + i * 15) % 40;
+				int sx = boxX + 10 + ((i * 23 + 7) % (boxW - 20));
+				int sy = boxY + boxH - 8 - (life * (boxH - 18) / 40);
+				g.setColor((i % 2 == 0) ? core : primary, 0.75f);
+				g.fillRect(sx, sy, 2, 2);
+			}
+		}
+
+		public static void PaintInventoryFullSetBanner(mGraphics g, int cx, int topY, int gender, int effSetId)
+		{
+			string tag = GetFullSetTagName(effSetId, gender);
+			if (string.IsNullOrEmpty(tag))
+			{
+				return;
+			}
+			GetTierPalette(effSetId, out int primary, out int _, out int core, out int badgeBorder);
+			mFont font = (effSetId == 12) ? mFont.tahoma_7b_white : ((effSetId == 11) ? (mFont.tahoma_7b_pink ?? mFont.tahoma_7b_red) : mFont.tahoma_7b_yellow);
+			if (font == null)
+			{
+				font = mFont.tahoma_7b_white;
+			}
+			int w = System.Math.Min(98, font.getWidth(tag) + 8);
+			int bx = cx - w / 2;
+			g.setColor(0x0B0E17, 0.85f);
+			g.fillRect(bx, topY, w, 11);
+			g.setColor(primary, 0.22f);
+			g.fillRect(bx + 1, topY + 1, w - 2, 3);
+			g.setColor(badgeBorder, 0.85f);
+			g.drawRect(bx, topY, w - 1, 10);
+			g.setColor(core, 0.90f);
+			g.fillRect(bx, topY + 5, 2, 1);
+			g.fillRect(bx + w - 2, topY + 5, 2, 1);
+			font.drawStringBorder(g, tag, cx, topY, mFont.CENTER, mFont.tahoma_7_greySmall);
 		}
 
 		public static void PaintElectricBorderBySkhId(mGraphics g, int skhId, bool isTL, bool isHD, int x, int y, int w, int h)
@@ -804,7 +1215,7 @@ namespace Game1
 					SkhSlotEffect.PaintSlotBorder(g, mounted, slotX, slotY, slotSize, slotSize);
 
 					mFont nameFont = SkhSlotEffect.IsDoHuyDiet(mounted)
-						? mFont.tahoma_7b_pink
+						? (mFont.tahoma_7b_pink ?? mFont.tahoma_7b_red ?? mFont.tahoma_7b_white)
 						: (SkhSlotEffect.IsDoThanLinh(mounted) ? mFont.tahoma_7b_yellow : mFont.tahoma_7b_green2);
 					nameFont.drawString(g, mounted.template.name, textX, slotY + 2, mFont.LEFT);
 					mFont.tahoma_7_yellow.drawString(g, "Đã gắn (" + SLOT_LABELS[s] + ")", textX, slotY + 13, mFont.LEFT);

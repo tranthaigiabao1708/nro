@@ -755,8 +755,13 @@ public class Pet extends Player {
 
     private void increasePoint() {
         if (this.nPoint != null && Util.canDoWithTime(lastTimeIncreasePoint, 0)) {
+            long tnBefore = this.nPoint.tiemNang;
             for (int i = 0; i < 20; i++) {
                 this.nPoint.increasePoint((byte) Util.nextInt(0, 4), (short) 1);
+            }
+            if (this.nPoint.tiemNang != tnBefore && this.master != null && this.master.fusion != null
+                    && this.master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
+                Service.gI().point(this.master);
             }
             lastTimeIncreasePoint = System.currentTimeMillis();
         }
@@ -966,6 +971,17 @@ public class Pet extends Player {
         return mobAtt;
     }
 
+    public void unlockSkillsByPower() {
+        for (int i = 0; i < 4; i++) {
+            int before = this.playerSkill != null ? this.playerSkill.getSizeSkill() : 0;
+            updatePower();
+            int after = this.playerSkill != null ? this.playerSkill.getSizeSkill() : 0;
+            if (after == before) {
+                break;
+            }
+        }
+    }
+
     private void updatePower() {
         if (this.playerSkill != null) {
             switch (this.playerSkill.getSizeSkill()) {
@@ -1057,18 +1073,46 @@ public class Pet extends Player {
     }
 
     public void openSkill4() {
-        Skill skill = null;
-        int tiLeBienKhi = 10;
-        int tiLeDeTrung = 70;
-        int tiLeKNL = 20;
+        int currentTemplateId = -1;
+        if (this.playerSkill.skills.size() > 3) {
+            Skill cur = this.playerSkill.skills.get(3);
+            if (cur != null && cur.skillId != -1 && cur.template != null) {
+                currentTemplateId = cur.template.id;
+            }
+        }
 
-        int rd = Util.nextInt(1, 100);
-        if (rd <= tiLeBienKhi) {
-            skill = SkillUtil.createSkill(Skill.BIEN_KHI, 1);
-        } else if (rd <= tiLeBienKhi + tiLeDeTrung) {
-            skill = SkillUtil.createSkill(Skill.DE_TRUNG, 1);
-        } else if (rd <= tiLeBienKhi + tiLeDeTrung + tiLeKNL) {
-            skill = SkillUtil.createSkill(Skill.KHIEN_NANG_LUONG, 1);
+        byte[] candidateSkills = {Skill.BIEN_KHI, Skill.DE_TRUNG, Skill.KHIEN_NANG_LUONG};
+        int[] candidateWeights = {10, 70, 20};
+
+        int totalWeight = 0;
+        for (int i = 0; i < candidateSkills.length; i++) {
+            if (candidateSkills[i] != currentTemplateId) {
+                totalWeight += candidateWeights[i];
+            }
+        }
+
+        Skill skill = null;
+        if (totalWeight > 0) {
+            int rd = Util.nextInt(1, totalWeight);
+            int acc = 0;
+            for (int i = 0; i < candidateSkills.length; i++) {
+                if (candidateSkills[i] == currentTemplateId) {
+                    continue;
+                }
+                acc += candidateWeights[i];
+                if (rd <= acc) {
+                    skill = SkillUtil.createSkill(candidateSkills[i], 1);
+                    break;
+                }
+            }
+        }
+        if (skill == null) {
+            for (byte cand : candidateSkills) {
+                if (cand != currentTemplateId) {
+                    skill = SkillUtil.createSkill(cand, 1);
+                    break;
+                }
+            }
         }
         this.playerSkill.skills.set(3, skill);
     }

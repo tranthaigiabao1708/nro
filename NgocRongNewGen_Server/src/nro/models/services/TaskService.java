@@ -87,7 +87,16 @@ public class TaskService {
                     msg.writer().writeUTF(stm.notify);
                 }
             }
-            msg.writer().writeShort(player.playerTask.taskMain.subTasks.get(player.playerTask.taskMain.index).count);
+            short curSubCount = 0;
+            if (player.playerTask.taskMain.subTasks != null && !player.playerTask.taskMain.subTasks.isEmpty()) {
+                int idx = player.playerTask.taskMain.index;
+                if (idx >= 0 && idx < player.playerTask.taskMain.subTasks.size()) {
+                    curSubCount = player.playerTask.taskMain.subTasks.get(idx).count;
+                } else {
+                    curSubCount = player.playerTask.taskMain.subTasks.get(player.playerTask.taskMain.subTasks.size() - 1).count;
+                }
+            }
+            msg.writer().writeShort(curSubCount);
             for (SubTaskMain stm : player.playerTask.taskMain.subTasks) {
                 msg.writer().writeShort(stm.maxCount);
             }
@@ -117,15 +126,34 @@ public class TaskService {
                 break;
         }
         sendTaskMain(player);
-        Service.gI().sendThongBao(player, "Nhiệm vụ tiếp theo của bạn là "
-                + player.playerTask.taskMain.subTasks.get(player.playerTask.taskMain.index).name);
+        if (player.playerTask.taskMain != null && player.playerTask.taskMain.subTasks != null
+                && player.playerTask.taskMain.index >= 0
+                && player.playerTask.taskMain.index < player.playerTask.taskMain.subTasks.size()) {
+            Service.gI().sendThongBao(player, "Nhiệm vụ tiếp theo của bạn là "
+                    + player.playerTask.taskMain.subTasks.get(player.playerTask.taskMain.index).name);
+        }
     }
 
     public void sendUpdateCountSubTask(Player player) {
+        if (player == null || player.playerTask == null || player.playerTask.taskMain == null
+                || player.playerTask.taskMain.subTasks == null
+                || player.playerTask.taskMain.index < 0
+                || player.playerTask.taskMain.index >= player.playerTask.taskMain.subTasks.size()) {
+            return;
+        }
         Message msg = null;
         try {
             msg = new Message(43);
-            msg.writer().writeShort(player.playerTask.taskMain.subTasks.get(player.playerTask.taskMain.index).count);
+            short curSubCount = 0;
+            if (player.playerTask.taskMain.subTasks != null && !player.playerTask.taskMain.subTasks.isEmpty()) {
+                int idx = player.playerTask.taskMain.index;
+                if (idx >= 0 && idx < player.playerTask.taskMain.subTasks.size()) {
+                    curSubCount = player.playerTask.taskMain.subTasks.get(idx).count;
+                } else {
+                    curSubCount = player.playerTask.taskMain.subTasks.get(player.playerTask.taskMain.subTasks.size() - 1).count;
+                }
+            }
+            msg.writer().writeShort(curSubCount);
             player.sendMessage(msg);
         } catch (IOException e) {
         } finally {
@@ -207,6 +235,10 @@ public class TaskService {
                         || doneTask(player, ConstTask.TASK_21_4));
             }
             case ConstNpc.ONG_GOHAN, ConstNpc.ONG_MOORI, ConstNpc.ONG_PARAGUS -> {
+                if (isCurrentTask(player, ConstTask.TASK_28_8)) {
+                    VuTru13Service.gI().triggerHomeAwakening(player, npc);
+                    return true;
+                }
                 if (isCurrentTask(player, ConstTask.TASK_11_3)) {
                     doneTask(player, ConstTask.TASK_11_3);
                     doneTask(player, ConstTask.TASK_12_0);
@@ -255,6 +287,10 @@ public class TaskService {
             case ConstNpc.OSIN -> {
                 return doneTask(player, ConstTask.TASK_28_0)
                         || doneTask(player, ConstTask.TASK_28_7);
+            }
+            case ConstNpc.GOKU_BI_PHONG_AN -> {
+                return doneTask(player, ConstTask.TASK_29_1)
+                        || doneTask(player, ConstTask.TASK_29_6);
             }
         }
         return false;
@@ -348,6 +384,8 @@ public class TaskService {
                     doneTask(player, ConstTask.TASK_26_0);
                 case 103 ->
                     doneTask(player, ConstTask.TASK_27_2);
+                case 178, 179, 180, 181, 182 ->
+                    doneTask(player, ConstTask.TASK_29_0);
             }
         }
     }
@@ -478,6 +516,14 @@ public class TaskService {
                     switch (boss.currentLevel) {
                         case 1 ->
                             doneTask(player, ConstTask.TASK_27_4);
+                    }
+                }
+                case BossID.DAI_DE_FIDE_VT13 -> {
+                    switch (boss.currentLevel) {
+                        case 0 ->
+                            doneTask(player, ConstTask.TASK_29_4);
+                        case 1 ->
+                            doneTask(player, ConstTask.TASK_29_5);
                     }
                 }
             }
@@ -619,12 +665,16 @@ public class TaskService {
                     doneTask(player, ConstTask.TASK_25_4);
                 case ConstMob.XEN_CON_CAP_8 ->
                     doneTask(player, ConstTask.TASK_26_4);
+                case ConstMob.CHIEN_BINH_AM_ANH_VT13 ->
+                    doneTask(player, ConstTask.TASK_29_2);
+                case ConstMob.THUC_THE_NGUYEN_RUA_VT13 ->
+                    doneTask(player, ConstTask.TASK_29_3);
             }
         }
     }
 
     //xong nhiệm vụ nào đó
-    private boolean doneTask(Player player, int idTaskCustom) {
+    public boolean doneTask(Player player, int idTaskCustom) {
         if (player == null || player.playerTask == null || player.playerTask.taskMain == null) {
             return false;
         }
@@ -1047,30 +1097,53 @@ public class TaskService {
                     break;
                 case ConstTask.TASK_27_5:
                     npcSay(player, ConstNpc.BUNMA_TL,
-                            "Vào lúc 12h trưa các ngày, bạn đến gặp NPC Ô sin tại map Đại hội võ thuật. sau đó bạn đến các tầng của map để tiêu diệt các mục tiêu:\n"
-                            + "Hạ 25 Drabura\n"
-                            + "Hạ 25 Bui Bui\n"
-                            + "Hạ 25 Bui Bui lần 2\n"
-                            + "Hạ 25 Yacon\n"
-                            + "Hạ 25 Drabura lần 2\n"
-                            + "Hạ 50 Mabư");
+                            "Vào lúc 12h trưa các ngày, bạn đến gặp NPC Ô sin tại map Đại hội võ thuật. Sau đó đến các tầng của map để tiêu diệt các mục tiêu:\n"
+                            + "Hạ 5 Drabura\n"
+                            + "Hạ 5 Pui Pui\n"
+                            + "Hạ 5 Pui Pui lần 2\n"
+                            + "Hạ 5 Yacôn\n"
+                            + "Hạ 5 Drabura lần 2\n"
+                            + "Hạ 5 Mabư\n"
+                            + "Hoàn thành nhanh để đến với võ đài liên vũ trụ và khai mở Vũ Trụ 13!");
                     break;
                 //----
                 case ConstTask.TASK_28_0:
-                    break;
                 case ConstTask.TASK_28_1:
-                    break;
                 case ConstTask.TASK_28_2:
-                    break;
                 case ConstTask.TASK_28_3:
-                    break;
                 case ConstTask.TASK_28_4:
-                    break;
                 case ConstTask.TASK_28_5:
-                    break;
                 case ConstTask.TASK_28_6:
                     break;
                 case ConstTask.TASK_28_7:
+                    npcSay(player, ConstNpc.OSIN,
+                            "Phi thường lắm! Ngươi đã quét sạch bè lũ Babidi và Mabư!\n"
+                            + "Nhưng bầu trời liên vũ trụ đang chấn động dữ dội...\n"
+                            + "Hãy lập tức quay về Nhà gặp ông %2 tại quê nhà để khai mở Sức Mạnh Vũ Trụ 13!");
+                    break;
+                case ConstTask.TASK_28_8:
+                    break;
+                case ConstTask.TASK_29_0:
+                    Service.gI().sendThongBao(player, "Bạn đã đặt chân vào Vũ Trụ 13! Hãy tiến sang bên phải tới Ngục Tù Phong Ấn Goku!");
+                    break;
+                case ConstTask.TASK_29_1:
+                    npcSay(player, ConstNpc.GOKU_BI_PHONG_AN,
+                            "Cẩn thận... Trọng lực và lời nguyền cổ thần ở Vũ Trụ 13 này khủng khiếp lắm!\n"
+                            + "Xiềng xích phong ấn đã khóa chặt Bản Năng Vô Cực của ta rồi...\n"
+                            + "Trước khi chạm trán Đại Đế Fide ở Điện Thờ phía đông, hãy luyện tập tiêu diệt 30 Chiến Binh Ám Ảnh VT13 và 30 Thực Thể Nguyền Rủa VT13 để cơ thể thích nghi sát khí!");
+                    break;
+                case ConstTask.TASK_29_2:
+                case ConstTask.TASK_29_3:
+                case ConstTask.TASK_29_4:
+                case ConstTask.TASK_29_5:
+                    break;
+                case ConstTask.TASK_29_6:
+                    player.inventory.ruby += 5000;
+                    Service.gI().sendMoney(player);
+                    npcSay(player, ConstNpc.GOKU_BI_PHONG_AN,
+                            "Không xong rồi... Cột sáng Hắc Ám từ Điện Thờ vừa làm cả ngục tối rung chuyển!\n"
+                            + "Black Fide thực sự đã mở khóa Phong Ấn Thần Hủy Diệt Vũ Trụ 13!\n"
+                            + "Hãy nhận 5.000 Hồng Ngọc tiếp sức và chuẩn bị tinh thần... Hàng loạt Cổ Thần bị nguyền rủa sắp sửa trỗi dậy!");
                     break;
             }
             InventoryService.gI().sendItemBags(player);
@@ -1125,6 +1198,12 @@ public class TaskService {
     }
 
     private void addDoneSubTask(Player player, int numDone) {
+        if (player == null || player.playerTask == null || player.playerTask.taskMain == null
+                || player.playerTask.taskMain.subTasks == null
+                || player.playerTask.taskMain.index < 0
+                || player.playerTask.taskMain.index >= player.playerTask.taskMain.subTasks.size()) {
+            return;
+        }
         var subTask = player.playerTask.taskMain.subTasks.get(player.playerTask.taskMain.index);
         subTask.count = (short) Math.min((long) Short.MAX_VALUE, (long) subTask.count + numDone);
         if (subTask.count

@@ -99,10 +99,6 @@ public class NewSkill {
             typeItem = this.getTypeItem();
         }
         this.skillSelect = this.player.playerSkill.skillSelect;
-        if (this.player.isPl() && skillSelect.currLevel < 1000) {
-            skillSelect.currLevel++;
-            SkillService.gI().sendCurrLevelSpecial(player, skillSelect);
-        }
         this.dir = dir;
         this._xPlayer = _xPlayer;
         this._yPlayer = _yPlayer;

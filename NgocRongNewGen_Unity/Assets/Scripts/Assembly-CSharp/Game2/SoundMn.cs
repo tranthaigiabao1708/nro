@@ -233,6 +233,15 @@ namespace Game2
 					mResources.change_account
 				};
 			}
+			{
+				string[] arrHideCt = new string[Panel.strTool.Length + 1];
+				for (int i = 0; i < Panel.strTool.Length; i++)
+				{
+					arrHideCt[i] = Panel.strTool[i];
+				}
+				arrHideCt[Panel.strTool.Length] = Panel.getStrHideCaiTrang();
+				Panel.strTool = arrHideCt;
+			}
 			if (IsDelAcc)
 			{
 				string[] array = new string[Panel.strTool.Length + 1];

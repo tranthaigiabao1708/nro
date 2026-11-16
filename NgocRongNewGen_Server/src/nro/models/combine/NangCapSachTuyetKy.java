@@ -79,10 +79,25 @@ public class NangCapSachTuyetKy {
         }
 
         if (Util.isTrue(SUCCESS_RATE_PERCENT, 100)) {
+            ItemService.gI().ensureDefaultOptions(sachTuyetKy);
             switch (sachTuyetKy.template.id) {
                 case 1044 -> sachTuyetKy.template = ItemService.gI().getTemplate(1278);
                 case 1211 -> sachTuyetKy.template = ItemService.gI().getTemplate(1279);
                 case 1212 -> sachTuyetKy.template = ItemService.gI().getTemplate(1280);
+            }
+            int opt21Index = -1;
+            for (int i = 0; i < sachTuyetKy.itemOptions.size(); i++) {
+                Item.ItemOption io = sachTuyetKy.itemOptions.get(i);
+                if (io != null && io.optionTemplate != null && io.optionTemplate.id == 21) {
+                    opt21Index = i;
+                    break;
+                }
+            }
+            if (opt21Index >= 0 && opt21Index < 3) {
+                sachTuyetKy.itemOptions.add(opt21Index, new Item.ItemOption(217, 0));
+            } else if (opt21Index == -1) {
+                sachTuyetKy.itemOptions.add(0, new Item.ItemOption(217, 0));
+                ItemService.gI().ensureDefaultOptions(sachTuyetKy);
             }
             CombineService.gI().sendEffectSuccessCombine(player);
         } else {

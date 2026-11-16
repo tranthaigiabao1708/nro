@@ -160,6 +160,7 @@ public class Controller implements IMessageHandler {
                                     }
                                     RadarService.gI().Radar1(player, idC, card.Used);
                                     Service.gI().point(player);
+                                    RadarService.gI().sendAura(player, player.getAura(), player.getEffFront());
                                 }
                                 break;
                         }
@@ -167,15 +168,24 @@ public class Controller implements IMessageHandler {
                     break;
                 case -105:
                     if (player != null) {
-                        if (player.type == 0 && player.maxTime == 30) {
+                        nro.models.map.Zone prevZone = player.zone;
+                        boolean mapSent = false;
+                        if (player.type == 0 && (player.idMark != null && player.idMark.isGotoFuture() || player.maxTime > 0)) {
+                            if (player.idMark != null) {
+                                player.idMark.setGotoFuture(false);
+                            }
+                            player.maxTime = 0;
                             ChangeMapService.gI().changeMapBySpaceShip(player, 102, -1, Util.nextInt(60, 200));
-                            player.idMark.setGotoFuture(false);
+                            mapSent = (player.zone != prevZone);
                         } else if (player.type == 1 && player.maxTime == 5) {
                             if (player.idMark != null && player.idMark.isGoToBDKB()) {
-                                ChangeMapService.gI().changeMap(player, MapService.gI().getMapCanJoin(player, 135, -1), 35, 35);
                                 player.idMark.setGoToBDKB(false);
+                                player.maxTime = 0;
+                                ChangeMapService.gI().changeMap(player, MapService.gI().getMapCanJoin(player, 135, -1), 35, 35);
+                                mapSent = (player.zone != prevZone);
                             }
                         } else if (player.type == 2 && player.maxTime == 5) {
+                            player.maxTime = 0;
                             int customPortalMap = player.idMark != null ? player.idMark.getTargetSpacePortalMapId() : -1;
                             if (customPortalMap >= 0) {
                                 player.idMark.setTargetSpacePortalMapId(-1);
@@ -190,24 +200,36 @@ public class Controller implements IMessageHandler {
                                     };
                                     int destY = targetZone.map.yPhysicInTop(destX, 100);
                                     ChangeMapService.gI().changeMap(player, targetZone, destX, destY);
+                                    mapSent = (player.zone != prevZone);
                                 } else {
                                     Service.gI().sendThongBao(player, "Cổng không gian sang khu vực Vũ Trụ 6 này sẽ chính thức khai mở tại Giai đoạn 2!");
                                 }
-                            } else if (MapService.gI().isMapHanhTinhThucVat(player.zone.map.mapId)) {
+                            } else if (player.zone != null && MapService.gI().isMapHanhTinhThucVat(player.zone.map.mapId)) {
                                 ChangeMapService.gI().changeMap(player, 80, -1, -1, 5);
+                                mapSent = (player.zone != prevZone);
                             } else {
                                 ChangeMapService.gI().changeMap(player, 160, -1, -1, 5);
+                                mapSent = (player.zone != prevZone);
                             }
                         } else if (player.type == 3 && player.maxTime == 5) {
+                            player.maxTime = 0;
                             ChangeMapService.gI().changeMap(player, player.idMark.getZoneKhiGasHuyDiet(), player.idMark.getXMapKhiGasHuyDiet(), player.idMark.getYMapKhiGasHuyDiet());
                             player.idMark.setZoneKhiGasHuyDiet(null);
+                            mapSent = (player.zone != prevZone);
                         } else if (player.type == 4 && player.maxTime == 5) {
                             if (player.idMark != null && player.idMark.isGoToKGHD()) {
-                                ChangeMapService.gI().changeMap(player, MapService.gI().getMapCanJoin(player, 149, -1), 100 + (Util.nextInt(-10, 10)), 336);
                                 player.idMark.setGoToKGHD(false);
+                                player.maxTime = 0;
+                                ChangeMapService.gI().changeMap(player, MapService.gI().getMapCanJoin(player, 149, -1), 100 + (Util.nextInt(-10, 10)), 336);
+                                mapSent = (player.zone != prevZone);
                             }
                         } else if (player.type == 5 && player.maxTime == 5) {
+                            player.maxTime = 0;
                             ChangeMapService.gI().changeMap(player, MapService.gI().getMapCanJoin(player, 156, -1), 100 + (Util.nextInt(-10, 10)), 336);
+                            mapSent = (player.zone != prevZone);
+                        }
+                        if (!mapSent && player.zone != null) {
+                            player.zone.mapInfo(player);
                         }
                     }
                     break;
@@ -215,13 +237,31 @@ public class Controller implements IMessageHandler {
                     // Đăng ký tài khoản nhanh (Message 42)
                     regisAccountFast(_session, _msg);
                     break;
+                case -126:
+                    if (player != null) {
+                        byte subCmdVt13 = _msg.reader().available() > 0 ? _msg.reader().readByte() : 1;
+                        if (subCmdVt13 == 1) {
+                            nro.models.services.VuTru13Service.gI().toggleHideCaiTrang(player);
+                        } else if (subCmdVt13 == 0) {
+                            nro.models.services.VuTru13Service.gI().sendState(player);
+                        }
+                    }
+                    break;
                 case -127:
                     if (player != null) {
+                        if (TransactionService.gI().check(player)) {
+                            Service.gI().sendThongBao(player, "Không thể thực hiện");
+                            return;
+                        }
                         LuckyRound.gI().readOpenBall(player, _msg);
                     }
                     break;
                 case -125:
                     if (player != null) {
+                        if (TransactionService.gI().check(player)) {
+                            Service.gI().sendThongBao(player, "Không thể thực hiện");
+                            return;
+                        }
                         Input.gI().doInput(player, _msg);
                     }
                     break;
@@ -232,6 +272,10 @@ public class Controller implements IMessageHandler {
                     break;
                 case 118:
                     if (player != null) {
+                        if (TransactionService.gI().check(player)) {
+                            Service.gI().sendThongBao(player, "Không thể thực hiện");
+                            return;
+                        }
                         nro.models.services.SkhCollectionService.gI().handleClientMessage(player, _msg);
                     }
                     break;
@@ -425,6 +469,10 @@ public class Controller implements IMessageHandler {
                     break;
                 case -81:
                     if (player != null) {
+                        if (TransactionService.gI().check(player)) {
+                            Service.gI().sendThongBao(player, "Không thể thực hiện");
+                            return;
+                        }
                         try {
                             _msg.reader().readByte();
                             int count = _msg.reader().readShort();
@@ -597,11 +645,20 @@ public class Controller implements IMessageHandler {
                             Service.gI().sendThongBao(player, "Không thể thực hiện");
                             return;
                         }
-                        Command.gI().chat(player, _msg.reader().readUTF());
+                        String chatText = _msg.reader().readUTF();
+                        if (chatText != null && (chatText.trim().equalsIgnoreCase("ancaitrang") || chatText.trim().equalsIgnoreCase("act"))) {
+                            nro.models.services.VuTru13Service.gI().toggleHideCaiTrang(player);
+                            return;
+                        }
+                        Command.gI().chat(player, chatText);
                     }
                     break;
                 case 32:
                     if (player != null) {
+                        if (TransactionService.gI().check(player)) {
+                            Service.gI().sendThongBao(player, "Không thể thực hiện");
+                            return;
+                        }
                         int npcId = _msg.reader().readShort();
                         int select = _msg.reader().readByte();
                         MenuController.gI().doSelectMenu(player, npcId, select);
@@ -609,6 +666,10 @@ public class Controller implements IMessageHandler {
                     break;
                 case 33:
                     if (player != null) {
+                        if (TransactionService.gI().check(player)) {
+                            Service.gI().sendThongBao(player, "Không thể thực hiện");
+                            return;
+                        }
                         int npcId = _msg.reader().readShort();
                         MenuController.gI().openMenuNPC(_session, npcId, player);
                     }
@@ -647,6 +708,10 @@ public class Controller implements IMessageHandler {
                     break;
                 case -20:
                     if (player != null && !player.isDie()) {
+                        if (TransactionService.gI().check(player)) {
+                            Service.gI().sendThongBao(player, "Không thể nhặt vật phẩm khi đang giao dịch");
+                            return;
+                        }
                         int itemMapId = _msg.reader().readShort();
                         ItemMapService.gI().pickItem(player, itemMapId, false);
                     }
@@ -661,9 +726,14 @@ public class Controller implements IMessageHandler {
                     messageSubCommand(_session, _msg);
                     break;
                 case -15: // về nhà
-                    if (player != null) {
-                        int mapId = MapService.gI().isMapMaBu(player.zone.map.mapId) ? 114 : player.gender + 21;
-                        ChangeMapService.gI().changeMapBySpaceShip(player, mapId, 0, -1);
+                    if (player != null && player.zone != null && player.zone.map != null) {
+                        int curMapId = player.zone.map.mapId;
+                        if (nro.models.services.VuTru13Service.isMapVuTru13(curMapId)) {
+                            ChangeMapService.gI().changeMapBySpaceShip(player, nro.models.services.VuTru13Service.MAP_THANH_DIEN_ZENO_VT13, -1, 300);
+                        } else {
+                            int mapId = MapService.gI().isMapMaBu(curMapId) ? 114 : player.gender + 21;
+                            ChangeMapService.gI().changeMapBySpaceShip(player, mapId, 0, -1);
+                        }
                     }
                     break;
                 case -16: // hồi sinh
@@ -819,9 +889,9 @@ public class Controller implements IMessageHandler {
                                 Service.gI().sendChibi(player);
                             }
                             player.zone.mapInfo(player);
-                            if (player.getSession().version >= 220) {
+                            if (player.playerSkill != null && player.playerSkill.skills != null) {
                                 for (Skill skill : player.playerSkill.skills) {
-                                    if (skill.currLevel <= 0 || skill.template.type != 4) {
+                                    if (skill == null || skill.template == null || skill.template.type != 4 || skill.point <= 0) {
                                         continue;
                                     }
                                     SkillService.gI().sendCurrLevelSpecial(player, skill);
@@ -1082,7 +1152,7 @@ public class Controller implements IMessageHandler {
                 player.pet.setClothes.setup();
             }
             ItemTimeService.gI().sendCanAutoPlay(player);
-            player.start();
+            nro.models.services.VuTru13Service.gI().sendState(player);
         } catch (Exception e) {
         }
     }

@@ -153,6 +153,10 @@ public class ConstNpc {
     public static final byte RUONG_SUU_TAM = 82;
     public static final byte DR_MYUU = 83;
     public static final byte XE_NUOC_MIA = 84;
+    public static final byte GOKU_BI_PHONG_AN = 85;
+    public static final byte DAI_THAN_QUAN = 86;
+    public static final byte ZENO_SAMA = 87;
+    public static final int MENU_VU_TRU_13_HOME = 20310;
     //----------------------index menu------------------------------------------
     //menu o len tang map mabu
     public static final int GO_UPSTAIRS_MENU = 10000;

@@ -136,6 +136,10 @@ namespace Game1
 
 		public static void drawSmallImage(mGraphics g, int id, int x, int y, int transform, int anchor)
 		{
+			if (id < 0 || (imgNew != null && id >= imgNew.Length))
+			{
+				return;
+			}
 			if (imgbig != null)
 			{
 				if (smallImg != null)
@@ -186,6 +190,10 @@ namespace Game1
 
 		public static void drawSmallImage(mGraphics g, int id, int f, int x, int y, int w, int h, int transform, int anchor)
 		{
+			if (id < 0 || (imgNew != null && id >= imgNew.Length))
+			{
+				return;
+			}
 			if (imgbig == null)
 			{
 				Small small = imgNew[id];

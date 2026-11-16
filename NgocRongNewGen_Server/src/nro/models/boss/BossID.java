@@ -204,4 +204,7 @@ public class BossID {
     public static final int CAULIFLA_VT6 = -933;
     public static final int HIT_VT6 = -934;
     public static final int CHAMPA_VT6 = -935;
+
+    //========================VU TRU 13 - VU TRU BI NGUYEN RUA========================
+    public static final int DAI_DE_FIDE_VT13 = -940;
 }

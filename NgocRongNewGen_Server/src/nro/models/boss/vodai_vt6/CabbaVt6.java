@@ -8,9 +8,9 @@ import nro.models.utils.Util;
 
 public class CabbaVt6 extends Universe6Boss {
 
-    private static final long REAL_HP = 36_000_000_000L;
-    private static final long FLAT_ARMOR = 35_000_000L;
-    private static final int ARMOR_PCT = 75;
+    private static final long REAL_HP = 18_000_000_000L;
+    private static final long FLAT_ARMOR = 11_666_667L;
+    private static final int ARMOR_PCT = 25;
 
     private boolean awakenedSuperSaiyan;
     private long lastShieldBreakTime;
@@ -35,8 +35,8 @@ public class CabbaVt6 extends Universe6Boss {
     }
 
     @Override
-    protected int getBonusPercentMaxHpPerHit() {
-        return this.awakenedSuperSaiyan ? 11 : 7;
+    public int getHitPercentMaxHp() {
+        return this.awakenedSuperSaiyan ? 28 : 25;
     }
 
     @Override
