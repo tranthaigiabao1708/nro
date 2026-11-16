@@ -7,8 +7,9 @@ echo   CONG CU NAP CUSTOM_PART.SQL VA XOA CACHE NR_PART CLIENT NGOC RONG NEWGEN
 echo ============================================================================
 echo.
 
-set "MYSQL_EXE=d:\nro\runtime\mariadb\bin\mysql.exe"
-set "SQL_FILE=d:\nro\tools\custom_part.sql"
+set "ROOT_DIR=%~dp0.."
+set "MYSQL_EXE=%ROOT_DIR%\runtime\mariadb\bin\mysql.exe"
+set "SQL_FILE=%~dp0custom_part.sql"
 
 if exist "%SQL_FILE%" (
     echo [1/2] Phat hien file %SQL_FILE% - Dang nap vao MariaDB nro_newgen...
