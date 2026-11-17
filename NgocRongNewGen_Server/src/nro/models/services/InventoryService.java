@@ -60,7 +60,13 @@ public class InventoryService {
     }
 
     public boolean isLockedItem(Item item) {
-        if (item == null || !item.isNotNullItem() || item.itemOptions == null) {
+        if (item == null || !item.isNotNullItem()) {
+            return false;
+        }
+        if (item.template != null && item.template.id == 1535) {
+            return true;
+        }
+        if (item.itemOptions == null) {
             return false;
         }
         for (Item.ItemOption io : item.itemOptions) {
@@ -71,11 +77,21 @@ public class InventoryService {
         return false;
     }
 
+    private boolean isMatchingItemOrGoldBarAlias(Item item, int tempId) {
+        if (item == null || !item.isNotNullItem() || item.template == null) {
+            return false;
+        }
+        if (item.template.id == tempId) {
+            return true;
+        }
+        return tempId == 457 && item.template.id == 1535;
+    }
+
     public int getTotalQuantityBag(Player player, int tempId) {
         long total = 0;
         if (player != null && player.inventory != null && player.inventory.itemsBag != null) {
             for (Item item : player.inventory.itemsBag) {
-                if (item != null && item.isNotNullItem() && item.template.id == tempId) {
+                if (isMatchingItemOrGoldBarAlias(item, tempId)) {
                     total += item.quantity;
                 }
             }
@@ -87,7 +103,7 @@ public class InventoryService {
         long total = 0;
         if (player != null && player.inventory != null && player.inventory.itemsBag != null) {
             for (Item item : player.inventory.itemsBag) {
-                if (item != null && item.isNotNullItem() && item.template.id == tempId && isLockedItem(item)) {
+                if (isMatchingItemOrGoldBarAlias(item, tempId) && isLockedItem(item)) {
                     total += item.quantity;
                 }
             }
@@ -99,7 +115,7 @@ public class InventoryService {
         long total = 0;
         if (player != null && player.inventory != null && player.inventory.itemsBag != null) {
             for (Item item : player.inventory.itemsBag) {
-                if (item != null && item.isNotNullItem() && item.template.id == tempId && !isLockedItem(item)) {
+                if (isMatchingItemOrGoldBarAlias(item, tempId) && !isLockedItem(item)) {
                     total += item.quantity;
                 }
             }
@@ -112,23 +128,20 @@ public class InventoryService {
             return false;
         }
         int remaining = quantity;
-        // Ưu tiên trừ vật phẩm khóa (có option 30) trước
-        for (Item item : player.inventory.itemsBag) {
-            if (remaining <= 0) {
-                break;
-            }
-            if (item != null && item.isNotNullItem() && item.template.id == tempId && isLockedItem(item)) {
+        List<Item> bag = player.inventory.itemsBag;
+        // Ưu tiên trừ vật phẩm khóa (có option 30 hoặc Thỏi vàng khóa 1535) trước
+        for (int i = 0; i < bag.size() && remaining > 0; i++) {
+            Item item = bag.get(i);
+            if (isMatchingItemOrGoldBarAlias(item, tempId) && isLockedItem(item)) {
                 int take = Math.min(item.quantity, remaining);
                 subQuantityItemsBag(player, item, take);
                 remaining -= take;
             }
         }
-        // Nếu vẫn còn thiếu thì trừ tiếp vật phẩm thường (không khóa)
-        for (Item item : player.inventory.itemsBag) {
-            if (remaining <= 0) {
-                break;
-            }
-            if (item != null && item.isNotNullItem() && item.template.id == tempId && !isLockedItem(item)) {
+        // Hết vật phẩm khóa thì tự động dùng vật phẩm thường (giao dịch được) bù vào phần còn thiếu
+        for (int i = 0; i < bag.size() && remaining > 0; i++) {
+            Item item = bag.get(i);
+            if (isMatchingItemOrGoldBarAlias(item, tempId) && !isLockedItem(item)) {
                 int take = Math.min(item.quantity, remaining);
                 subQuantityItemsBag(player, item, take);
                 remaining -= take;
@@ -142,11 +155,10 @@ public class InventoryService {
             return false;
         }
         int remaining = quantity;
-        for (Item item : player.inventory.itemsBag) {
-            if (remaining <= 0) {
-                break;
-            }
-            if (item != null && item.isNotNullItem() && item.template.id == tempId && !isLockedItem(item)) {
+        List<Item> bag = player.inventory.itemsBag;
+        for (int i = 0; i < bag.size() && remaining > 0; i++) {
+            Item item = bag.get(i);
+            if (isMatchingItemOrGoldBarAlias(item, tempId) && !isLockedItem(item)) {
                 int take = Math.min(item.quantity, remaining);
                 subQuantityItemsBag(player, item, take);
                 remaining -= take;
@@ -336,12 +348,12 @@ public class InventoryService {
         if (id == 454 || id == 921 || id == 1819) {
             return 1;
         }
-        // Tiếp theo: Thỏi vàng thường (không khóa) -> Thỏi vàng khóa (option 30 / id 1535)
+        // Tiếp theo: Thỏi vàng khóa (option 30 / id 1535) đứng trước -> Thỏi vàng thường đứng sau
         if (id == 457) {
-            return isLockedGoldBar(item) ? 3 : 2;
+            return isLockedGoldBar(item) ? 2 : 3;
         }
         if (id == 1535) {
-            return 3;
+            return 2;
         }
         return 4;
     }

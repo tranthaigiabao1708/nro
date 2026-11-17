@@ -458,7 +458,7 @@ public class BaHatMit extends Npc {
                     } else if (player.idMark.getIndexMenu() == ConstNpc.DOI_SACH_TUYET_KY) {
                         if (select == 0) {
                             DoiSachTuyetKy.doiSachTuyetKy(player, false);
-                        } else if (select == 1 && InventoryService.gI().findItemBag(player, 1794) != null) {
+                        } else if (select == 1 && InventoryService.gI().getTotalQuantityBag(player, 1794) > 0) {
                             DoiSachTuyetKy.doiSachTuyetKy(player, true);
                         }
                     } else if (player.idMark.getIndexMenu() == ConstNpc.MENU_OPTION_SHOP_BUA) {

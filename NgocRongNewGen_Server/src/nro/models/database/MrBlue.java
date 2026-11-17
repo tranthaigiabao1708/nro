@@ -1472,6 +1472,11 @@ public class MrBlue {
                 player.voCucType = 0;
                 player.voCucLevel = 1;
             }
+            if (!player.unlockVuTru13 && (player.vuTru13Stage > 0 || player.voCucType > 0
+                    || nro.models.services.VuTru13Service.gI().hasRelicItem(player))) {
+                player.unlockVuTru13 = true;
+                player.vuTru13Stage = Math.max(1, player.vuTru13Stage);
+            }
             if (!player.unlockVuTru13 && player.playerTask != null && player.playerTask.taskMain != null
                     && player.playerTask.taskMain.id >= 29) {
                 TaskMain migrated = TaskService.gI().getTaskMainById(player, 28);

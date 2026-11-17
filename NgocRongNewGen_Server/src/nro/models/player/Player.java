@@ -249,6 +249,9 @@ public class Player implements Runnable {
     public byte voCucType; // 0: chưa chọn, 1: Bản Năng Vô Cực, 2: Bản Ngã Vô Cực
     public int voCucLevel = 1;
     public int targetSpacePortalMapId = -1;
+    public boolean playingKheNutCutscene;
+    public long kheNutCutsceneStartTime;
+    public long kheNutMapReadyTime;
 
     // Võ Đài Siêu Cấp Vũ Trụ 6 & 7 (Map 145)
     public int levelSuperChest;
@@ -493,6 +496,16 @@ public class Player implements Runnable {
                     if (this.isPl() && this.zone != null && this.zone.map.mapId == this.gender + 21 && (TaskService.gI().getIdTask(this) == ConstTask.TASK_0_0 || TaskService.gI().getIdTask(this) == ConstTask.TASK_0_1)) {
                         this.playerTask.taskMain.index = 2;
                         TaskService.gI().sendTaskMain(this);
+                    }
+                    if (this.isPl() && this.zone != null && this.zone.map != null
+                            && this.zone.map.mapId == nro.models.services.VuTru13Service.MAP_KHE_NUT_VT13) {
+                        if (this.kheNutMapReadyTime == 0L) {
+                            this.kheNutMapReadyTime = System.currentTimeMillis();
+                        }
+                        nro.models.services.VuTru13Service.gI().checkKheNutPyramidTrigger(this);
+                    } else if (this.isPl()) {
+                        this.playingKheNutCutscene = false;
+                        this.kheNutMapReadyTime = 0L;
                     }
                 }
                 if ((this.zone != null && !MapService.gI().isHome(this.zone.map.mapId)) || (!this.isPl() && this.zone == null)) {

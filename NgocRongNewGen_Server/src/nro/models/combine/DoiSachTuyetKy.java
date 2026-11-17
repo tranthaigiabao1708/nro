@@ -23,13 +23,9 @@ public class DoiSachTuyetKy {
     private static final short[] SACH_IDS = new short[]{1044, 1211, 1212};
 
     public static void showCombine(Player player) {
-        Item cuonSachCu = InventoryService.gI().findItemBag(player, 1283);
-        Item kimBamGiay = InventoryService.gI().findItemBag(player, 1285);
-        Item conDau = InventoryService.gI().findItemBag(player, 1794);
-
-        int quantityCuonSachCu = cuonSachCu != null ? cuonSachCu.quantity : 0;
-        int quantityKimBamGiay = kimBamGiay != null ? kimBamGiay.quantity : 0;
-        int quantityConDau = conDau != null ? conDau.quantity : 0;
+        int quantityCuonSachCu = InventoryService.gI().getTotalQuantityBag(player, 1283);
+        int quantityKimBamGiay = InventoryService.gI().getTotalQuantityBag(player, 1285);
+        int quantityConDau = InventoryService.gI().getTotalQuantityBag(player, 1794);
 
         StringBuilder text = new StringBuilder();
         text.append(ConstFont.BOLD_GREEN).append("Đổi sách Tuyệt Kỹ 1\n")
@@ -69,9 +65,9 @@ public class DoiSachTuyetKy {
         Item kimBamGiay = InventoryService.gI().findItemBag(player, 1285);
         Item conDau = useConDau ? InventoryService.gI().findItemBag(player, 1794) : null;
 
-        if (cuonSachCu == null || cuonSachCu.quantity < REQUIRED_CUON_SACH_CU
-                || kimBamGiay == null || kimBamGiay.quantity < REQUIRED_KIM_BAM_GIAY
-                || (useConDau && (conDau == null || conDau.quantity < REQUIRED_CON_DAU))) {
+        if (cuonSachCu == null || InventoryService.gI().getTotalQuantityBag(player, 1283) < REQUIRED_CUON_SACH_CU
+                || kimBamGiay == null || InventoryService.gI().getTotalQuantityBag(player, 1285) < REQUIRED_KIM_BAM_GIAY
+                || (useConDau && (conDau == null || InventoryService.gI().getTotalQuantityBag(player, 1794) < REQUIRED_CON_DAU))) {
             Service.gI().sendThongBao(player, "Bạn không đủ nguyên liệu để đổi sách.");
             return;
         }
@@ -89,13 +85,14 @@ public class DoiSachTuyetKy {
     }
 
     private static void processSuccess(Player player, Item cuonSachCu, Item kimBamGiay, Item conDau, boolean useConDau) {
-        InventoryService.gI().subQuantityItemsBag(player, cuonSachCu, REQUIRED_CUON_SACH_CU);
-        InventoryService.gI().subQuantityItemsBag(player, kimBamGiay, REQUIRED_KIM_BAM_GIAY);
-        if (useConDau && conDau != null) {
-            InventoryService.gI().subQuantityItemsBag(player, conDau, REQUIRED_CON_DAU);
+        InventoryService.gI().subQuantityItemsBagPriorityLocked(player, 1283, REQUIRED_CUON_SACH_CU);
+        InventoryService.gI().subQuantityItemsBagPriorityLocked(player, 1285, REQUIRED_KIM_BAM_GIAY);
+        if (useConDau) {
+            InventoryService.gI().subQuantityItemsBagPriorityLocked(player, 1794, REQUIRED_CON_DAU);
         }
         Item sachTuyetKy = createSach(player.gender, useConDau);
         InventoryService.gI().addItemBag(player, sachTuyetKy);
+        InventoryService.gI().sendItemBags(player);
 
         CombineService.gI().sendEffSuccessVip(player, sachTuyetKy.template.iconID);
 
@@ -106,8 +103,9 @@ public class DoiSachTuyetKy {
     }
 
     private static void processFailure(Player player, Item cuonSachCu, Item kimBamGiay) {
-        InventoryService.gI().subQuantityItemsBag(player, cuonSachCu, REQUIRED_CUON_SACH_CU / 2);
-        InventoryService.gI().subQuantityItemsBag(player, kimBamGiay, REQUIRED_KIM_BAM_GIAY);
+        InventoryService.gI().subQuantityItemsBagPriorityLocked(player, 1283, REQUIRED_CUON_SACH_CU / 2);
+        InventoryService.gI().subQuantityItemsBagPriorityLocked(player, 1285, REQUIRED_KIM_BAM_GIAY);
+        InventoryService.gI().sendItemBags(player);
 
         CombineService.gI().sendEffFailVip(player);
 

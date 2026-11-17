@@ -207,4 +207,6 @@ public class BossID {
 
     //========================VU TRU 13 - VU TRU BI NGUYEN RUA========================
     public static final int DAI_DE_FIDE_VT13 = -940;
+    public static final int THAN_HUY_DIET_VT13 = -941;
+    public static final int THAN_HUY_DIET_VT13_TRIAL = -942;
 }

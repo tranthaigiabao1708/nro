@@ -56,7 +56,7 @@ public class ZenoSama extends Npc {
                         "Map 1: Khe Nứt\nNguyền Rủa",
                         "Map 2: Vực Thẳm\nNguyền Rủa",
                         "Map 3: Ngục Tù\nPhong Ấn Goku",
-                        "Map 4: Điện Thờ\nBlack Fide",
+                        "Map 4: Điện Thờ\nThần Hủy Diệt",
                         "Ở lại đây");
                 case 3 -> ChangeMapService.gI().changeMapBySpaceShip(player, player.gender + 21, -1, 250);
             }

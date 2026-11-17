@@ -21,8 +21,7 @@ public class Santa extends Npc {
     }
 
     private List<String> buildBaseMenu(Player player) {
-        Item pGG = InventoryService.gI().findItem(player.inventory.itemsBag, 459);
-        int soLuong = pGG != null ? pGG.quantity : 0;
+        int soLuong = InventoryService.gI().getTotalQuantityBag(player, 459);
         List<String> menu = new ArrayList<>(Arrays.asList(
                 "Cửa hàng",
                 "Mở rộng\nHành trang\nRương đồ",

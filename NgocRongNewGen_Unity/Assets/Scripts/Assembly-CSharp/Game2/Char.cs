@@ -2610,7 +2610,7 @@ namespace Game2
 				catch (Exception)
 				{
 				}
-				if (npc != null && npc.cy == cy && Res.abs(npc.cx - cx) < 24)
+				if (npc != null && !npc.isHide && npc.cy == cy && Res.abs(npc.cx - cx) < 24)
 				{
 					paintName = false;
 				}
@@ -6076,7 +6076,7 @@ namespace Game2
 				for (int i = 0; i < GameScr.vNpc.size(); i++)
 				{
 					Npc npc = (Npc)GameScr.vNpc.elementAt(i);
-					if (npc.statusMe != 15)
+					if (!npc.isHide && npc.statusMe != 15)
 					{
 						int num5 = Math.abs(myCharz().cx - npc.cx);
 						int num6 = Math.abs(myCharz().cy - npc.cy);
@@ -6111,7 +6111,7 @@ namespace Game2
 				for (int j = 0; j < GameScr.vNpc.size(); j++)
 				{
 					Npc npc2 = (Npc)GameScr.vNpc.elementAt(j);
-					if (npc2.statusMe != 15)
+					if (!npc2.isHide && npc2.statusMe != 15)
 					{
 						int num8 = Math.abs(myCharz().cx - npc2.cx);
 						int num9 = Math.abs(myCharz().cy - npc2.cy);
@@ -6208,6 +6208,10 @@ namespace Game2
 				for (int m = 0; m < GameScr.vMob.size(); m++)
 				{
 					Mob mob = (Mob)GameScr.vMob.elementAt(m);
+					if (mob == null || mob.isHide)
+					{
+						continue;
+					}
 					int num17 = Math.abs(myCharz().cx - mob.x);
 					int num18 = Math.abs(myCharz().cy - mob.y);
 					int num19 = ((num17 <= num18) ? num18 : num17);
@@ -6229,6 +6233,10 @@ namespace Game2
 				for (int n = 0; n < GameScr.vMob.size(); n++)
 				{
 					Mob mob2 = (Mob)GameScr.vMob.elementAt(n);
+					if (mob2 == null || mob2.isHide)
+					{
+						continue;
+					}
 					int num20 = Math.abs(myCharz().cx - mob2.x);
 					int num21 = Math.abs(myCharz().cy - mob2.y);
 					int num22 = ((num20 <= num21) ? num21 : num20);
@@ -6461,7 +6469,7 @@ namespace Game2
 			for (int l = 0; l < GameScr.vMob.size(); l++)
 			{
 				Mob mob2 = (Mob)GameScr.vMob.elementAt(l);
-				if (mob2.status != 1 && mob2.status != 0 && num2 <= mob2.x && mob2.x <= num3 && num4 <= mob2.y && mob2.y <= num5)
+				if (!mob2.isHide && mob2.status != 1 && mob2.status != 0 && num2 <= mob2.x && mob2.x <= num3 && num4 <= mob2.y && mob2.y <= num5)
 				{
 					focus.addElement(mob2);
 					if (mobFocus != null && mob2.Equals(mobFocus))
@@ -6473,7 +6481,7 @@ namespace Game2
 			for (int m = 0; m < GameScr.vNpc.size(); m++)
 			{
 				Npc npc = (Npc)GameScr.vNpc.elementAt(m);
-				if (npc.statusMe != 15 && num2 <= npc.cx && npc.cx <= num3 && num4 <= npc.cy && npc.cy <= num5)
+				if (!npc.isHide && npc.statusMe != 15 && num2 <= npc.cx && npc.cx <= num3 && num4 <= npc.cy && npc.cy <= num5)
 				{
 					focus.addElement(npc);
 					if (npcFocus != null && npc.Equals(npcFocus))

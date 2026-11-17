@@ -160,8 +160,9 @@ public class Whis extends Npc {
             return;
         }
 
+        int totalSach = InventoryService.gI().getTotalQuantityBag(player, 1229);
         Item sach = InventoryService.gI().findItemBag(player, 1229);
-        if (sach == null) {
+        if (sach == null || totalSach <= 0) {
             Service.gI().sendThongBao(player, "Bạn chưa có Bí kiếp tuyệt kỹ trong hành trang!");
             return;
         }
@@ -182,14 +183,14 @@ public class Whis extends Npc {
         boolean isNewSkill = (currentSkill == null || currentSkill.point == 0);
 
         if (isNewSkill) {
-            if (sach.quantity >= 9999) {
+            if (totalSach >= 9999) {
                 learnNewSkill(player, sach, skillId, iconSkill);
             } else {
-                int missing = 9999 - sach.quantity;
+                int missing = 9999 - totalSach;
                 Service.gI().sendThongBao(player, "Ngươi còn thiếu " + missing + " bí kíp nữa.\nHãy tìm đủ rồi đến gặp ta.");
             }
         } else {
-            if (sach.quantity >= 999) {
+            if (totalSach >= 999) {
                 if (currentSkill.currLevel < 1000) {
                     npcChat(player, "Ngươi chưa luyện skill đến mức thành thạo. Luyện thêm đi.");
                 } else if (currentSkill.point >= 9) {
@@ -198,7 +199,7 @@ public class Whis extends Npc {
                     upgradeSkill(player, sach, currentSkill, iconSkill);
                 }
             } else {
-                int missing = 999 - sach.quantity;
+                int missing = 999 - totalSach;
                 Service.gI().sendThongBao(player, "Ngươi còn thiếu " + missing + " bí kíp nữa.\nHãy tìm đủ rồi đến gặp ta.");
             }
         }
@@ -220,7 +221,7 @@ public class Whis extends Npc {
             npcChat(player, npcMessage);
             Service.gI().sendThongBao(player, message);
 
-            InventoryService.gI().subQuantityItemsBag(player, sach, usedBk);
+            InventoryService.gI().subQuantityItemsBagPriorityLocked(player, 1229, usedBk);
             player.inventory.gold -= 10_000_000;
             player.inventory.gem -= 99;
             Service.gI().sendMoney(player);
@@ -264,7 +265,7 @@ public class Whis extends Npc {
             npcChat(player, npcMessage);
             Service.gI().sendThongBao(player, message);
 
-            InventoryService.gI().subQuantityItemsBag(player, sach, usedBk);
+            InventoryService.gI().subQuantityItemsBagPriorityLocked(player, 1229, usedBk);
             player.inventory.gold -= 10_000_000;
             player.inventory.gem -= 99;
             Service.gI().sendMoney(player);

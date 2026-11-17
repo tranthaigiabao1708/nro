@@ -25,6 +25,24 @@ public class VuTru13Service {
     public static final byte BAN_NANG_VO_CUC = 1;
     public static final byte BAN_NGA_VO_CUC = 2;
 
+    // Bitflags lưu trong vuTru13Stage (0..127)
+    public static final int STAGE_FLAG_AWAKENED = 1;
+    public static final int STAGE_FLAG_BLACK_FIDE_SEAL = 2;
+    public static final int STAGE_FLAG_KHE_NUT_INTRO = 4;
+    public static final int STAGE_FLAG_CHAMPA_SOUL = 8;
+    public static final int STAGE_FLAG_THAN_HUY_DIET_SLAIN = 16;
+
+    // Cutscene IDs
+    public static final int CUTSCENE_KHE_NUT_12_GODS = 5;
+
+    // Boss Thần Hủy Diệt VT13 Combat VFX types (subCmd = 3)
+    public static final byte BOSS_VFX_HAKAI_SPHERE = 1;
+    public static final byte BOSS_VFX_EGYPT_SIGIL_PILLAR = 2;
+    public static final byte BOSS_VFX_SOUL_FLASH_STORM = 3;
+
+    public static final int PYRAMID_KHE_NUT_X = 840;
+    public static final int PYRAMID_KHE_NUT_Y = 456;
+
     private static VuTru13Service instance;
 
     public static VuTru13Service gI() {
@@ -165,14 +183,28 @@ public class VuTru13Service {
         }
 
         boolean firstChoose = (player.voCucType == VO_CUC_NONE);
+        String paymentNote = "";
         if (!firstChoose && !player.isAdmin()) {
-            Item thoiVang = InventoryService.gI().findItemBag(player, 457);
-            if (thoiVang == null || thoiVang.quantity < 50) {
-                Service.gI().sendThongBao(player, "Đổi hướng phát triển Vô Cực cần 50 Thỏi vàng trong hành trang (giữ nguyên cấp cảnh giới)!");
+            int totalTv = InventoryService.gI().getTotalQuantityBag(player, 457);
+            if (totalTv < 50) {
+                Service.gI().sendThongBao(player, "Đổi hướng phát triển Vô Cực cần 50 Thỏi vàng trong hành trang (đang có " + totalTv + ")!");
                 return;
             }
-            InventoryService.gI().subQuantityItemsBag(player, thoiVang, 50);
+            int lockedBefore = InventoryService.gI().getTotalLockedQuantityBag(player, 457);
+            if (!InventoryService.gI().subQuantityItemsBagPriorityLocked(player, 457, 50)) {
+                Service.gI().sendThongBao(player, "Đổi hướng phát triển Vô Cực cần 50 Thỏi vàng trong hành trang!");
+                return;
+            }
             InventoryService.gI().sendItemBags(player);
+            int usedLocked = Math.min(lockedBefore, 50);
+            int usedUnlocked = 50 - usedLocked;
+            if (usedLocked > 0 && usedUnlocked > 0) {
+                paymentNote = " (-" + usedLocked + " Thỏi vàng khóa, -" + usedUnlocked + " Thỏi vàng thường)";
+            } else if (usedLocked > 0) {
+                paymentNote = " (-" + usedLocked + " Thỏi vàng khóa)";
+            } else {
+                paymentNote = " (-50 Thỏi vàng)";
+            }
         }
 
         player.voCucType = pathType;
@@ -209,7 +241,7 @@ public class VuTru13Service {
         if (firstChoose) {
             ServerNotify.gI().notify("Thánh Điện Toàn Vương VT13: Chiến binh " + player.name + " đã thức tỉnh [" + getVoCucPathName(pathType) + "] trước Đại Thần Quan!");
         } else {
-            Service.gI().sendThongBao(player, "Đã chuyển sang hướng [" + getVoCucPathName(pathType) + "] (Cấp " + player.voCucLevel + ")!");
+            Service.gI().sendThongBao(player, "Đã chuyển sang hướng [" + getVoCucPathName(pathType) + "] (Cấp " + player.voCucLevel + ")" + paymentNote + "!");
         }
         PlayerDAO.savePlayerAsync(player);
     }
@@ -230,18 +262,37 @@ public class VuTru13Service {
         int reqHonTim = curLv * 20;
         int reqThoiVang = curLv * 50;
 
+        String upgradePaymentNote = "";
         if (!player.isAdmin()) {
-            Item honTim = InventoryService.gI().findItemBag(player, 2018);
-            Item thoiVang = InventoryService.gI().findItemBag(player, 457);
-            int curHon = honTim != null ? honTim.quantity : 0;
-            int curTv = thoiVang != null ? thoiVang.quantity : 0;
+            int curHon = InventoryService.gI().getTotalQuantityBag(player, 2018);
+            int curTv = InventoryService.gI().getTotalQuantityBag(player, 457);
             if (curHon < reqHonTim || curTv < reqThoiVang) {
                 Service.gI().sendThongBao(player, "Đột phá Cấp " + (curLv + 1) + " cần " + reqHonTim + " Hồn Boss Tím (đang có " + curHon + ") và " + reqThoiVang + " Thỏi vàng (đang có " + curTv + ")!");
                 return;
             }
-            InventoryService.gI().subQuantityItemsBag(player, honTim, reqHonTim);
-            InventoryService.gI().subQuantityItemsBag(player, thoiVang, reqThoiVang);
+            int lockedTvBefore = InventoryService.gI().getTotalLockedQuantityBag(player, 457);
+            if (!InventoryService.gI().subQuantityItemsBagPriorityLocked(player, 2018, reqHonTim)) {
+                Service.gI().sendThongBao(player, "Không đủ " + reqHonTim + " Hồn Boss Tím để đột phá!");
+                return;
+            }
+            if (!InventoryService.gI().subQuantityItemsBagPriorityLocked(player, 457, reqThoiVang)) {
+                Item refundHon = ItemService.gI().createNewItem((short) 2018, reqHonTim);
+                refundHon.itemOptions.add(new Item.ItemOption(73, 0));
+                InventoryService.gI().addItemBag(player, refundHon);
+                InventoryService.gI().sendItemBags(player);
+                Service.gI().sendThongBao(player, "Không đủ " + reqThoiVang + " Thỏi vàng để đột phá!");
+                return;
+            }
             InventoryService.gI().sendItemBags(player);
+            int usedLockedTv = Math.min(lockedTvBefore, reqThoiVang);
+            int usedUnlockedTv = reqThoiVang - usedLockedTv;
+            if (usedLockedTv > 0 && usedUnlockedTv > 0) {
+                upgradePaymentNote = " (-" + reqHonTim + " Hồn Boss Tím, -" + usedLockedTv + " Thỏi vàng khóa, -" + usedUnlockedTv + " Thỏi vàng thường)";
+            } else if (usedLockedTv > 0) {
+                upgradePaymentNote = " (-" + reqHonTim + " Hồn Boss Tím, -" + usedLockedTv + " Thỏi vàng khóa)";
+            } else {
+                upgradePaymentNote = " (-" + reqHonTim + " Hồn Boss Tím, -" + reqThoiVang + " Thỏi vàng)";
+            }
         }
 
         player.voCucLevel = curLv + 1;
@@ -250,7 +301,7 @@ public class VuTru13Service {
         Service.gI().Send_Info_NV(player);
         sendState(player);
         broadcastVoCucAura(player);
-        Service.gI().sendThongBao(player, "Đột phá thành công [" + getVoCucPathName(player.voCucType) + "] lên Cấp " + player.voCucLevel + "!");
+        Service.gI().sendThongBao(player, "Đột phá thành công [" + getVoCucPathName(player.voCucType) + "] lên Cấp " + player.voCucLevel + upgradePaymentNote + "!");
         if (player.voCucLevel >= 5) {
             ServerNotify.gI().notify("Chúc mừng " + player.name + " đã tu luyện [" + getVoCucPathName(player.voCucType) + "] đạt cảnh giới viên mãn Cấp 5!");
         }
@@ -390,14 +441,14 @@ public class VuTru13Service {
                     continue;
                 }
                 if (pl.equals(killer) || pl.unlockVuTru13) {
-                    pl.vuTru13Stage = Math.max(2, pl.vuTru13Stage);
+                    pl.vuTru13Stage |= STAGE_FLAG_BLACK_FIDE_SEAL;
                     sendState(pl);
                     sendCutscene(pl, 2, focusX, focusY, "BLACK FIDE PHÁ VỠ PHONG ẤN THẦN HỦY DIỆT VŨ TRỤ 13", steps);
                     PlayerDAO.savePlayerAsync(pl);
                 }
             }
         } else if (killer != null && killer.isPl()) {
-            killer.vuTru13Stage = Math.max(2, killer.vuTru13Stage);
+            killer.vuTru13Stage |= STAGE_FLAG_BLACK_FIDE_SEAL;
             sendState(killer);
             sendCutscene(killer, 2, focusX, focusY, "BLACK FIDE PHÁ VỠ PHONG ẤN THẦN HỦY DIỆT VŨ TRỤ 13", steps);
             PlayerDAO.savePlayerAsync(killer);
@@ -405,6 +456,150 @@ public class VuTru13Service {
 
         if (killer != null) {
             ServerNotify.gI().notify("Chấn động Vũ Trụ 13: " + killer.name + " vừa đánh bại Black Fide, nhưng Phong Ấn Thần Hủy Diệt Vũ Trụ 13 đã bị phá vỡ!");
+        }
+    }
+
+    public boolean isKheNutMobsSuppressed(Player pl) {
+        if (pl == null) {
+            return false;
+        }
+        Player owner = pl;
+        if (pl.isPet && pl instanceof nro.models.player.Pet petObj && petObj.master != null) {
+            owner = petObj.master;
+        }
+        if (!owner.isPl() || owner.zone == null || owner.zone.map == null) {
+            return false;
+        }
+        if (owner.zone.map.mapId != MAP_KHE_NUT_VT13) {
+            return false;
+        }
+        return owner.playingKheNutCutscene || (owner.vuTru13Stage & STAGE_FLAG_KHE_NUT_INTRO) == 0;
+    }
+
+    public void checkKheNutPyramidTrigger(Player player) {
+        if (player == null || !player.isPl() || player.isDie() || player.zone == null || player.zone.map == null) {
+            return;
+        }
+        if (player.zone.map.mapId != MAP_KHE_NUT_VT13) {
+            player.playingKheNutCutscene = false;
+            return;
+        }
+        if (player.getSession() == null || !player.getSession().finishUpdate
+                || player.idMark == null || !player.idMark.isLoadedAllDataPlayer()) {
+            return;
+        }
+        if (player.kheNutMapReadyTime > 0L && System.currentTimeMillis() - player.kheNutMapReadyTime < 1200L) {
+            return;
+        }
+        if (player.playingKheNutCutscene) {
+            // Watchdog an toàn nếu quá 150s chưa nhận gói hoàn tất từ Client
+            if (System.currentTimeMillis() - player.kheNutCutsceneStartTime > 150_000L) {
+                completeKheNutGodsCutscene(player);
+            }
+            return;
+        }
+        if ((player.vuTru13Stage & STAGE_FLAG_KHE_NUT_INTRO) != 0) {
+            return;
+        }
+        if (Math.abs(player.location.x - PYRAMID_KHE_NUT_X) <= 210) {
+            triggerKheNutGodsCutscene(player, true);
+        }
+    }
+
+    public void triggerKheNutGodsCutscene(Player player, boolean firstTrigger) {
+        if (player == null || !player.isPl()) {
+            return;
+        }
+        player.unlockVuTru13 = true;
+        player.vuTru13Stage |= STAGE_FLAG_AWAKENED;
+        player.playingKheNutCutscene = true;
+        player.kheNutCutsceneStartTime = System.currentTimeMillis();
+        sendState(player);
+
+        String[][] steps = new String[][]{
+            // Cảnh 1 (Steps 0..1): Tháp Ai Cập vỡ -> Thần Hủy Diệt VT13 xuất hiện giữa không trung -> Nổ Flash (tốc độ 1/2: 300 ticks/bước)
+            {"Tháp Ai Cập Phong Ấn", "RẦM RẦM!! Khi bạn tiến lại gần, cổ ngữ trên Tháp Ai Cập nứt toác dữ dội, xiềng xích phong ấn vạn năm đứt tung!", "300"},
+            {"Thần Hủy Diệt Vũ Trụ 13", "PHONG ẤN VẠN CỔ ĐÃ VỠ!! Kẻ nào dám đánh thức Bản Tôn?! HỦY DIỆT BÙNG NỔ — FLASH!!", "300"},
+            // Cảnh 2 (Steps 2..3): 12 Thần Hủy Diệt giáng lâm -> Boss VT13 hóa thân tấn công tất cả
+            {"12 Thần Hủy Diệt (VT1 - VT12)", "Cảnh báo chấn động đa vũ trụ!! Beerus, Champa, Belmod, Iwan cùng toàn bộ 12 Thần Hủy Diệt đồng loạt giáng lâm bao vây!", "300"},
+            {"Boss Thần Hủy Diệt VT13", "Lũ hậu bối yếu đuối của 12 vũ trụ mà đòi phong ấn ta lần nữa sao?! HÓA THÂN CỔ THẦN — VẠN VẬT QUY HƯ VÔ!!", "330"},
+            // Cảnh 3 (Steps 4..5): VT7, VT11, VT1 trụ vững; 9 Thần gục ngã hóa Cục Năng Lượng Tím -> Boss lướt thu thập
+            {"Thảm Kịch 12 Vũ Trụ", "Chỉ còn Beerus (VT7), Belmod (VT11) và Iwan (VT1) gắng gượng đứng vững! 9 Thần Hủy Diệt còn lại gục ngã, hóa thành các Hồn Năng Lượng Tím!", "320"},
+            {"Boss Thần Hủy Diệt VT13", "Hahaha! Tinh hoa thần lực hủy diệt tuyệt hảo! Tất cả đều thuộc về Bản Tôn!!", "350"},
+            // Cảnh 4 (Steps 6..7): Beerus lao ra đánh & đoạt 1 Hồn Tím ở chỗ Champa VT6 -> Va chạm, đối thoại & Boss rời đi, Beerus thành NPC
+            {"Thần Hủy Diệt Beerus (VT7)", "CHAMPA!! Ngươi đừng hòng nuốt trọn linh hồn em trai ta!! HAKAI — ĐOẠT HỒN!!", "330"},
+            {"Boss Thần Hủy Diệt VT13", "Khá lắm con mèo Vũ Trụ 7... Giữ lấy mảnh hồn cuối cùng đó đi! Khi ta luyện hóa xong 8 thần hồn ở Điện Thờ Sâu Thẳm, cả 13 Vũ Trụ sẽ bị xóa sổ!", "360"}
+        };
+        sendCutscene(player, CUTSCENE_KHE_NUT_12_GODS, PYRAMID_KHE_NUT_X, 340,
+                "THÁP AI CẬP VỠ NÁT - ĐẠI CHIẾN 13 THẦN HỦY DIỆT", steps);
+    }
+
+    public void completeKheNutGodsCutscene(Player player) {
+        if (player == null || !player.isPl()) {
+            return;
+        }
+        player.playingKheNutCutscene = false;
+        boolean firstDone = (player.vuTru13Stage & STAGE_FLAG_KHE_NUT_INTRO) == 0;
+        player.unlockVuTru13 = true;
+        player.vuTru13Stage |= (STAGE_FLAG_AWAKENED | STAGE_FLAG_KHE_NUT_INTRO);
+        sendState(player);
+        PlayerDAO.savePlayerAsync(player);
+
+        if (firstDone) {
+            Service.gI().sendThongBao(player, "Dư chấn từ Tháp Ai Cập vỡ nát đã đánh thức bầy Quái Vật Nguyền Rủa khắp Khe Nứt!");
+            ServerNotify.gI().notify("Dị biến tại Khe Nứt Nguyền Rủa: " + player.name
+                    + " vừa chứng kiến Tháp Ai Cập vỡ toác — CỔ THẦN HỦY DIỆT VŨ TRỤ 13 đã tái xuất!");
+        }
+    }
+
+    public void broadcastBossSkillVfx(Zone zone, byte vfxType, int srcX, int srcY, int dstX, int dstY) {
+        if (zone == null) {
+            return;
+        }
+        for (Player pl : zone.getPlayers()) {
+            if (pl == null || !pl.isPl() || pl.getSession() == null) {
+                continue;
+            }
+            Message msg = null;
+            try {
+                msg = new Message(CMD_VU_TRU_13);
+                msg.writer().writeByte(3); // subCmd = 3: Boss Thần Hủy Diệt VT13 combat VFX
+                msg.writer().writeByte(vfxType);
+                msg.writer().writeShort(srcX);
+                msg.writer().writeShort(srcY);
+                msg.writer().writeShort(dstX);
+                msg.writer().writeShort(dstY);
+                pl.sendMessage(msg);
+            } catch (Exception e) {
+                Logger.logException(VuTru13Service.class, e);
+            } finally {
+                if (msg != null) {
+                    msg.cleanup();
+                }
+            }
+        }
+    }
+
+    public void summonTrialBossOnKheNut(Player player) {
+        if (player == null || !player.isPl() || player.zone == null || player.zone.map == null) {
+            return;
+        }
+        if (player.zone.map.mapId != MAP_KHE_NUT_VT13) {
+            Service.gI().sendThongBao(player, "Chỉ có thể triệu hồi Phân Thân Thử Nghiệm tại Khe Nứt Nguyền Rủa VT13!");
+            return;
+        }
+        if (nro.models.boss.Boss_Manager.BossManager.gI().checkBosses(player.zone, nro.models.boss.BossID.THAN_HUY_DIET_VT13_TRIAL)) {
+            Service.gI().sendThongBao(player, "Phân Thân Thần Hủy Diệt VT13 đang hiện diện ngay trong khu vực này rồi!");
+            return;
+        }
+        try {
+            nro.models.boss.vu_tru_13.ThanHuyDietVt13 trial = new nro.models.boss.vu_tru_13.ThanHuyDietVt13(
+                    player.zone, PYRAMID_KHE_NUT_X + 150, PYRAMID_KHE_NUT_Y);
+            trial.changeStatus(nro.models.consts.BossStatus.RESPAWN);
+            Service.gI().sendThongBao(player, "ẦM ẦM!! Phân Thân Thần Hủy Diệt Vũ Trụ 13 đã giáng lâm bên cạnh Tháp Ai Cập!");
+        } catch (Exception e) {
+            Logger.logException(VuTru13Service.class, e);
+            Service.gI().sendThongBao(player, "Không thể triệu hồi Phân Thân lúc này!");
         }
     }
 }

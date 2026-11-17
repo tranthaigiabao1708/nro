@@ -244,6 +244,11 @@ public class Controller implements IMessageHandler {
                             nro.models.services.VuTru13Service.gI().toggleHideCaiTrang(player);
                         } else if (subCmdVt13 == 0) {
                             nro.models.services.VuTru13Service.gI().sendState(player);
+                        } else if (subCmdVt13 == 4) {
+                            int finishedCutsceneId = _msg.reader().available() > 0 ? _msg.reader().readByte() : 5;
+                            if (finishedCutsceneId == nro.models.services.VuTru13Service.CUTSCENE_KHE_NUT_12_GODS) {
+                                nro.models.services.VuTru13Service.gI().completeKheNutGodsCutscene(player);
+                            }
                         }
                     }
                     break;

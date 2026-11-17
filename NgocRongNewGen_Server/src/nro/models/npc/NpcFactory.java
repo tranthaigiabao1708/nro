@@ -61,6 +61,9 @@ import nro.models.npc_list.NgoKhong;
 import nro.models.npc_list.DaiThanQuan;
 import nro.models.npc_list.ZenoSama;
 import nro.models.npc_list.GokuPhongAn;
+import nro.models.npc_list.BeerusVt13;
+import nro.models.npc_list.BelmodVt13;
+import nro.models.npc_list.IwanVt13;
 import nro.models.services.ClanService;
 import nro.models.services.Service;
 import nro.models.services.ItemService;
@@ -228,6 +231,12 @@ public class NpcFactory {
                     new DaiThanQuan(mapId, status, cx, cy, tempId, avatar);
                 case ConstNpc.ZENO_SAMA ->
                     new ZenoSama(mapId, status, cx, cy, tempId, avatar);
+                case ConstNpc.BEERUS_VT13 ->
+                    new BeerusVt13(mapId, status, cx, cy, tempId, avatar);
+                case ConstNpc.BELMOD_VT13 ->
+                    new BelmodVt13(mapId, status, cx, cy, tempId, avatar);
+                case ConstNpc.IWAN_VT13 ->
+                    new IwanVt13(mapId, status, cx, cy, tempId, avatar);
                 default ->
                     new Npc(mapId, status, cx, cy, tempId, avatar) {
                         @Override

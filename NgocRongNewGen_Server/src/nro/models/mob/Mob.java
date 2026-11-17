@@ -117,6 +117,9 @@ public class Mob {
 
     public synchronized void injured(Player plAtt, long damage, boolean dieWhenHpFull) {
         if (!this.isDie()) {
+            if (plAtt != null && nro.models.services.VuTru13Service.gI().isKheNutMobsSuppressed(plAtt)) {
+                return;
+            }
             if (this.zone != null && this.zone.map != null && this.zone.map.mapId == 174) {
                 damage = Math.max(1L, damage * 65L / 100L);
             }
@@ -363,6 +366,13 @@ public class Mob {
                 if (pl == null) {
                     continue;
                 }
+                if (nro.models.services.VuTru13Service.gI().isKheNutMobsSuppressed(pl)) {
+                    continue;
+                }
+                if (this.zone != null && this.zone.map != null && this.zone.map.mapId == 178
+                        && Math.abs(pl.location.x - 840) <= 200 && pl.location.y >= 380) {
+                    continue;
+                }
                 if (this.zone != null && this.zone.map != null
                         && (pl.location.x <= 180 || pl.location.x >= this.zone.map.mapWidth - 180)) {
                     continue;
@@ -399,6 +409,15 @@ public class Mob {
             if (playersMap != null) {
                 for (Player plAttt : playersMap) {
                     if (plAttt == null) {
+                        continue;
+                    }
+                    if (nro.models.services.VuTru13Service.gI().isKheNutMobsSuppressed(plAttt)) {
+                        this.temporaryEnemies.remove(plAttt);
+                        continue;
+                    }
+                    if (this.zone != null && this.zone.map != null && this.zone.map.mapId == 178
+                            && Math.abs(plAttt.location.x - 840) <= 200 && plAttt.location.y >= 380) {
+                        this.temporaryEnemies.remove(plAttt);
                         continue;
                     }
                     if (plAttt.isDie() || plAttt.zone != this.zone) {

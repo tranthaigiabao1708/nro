@@ -17,23 +17,6 @@ namespace Game2.Assets.src.f
 				case -127:
 					readLuckyRound(msg);
 					break;
-				case -126:
-				{
-					sbyte b6 = msg.reader().readByte();
-					Res.outz("type quay= " + b6);
-					if (b6 == 1)
-					{
-						msg.reader().readByte();
-						string num10 = msg.reader().readUTF();
-						string finish = msg.reader().readUTF();
-						GameScr.gI().showWinNumber(num10, finish);
-					}
-					if (b6 == 0)
-					{
-						GameScr.gI().showYourNumber(msg.reader().readUTF());
-					}
-					break;
-				}
 				case -125:
 				{
 					ChatTextField.gI().isShow = false;

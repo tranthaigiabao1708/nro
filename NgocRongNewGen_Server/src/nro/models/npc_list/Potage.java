@@ -44,11 +44,9 @@ public class Potage extends Npc {
                             case 0 ->
                                 NpcService.gI().createTutorial(player, tempId, this.avartar, "Thứ bị phong ấn tại đây là vũ khí có tên Commeson được tạo ra nhằm bảo vệ cho hành tinh Potaufeu Tuy nhiên nó đã tàn phá mọi thứ trong quá khứ\nKhiến cư dân Potaufeu niêm phong nó với cái giá phải trả là mạng sống của họ Ta, Potage là người duy nhất sống sót và ta đã bảo vệ phong ấn hơn một trăm năm.\nTuy nhiên bọn xâm lượt Gryll đã đến và giải thoát Commeson Hãy giúp ta tiêu diệt bản sao do Commeson tạo ra và niêm phong Commeson một lần và mãi mãi");
                             case 1 -> {
-                                Item thoiVang = InventoryService.gI().findItemBag(player, 457);
-                                if (thoiVang == null || thoiVang.quantity < 1) {
+                                if (!InventoryService.gI().subQuantityItemsBagPriorityLocked(player, 457, 1)) {
                                     Service.gI().sendThongBao(player, "Bạn cần có ít nhất 1 Thỏi vàng trong hành trang để khiêu chiến Nhân Bản!");
                                 } else {
-                                    InventoryService.gI().subQuantityItemsBag(player, thoiVang, 1);
                                     InventoryService.gI().sendItemBags(player);
                                     Service.gI().callNhanBan(player);
                                 }

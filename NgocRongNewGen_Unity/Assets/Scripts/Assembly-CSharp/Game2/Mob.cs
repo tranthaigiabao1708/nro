@@ -545,6 +545,22 @@ namespace Game2
 
 		public virtual void update()
 		{
+			if (TileMap.mapID == 178)
+			{
+				isHide = GameScr.shouldHideKheNutMobs();
+				if (isHide)
+				{
+					if (Char.myCharz() != null && Char.myCharz().mobFocus == this)
+					{
+						Char.myCharz().mobFocus = null;
+					}
+					return;
+				}
+			}
+			else if (isHide && !isMobMe)
+			{
+				isHide = false;
+			}
 			if (isMafuba)
 			{
 				return;

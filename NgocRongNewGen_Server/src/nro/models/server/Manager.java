@@ -330,6 +330,29 @@ public final class Manager {
         }
     }
 
+    private void ensurePlayerTableSchema(Connection con) {
+        String[] ddl = new String[]{
+            "ALTER TABLE player MODIFY COLUMN items_body MEDIUMTEXT NOT NULL",
+            "ALTER TABLE player MODIFY COLUMN items_bag MEDIUMTEXT NOT NULL",
+            "ALTER TABLE player MODIFY COLUMN items_box MEDIUMTEXT NOT NULL",
+            "ALTER TABLE player MODIFY COLUMN total_damage_maydam BIGINT(20) NOT NULL DEFAULT 0",
+            "ALTER TABLE player ADD COLUMN IF NOT EXISTS last_damage_maydam BIGINT(20) NOT NULL DEFAULT 0 AFTER total_damage_maydam",
+            "ALTER TABLE player ADD COLUMN IF NOT EXISTS data_skh_collection TEXT NOT NULL DEFAULT '[]'",
+            "ALTER TABLE player ADD COLUMN IF NOT EXISTS unlock_vu_tru_13 TINYINT(1) NOT NULL DEFAULT 0",
+            "ALTER TABLE player ADD COLUMN IF NOT EXISTS hide_cai_trang TINYINT(1) NOT NULL DEFAULT 0",
+            "ALTER TABLE player ADD COLUMN IF NOT EXISTS vu_tru_13_stage INT(11) NOT NULL DEFAULT 0",
+            "ALTER TABLE player ADD COLUMN IF NOT EXISTS vo_cuc_type TINYINT(4) NOT NULL DEFAULT 0",
+            "ALTER TABLE player ADD COLUMN IF NOT EXISTS vo_cuc_level INT(11) NOT NULL DEFAULT 1"
+        };
+        for (String sql : ddl) {
+            try (java.sql.Statement st = con.createStatement()) {
+                st.execute(sql);
+            } catch (Exception e) {
+                Logger.error("[SchemaMigration] Bỏ qua/Cảnh báo câu lệnh (" + sql + "): " + e.getMessage() + "\n");
+            }
+        }
+    }
+
     private void loadDatabase() {
         long st = System.currentTimeMillis();
         JSONArray dataArray;
@@ -337,6 +360,7 @@ public final class Manager {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try (Connection ConnectionDatabase = LocalManager.getConnection()) {
+            ensurePlayerTableSchema(ConnectionDatabase);
             //load part strictly indexed by id
             ps = ConnectionDatabase.prepareStatement("select * from part order by id asc");
             rs = ps.executeQuery();

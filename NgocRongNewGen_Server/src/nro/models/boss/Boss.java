@@ -652,6 +652,7 @@ public class Boss extends Player implements IBoss {
                  BossID.BABY,
                  BossID.GOLDEN_FRIEZA,
                  BossID.DAI_DE_FIDE_VT13,
+                 BossID.THAN_HUY_DIET_VT13,
                  BossID.SIEU_BO_HUNG,
                  BossID.XEN_CON_1,
                  BossID.XEN_CON_2,

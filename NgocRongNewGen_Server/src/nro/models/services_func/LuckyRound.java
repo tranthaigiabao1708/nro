@@ -87,13 +87,12 @@ public class LuckyRound {
 
     private void openBallByTicket(Player player, byte count) {
         int ticketNeed = (count * PRICE_TICKET);
-        Item ticket = InventoryService.gI().findItemBag(player, TICKET);
-        if (ticket == null || ticket.quantity < ticketNeed) {
+        if (InventoryService.gI().getTotalQuantityBag(player, TICKET) < ticketNeed) {
             Service.gI().sendThongBao(player, "Bạn không đủ " + ItemService.gI().createNewItem((short) TICKET).template.name + " để quay");
             sendReward(player, new ArrayList<>());
         } else {
             if (count + player.inventory.itemsBoxCrackBall.size() <= MAX_ITEM_IN_BOX) {
-                InventoryService.gI().subQuantityItemsBag(player, ticket, ticketNeed);
+                InventoryService.gI().subQuantityItemsBagPriorityLocked(player, TICKET, ticketNeed);
                 InventoryService.gI().sendItemBags(player);
                 List<Item> list = RewardService.gI().getListItemLuckyRound(player, count, true);
                 addItemToBox(player, list);

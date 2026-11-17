@@ -3022,4 +3022,88 @@ public class BossesData {
             },
             AppearType.ANOTHER_LEVEL
     );
+
+    //========================VŨ TRỤ 13 - CỔ THẦN HỦY DIỆT VŨ TRỤ 13========================
+    public static final BossData THAN_HUY_DIET_VT13 = new BossData(
+            "Thần Hủy Diệt VT13",
+            ConstPlayer.XAYDA,
+            new short[]{2126, 2127, 2128, -1, -1, -1},
+            320000,
+            new int[]{2000000000},
+            new int[]{180},
+            new int[][]{
+                {Skill.GALICK, 7, 350},
+                {Skill.LIEN_HOAN, 7, 800},
+                {Skill.ANTOMIC, 7, 850},
+                {Skill.KAMEJOKO, 7, 900}
+            },
+            new String[]{
+                "|-1|Tháp Ai Cập đã vỡ nát... 8 Thần Hồn Hủy Diệt của 12 Vũ Trụ đang sôi sục trong huyết quản Bản Tôn!",
+                "|-1|Beerus tưởng giấu được mảnh hồn của Champa là cứu vãn được đa vũ trụ sao?!"
+            },
+            new String[]{
+                "|-1|Hakai Cổ Thần!! Quỳ xuống trước quyền năng của Vũ Trụ 13!",
+                "|-1|Trận Pháp Phán Quyết Ai Cập! Linh hồn ngươi cũng sẽ hóa thành cầu năng lượng tím cho ta!",
+                "|-1|Ngay cả 12 Thần Hủy Diệt hợp lực còn gục ngã dưới chân Bản Tôn!"
+            },
+            new String[]{
+                "|-1|Gừ... Khá lắm phàm nhân! Đã đến lúc dung hợp toàn bộ 8 Thần Hồn Hủy Diệt — HÓA THÂN TỐI THƯỢNG!!"
+            },
+            REST_5_M
+    );
+
+    public static final BossData CO_THAN_HUY_DIET_VT13 = new BossData(
+            "Cổ Thần Hủy Diệt VT13",
+            ConstPlayer.XAYDA,
+            new short[]{2126, 2127, 2128, -1, -1, -1},
+            420000,
+            new int[]{2000000000},
+            new int[]{180},
+            new int[][]{
+                {Skill.GALICK, 7, 300},
+                {Skill.LIEN_HOAN, 7, 700},
+                {Skill.ANTOMIC, 7, 750},
+                {Skill.SUPER_KAME, 7, 1100}
+            },
+            new String[]{
+                "|-1|CHIÊM NGƯỠNG ĐI!! ĐÂY LÀ HÌNH THÁI CỔ THẦN HỦY DIỆT TỐI THƯỢNG CỦA VŨ TRỤ 13!",
+                "|-1|Bão Hồn 8 Thần Hủy Diệt — Nghiền nát toàn bộ không-thời gian!!"
+            },
+            new String[]{
+                "|-1|Quả Cầu Hakai Cổ Thần!! Vạn vật quy hư vô!",
+                "|-1|Dù ngươi có đạt tới Bản Năng Vô Cực hay Bản Ngã Tối Thượng cũng không thoát khỏi Phán Quyết Ai Cập!",
+                "|-1|HỦY DIỆT BÙNG NỔ — FLASH!!"
+            },
+            new String[]{
+                "|-1|Không thể nào... Bản Tôn bất diệt... Lời nguyền Vũ Trụ 13 sẽ còn tái sinh!!"
+            },
+            AppearType.ANOTHER_LEVEL
+    );
+
+    public static final BossData THAN_HUY_DIET_VT13_TRIAL = new BossData(
+            "Phân Thân Thần Hủy Diệt VT13",
+            ConstPlayer.XAYDA,
+            new short[]{2126, 2127, 2128, -1, -1, -1},
+            240000,
+            new int[]{2000000000},
+            new int[]{178},
+            new int[][]{
+                {Skill.GALICK, 7, 400},
+                {Skill.LIEN_HOAN, 7, 850},
+                {Skill.ANTOMIC, 7, 900},
+                {Skill.KAMEJOKO, 7, 950}
+            },
+            new String[]{
+                "|-1|Chỉ là một luồng tàn ảnh tại Tháp Ai Cập... nhưng dư sức nghiền nát ngươi!"
+            },
+            new String[]{
+                "|-1|Quả Cầu Hakai Cổ Thần!!",
+                "|-1|Nếm thử Trận Pháp Phán Quyết Ai Cập đi!",
+                "|-1|Bão Hồn Thần Hủy Diệt — FLASH!!"
+            },
+            new String[]{
+                "|-1|Khá lắm... Chân thân của ta đang đợi ngươi tại Điện Thờ Sâu Thẳm!"
+            },
+            AppearType.CALL_BY_ANOTHER
+    );
 }

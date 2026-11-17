@@ -1376,9 +1376,17 @@ public class TaskService {
                     }
                 }
             }
+            TaskMain after = player.playerTask.taskMain;
+            if (after != null && after.id >= 29 && !player.unlockVuTru13) {
+                player.unlockVuTru13 = true;
+                player.vuTru13Stage = Math.max(1, player.vuTru13Stage);
+                nro.models.services.VuTru13Service.gI().ensureRelicItem(player, false);
+                player.nPoint.calPoint();
+                Service.gI().point(player);
+                nro.models.services.VuTru13Service.gI().sendState(player);
+            }
             sendTaskMain(player);
             nro.models.database.PlayerDAO.savePlayerAsync(player);
-            TaskMain after = player.playerTask.taskMain;
             String nextInfo = (after != null && after.subTasks != null && after.index < after.subTasks.size())
                     ? "[" + after.id + "." + after.index + "] " + after.name + " - " + after.subTasks.get(after.index).name
                     : "Đã hoàn thành tối đa";

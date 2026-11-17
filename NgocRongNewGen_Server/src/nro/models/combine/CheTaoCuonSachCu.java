@@ -50,7 +50,9 @@ public class CheTaoCuonSachCu {
         Item trangSachCu = InventoryService.gI().findItemBag(player, TRANG_SACH_CU_ID);
         Item biaSach = InventoryService.gI().findItemBag(player, BIA_SACH_ID);
 
-        if (trangSachCu == null || biaSach == null || trangSachCu.quantity < REQUIRED_TRANG_SACH_CU || biaSach.quantity < REQUIRED_BIA_SACH) {
+        if (trangSachCu == null || biaSach == null
+                || getItemQuantity(player, TRANG_SACH_CU_ID) < REQUIRED_TRANG_SACH_CU
+                || getItemQuantity(player, BIA_SACH_ID) < REQUIRED_BIA_SACH) {
             return;
         }
 
@@ -64,8 +66,7 @@ public class CheTaoCuonSachCu {
     }
 
     private static int getItemQuantity(Player player, int itemId) {
-        Item item = InventoryService.gI().findItemBag(player, itemId);
-        return item != null ? item.quantity : 0;
+        return InventoryService.gI().getTotalQuantityBag(player, itemId);
     }
 
     private static String formatRequirement(String itemName, int currentQuantity, int requiredQuantity) {
@@ -84,12 +85,14 @@ public class CheTaoCuonSachCu {
     }
 
     private static void processSuccess(Player player, Item trangSachCu, Item biaSach) {
-        InventoryService.gI().subQuantityItemsBag(player, trangSachCu, REQUIRED_TRANG_SACH_CU);
-        InventoryService.gI().subQuantityItemsBag(player, biaSach, REQUIRED_BIA_SACH);
+        InventoryService.gI().subQuantityItemsBagPriorityLocked(player, TRANG_SACH_CU_ID, REQUIRED_TRANG_SACH_CU);
+        InventoryService.gI().subQuantityItemsBagPriorityLocked(player, BIA_SACH_ID, REQUIRED_BIA_SACH);
+        InventoryService.gI().sendItemBags(player);
 
         Item cuonSachCu = ItemService.gI().createNewItem((short) CUON_SACH_CU_ID);
         cuonSachCu.itemOptions.add(new Item.ItemOption(30, 0));
         InventoryService.gI().addItemBag(player, cuonSachCu);
+        InventoryService.gI().sendItemBags(player);
 
         CombineService.gI().sendEffSuccessVip(player, cuonSachCu.template.iconID);
         Util.setTimeout(() -> {
@@ -99,8 +102,9 @@ public class CheTaoCuonSachCu {
     }
 
     private static void processFailure(Player player, Item trangSachCu, Item biaSach) {
-        InventoryService.gI().subQuantityItemsBag(player, trangSachCu, TRANG_SACH_CU_LOSS_ON_FAIL);
-        InventoryService.gI().subQuantityItemsBag(player, biaSach, REQUIRED_BIA_SACH);
+        InventoryService.gI().subQuantityItemsBagPriorityLocked(player, TRANG_SACH_CU_ID, TRANG_SACH_CU_LOSS_ON_FAIL);
+        InventoryService.gI().subQuantityItemsBagPriorityLocked(player, BIA_SACH_ID, REQUIRED_BIA_SACH);
+        InventoryService.gI().sendItemBags(player);
 
         CombineService.gI().sendEffFailVip(player);
         Util.setTimeout(() -> {

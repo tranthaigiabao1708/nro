@@ -168,6 +168,29 @@ namespace Game1
 				}
 			}
 			base.update();
+			if (template != null && (template.npcTemplateId == 88 || template.npcTemplateId == 89 || template.npcTemplateId == 90))
+			{
+				isHide = GameScr.shouldHideKheNutSurvivingNpc(template.npcTemplateId);
+				if (isHide && Char.myCharz() != null && Char.myCharz().npcFocus == this)
+				{
+					Char.myCharz().npcFocus = null;
+				}
+				if (template.npcTemplateId == 88)
+				{
+					cdir = ((Char.myCharz() != null && Char.myCharz().cx < cx) ? (-1) : 1);
+					cf = (GameCanvas.gameTick / 12) % 2;
+				}
+				else if (template.npcTemplateId == 89)
+				{
+					cdir = 1;
+					cf = 0;
+				}
+				else
+				{
+					cdir = -1;
+					cf = 0;
+				}
+			}
 			if (template != null && template.npcTemplateId == 85)
 			{
 				cdir = 1;

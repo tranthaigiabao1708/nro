@@ -375,6 +375,7 @@ public class AdminPanelServer {
             }
         }
         PlayerService.gI().sendInfoHpMpMoney(pl);
+        nro.models.database.PlayerDAO.savePlayerAsync(pl);
         String label = type.equals("gold") ? "vàng" : type.equals("gem") ? "ngọc xanh" : "hồng ngọc";
         Service.gI().sendThongBao(pl, (amount > 0 ? "Admin đã tặng bạn " : "Admin đã trừ ") + Math.abs(amount) + " " + label);
         audit(null, "MONEY " + type + " " + amount + " -> " + pl.name);
@@ -420,6 +421,14 @@ public class AdminPanelServer {
         if (given == 0) {
             return err("Hành trang của " + pl.name + " đã đầy");
         }
+        if (itemId == nro.models.services.VuTru13Service.ITEM_AN_KHAI_MO_VT13 && !pl.unlockVuTru13) {
+            pl.unlockVuTru13 = true;
+            pl.vuTru13Stage = Math.max(1, pl.vuTru13Stage);
+            pl.nPoint.calPoint();
+            Service.gI().point(pl);
+            nro.models.services.VuTru13Service.gI().sendState(pl);
+        }
+        nro.models.database.PlayerDAO.savePlayerAsync(pl);
         Service.gI().sendThongBao(pl, "Admin đã tặng bạn " + given + " " + temp.name);
         audit(null, "ITEM " + itemId + " x" + given + " opt=" + p.getOrDefault("options", "") + " -> " + pl.name);
         return ok("Đã gửi " + given + "/" + quantity + " x " + temp.name + " cho " + pl.name);
@@ -438,6 +447,7 @@ public class AdminPanelServer {
             return err("Hành trang của " + pl.name + " đã đầy");
         }
         InventoryService.gI().sendItemBags(pl);
+        nro.models.database.PlayerDAO.savePlayerAsync(pl);
         String label = locked ? "Thỏi vàng khóa" : "Thỏi vàng (giao dịch được)";
         Service.gI().sendThongBao(pl, "Admin đã tặng bạn " + quantity + " " + label);
         audit(null, "THOIVANG " + (locked ? "KHOA " : "THUONG ") + quantity + " -> " + pl.name);

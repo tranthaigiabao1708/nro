@@ -197,6 +197,12 @@ public class PlayerService {
                 player.newPet.followMaster();
             }
             if (player.isPl()) {
+                if (player.zone.map != null && player.zone.map.mapId == nro.models.services.VuTru13Service.MAP_KHE_NUT_VT13) {
+                    if (player.kheNutMapReadyTime == 0L) {
+                        player.kheNutMapReadyTime = System.currentTimeMillis() - 1500L;
+                    }
+                    nro.models.services.VuTru13Service.gI().checkKheNutPyramidTrigger(player);
+                }
                 try {
                     int type = player.zone.map.tileMap[player.location.y / 24][player.location.x / 24];
                     player.isFly = type == 0;

@@ -956,6 +956,9 @@ public class Pet extends Player {
     }
 
     private Mob findMobAttack() {
+        if (this.master != null && nro.models.services.VuTru13Service.gI().isKheNutMobsSuppressed(this.master)) {
+            return null;
+        }
         int dis = ARANGE_CAN_ATTACK;
         Mob mobAtt = null;
         for (Mob mob : zone.mobs) {

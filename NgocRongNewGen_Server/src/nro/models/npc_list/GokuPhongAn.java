@@ -21,8 +21,8 @@ public class GokuPhongAn extends Npc {
         if (TaskService.gI().checkDoneTaskTalkNpc(player, this)) {
             return;
         }
-        String sealState = player.vuTru13Stage >= 2
-                ? "|7|[CẢNH BÁO] Phong Ấn Thần Hủy Diệt Vũ Trụ 13 đã bị Black Fide phá vỡ! Hàng loạt cổ thần sắp thức giấc!"
+        String sealState = (player.vuTru13Stage & VuTru13Service.STAGE_FLAG_BLACK_FIDE_SEAL) != 0
+                ? "|7|[CẢNH BÁO] Phong Ấn Thần Hủy Diệt Vũ Trụ 13 đã bị Black Fide phá vỡ! Cổ Thần Anubis đang ngự trị tại Điện Thờ Sâu Thẳm!"
                 : "|1|Xiềng xích nguyền rủa của Vũ Trụ 13 đang khóa chặt thần lực của ta...\n"
                 + "|2|Đại Đế Fide đang hấp thụ tà khí cổ thần ở Điện Thờ phía đông để biến thành Black Fide và mở phong ấn Thần Hủy Diệt!";
 

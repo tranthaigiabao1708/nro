@@ -1699,7 +1699,7 @@ public class ShopService {
                             usedLockedGoldBar = true;
                         }
                         currencyName = usedUnlocked > 0
-                                ? currencyName + " khóa + " + Util.numberToMoney(usedUnlocked) + " " + currencyName + " thường"
+                                ? currencyName + " khóa, -" + Util.numberToMoney(usedUnlocked) + " " + currencyName + " thường"
                                 : currencyName + " khóa";
                         totalCost = usedLocked;
                     }

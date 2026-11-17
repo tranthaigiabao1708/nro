@@ -274,8 +274,12 @@ public class UseItem {
             }
             if (item.template.id == 2031) {
                 if (!pl.unlockVuTru13) {
-                    Service.gI().sendThongBao(pl, "Bạn cần hoàn thành nhiệm vụ cuối và về Nhà khai mở Sức Mạnh Vũ Trụ 13 trước!");
-                    return;
+                    pl.unlockVuTru13 = true;
+                    pl.vuTru13Stage = Math.max(1, pl.vuTru13Stage);
+                    pl.nPoint.calPoint();
+                    Service.gI().point(pl);
+                    nro.models.services.VuTru13Service.gI().sendState(pl);
+                    nro.models.database.PlayerDAO.savePlayerAsync(pl);
                 }
                 if (pl.zone != null && pl.zone.map != null) {
                     int curMap = pl.zone.map.mapId;
