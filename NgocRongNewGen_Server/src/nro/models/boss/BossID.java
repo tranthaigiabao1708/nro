@@ -209,4 +209,5 @@ public class BossID {
     public static final int DAI_DE_FIDE_VT13 = -940;
     public static final int THAN_HUY_DIET_VT13 = -941;
     public static final int THAN_HUY_DIET_VT13_TRIAL = -942;
+    public static final int FIDE_DEN = -943;
 }

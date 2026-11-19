@@ -249,6 +249,12 @@ public class Controller implements IMessageHandler {
                             if (finishedCutsceneId == nro.models.services.VuTru13Service.CUTSCENE_KHE_NUT_12_GODS) {
                                 nro.models.services.VuTru13Service.gI().completeKheNutGodsCutscene(player);
                             }
+                        } else if (subCmdVt13 == 91) {
+                            // [TEST TẠM THỜI] Gọi ngay Boss Thần Hủy Diệt Bunny
+                            nro.models.services.VuTru13Service.gI().testSummonBossNow(player, nro.models.boss.BossID.THAN_HUY_DIET_VT13);
+                        } else if (subCmdVt13 == 92) {
+                            // [TEST TẠM THỜI] Gọi ngay Boss Fide Đen
+                            nro.models.services.VuTru13Service.gI().testSummonBossNow(player, nro.models.boss.BossID.FIDE_DEN);
                         }
                     }
                     break;

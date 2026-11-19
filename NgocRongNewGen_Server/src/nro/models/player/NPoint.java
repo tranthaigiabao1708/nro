@@ -861,8 +861,16 @@ public class NPoint {
             this.tlxgc += 25;
             this.tlxgcc += 25;
         }
+        if (this.player.setClothes != null && this.player.setClothes.setVoCuc == 5) {
+            this.tlxgc += 40;
+            this.tlxgcc += 40;
+            this.tlDame.add(35);
+            this.tlHp.add(35);
+            this.tlMp.add(35);
+            this.tlSDCM += 35;
+        }
         if (!this.player.isPet && this.player.setClothes != null && this.player.setClothes.gohan == 5) {
-            this.tlGold += 30;
+            this.tlGold += 30 + (30 * this.player.setClothes.skhBonusGohan / 100);
         }
         if (!this.player.isPet && this.player.playerIntrinsic != null && this.player.playerIntrinsic.intrinsic != null
                 && this.player.playerIntrinsic.intrinsic.id == 23) {
@@ -941,11 +949,13 @@ public class NPoint {
 
         // Xử lý set nappa
         if (this.player.setClothes.nappa == 5) {
-            hpMax += (hpMax * 80L / 100L);
+            long nappaPct = 80L + (80L * this.player.setClothes.skhBonusNappa / 100L);
+            hpMax += (hpMax * nappaPct / 100L);
         }
 
         if (this.player.setClothes.cadicM >= 2) {
-            hpMax += (hpMax * 30L / 100L);
+            long cadicMPct = 30L + (30L * this.player.setClothes.skhBonusCadicM / 100L);
+            hpMax += (hpMax * cadicMPct / 100L);
         }
         // Xử lý set worldcup
         if (this.player.setClothes.worldcup == 2) {
@@ -1031,6 +1041,8 @@ public class NPoint {
                 hpMax += (this.player.pet.nPoint.hpMax * 40L / 100L);
             } else if (this.player.pet.typePet == 6) {
                 hpMax += (this.player.pet.nPoint.hpMax * 60L / 100L);
+            } else if (this.player.pet.typePet == 7) {
+                hpMax += (this.player.pet.nPoint.hpMax * 200L / 100L);
             } else {
                 hpMax += this.player.pet.nPoint.hpMax;
             }
@@ -1178,6 +1190,8 @@ public class NPoint {
                 mpMax += (this.player.pet.nPoint.mpMax * 40L / 100L);
             } else if (this.player.pet.typePet == 6) {
                 mpMax += (this.player.pet.nPoint.mpMax * 60L / 100L);
+            } else if (this.player.pet.typePet == 7) {
+                mpMax += (this.player.pet.nPoint.mpMax * 200L / 100L);
             } else {
                 mpMax += this.player.pet.nPoint.mpMax;
             }
@@ -1275,8 +1289,9 @@ public class NPoint {
         }
 
         if (this.player.setClothes.nail >= 2) {
-            this.tlDameCrit.add(10);
-            this.tlSDCM += 10;
+            int nailCritPct = 10 + (10 * this.player.setClothes.skhBonusNail / 100);
+            this.tlDameCrit.add(nailCritPct);
+            this.tlSDCM += nailCritPct;
         }
         // Xử lý thức ăn 2
         if (this.player.itemTime != null && this.player.itemTime.isEatMeal2 && this.player.itemTime.iconMeal2 == 8061) {
@@ -1328,6 +1343,8 @@ public class NPoint {
                 dame += (this.player.pet.nPoint.dame * 40L / 100L);
             } else if (this.player.pet.typePet == 6) {
                 dame += (this.player.pet.nPoint.dame * 60L / 100L);
+            } else if (this.player.pet.typePet == 7) {
+                dame += (this.player.pet.nPoint.dame * 200L / 100L);
             } else {
                 dame += this.player.pet.nPoint.dame;
             }
@@ -1414,7 +1431,7 @@ public class NPoint {
         }
 
         if (player.setClothes.thanVuTruKaio >= 2) {
-            this.crit += 15;
+            this.crit += 15 + (15 * player.setClothes.skhBonusThanVuTruKaio / 100);
         }
     }
 
@@ -1588,7 +1605,7 @@ public class NPoint {
                 }
                 percentDameSkill = skillSelect.damage;
                 if (this.player.setClothes.songoku == 5) {
-                    percentXDame = 100;
+                    percentXDame = 100 + (100 * this.player.setClothes.skhBonusSongoku / 100);
                 }
                 break;
             case Skill.GALICK:
@@ -1597,7 +1614,7 @@ public class NPoint {
                 }
                 percentDameSkill = skillSelect.damage;
                 if (this.player.setClothes.kakarot == 5) {
-                    percentXDame = 100;
+                    percentXDame = 100 + (100 * this.player.setClothes.skhBonusKakarot / 100);
                 }
                 break;
             case Skill.ANTOMIC:
@@ -1621,7 +1638,7 @@ public class NPoint {
                 }
                 percentDameSkill = skillSelect.damage;
                 if (this.player.setClothes.nail == 5) {
-                    percentXDame = 80;
+                    percentXDame = 80 + (80 * this.player.setClothes.skhBonusNail / 100);
                 }
                 break;
 
@@ -1631,7 +1648,7 @@ public class NPoint {
                 }
                 percentDameSkill = skillSelect.damage;
                 if (this.player.setClothes.ocTieu == 5) {
-                    percentXDame = 100;
+                    percentXDame = 100 + (100 * this.player.setClothes.skhBonusOcTieu / 100);
                 }
                 break;
             case Skill.KAIOKEN:
@@ -1640,7 +1657,7 @@ public class NPoint {
                 }
                 percentDameSkill = skillSelect.damage;
                 if (player.setClothes.thanVuTruKaio == 5) {
-                    percentXDame = 120;
+                    percentXDame = 120 + (120 * player.setClothes.skhBonusThanVuTruKaio / 100);
                 }
                 break;
             case Skill.SUPER_KAME:
@@ -1668,7 +1685,8 @@ public class NPoint {
                 percentDameSkill = skillSelect.damage;
                 long dameSkill = this.mpMax / 100L * percentDameSkill + (this.mpMax % 100L) * percentDameSkill / 100L;
                 if (this.player.setClothes.picolo == 5) {
-                    dameSkill *= 2L;
+                    long picoloMultPct = 200L + this.player.setClothes.skhBonusPicolo;
+                    dameSkill = (dameSkill / 100L) * picoloMultPct + ((dameSkill % 100L) * picoloMultPct / 100L);
                 }
                 return Math.max(1L, dameSkill);
             case Skill.QUA_CAU_KENH_KHI:
@@ -1692,14 +1710,16 @@ public class NPoint {
                 long dameqckk = (hpmob / 10L) + (hppl / 10L) + this.dame * 10L;
 
                 if (this.player.setClothes.kirin == 5) {
-                    dameqckk *= 2L;
+                    long kirinMultPct = 200L + this.player.setClothes.skhBonusKirin;
+                    dameqckk = (dameqckk / 100L) * kirinMultPct + ((dameqckk % 100L) * kirinMultPct / 100L);
                 }
 
                 dameqckk = dameqckk + (dameqckk / 100L * Util.nextInt(-5, 5));
                 return Math.max(1L, dameqckk);
             case Skill.DE_TRUNG:
                 if (player.setClothes.pikkoroDaimao == 5) {
-                    dameAttack *= 4L;
+                    long pikkoroMultPct = 400L + 3L * player.setClothes.skhBonusPikkoroDaimao;
+                    dameAttack = (dameAttack / 100L) * pikkoroMultPct + ((dameAttack % 100L) * pikkoroMultPct / 100L);
                 }
                 return dameAttack;
         }

@@ -71,11 +71,11 @@ public class DoiSachTuyetKy {
             Service.gI().sendThongBao(player, "Bạn không đủ nguyên liệu để đổi sách.");
             return;
         }
-        CombineService.gI().sendAddItemCombine(player, ConstNpc.BA_HAT_MIT, cuonSachCu, kimBamGiay, conDau);
-
         if (useConDau) {
+            CombineService.gI().sendAddItemCombine(player, ConstNpc.BA_HAT_MIT, cuonSachCu, kimBamGiay, conDau);
             processSuccess(player, cuonSachCu, kimBamGiay, conDau, true);
         } else {
+            CombineService.gI().sendAddItemCombine(player, ConstNpc.BA_HAT_MIT, cuonSachCu, kimBamGiay);
             if (Util.isTrue(SUCCESS_RATE_PERCENT, 100)) {
                 processSuccess(player, cuonSachCu, kimBamGiay, null, false);
             } else {
@@ -126,22 +126,23 @@ public class DoiSachTuyetKy {
     }
 
     private static Item createSach(byte gender, boolean useConDau) {
-        short itemId = SACH_IDS[Util.nextInt(SACH_IDS.length)];
+        short itemId = (gender >= 0 && gender < SACH_IDS.length) ? SACH_IDS[gender] : SACH_IDS[0];
 
         Item sach = ItemService.gI().createNewItem(itemId);
         sach.itemOptions.clear();
 
         if (useConDau) {
-            if (Util.isTrue(EXTRA_OPTION_CHANCE, 100)) {
-                int optionCount = Util.nextInt(1, 3);
-                for (int i = 0; i < optionCount; i++) {
-                    sach.itemOptions.add(new Item.ItemOption(217, 0));
-                }
-            } else {
+            // Dùng Con dấu: 100% ra 2 - 3 dòng chỉ số chưa giám định (X5 của 20% = 100%)
+            int optionCount = Util.nextInt(2, 3);
+            for (int i = 0; i < optionCount; i++) {
                 sach.itemOptions.add(new Item.ItemOption(217, 0));
             }
         } else {
-            sach.itemOptions.add(new Item.ItemOption(217, 0));
+            // Không dùng Con dấu: 20% cơ hội ra 2 - 3 dòng, còn lại 1 dòng
+            int optionCount = Util.isTrue(EXTRA_OPTION_CHANCE, 100) ? Util.nextInt(2, 3) : 1;
+            for (int i = 0; i < optionCount; i++) {
+                sach.itemOptions.add(new Item.ItemOption(217, 0));
+            }
         }
 
         sach.itemOptions.add(new Item.ItemOption(21, 40));

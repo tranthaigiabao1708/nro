@@ -2981,16 +2981,16 @@ public class BossesData {
                 {Skill.MASENKO, 7, 1200}
             },
             new String[]{
-                "|-1|Hô hô hô! Cuối cùng ta đã tìm thấy Bia Phong Ấn Thần Hủy Diệt của Vũ Trụ 13!",
-                "|-1|Son Goku đã bị xiềng xích khóa chặt ở ngục tối... chẳng còn ai cản nổi bản đế nữa!"
+                "|-1|Hô hô hô! Cuối cùng ta đã tìm thấy Điện Thờ giam giữ Thần Hủy Diệt Bunny của Vũ Trụ 13!",
+                "|-1|Son Goku đã bị xiềng xích khóa chặt ở ngục tối... chẳng còn ai cản nổi ta nữa!"
             },
             new String[]{
                 "|-1|Lũ sâu bọ dám mò sang tận Vũ Trụ 13 cơ à?!",
-                "|-1|Hãy trở thành vật hiến tế để mở khóa Phong Ấn Cổ Thần đi!",
+                "|-1|Năng lượng của các ngươi sẽ giúp ta đánh thức Thần Hủy Diệt Bunny!",
                 "|-1|Tia Chết Chóc Hoàng Kim! Tan xác đi!"
             },
             new String[]{
-                "|-1|Khá lắm... Ngươi buộc bản đế phải phô diễn hình thái tối thượng vừa tu luyện trong Dị Giới!"
+                "|-1|Khá lắm... Ngươi buộc ta phải tung ra hình thái tối thượng vừa rèn luyện trong không gian khác!"
             },
             REST_1_M
     );
@@ -3010,50 +3010,51 @@ public class BossesData {
             },
             new String[]{
                 "|-1|QUỲ XUỐNG ĐI! Đây chính là BLACK FIDE — Ác Mộng Tối Thượng của 13 Vũ Trụ!",
-                "|-1|Bia Phong Ấn Thần Hủy Diệt đang cộng hưởng với luồng hắc khí của ta!"
+                "|-1|Xiềng xích cổ đại đang cộng hưởng với luồng Ki đen của ta!"
             },
             new String[]{
-                "|-1|Hắc Ám Đế Vương! Một đấm này từng nghiền nát cả Bản Năng Vô Cực!",
-                "|-1|Mỗi giọt máu đổ xuống Điện Thờ này đều làm xiềng xích Thần Hủy Diệt rạn nứt!",
-                "|-1|Chết đi! Và chiêm ngưỡng thời khắc Cổ Thần Vũ Trụ 13 thức giấc!"
+                "|-1|Một đấm này của Black Fide từng đánh gục cả Bản Năng Vô Cực!",
+                "|-1|Mỗi đòn va chạm trong Điện Thờ này đều làm xiềng xích giam giữ rạn nứt!",
+                "|-1|Chết đi! Và chứng kiến thời khắc Thần Hủy Diệt Bunny thức giấc!"
             },
             new String[]{
-                "|-1|Khặc khặc... Muộn rồi!! Huyết Tế đã đủ... PHONG ẤN THẦN HỦY DIỆT MỞ RA!!"
+                "|-1|Khặc khặc... Muộn rồi!! Năng lượng đã đủ... THẦN HỦY DIỆT BUNNY THỨC TỈNH ĐI!!"
             },
             AppearType.ANOTHER_LEVEL
     );
 
-    //========================VŨ TRỤ 13 - CỔ THẦN HỦY DIỆT VŨ TRỤ 13========================
+    //========================VŨ TRỤ 13 - THẦN HỦY DIỆT BUNNY (BOSS THEO GIỜ - 100 TỶ HP)========================
     public static final BossData THAN_HUY_DIET_VT13 = new BossData(
-            "Thần Hủy Diệt VT13",
+            "Thần Hủy Diệt Bunny",
             ConstPlayer.XAYDA,
             new short[]{2126, 2127, 2128, -1, -1, -1},
-            320000,
+            450000,
             new int[]{2000000000},
             new int[]{180},
             new int[][]{
-                {Skill.GALICK, 7, 350},
-                {Skill.LIEN_HOAN, 7, 800},
-                {Skill.ANTOMIC, 7, 850},
-                {Skill.KAMEJOKO, 7, 900}
+                {Skill.GALICK, 7, 300},
+                {Skill.LIEN_HOAN, 7, 700},
+                {Skill.ANTOMIC, 7, 750},
+                {Skill.SUPER_KAME, 7, 1100}
             },
             new String[]{
-                "|-1|Tháp Ai Cập đã vỡ nát... 8 Thần Hồn Hủy Diệt của 12 Vũ Trụ đang sôi sục trong huyết quản Bản Tôn!",
-                "|-1|Beerus tưởng giấu được mảnh hồn của Champa là cứu vãn được đa vũ trụ sao?!"
+                "|-1|Xiềng xích cổ đại đã vỡ nát... Giờ khắc Hủy Diệt của Vũ Trụ 13 đã tới!",
+                "|-1|Dải băng xác ướp cổ đại và ngọn lửa Hakai của ta sẽ chôn vùi tất cả các ngươi!"
             },
             new String[]{
-                "|-1|Hakai Cổ Thần!! Quỳ xuống trước quyền năng của Vũ Trụ 13!",
-                "|-1|Trận Pháp Phán Quyết Ai Cập! Linh hồn ngươi cũng sẽ hóa thành cầu năng lượng tím cho ta!",
-                "|-1|Ngay cả 12 Thần Hủy Diệt hợp lực còn gục ngã dưới chân Bản Tôn!"
+                "|-1|Hakai Toàn Khu!! Không kẻ nào trốn thoát khỏi ngọn lửa Hủy Diệt đâu!",
+                "|-1|Dải Băng Xác Ướp — Trói chặt và nghiền nát mục tiêu!",
+                "|-1|Ấn Bọ Hung Pharaoh!! Hấp thụ sinh lực về cho ta!",
+                "|-1|Tái tạo năng lượng cổ đại... Các ngươi nghĩ có thể làm gián đoạn ta sao?!"
             },
             new String[]{
-                "|-1|Gừ... Khá lắm phàm nhân! Đã đến lúc dung hợp toàn bộ 8 Thần Hồn Hủy Diệt — HÓA THÂN TỐI THƯỢNG!!"
+                "|-1|Hự... Không thể nào!! Tất cả hãy tan biến cùng Quả Cầu Hakai cuối cùng của ta đi!!"
             },
-            REST_5_M
+            3600
     );
 
     public static final BossData CO_THAN_HUY_DIET_VT13 = new BossData(
-            "Cổ Thần Hủy Diệt VT13",
+            "Thần Hủy Diệt Bunny",
             ConstPlayer.XAYDA,
             new short[]{2126, 2127, 2128, -1, -1, -1},
             420000,
@@ -3066,22 +3067,22 @@ public class BossesData {
                 {Skill.SUPER_KAME, 7, 1100}
             },
             new String[]{
-                "|-1|CHIÊM NGƯỠNG ĐI!! ĐÂY LÀ HÌNH THÁI CỔ THẦN HỦY DIỆT TỐI THƯỢNG CỦA VŨ TRỤ 13!",
-                "|-1|Bão Hồn 8 Thần Hủy Diệt — Nghiền nát toàn bộ không-thời gian!!"
+                "|-1|NHÌN CHO RÕ ĐÂY!! SỨC MẠNH HỦY DIỆT TỐI ĐA CỦA THẦN HỦY DIỆT BUNNY!",
+                "|-1|Bão Năng Lượng 8 Thần Hủy Diệt — Quét sạch toàn bộ không-thời gian!!"
             },
             new String[]{
-                "|-1|Quả Cầu Hakai Cổ Thần!! Vạn vật quy hư vô!",
-                "|-1|Dù ngươi có đạt tới Bản Năng Vô Cực hay Bản Ngã Tối Thượng cũng không thoát khỏi Phán Quyết Ai Cập!",
-                "|-1|HỦY DIỆT BÙNG NỔ — FLASH!!"
+                "|-1|Quả Cầu Hakai!! Tan biến hết đi!",
+                "|-1|Dù ngươi có đạt tới Bản Năng Vô Cực hay Bản Ngã Tối Thượng cũng không đỡ nổi đòn này!",
+                "|-1|NĂNG LƯỢNG HỦY DIỆT BÙNG NỔ — FLASH!!"
             },
             new String[]{
-                "|-1|Không thể nào... Bản Tôn bất diệt... Lời nguyền Vũ Trụ 13 sẽ còn tái sinh!!"
+                "|-1|Không thể nào... Sức mạnh của Thần Hủy Diệt Bunny vẫn chưa kết thúc đâu!!"
             },
             AppearType.ANOTHER_LEVEL
     );
 
     public static final BossData THAN_HUY_DIET_VT13_TRIAL = new BossData(
-            "Phân Thân Thần Hủy Diệt VT13",
+            "Phân Thân Bunny",
             ConstPlayer.XAYDA,
             new short[]{2126, 2127, 2128, -1, -1, -1},
             240000,
@@ -3094,16 +3095,46 @@ public class BossesData {
                 {Skill.KAMEJOKO, 7, 950}
             },
             new String[]{
-                "|-1|Chỉ là một luồng tàn ảnh tại Tháp Ai Cập... nhưng dư sức nghiền nát ngươi!"
+                "|-1|Chỉ là một phân thân của ta thôi... nhưng dư sức nghiền nát ngươi!"
             },
             new String[]{
-                "|-1|Quả Cầu Hakai Cổ Thần!!",
-                "|-1|Nếm thử Trận Pháp Phán Quyết Ai Cập đi!",
-                "|-1|Bão Hồn Thần Hủy Diệt — FLASH!!"
+                "|-1|Quả Cầu Hakai!!",
+                "|-1|Đỡ lấy Cột Năng Lượng Hủy Diệt này đi!",
+                "|-1|Bão Năng Lượng Hủy Diệt — FLASH!!"
             },
             new String[]{
-                "|-1|Khá lắm... Chân thân của ta đang đợi ngươi tại Điện Thờ Sâu Thẳm!"
+                "|-1|Khá lắm... Bản thể thật sự của ta đang đợi ngươi tại Điện Thờ!"
             },
             AppearType.CALL_BY_ANOTHER
+    );
+
+    //========================VŨ TRỤ 13 - BOSS ĐỘC LẬP FIDE ĐEN (20 TỶ HP)========================
+    public static final BossData FIDE_DEN = new BossData(
+            "Fide Đen",
+            ConstPlayer.XAYDA,
+            new short[]{2114, 2115, 2116, -1, -1, -1},
+            320000,
+            new int[]{2000000000},
+            new int[]{178, 182, 179},
+            new int[][]{
+                {Skill.GALICK, 7, 350},
+                {Skill.LIEN_HOAN, 7, 750},
+                {Skill.ANTOMIC, 7, 850},
+                {Skill.KAMEJOKO, 7, 950}
+            },
+            new String[]{
+                "|-1|Hô hô hô! Sau 10 năm khổ luyện trong chiều không gian tối, FIDE ĐEN đã giáng lâm!",
+                "|-1|Hãy run rẩy trước nguồn Ki Hắc Ám tuyệt đối của ta đi!"
+            },
+            new String[]{
+                "|-1|Cầu Hắc Ám Tối Thượng — Xóa sổ tất cả!",
+                "|-1|Trói Ki Đen!! Ngươi nghĩ có thể thoát khỏi xiềng xích bóng tối sao?!",
+                "|-1|Khiên Hấp Thụ Hắc Ám — Mọi đòn tấn công của ngươi chỉ làm ta mạnh hơn thôi!",
+                "|-1|Một đấm này đủ nghiền nát cả Bản Năng lẫn Bản Ngã Vô Cực!"
+            },
+            new String[]{
+                "|-1|Không thể nào... Hình thái Fide Đen của ta lại bại trận ư?!"
+            },
+            REST_10_M
     );
 }

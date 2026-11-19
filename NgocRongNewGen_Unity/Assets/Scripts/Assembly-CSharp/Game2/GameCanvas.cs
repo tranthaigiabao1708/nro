@@ -2465,6 +2465,50 @@ namespace Game2
                             isPointerClick = (isPointerJustDown = (isPointerJustRelease = false));
                         }
                     }
+                    // [TEST TẠM THỜI] 2 nút triệu hồi Boss ngay lập tức để test (Bunny & Fide Đen)
+                    if (currentScreen != null && currentScreen is GameScr)
+                    {
+                        int nutW = GameScr.imgNut.getWidth();
+                        int nutH = GameScr.imgNut.getHeight();
+                        int btnY = GameScr.yC + 17 + mGraphics.addYWhenOpenKeyBoard;
+                        int hitY = GameScr.yC + 1 + mGraphics.addYWhenOpenKeyBoard;
+
+                        int bx1 = GameScr.xC - 66;
+                        g.drawImage((mScreen.keyTouch != 10001) ? GameScr.imgNut : GameScr.imgNutF, bx1, btnY, mGraphics.HCENTER | mGraphics.VCENTER);
+                        mFont.tahoma_7b_white.drawString(g, "Gọi\nBunny", bx1 + 1, GameScr.yC + 5 + mGraphics.addYWhenOpenKeyBoard, mGraphics.HCENTER | mGraphics.VCENTER);
+                        if (isPointerHoldIn(bx1 - 16, hitY, nutW, nutH))
+                        {
+                            mScreen.keyTouch = 10001;
+                            isPointerJustDown = false;
+                            GameScr.gI().isPointerDowning = false;
+                            if (isPointerClick && isPointerJustRelease)
+                            {
+                                Message msgTest1 = new Message((sbyte)(-126));
+                                msgTest1.writer().writeByte(91);
+                                Session_ME.gI().sendMessage(msgTest1);
+                                msgTest1.cleanup();
+                                isPointerClick = (isPointerJustDown = (isPointerJustRelease = false));
+                            }
+                        }
+
+                        int bx2 = GameScr.xC - 112;
+                        g.drawImage((mScreen.keyTouch != 10002) ? GameScr.imgNut : GameScr.imgNutF, bx2, btnY, mGraphics.HCENTER | mGraphics.VCENTER);
+                        mFont.tahoma_7b_white.drawString(g, "Gọi\nFide", bx2 + 1, GameScr.yC + 5 + mGraphics.addYWhenOpenKeyBoard, mGraphics.HCENTER | mGraphics.VCENTER);
+                        if (isPointerHoldIn(bx2 - 16, hitY, nutW, nutH))
+                        {
+                            mScreen.keyTouch = 10002;
+                            isPointerJustDown = false;
+                            GameScr.gI().isPointerDowning = false;
+                            if (isPointerClick && isPointerJustRelease)
+                            {
+                                Message msgTest2 = new Message((sbyte)(-126));
+                                msgTest2.writer().writeByte(92);
+                                Session_ME.gI().sendMessage(msgTest2);
+                                msgTest2.cleanup();
+                                isPointerClick = (isPointerJustDown = (isPointerJustRelease = false));
+                            }
+                        }
+                    }
                 }
             }
 			catch (Exception)
@@ -2559,10 +2603,17 @@ namespace Game2
 				try
 				{
 					string[] array = Res.split(path, "/", 0);
-					sbyte[] array2 = Rms.loadRMS("x" + mGraphics.zoomLevel + array[^1]);
+					string leafName = array[^1];
+					sbyte[] array2 = Rms.loadRMS("x" + mGraphics.zoomLevel + leafName);
 					if (array2 != null)
 					{
 						result = Image.createImage(array2, 0, array2.Length);
+						return result;
+					}
+					string diskBg = System.IO.Path.Combine(Application.dataPath, "CustomAssets", "bg", "x" + mGraphics.zoomLevel, leafName + ".png");
+					if (System.IO.File.Exists(diskBg))
+					{
+						result = Image.createImage(System.IO.File.ReadAllBytes(diskBg));
 						return result;
 					}
 					return result;
@@ -2573,6 +2624,30 @@ namespace Game2
 					return result;
 				}
 			}
+		}
+
+		public static Image loadCustomLogoImage()
+		{
+			try
+			{
+				string diskLogo = System.IO.Path.Combine(Application.dataPath, "CustomAssets", "logo1.png");
+				if (System.IO.File.Exists(diskLogo))
+				{
+					Image img = Image.createImage(System.IO.File.ReadAllBytes(diskLogo));
+					if (img != null)
+					{
+						if (mGraphics.zoomLevel != 4)
+						{
+							resizeImage(img);
+						}
+						return img;
+					}
+				}
+			}
+			catch (Exception)
+			{
+			}
+			return loadImage("/mainimage/logo1.png");
 		}
 
 		public static Image LoadImageFromRoot(string path)

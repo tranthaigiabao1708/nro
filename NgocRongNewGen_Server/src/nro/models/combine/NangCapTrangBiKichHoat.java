@@ -59,7 +59,7 @@ public class NangCapTrangBiKichHoat {
             return false;
         }
         int id = item.template.id;
-        return id >= 1048 && id <= 1062;
+        return (id >= 1048 && id <= 1062) || (id >= 2035 && id <= 2049);
     }
 
     public static int getMainSkhOptionId(Item item) {
@@ -237,7 +237,8 @@ public class NangCapTrangBiKichHoat {
 
         boolean isSuccess = Util.isTrue(RATIO_THAN_LINH_SKH, 100);
         if (isSuccess) {
-            transferSkhOptions(skhId, itemTL);
+            int prevUpgradeLv = CuongHoaCapSkh.getSkhUpgradeLevel(itemSKH);
+            transferSkhOptions(skhId, itemTL, prevUpgradeLv);
             InventoryService.gI().subQuantityItemsBag(player, itemSKH, 1);
             CombineService.gI().sendEffectSuccessCombine(player);
             Service.gI().sendThongBao(player, "Chúc mừng! Bạn đã nâng cấp thành công " + itemTL.template.name + " (" + setName + ")!");
@@ -404,7 +405,8 @@ public class NangCapTrangBiKichHoat {
 
         boolean isSuccess = Util.isTrue(RATIO_HUY_DIET_SKH, 100);
         if (isSuccess) {
-            transferSkhOptions(skhId, itemHD);
+            int prevUpgradeLv = CuongHoaCapSkh.getSkhUpgradeLevel(itemTLSKH);
+            transferSkhOptions(skhId, itemHD, prevUpgradeLv);
             InventoryService.gI().subQuantityItemsBag(player, itemTLSKH, 1);
             CombineService.gI().sendEffectSuccessCombine(player);
             Service.gI().sendThongBao(player, "Chúc mừng! Bạn đã nâng cấp thành công " + itemHD.template.name + " (" + setName + ")!");
@@ -593,7 +595,8 @@ public class NangCapTrangBiKichHoat {
 
         boolean isSuccess = Util.isTrue(RATIO_THIEN_SU_SKH, 100);
         if (isSuccess) {
-            transferSkhOptions(skhId, itemTS);
+            int prevUpgradeLv = CuongHoaCapSkh.getSkhUpgradeLevel(itemHDSKH);
+            transferSkhOptions(skhId, itemTS, prevUpgradeLv);
             InventoryService.gI().subQuantityItemsBag(player, itemHDSKH, 1);
             CombineService.gI().sendEffectSuccessCombine(player);
             Service.gI().sendThongBao(player, "Chúc mừng! Bạn đã nâng cấp thành công " + itemTS.template.name + " (" + setName + ")!");
@@ -613,7 +616,7 @@ public class NangCapTrangBiKichHoat {
         CombineService.gI().reOpenItemCombine(player);
     }
 
-    private static void transferSkhOptions(int skhId, Item targetItem) {
+    private static void transferSkhOptions(int skhId, Item targetItem, int skhUpgradeLv) {
         if (targetItem.itemOptions == null) {
             targetItem.itemOptions = new ArrayList<>();
         }
@@ -624,6 +627,7 @@ public class NangCapTrangBiKichHoat {
         for (int subId : ItemService.gI().getOptionIdsBySKH(skhId)) {
             targetItem.itemOptions.add(new ItemOption(subId, 0));
         }
+        CuongHoaCapSkh.applySkhUpgradeOptions(targetItem, skhUpgradeLv);
         ItemService.gI().ensureDefaultOptions(targetItem);
     }
 }

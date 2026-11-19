@@ -128,7 +128,8 @@ public abstract class SuperRank extends Boss {
             this.fusion = player.fusion;
             this.fusion.setPlayer(this);
             this.nPoint.calPoint();
-            ChangeMapService.gI().changeMap(this, this.zone, 434, 264);
+            boolean isVt13 = this.zone.map != null && this.zone.map.mapId == 186;
+            ChangeMapService.gI().changeMap(this, this.zone, isVt13 ? 940 : 434, isVt13 ? 456 : 264);
         }
     }
 

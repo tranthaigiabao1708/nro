@@ -159,6 +159,7 @@ public class ConstNpc {
     public static final byte BEERUS_VT13 = 88;
     public static final byte BELMOD_VT13 = 89;
     public static final byte IWAN_VT13 = 90;
+    public static final byte TRONG_TAI_VT13 = 91;
     public static final int MENU_VU_TRU_13_HOME = 20310;
     //----------------------index menu------------------------------------------
     //menu o len tang map mabu

@@ -2347,6 +2347,11 @@ namespace Game1
 
 		public override void keyPress(int keyCode)
 		{
+			if (isCutsceneVt13)
+			{
+				pendingCutsceneKeyAdvance = true;
+				return;
+			}
 			base.keyPress(keyCode);
 		}
 
@@ -4756,12 +4761,15 @@ namespace Game1
 				{
 					Cout.LogError("Loi ham paint char gamesc: " + ex.ToString());
 				}
-				if (char2 != null && (!GameCanvas.panel.isShow || !GameCanvas.panel.isTypeShop()) && char2.isShadown)
+				if (char2 != null && (!GameCanvas.panel.isShow || !GameCanvas.panel.isTypeShop()) && char2.isShadown && !shouldSuppressGroundCharInFinisher(char2))
 				{
 					char2.paintShadow(g);
 				}
 			}
-			Char.myCharz().paintShadow(g);
+			if (!shouldSuppressGroundCharInFinisher(Char.myCharz()))
+			{
+				Char.myCharz().paintShadow(g);
+			}
 			EffecMn.paintLayer2(g);
 			for (int num = 0; num < vMob.size(); num++)
 			{
@@ -4781,12 +4789,25 @@ namespace Game1
 				catch (Exception)
 				{
 				}
-				if (char3 != null && (!GameCanvas.panel.isShow || !GameCanvas.panel.isTypeShop()))
+				if (char3 != null && (!GameCanvas.panel.isShow || !GameCanvas.panel.isTypeShop()) && !shouldSuppressGroundCharInFinisher(char3))
 				{
+					if (isCutsceneVt13 && cutsceneIdVt13 == 6 && !char3.isPet && !char3.isMiniPet && char3.charID > 0)
+					{
+						char3.cy = finisherFloorY;
+						char3.cdir = ((char3.cx <= finisherBossX) ? 1 : (-1));
+					}
 					char3.paint(g);
 				}
 			}
-			Char.myCharz().paint(g);
+			if (!shouldSuppressGroundCharInFinisher(Char.myCharz()))
+			{
+				if (isCutsceneVt13 && cutsceneIdVt13 == 6)
+				{
+					Char.myCharz().cy = finisherFloorY;
+					Char.myCharz().cdir = ((Char.myCharz().cx <= finisherBossX) ? 1 : (-1));
+				}
+				Char.myCharz().paint(g);
+			}
 			paintVuTru13Foreground(g);
 			if (Char.myCharz().skillPaint != null && Char.myCharz().skillInfoPaint() != null && Char.myCharz().indexSkill < Char.myCharz().skillInfoPaint().Length)
 			{
@@ -7094,6 +7115,26 @@ namespace Game1
 
 		public static int voCucLevelVt13 = 1;
 
+		public static bool hasVoCucSetVt13;
+
+		private int finisherKillerCharId = -1;
+
+		private string finisherKillerName = string.Empty;
+
+		private int finisherKillerHead;
+
+		private int finisherKillerBody;
+
+		private int finisherKillerLeg;
+
+		private int finisherKillerGroundX = 760;
+
+		private int finisherBossX = 920;
+
+		private int finisherFloorY = 456;
+
+		private bool pendingCutsceneKeyAdvance;
+
 		private int cutsceneIdVt13;
 
 		private int cutsceneFocusX;
@@ -7113,6 +7154,8 @@ namespace Game1
 		private int cutsceneStepTick;
 
 		private int cutsceneTotalTick;
+
+		private long cutsceneStepStartMs;
 
 		private int changingMapWatchdogTicks;
 
@@ -7186,6 +7229,17 @@ namespace Game1
 
 		private void spawnBossVt13SkillVfx(sbyte vfxTypeVal, int sx, int sy, int dx, int dy)
 		{
+			// Nếu là hiệu ứng vỡ khiên tại chính vị trí Fide Đen thì tắt ngay vòm Khiên Hấp Thụ đang chạy (type 8)
+			if (vfxTypeVal == 9 && sx == dx && sy == dy)
+			{
+				for (int k = 0; k < MAX_BOSS_VT13_VFX; k++)
+				{
+					if (bossVfxMaxTick[k] > 0 && bossVfxType[k] == 8 && System.Math.Abs(bossVfxSrcX[k] - sx) < 220)
+					{
+						bossVfxMaxTick[k] = 0;
+					}
+				}
+			}
 			int slot = 0;
 			int bestRemaining = 999999;
 			for (int i = 0; i < MAX_BOSS_VT13_VFX; i++)
@@ -7208,15 +7262,22 @@ namespace Game1
 			bossVfxDstX[slot] = dx;
 			bossVfxDstY[slot] = dy;
 			bossVfxTick[slot] = 0;
-			bossVfxMaxTick[slot] = ((vfxTypeVal == 1) ? 76 : ((vfxTypeVal == 2) ? 92 : 108));
+			bossVfxMaxTick[slot] = ((vfxTypeVal == 1) ? 76
+				: ((vfxTypeVal == 2) ? 92
+				: ((vfxTypeVal == 4) ? 104
+				: ((vfxTypeVal == 5) ? 88
+				: ((vfxTypeVal == 6) ? 104
+				: ((vfxTypeVal == 7) ? 78
+				: ((vfxTypeVal == 8) ? 200
+				: ((vfxTypeVal == 9) ? 34 : 108))))))));
 			if (vfxTypeVal == 3)
 			{
 				bossVfxFlashTicks = 44;
 				shock_scr = 26;
 			}
-			else if (vfxTypeVal == 2)
+			else if (vfxTypeVal == 2 || vfxTypeVal == 4 || vfxTypeVal == 5 || vfxTypeVal == 6 || vfxTypeVal == 7 || vfxTypeVal == 8)
 			{
-				shock_scr = 16;
+				shock_scr = 14;
 			}
 		}
 
@@ -7238,9 +7299,14 @@ namespace Game1
 					{
 						voCucLevelVt13 = msg.reader().readByte();
 					}
+					if (msg.reader().available() > 0)
+					{
+						hasVoCucSetVt13 = msg.reader().readBoolean();
+					}
 					if (Char.myCharz() != null)
 					{
 						Char.myCharz().voCucType = voCucTypeVt13;
+						Char.myCharz().hasVoCucSet = hasVoCucSetVt13;
 					}
 					if (SoundMn.gI() != null)
 					{
@@ -7251,10 +7317,13 @@ namespace Game1
 				{
 					int charId = msg.reader().readInt();
 					sbyte vcType = msg.reader().readByte();
+					bool hasSet = msg.reader().available() > 0 && msg.reader().readBoolean();
 					if (Char.myCharz() != null && Char.myCharz().charID == charId)
 					{
 						voCucTypeVt13 = vcType;
+						hasVoCucSetVt13 = hasSet;
 						Char.myCharz().voCucType = vcType;
+						Char.myCharz().hasVoCucSet = hasSet;
 					}
 					else
 					{
@@ -7262,8 +7331,75 @@ namespace Game1
 						if (cInMap != null)
 						{
 							cInMap.voCucType = vcType;
+							cInMap.hasVoCucSet = hasSet;
 						}
 					}
+				}
+				else if (subCmd == 5)
+				{
+					finisherKillerCharId = msg.reader().readInt();
+					finisherKillerName = msg.reader().readUTF();
+					finisherKillerHead = msg.reader().readShort();
+					finisherKillerBody = msg.reader().readShort();
+					finisherKillerLeg = msg.reader().readShort();
+					finisherKillerGroundX = msg.reader().readShort();
+					finisherBossX = msg.reader().readShort();
+					finisherFloorY = msg.reader().readShort();
+					cutsceneTitle = msg.reader().readUTF();
+					int stepCount5 = msg.reader().readByte();
+					if (stepCount5 <= 0)
+					{
+						return;
+					}
+					cutsceneSpeakers = new string[stepCount5];
+					cutsceneTexts = new string[stepCount5];
+					cutsceneDurations = new int[stepCount5];
+					for (int s5 = 0; s5 < stepCount5; s5++)
+					{
+						cutsceneSpeakers[s5] = msg.reader().readUTF();
+						cutsceneTexts[s5] = msg.reader().readUTF();
+						int dur5 = msg.reader().readShort();
+						cutsceneDurations[s5] = ((dur5 < 80) ? 200 : dur5);
+					}
+					cutsceneIdVt13 = 6;
+					activeCutsceneIdVt13 = 6;
+					cutsceneFocusX = finisherBossX;
+					cutsceneFocusY = finisherFloorY - 90;
+					cutsceneStepIdx = 0;
+					cutsceneStepTick = 0;
+					cutsceneTotalTick = 0;
+					cutsceneStepStartMs = mSystem.currentTimeMillis();
+					pendingCutsceneKeyAdvance = false;
+					isCutsceneVt13 = true;
+					shock_scr = 28;
+					GameCanvas.clearKeyPressed();
+					GameCanvas.clearKeyHold();
+					GameCanvas.isPointerJustRelease = false;
+					GameCanvas.isPointerClick = false;
+					if (Char.myCharz() != null)
+					{
+						Char.myCharz().cy = finisherFloorY;
+						Char.myCharz().cdir = ((Char.myCharz().cx <= finisherBossX) ? 1 : (-1));
+					}
+					for (int ci = 0; ci < vCharInMap.size(); ci++)
+					{
+						Char ch = (Char)vCharInMap.elementAt(ci);
+						if (ch != null && ch.charID > 0 && !ch.isPet && !ch.isMiniPet)
+						{
+							ch.cy = finisherFloorY;
+							ch.cdir = ((ch.cx <= finisherBossX) ? 1 : (-1));
+						}
+					}
+					if (GameCanvas.menu != null)
+					{
+						GameCanvas.menu.forceHideMenuWithoutAction();
+					}
+					if (GameCanvas.panel != null && GameCanvas.panel.isShow)
+					{
+						GameCanvas.panel.hide();
+					}
+					ChatPopup.currChatPopup = null;
+					InfoDlg.hide();
 				}
 				else if (subCmd == 3)
 				{
@@ -7299,17 +7435,24 @@ namespace Game1
 					cutsceneStepIdx = 0;
 					cutsceneStepTick = 0;
 					cutsceneTotalTick = 0;
+					cutsceneStepStartMs = mSystem.currentTimeMillis();
+					pendingCutsceneKeyAdvance = false;
 					isCutsceneVt13 = true;
 					shock_scr = 24;
+					GameCanvas.clearKeyPressed();
+					GameCanvas.clearKeyHold();
+					GameCanvas.isPointerJustRelease = false;
+					GameCanvas.isPointerClick = false;
 					if (GameCanvas.menu != null)
 					{
-						GameCanvas.menu.doCloseMenu();
+						GameCanvas.menu.forceHideMenuWithoutAction();
 					}
 					if (GameCanvas.panel != null && GameCanvas.panel.isShow)
 					{
 						GameCanvas.panel.hide();
 					}
 					ChatPopup.currChatPopup = null;
+					GameCanvas.currentDialog = null;
 					InfoDlg.hide();
 				}
 			}
@@ -7319,10 +7462,32 @@ namespace Game1
 			}
 		}
 
+		public void notifyCutsceneAnyKey()
+		{
+			if (!isCutsceneVt13)
+			{
+				return;
+			}
+			if (mSystem.currentTimeMillis() - cutsceneStepStartMs >= 260L)
+			{
+				advanceCutsceneVt13();
+			}
+		}
+
+		private int getClampedCutsceneAnimTick()
+		{
+			if (cutsceneDurations != null && cutsceneStepIdx >= 0 && cutsceneStepIdx < cutsceneDurations.Length)
+			{
+				return System.Math.Min(cutsceneStepTick, cutsceneDurations[cutsceneStepIdx]);
+			}
+			return System.Math.Min(cutsceneStepTick, 240);
+		}
+
 		private void handleCutsceneVt13Key()
 		{
-			bool nextTriggered = false;
-			if (GameCanvas.isPointerJustRelease || GameCanvas.isPointerClick)
+			bool nextTriggered = pendingCutsceneKeyAdvance;
+			pendingCutsceneKeyAdvance = false;
+			if (UnityEngine.Input.anyKeyDown || GameCanvas.isPointerJustRelease || GameCanvas.isPointerClick)
 			{
 				nextTriggered = true;
 			}
@@ -7336,7 +7501,7 @@ namespace Game1
 			}
 			GameCanvas.isPointerJustRelease = false;
 			GameCanvas.isPointerClick = false;
-			if (nextTriggered && cutsceneStepTick >= 18)
+			if (nextTriggered && mSystem.currentTimeMillis() - cutsceneStepStartMs >= 260L)
 			{
 				advanceCutsceneVt13();
 			}
@@ -7378,6 +7543,11 @@ namespace Game1
 		{
 			cutsceneStepIdx++;
 			cutsceneStepTick = 0;
+			cutsceneStepStartMs = mSystem.currentTimeMillis();
+			pendingCutsceneKeyAdvance = false;
+			GameCanvas.clearKeyPressed();
+			GameCanvas.isPointerJustRelease = false;
+			GameCanvas.isPointerClick = false;
 			if (cutsceneTexts == null || cutsceneStepIdx >= cutsceneTexts.Length)
 			{
 				finishCutsceneVt13();
@@ -7393,9 +7563,9 @@ namespace Game1
 
 		private void updateCutsceneVt13()
 		{
-			if ((TileMap.mapID == 178 || TileMap.mapID == 180) && SmallImage.imgNew != null && prewarmVt13IconCursor < 41)
+			if (SmallImage.imgNew != null && prewarmVt13IconCursor < 236)
 			{
-				for (int pw = 0; pw < 3 && prewarmVt13IconCursor < 41; pw++)
+				for (int pw = 0; pw < 8 && prewarmVt13IconCursor < 236; pw++)
 				{
 					int pid = 27220 + prewarmVt13IconCursor;
 					prewarmVt13IconCursor++;
@@ -7404,21 +7574,17 @@ namespace Game1
 						SmallImage.createImage(pid);
 					}
 				}
-				if (16187 < SmallImage.imgNew.Length && SmallImage.imgNew[16187] == null)
-				{
-					SmallImage.createImage(16187);
-				}
 			}
 			if (bossVfxFlashTicks > 0)
 			{
-				bossVfxFlashTicks--;
+				bossVfxFlashTicks = 0;
 			}
 			for (int i = 0; i < MAX_BOSS_VT13_VFX; i++)
 			{
 				if (bossVfxMaxTick[i] > 0)
 				{
 					bossVfxTick[i]++;
-					if (bossVfxType[i] == 1 && bossVfxTick[i] == 44)
+					if ((bossVfxType[i] == 1 && bossVfxTick[i] == 44) || (bossVfxType[i] == 7 && bossVfxTick[i] == 40))
 					{
 						shock_scr = 18;
 					}
@@ -7447,13 +7613,16 @@ namespace Game1
 			{
 				return;
 			}
-			if (cutsceneTexts == null || cutsceneStepIdx >= cutsceneTexts.Length)
+			// Đảm bảo bấm phím bất kỳ luôn chuyển cảnh được ngay cả khi có serverChatPopUp đang chạy!
+			handleCutsceneVt13Key();
+			if (!isCutsceneVt13 || cutsceneTexts == null || cutsceneStepIdx >= cutsceneTexts.Length)
 			{
 				finishCutsceneVt13();
 				return;
 			}
 			cutsceneStepTick++;
 			cutsceneTotalTick++;
+			int animStepTick = getClampedCutsceneAnimTick();
 			int dynFocusX = cutsceneFocusX;
 			int dynFocusY = cutsceneFocusY;
 			if (cutsceneIdVt13 == 5)
@@ -7480,7 +7649,7 @@ namespace Game1
 				{
 					dynFocusX = 840;
 					dynFocusY = 335;
-					if (cutsceneStepIdx == 3 && cutsceneStepTick % 48 == 16)
+					if (cutsceneStepIdx == 3 && cutsceneStepTick <= 330 && cutsceneStepTick % 48 == 16)
 					{
 						shock_scr = 16;
 					}
@@ -7492,13 +7661,13 @@ namespace Game1
 				}
 				else if (cutsceneStepIdx == 5)
 				{
-					GetBossSweepPosition(cutsceneStepTick * 0.5f, out int sweepX, out int sweepY, out int _, out int _);
+					GetBossSweepPosition(animStepTick * 0.5f, out int sweepX, out int sweepY, out int _, out int _);
 					dynFocusX = (840 + sweepX) / 2;
 					dynFocusY = 355;
 				}
 				else if (cutsceneStepIdx == 6)
 				{
-					dynFocusX = ((cutsceneStepTick < 96) ? 700 : 815);
+					dynFocusX = ((animStepTick < 96) ? 700 : 815);
 					dynFocusY = 340;
 					if (cutsceneStepTick == 104)
 					{
@@ -7509,6 +7678,58 @@ namespace Game1
 				{
 					dynFocusX = 840;
 					dynFocusY = 365;
+				}
+			}
+			else if (cutsceneIdVt13 == 6)
+			{
+				int bossSkyY = finisherFloorY - 172;
+				if (cutsceneStepIdx == 0)
+				{
+					float t0 = System.Math.Min(1f, animStepTick / 95f);
+					dynFocusX = finisherBossX;
+					dynFocusY = (int)((finisherFloorY - 55) + ((bossSkyY + 20) - (finisherFloorY - 55)) * t0);
+					if (cutsceneStepTick <= 210 && cutsceneStepTick % 36 == 18)
+					{
+						shock_scr = 14;
+					}
+				}
+				else if (cutsceneStepIdx == 1)
+				{
+					if (animStepTick < 42)
+					{
+						dynFocusX = finisherKillerGroundX;
+						dynFocusY = finisherFloorY - 48;
+						if (cutsceneStepTick == 10)
+						{
+							shock_scr = 20;
+						}
+					}
+					else if (animStepTick < 116)
+					{
+						float tDash = (animStepTick - 42f) / 74f;
+						dynFocusX = (int)(finisherKillerGroundX + (finisherBossX - finisherKillerGroundX) * tDash);
+						dynFocusY = (int)((finisherFloorY - 48) + ((bossSkyY + 10) - (finisherFloorY - 48)) * tDash);
+					}
+					else
+					{
+						dynFocusX = finisherBossX;
+						dynFocusY = bossSkyY + 8;
+						if (cutsceneStepTick == 116)
+						{
+							shock_scr = 40;
+							bossVfxFlashTicks = 44;
+						}
+					}
+				}
+				else
+				{
+					float tLand = System.Math.Min(1f, animStepTick / 120f);
+					dynFocusX = (int)(finisherBossX + ((finisherBossX + finisherKillerGroundX) / 2 - finisherBossX) * tLand);
+					dynFocusY = (int)((bossSkyY + 20) + ((finisherFloorY - 65) - (bossSkyY + 20)) * tLand);
+					if (cutsceneStepTick == 8)
+					{
+						shock_scr = 26;
+					}
 				}
 			}
 			int targetX = dynFocusX - GameCanvas.w / 2;
@@ -7543,11 +7764,7 @@ namespace Game1
 			cmtoY = targetY;
 			cmx += (cmtoX - cmx) / 8;
 			cmy += (cmtoY - cmy) / 8;
-			int maxDur = ((cutsceneDurations != null && cutsceneStepIdx < cutsceneDurations.Length) ? cutsceneDurations[cutsceneStepIdx] : 240);
-			if (cutsceneStepTick >= maxDur)
-			{
-				advanceCutsceneVt13();
-			}
+			// KHÔNG TỰ ĐỘNG CHUYỂN CẢNH: Luôn chờ người chơi bấm phím bất kỳ mới sang cảnh tiếp theo!
 		}
 
 		private void DrawRiggedCutsceneChar(mGraphics g, int headPartId, int bodyPartId, int legPartId, int cf, int cx, int cy, int cdir)
@@ -7583,25 +7800,69 @@ namespace Game1
 			SmallImage.drawSmallImage(g, pb.pi[bIdx].id, cx + (Char.CharInfo[cf][2][1] + pb.pi[bIdx].dx) * dirSign, cy - Char.CharInfo[cf][2][2] + pb.pi[bIdx].dy, trans, anchor);
 		}
 
+		private void Draw3DSprite(mGraphics g, int iconId, float wx, float wy, float scaleX, float scaleY, float angleDeg, bool bottomAnchor)
+		{
+			if (SmallImage.imgNew == null || iconId < 0 || iconId >= SmallImage.imgNew.Length)
+			{
+				return;
+			}
+			Assets.src.e.Small small = SmallImage.imgNew[iconId];
+			if (small == null)
+			{
+				SmallImage.createImage(iconId);
+				return;
+			}
+			if (small.img == null || small.img == SmallImage.imgEmpty || small.img.texture == null)
+			{
+				return;
+			}
+			if (UnityEngine.Event.current != null && UnityEngine.Event.current.type != UnityEngine.EventType.Repaint)
+			{
+				return;
+			}
+			UnityEngine.Texture2D tex = small.img.texture;
+			float sx = (wx + (float)g.getTranslateX()) * (float)mGraphics.zoomLevel;
+			float sy = (wy + (float)g.getTranslateY()) * (float)mGraphics.zoomLevel;
+			float sw = (float)tex.width * scaleX;
+			float sh = (float)tex.height * scaleY;
+			float rx = sx - sw * 0.5f;
+			float ry = (bottomAnchor ? (sy - sh) : (sy - sh * 0.5f));
+			if (System.Math.Abs(angleDeg) > 0.1f)
+			{
+				UnityEngine.Matrix4x4 oldMat = UnityEngine.GUI.matrix;
+				UnityEngine.GUIUtility.RotateAroundPivot(angleDeg, new UnityEngine.Vector2(sx, sy));
+				UnityEngine.Graphics.DrawTexture(new UnityEngine.Rect(rx, ry, sw, sh), tex);
+				UnityEngine.GUI.matrix = oldMat;
+			}
+			else
+			{
+				UnityEngine.Graphics.DrawTexture(new UnityEngine.Rect(rx, ry, sw, sh), tex);
+			}
+		}
+
 		private void DrawPurpleSoulOrb(mGraphics g, int ox, int oy, int tickSeed)
 		{
-			int bob = (int)(System.Math.Sin((GameCanvas.gameTick * 0.5 + tickSeed * 7) * 0.18) * 4.0);
-			int pulse = (GameCanvas.gameTick / 2 + tickSeed * 5) % 16;
-			int rOuter = 11 + pulse / 4;
-			g.FillRect(ox - rOuter, oy + bob - rOuter, rOuter * 2, rOuter * 2, 0x6B21A8, 0.35f);
-			g.FillRect(ox - 7, oy + bob - 7, 14, 14, 0xC084FC, 0.55f);
-			SmallImage.drawSmallImage(g, 16187, ox, oy + bob, 0, mGraphics.VCENTER | mGraphics.HCENTER);
+			float bob = (float)(System.Math.Sin((GameCanvas.gameTick * 0.5 + tickSeed * 7) * 0.18) * 4.0);
+			float pulse = 0.92f + 0.14f * (float)System.Math.Sin(GameCanvas.gameTick * 0.12 + tickSeed);
+			int frame = ((GameCanvas.gameTick / 3 + tickSeed) & 0x7FFFFFFF) % 4;
+			Draw3DSprite(g, 27401 + frame, ox, (float)oy + bob, pulse, pulse, 0f, bottomAnchor: false);
 		}
 
 		private void DrawHakaiBeamLine(mGraphics g, int x0, int y0, int x1, int y1, int segments, int thickness, int outerRgb, int coreRgb)
 		{
+			if (segments < 1)
+			{
+				segments = 1;
+			}
 			for (int s = 0; s <= segments; s++)
 			{
-				int px = x0 + (x1 - x0) * s / segments;
-				int py = y0 + (y1 - y0) * s / segments;
-				int jit = (((s + GameCanvas.gameTick / 2) % 3) - 1) * 2;
-				g.FillRect(px - thickness, py + jit - thickness, thickness * 2, thickness * 2, outerRgb, 0.65f);
-				g.FillRect(px - thickness / 2, py + jit - thickness / 2, thickness, thickness, coreRgb, 0.9f);
+				float ratio = (float)s / (float)segments;
+				float px = (float)x0 + (float)(x1 - x0) * ratio;
+				float py = (float)y0 + (float)(y1 - y0) * ratio;
+				float jit = (float)System.Math.Sin(GameCanvas.gameTick * 0.35 + s * 1.3) * 3f;
+				float sc = 0.72f + 0.38f * (float)System.Math.Sin(ratio * System.Math.PI);
+				int spFrame = ((GameCanvas.gameTick / 2 + s) & 0x7FFFFFFF) % 4;
+				Draw3DSprite(g, 27401 + spFrame, px, py + jit, sc, sc, 0f, bottomAnchor: false);
 			}
 		}
 
@@ -7644,33 +7905,423 @@ namespace Game1
 
 		private void paintBossVt13PassiveAuraLayer(mGraphics g, int cx, int cy, bool frontLayer)
 		{
-			if (!frontLayer)
+			// Đã xóa bỏ hoàn toàn vòng hào quang phía sau boss theo yêu cầu!
+		}
+
+		private void paintFideDenPassiveAuraLayer(mGraphics g, int cx, int cy, bool frontLayer)
+		{
+			// Đã xóa bỏ hoàn toàn vòng hào quang phía sau boss theo yêu cầu!
+		}
+
+		private void paintBossVt13SkillVfxLayer(mGraphics g, bool frontLayer)
+		{
+			for (int i = 0; i < MAX_BOSS_VT13_VFX; i++)
 			{
-				// Ground Egyptian Magic Sigil + Rising Dark-Purple Hakai Pillar (1/2 speed)
-				int pulseW = 54 + ((GameCanvas.gameTick / 2) % 12);
-				g.FillRect(cx - pulseW, cy - 8, pulseW * 2, 12, 0x581C87, 0.45f);
-				g.FillRect(cx - 26, cy - 86, 52, 84, 0x3B0764, 0.28f);
-				SmallImage.drawSmallImage(g, 27239, cx, cy - 34, (GameCanvas.gameTick / 12 % 2 == 0) ? 0 : 2, mGraphics.VCENTER | mGraphics.HCENTER);
-			}
-			// 8 Orbiting Purple Destruction God-Souls in a 3D ring around Boss VT13 (1/2 speed)
-			for (int i = 0; i < 8; i++)
-			{
-				double ang = GameCanvas.gameTick * 0.045 + i * (System.Math.PI * 2.0 / 8.0);
-				double sinA = System.Math.Sin(ang);
-				bool isFront = sinA >= 0.0;
-				if (isFront != frontLayer)
+				if (bossVfxMaxTick[i] <= 0)
 				{
 					continue;
 				}
-				int ox = cx + (int)(System.Math.Cos(ang) * 46.0);
-				int oy = (cy - 36) + (int)(sinA * 14.0);
-				DrawPurpleSoulOrb(g, ox, oy, i);
-			}
-			if (frontLayer && GameCanvas.gameTick % 8 < 4)
-			{
-				int lx = cx + (((GameCanvas.gameTick / 4) % 5) - 2) * 14;
-				g.FillRect(lx - 1, cy - 76, 3, 28, 0xFACC15, 0.85f);
-				g.FillRect(lx + 3, cy - 54, 3, 24, 0xE879F9, 0.85f);
+				float ft = bossVfxTick[i] * 0.5f;
+				int t = bossVfxTick[i] / 2;
+				float sx = bossVfxSrcX[i];
+				float sy = bossVfxSrcY[i];
+				float dx = bossVfxDstX[i];
+				float dy = bossVfxDstY[i];
+				if (bossVfxType[i] == 1)
+				{
+					// Chiêu 1 (3D Volumetric): Quả Cầu Hakai 3D có vành đai nghiêng phối cảnh -> Vòm Sóng Xung Kích 3D Kép
+					if (ft <= 22f)
+					{
+						if (!frontLayer)
+						{
+							continue;
+						}
+						float ratio = ft / 22f;
+						float arcLift = (float)System.Math.Sin(ratio * System.Math.PI) * 22f;
+						float curX = sx + (dx - sx) * ratio;
+						float curY = (sy - 46f) + ((dy - 28f) - (sy - 46f)) * ratio - arcLift;
+						for (int tr = 4; tr >= 1; tr--)
+						{
+							float trRatio = System.Math.Max(0f, ratio - tr * 0.065f);
+							float trArc = (float)System.Math.Sin(trRatio * System.Math.PI) * 22f;
+							float tx = sx + (dx - sx) * trRatio;
+							float ty = (sy - 46f) + ((dy - 28f) - (sy - 46f)) * trRatio - trArc;
+							float wScale = System.Math.Max(0.35f, 0.92f - tr * 0.16f);
+							Draw3DSprite(g, 27401 + ((t + tr) % 4), tx, ty, wScale, wScale, 0f, bottomAnchor: false);
+						}
+						float pScale = 0.76f + 0.38f * (float)System.Math.Sin(ratio * System.Math.PI * 0.85);
+						float tiltDeg = (float)System.Math.Sin(ft * 0.32) * 12f;
+						Draw3DSprite(g, 27365 + (t % 6), curX, curY, pScale, pScale, tiltDeg, bottomAnchor: false);
+					}
+					else
+					{
+						float dt = ft - 22f;
+						if (!frontLayer)
+						{
+							float gScale = 0.85f + dt * 0.03f;
+							Draw3DSprite(g, 27383 + (t % 4), dx, dy + 2f, gScale, gScale * 0.9f, 0f, bottomAnchor: false);
+						}
+						for (int sp = 0; sp < 6; sp++)
+						{
+							double ang = sp * (System.Math.PI * 2.0 / 6.0) + dt * 0.22;
+							double sinA = System.Math.Sin(ang);
+							bool isFront = sinA >= 0.0;
+							if (isFront != frontLayer)
+							{
+								continue;
+							}
+							float dist = 16f + dt * 3.6f;
+							float spX = dx + (float)(System.Math.Cos(ang) * dist);
+							float spY = (dy - 28f) + (float)(sinA * dist * 0.42);
+							float zScale = 0.62f + 0.56f * (float)((sinA + 1.0) * 0.5);
+							Draw3DSprite(g, 27401 + ((t + sp) % 4), spX, spY, zScale, zScale, 0f, bottomAnchor: false);
+						}
+						if (frontLayer)
+						{
+							int expIdx = System.Math.Min(5, System.Math.Max(0, (int)(dt / 3f)));
+							float eScale = 0.82f + dt * 0.042f;
+							Draw3DSprite(g, 27371 + expIdx, dx, dy - 28f, eScale, eScale, dt * 3.8f, bottomAnchor: false);
+						}
+					}
+				}
+				else if (bossVfxType[i] == 2)
+				{
+					// Chiêu 2 (3D Volumetric): Đĩa Xoáy Mặt Đất 3D + Cột Lốc Xoáy Hủy Diệt 3D có Đá Bay Quỹ Đạo Trước/Sau
+					if (!frontLayer)
+					{
+						float dScaleX = 1.06f + 0.08f * (float)System.Math.Sin(ft * 0.35);
+						float dScaleY = 0.96f + 0.06f * (float)System.Math.Cos(ft * 0.35);
+						Draw3DSprite(g, 27383 + (t % 4), dx, dy + 2f, dScaleX, dScaleY, 0f, bottomAnchor: false);
+					}
+					if (ft >= 5f)
+					{
+						float pt = ft - 5f;
+						float colScaleY = System.Math.Min(1.36f, 0.35f + pt * 0.085f);
+						float colScaleX = 0.94f + 0.10f * (float)System.Math.Sin(ft * 0.45);
+						if (frontLayer)
+						{
+							Draw3DSprite(g, 27377 + (t % 6), dx, dy + 6f, colScaleX, colScaleY, 0f, bottomAnchor: true);
+						}
+						for (int k = 0; k < 4; k++)
+						{
+							double ang = ft * 0.28 + k * (System.Math.PI * 0.5);
+							double sinA = System.Math.Sin(ang);
+							bool isFront = sinA >= 0.0;
+							if (isFront != frontLayer)
+							{
+								continue;
+							}
+							float climb = ((pt * 6.5f + k * 46f) % 185f);
+							float rad = 22f + climb * 0.11f;
+							float rx = dx + (float)(System.Math.Cos(ang) * rad);
+							float ry = dy - 14f - climb + (float)(sinA * 7.0);
+							float rScale = (isFront ? 1.14f : 0.72f);
+							Draw3DSprite(g, 27237, rx, ry, rScale, rScale, ft * 9f + k * 45f, bottomAnchor: false);
+						}
+					}
+				}
+				else if (bossVfxType[i] == 3)
+				{
+					// Chiêu 3 (3D Volumetric): Đại Nổ Hakai Toàn Khu — Vòm Cầu 3D + Vòng Xoáy Đôi Gyroscope + 8 Cầu Plasma Quỹ Đạo Sâu Z
+					float radius = 28f + ft * 4.2f;
+					if (!frontLayer)
+					{
+						float gSc = 1.05f + ft * 0.025f;
+						Draw3DSprite(g, 27383 + (t % 4), sx, sy + 2f, gSc, gSc * 0.92f, 0f, bottomAnchor: false);
+					}
+					for (int k = 0; k < 8; k++)
+					{
+						double ang = ft * 0.24 + k * (System.Math.PI * 2.0 / 8.0);
+						double sinA = System.Math.Sin(ang);
+						bool isFront = sinA >= 0.0;
+						if (isFront != frontLayer)
+						{
+							continue;
+						}
+						float ox = sx + (float)(System.Math.Cos(ang) * radius);
+						float oy = (sy - 40f) + (float)(sinA * radius * 0.38);
+						float zSc = 0.60f + 0.62f * (float)((sinA + 1.0) * 0.5);
+						Draw3DSprite(g, 27401 + ((t + k) % 4), ox, oy, zSc, zSc, 0f, bottomAnchor: false);
+					}
+					if (frontLayer)
+					{
+						float coreSc = 0.95f + 0.14f * (float)System.Math.Sin(ft * 0.4);
+						Draw3DSprite(g, 27365 + (t % 6), sx, sy - 42f, coreSc, coreSc, ft * 4f, bottomAnchor: false);
+						float domeSc = 0.85f + ft * 0.035f;
+						Draw3DSprite(g, 27371 + (t % 6), sx, sy - 38f, domeSc, domeSc, -ft * 3.2f, bottomAnchor: false);
+					}
+				}
+				else if (bossVfxType[i] == 4)
+				{
+					// Chiêu 4 (3D Động): Dải Xoắn Xác Ướp 3D bay xoắn ốc -> Khối Băng Quấn 3D Siết Co Giãn + Vòng Năng Lượng Xoay + Nổ Giải Phóng
+					if (ft <= 16f)
+					{
+						if (!frontLayer)
+						{
+							continue;
+						}
+						float ratio = ft / 16f;
+						float flightDeg = (float)(System.Math.Atan2((dy - 28f) - (sy - 38f), dx - sx) * 180.0 / System.Math.PI);
+						for (int lk = 1; lk <= 6; lk++)
+						{
+							float lr = ratio * lk / 6f;
+							double wave = System.Math.Sin(lr * System.Math.PI * 2.5 + ft * 0.45);
+							float lx = sx + (dx - sx) * lr;
+							float ly = (sy - 38f) + ((dy - 28f) - (sy - 38f)) * lr + (float)(wave * 9.0);
+							float lSc = 0.64f + 0.44f * lr;
+							Draw3DSprite(g, 27395 + ((t + lk) % 2), lx, ly, lSc, lSc, flightDeg + ft * 12f + lk * 28f, bottomAnchor: false);
+						}
+					}
+					else
+					{
+						float bt = ft - 16f;
+						if (!frontLayer)
+						{
+							Draw3DSprite(g, 27383 + (t % 4), dx, dy + 2f, 0.90f, 0.84f, bt * 9f, bottomAnchor: false);
+						}
+						for (int w = 0; w < 4; w++)
+						{
+							double ang = bt * 0.34 + w * (System.Math.PI * 0.5);
+							double sinA = System.Math.Sin(ang);
+							bool isFront = sinA >= 0.0;
+							if (isFront != frontLayer)
+							{
+								continue;
+							}
+							float climb = ((bt * 5.2f + w * 18f) % 68f);
+							float wx = dx + (float)(System.Math.Cos(ang) * 28.0);
+							float wy = dy - 6f - climb + (float)(sinA * 6.0);
+							float wSc = (isFront ? 0.95f : 0.62f);
+							Draw3DSprite(g, 27401 + ((t + w) % 4), wx, wy, wSc, wSc, 0f, bottomAnchor: false);
+						}
+						if (frontLayer)
+						{
+							float sqX = 1.08f - 0.14f * (float)System.Math.Sin(bt * 0.55);
+							float sqY = 1.00f + 0.07f * (float)System.Math.Cos(bt * 0.55);
+							Draw3DSprite(g, 27387 + (t % 4), dx, dy + 4f, sqX, sqY, 0f, bottomAnchor: true);
+							if (bt > 28f)
+							{
+								int eIdx = System.Math.Min(5, (int)((bt - 28f) / 1.5f));
+								float eSc = 0.78f + (bt - 28f) * 0.06f;
+								Draw3DSprite(g, 27371 + eIdx, dx, dy - 30f, eSc, eSc, bt * 8f, bottomAnchor: false);
+							}
+						}
+					}
+				}
+				else if (bossVfxType[i] == 5)
+				{
+					// Chiêu 5 (3D Động): Ấn Đĩa Xoay 3D + Bọ Hung Vàng Hồng Ngọc 3D Đập Cánh & Luồng Hút Sinh Lực 3D
+					if (!frontLayer)
+					{
+						float gSc = 0.96f + 0.09f * (float)System.Math.Sin(ft * 0.36);
+						Draw3DSprite(g, 27383 + (t % 4), dx, dy + 2f, gSc, gSc * 0.9f, ft * 7f, bottomAnchor: false);
+					}
+					else
+					{
+						float hoverY = (dy - 50f) + (float)(System.Math.Sin(ft * 0.38) * 7.5);
+						float scScale = 1.06f + 0.12f * (float)System.Math.Sin(ft * 0.42);
+						float scTilt = (float)(System.Math.Sin(ft * 0.32) * 14.0);
+						Draw3DSprite(g, 27391 + (t % 4), dx, hoverY, scScale, scScale, scTilt, bottomAnchor: false);
+						for (int orb = 0; orb < 5; orb++)
+						{
+							float p = ((ft * 0.048f + orb * 0.2f) % 1f);
+							double zWave = System.Math.Cos(p * System.Math.PI * 2.0 + ft * 0.25);
+							float ox = dx + (sx - dx) * p;
+							float oy = (dy - 34f) + ((sy - 38f) - (dy - 34f)) * p - (float)(System.Math.Sin(p * System.Math.PI) * 38.0);
+							float oSc = 0.65f + 0.48f * (float)((zWave + 1.0) * 0.5);
+							Draw3DSprite(g, 27401 + ((t + orb) % 4), ox, oy, oSc, oSc, 0f, bottomAnchor: false);
+						}
+					}
+				}
+				else if (bossVfxType[i] == 6)
+				{
+					// Chiêu 6 (Fide Đen - Trói Ki Đen 3D Động): Roi Sấm Sét Hắc Ám 3D -> 6-Frame Xích Sấm Sét Quất Liên Tục + Vụ Nổ Hắc Ám
+					if (ft <= 14f)
+					{
+						if (!frontLayer)
+						{
+							continue;
+						}
+						float ratio = ft / 14f;
+						float flightDeg = (float)(System.Math.Atan2((dy - 30f) - (sy - 38f), dx - sx) * 180.0 / System.Math.PI);
+						for (int lk = 1; lk <= 6; lk++)
+						{
+							float lr = ratio * lk / 6f;
+							float lx = sx + (dx - sx) * lr;
+							float ly = (sy - 38f) + ((dy - 30f) - (sy - 38f)) * lr + (float)(System.Math.Sin(lr * System.Math.PI * 2.5 + ft * 0.65) * 9.5);
+							float lSc = 0.68f + 0.42f * lr;
+							Draw3DSprite(g, 27395 + ((t + lk) % 2), lx, ly, lSc, lSc, flightDeg + ft * 18f + lk * 35f, bottomAnchor: false);
+							if (lk == 6)
+							{
+								Draw3DSprite(g, 27434 + (t % 4), lx, ly, 0.58f, 0.58f, ft * 16f, bottomAnchor: false);
+							}
+						}
+					}
+					else
+					{
+						float bt = ft - 14f;
+						if (!frontLayer)
+						{
+							Draw3DSprite(g, 27383 + (t % 4), dx, dy + 2f, 0.92f, 0.85f, -bt * 10f, bottomAnchor: false);
+						}
+						for (int sp = 0; sp < 4; sp++)
+						{
+							double ang = bt * 0.38 + sp * (System.Math.PI * 0.5);
+							double sinA = System.Math.Sin(ang);
+							bool isFront = sinA >= 0.0;
+							if (isFront != frontLayer)
+							{
+								continue;
+							}
+							float climb = ((bt * 5.8f + sp * 17f) % 66f);
+							float ox = dx + (float)(System.Math.Cos(ang) * 30.0);
+							float oy = dy - 6f - climb + (float)(sinA * 6.0);
+							float oSc = (isFront ? 0.98f : 0.62f);
+							Draw3DSprite(g, 27401 + ((t + sp) % 4), ox, oy, oSc, oSc, 0f, bottomAnchor: false);
+						}
+						if (frontLayer)
+						{
+							float sqX = 1.05f - 0.12f * (float)System.Math.Sin(bt * 0.6);
+							float sqY = 1.02f + 0.06f * (float)System.Math.Cos(bt * 0.6);
+							// 6 khung hình xích sấm sét hắc ám quất và lóe tia chớp khác nhau liên tục mỗi nhịp!
+							Draw3DSprite(g, 27442 + (t % 6), dx, dy + 6f, sqX, sqY, 0f, bottomAnchor: true);
+							if (bt > 28f)
+							{
+								int nIdx = System.Math.Min(3, (int)((bt - 28f) / 2.5f));
+								float nSc = 0.75f + (bt - 28f) * 0.055f;
+								Draw3DSprite(g, 27438 + nIdx, dx, dy - 30f, nSc, nSc, bt * 9f, bottomAnchor: false);
+							}
+						}
+					}
+				}
+				else if (bossVfxType[i] == 7)
+				{
+					// Chiêu 7 (Fide Đen - Cầu Hắc Ám Tối Thượng 3D Động): Quả Cầu Sấm Sét Đen Tím Đỏ 4-Frame + Đuôi Sao Chổi -> Đại Nổ Nova 4-Frame
+					if (ft <= 20f)
+					{
+						if (!frontLayer)
+						{
+							continue;
+						}
+						float ratio = ft / 20f;
+						float arcLift = (float)System.Math.Sin(ratio * System.Math.PI) * 26f;
+						float curX = sx + (dx - sx) * ratio;
+						float curY = (sy - 46f) + ((dy - 28f) - (sy - 46f)) * ratio - arcLift;
+						for (int tr = 5; tr >= 1; tr--)
+						{
+							float trRatio = System.Math.Max(0f, ratio - tr * 0.058f);
+							float trArc = (float)System.Math.Sin(trRatio * System.Math.PI) * 26f;
+							float tx = sx + (dx - sx) * trRatio;
+							float ty = (sy - 46f) + ((dy - 28f) - (sy - 46f)) * trRatio - trArc;
+							float wScale = System.Math.Max(0.32f, 0.96f - tr * 0.15f);
+							Draw3DSprite(g, 27401 + ((t + tr) % 4), tx, ty, wScale, wScale, 0f, bottomAnchor: false);
+						}
+						float bScale = 0.82f + 0.42f * (float)System.Math.Sin(ratio * System.Math.PI * 0.85);
+						Draw3DSprite(g, 27434 + (t % 4), curX, curY, bScale, bScale, ft * 12f, bottomAnchor: false);
+					}
+					else
+					{
+						float dt = ft - 20f;
+						if (!frontLayer)
+						{
+							float gScale = 0.90f + dt * 0.035f;
+							Draw3DSprite(g, 27383 + (t % 4), dx, dy + 2f, gScale, gScale * 0.9f, dt * 10f, bottomAnchor: false);
+						}
+						for (int sp = 0; sp < 6; sp++)
+						{
+							double ang = sp * (System.Math.PI * 2.0 / 6.0) + dt * 0.26;
+							double sinA = System.Math.Sin(ang);
+							bool isFront = sinA >= 0.0;
+							if (isFront != frontLayer)
+							{
+								continue;
+							}
+							float dist = 18f + dt * 4.0f;
+							float spX = dx + (float)(System.Math.Cos(ang) * dist);
+							float spY = (dy - 28f) + (float)(sinA * dist * 0.42);
+							float zScale = 0.64f + 0.58f * (float)((sinA + 1.0) * 0.5);
+							Draw3DSprite(g, 27401 + ((t + sp) % 4), spX, spY, zScale, zScale, 0f, bottomAnchor: false);
+						}
+						if (frontLayer)
+						{
+							int expIdx = System.Math.Min(3, System.Math.Max(0, (int)(dt / 4.2f)));
+							float eScale = 0.84f + dt * 0.045f;
+							Draw3DSprite(g, 27438 + expIdx, dx, dy - 28f, eScale, eScale, dt * 6f, bottomAnchor: false);
+						}
+					}
+				}
+				else if (bossVfxType[i] == 8)
+				{
+					// Chiêu 8 (Fide Đen - Khiên Hấp Thụ Hắc Ám 3D Động 6s): Bám theo vị trí thật của Fide Đen, vòm cầu 6-frame xoay + hút hạt năng lượng!
+					float bx = sx;
+					float by = sy;
+					bool bossAlive = false;
+					for (int cIdx = 0; cIdx < vCharInMap.size(); cIdx++)
+					{
+						Char c = (Char)vCharInMap.elementAt(cIdx);
+						if (c != null && c.head == 2114 && c.statusMe != 14 && c.cHP > 0)
+						{
+							bx = c.cx;
+							by = c.cy;
+							bossVfxSrcX[i] = c.cx;
+							bossVfxSrcY[i] = c.cy;
+							bossAlive = true;
+							break;
+						}
+					}
+					if (!bossAlive)
+					{
+						bossVfxMaxTick[i] = 0;
+						continue;
+					}
+					if (!frontLayer)
+					{
+						float gSc = 1.02f + 0.08f * (float)System.Math.Sin(ft * 0.35);
+						Draw3DSprite(g, 27383 + (t % 4), bx, by + 3f, gSc, gSc * 0.88f, ft * 9f, bottomAnchor: false);
+					}
+					// 6 luồng hạt năng lượng bị hút xoắn ốc từ ngoài vào trong lồng ngực Fide Đen (có chiều sâu Z trước/sau)
+					for (int orb = 0; orb < 6; orb++)
+					{
+						float p = 1f - ((ft * 0.045f + orb / 6f) % 1f);
+						double ang = ft * 0.22 + orb * (System.Math.PI * 2.0 / 6.0) + (1f - p) * 2.2;
+						double sinA = System.Math.Sin(ang);
+						bool isFront = sinA >= 0.0;
+						if (isFront != frontLayer)
+						{
+							continue;
+						}
+						float rad = 16f + p * 64f;
+						float ox = bx + (float)(System.Math.Cos(ang) * rad);
+						float oy = (by - 34f) + (float)(sinA * rad * 0.42);
+						float oSc = (0.45f + p * 0.55f) * (isFront ? 1.12f : 0.72f);
+						Draw3DSprite(g, 27401 + ((t + orb) % 4), ox, oy, oSc, oSc, 0f, bottomAnchor: false);
+					}
+					if (frontLayer)
+					{
+						float dScX = 1.06f + 0.07f * (float)System.Math.Sin(ft * 0.38);
+						float dScY = 1.02f + 0.06f * (float)System.Math.Cos(ft * 0.38);
+						float dRot = (float)System.Math.Sin(ft * 0.18) * 10f;
+						Draw3DSprite(g, 27448 + (t % 6), bx, by - 32f, dScX, dScY, dRot, bottomAnchor: false);
+					}
+				}
+				else if (bossVfxType[i] == 9)
+				{
+					// Chiêu 9 (Fide Đen - Vụ Nổ Hắc Ám / Vỡ Khiên Động 4-Frame)
+					if (frontLayer)
+					{
+						int nIdx = System.Math.Min(3, System.Math.Max(0, (int)(ft / 4.2f)));
+						float nSc = 0.72f + ft * 0.045f;
+						Draw3DSprite(g, 27438 + nIdx, dx, dy - 28f, nSc, nSc, ft * 8f, bottomAnchor: false);
+						for (int sp = 0; sp < 4; sp++)
+						{
+							double ang = sp * (System.Math.PI * 0.5) + ft * 0.32;
+							float dist = 12f + ft * 3.2f;
+							float ox = dx + (float)(System.Math.Cos(ang) * dist);
+							float oy = (dy - 28f) + (float)(System.Math.Sin(ang) * dist * 0.55);
+							Draw3DSprite(g, 27401 + ((t + sp) % 4), ox, oy, 0.85f, 0.85f, 0f, bottomAnchor: false);
+						}
+					}
+				}
 			}
 		}
 
@@ -7682,7 +8333,7 @@ namespace Game1
 				int px = 840;
 				int py = 456;
 				bool inKheNutCutscene = isCutsceneVt13 && cutsceneIdVt13 == 5;
-				int scaledStep0Tick = cutsceneStepTick / 2;
+				int scaledStep0Tick = getClampedCutsceneAnimTick() / 2;
 				bool showIntact = (!inKheNutCutscene && (vt13Stage & 4) == 0)
 					|| (inKheNutCutscene && cutsceneStepIdx == 0 && scaledStep0Tick < 85);
 				if (showIntact)
@@ -7694,26 +8345,13 @@ namespace Game1
 						int amp = 2 + scaledStep0Tick / 12;
 						shakeX = (((GameCanvas.gameTick / 2) % 2 == 0) ? amp : (-amp));
 						shakeY = (((GameCanvas.gameTick / 2) % 3 == 0) ? (-amp / 2) : (amp / 2));
-						// Glowing purple seal cracks shooting upward before shattering
-						for (int b = -2; b <= 2; b++)
-						{
-							int beamH = 40 + scaledStep0Tick * 2;
-							g.FillRect(px + b * 18 - 3, py - beamH, 6, beamH, 0x9333EA, 0.45f);
-						}
+						int pFrame = (GameCanvas.gameTick / 2) % 6;
+						Draw3DSprite(g, 27377 + pFrame, px + shakeX, py + 4, 1.05f, 1.05f, 0f, bottomAnchor: true);
 					}
 					SmallImage.drawSmallImage(g, 27235, px + shakeX, py + shakeY, 0, mGraphics.BOTTOM | mGraphics.HCENTER);
-					if (!inKheNutCutscene)
-					{
-						mFont.tahoma_7b_yellow.drawString(g, "« THÁP AI CẬP PHONG ẤN CỔ THẦN VT13 »", px, py - 138, mFont.CENTER);
-						if (GameCanvas.gameTick % 48 < 32)
-						{
-							mFont.tahoma_7b_red.drawString(g, "(Tiến lại gần để kiểm tra phong ấn!)", px, py - 124, mFont.CENTER);
-						}
-					}
 				}
 				else
 				{
-					// Shattered Egyptian Pyramid Ruins + swirling purple rift wisps + floating stone fragments (1/2 speed)
 					SmallImage.drawSmallImage(g, 27236, px, py, 0, mGraphics.BOTTOM | mGraphics.HCENTER);
 					for (int s = 0; s < 3; s++)
 					{
@@ -7722,22 +8360,11 @@ namespace Game1
 						int sy = py - 86 - (s % 2) * 18 + bob;
 						SmallImage.drawSmallImage(g, 27237, sx, sy, (s == 2) ? 2 : 0, mGraphics.VCENTER | mGraphics.HCENTER);
 					}
-					if (!inKheNutCutscene)
-					{
-						mFont.tahoma_7b_red.drawString(g, "« PHẾ TÍCH THÁP AI CẬP - PHONG ẤN ĐÃ VỠ »", px, py - 156, mFont.CENTER);
-					}
 				}
 			}
 
-			// 2) Passive Back-Layer Aura for any live Boss Thần Hủy Diệt VT13 (head == 2126) in zone
-			for (int i = 0; i < vCharInMap.size(); i++)
-			{
-				Char c = (Char)vCharInMap.elementAt(i);
-				if (c != null && c.head == 2126 && c.statusMe != 14 && c.cHP > 0)
-				{
-					paintBossVt13PassiveAuraLayer(g, c.cx, c.cy, frontLayer: false);
-				}
-			}
+			// 2) 3D Back-Layer Depth Occlusion for Active Boss Combat Skills (NO passive boss aura!)
+			paintBossVt13SkillVfxLayer(g, frontLayer: false);
 		}
 
 		private void paintVuTru13World(mGraphics g)
@@ -7748,6 +8375,7 @@ namespace Game1
 			}
 			if (TileMap.mapID == 181)
 			{
+				mFont.tahoma_7b_yellow.drawString(g, "« ĐẠI HỘI VÕ THUẬT VT13 »", 76, 404, mFont.CENTER);
 				for (int n = 0; n < vNpc.size(); n++)
 				{
 					Npc npc = (Npc)vNpc.elementAt(n);
@@ -7755,12 +8383,24 @@ namespace Game1
 					{
 						if (npc.template.npcTemplateId == 86)
 						{
-							mFont.tahoma_7b_yellow.drawString(g, "« TU LUYỆN VÔ CỰC »", npc.cx, npc.cy - 76, mFont.CENTER);
+							mFont.tahoma_7b_yellow.drawString(g, "« ĐẠI THIÊN SỨ - VÔ CỰC & SET ĐỒ »", npc.cx, npc.cy - 76, mFont.CENTER);
 						}
 						else if (npc.template.npcTemplateId == 87)
 						{
 							mFont.tahoma_7b_yellow.drawString(g, "« MAP HOME VŨ TRỤ 13 »", npc.cx, npc.cy - 72, mFont.CENTER);
 						}
+					}
+				}
+			}
+			else if (TileMap.mapID == 186)
+			{
+				mFont.tahoma_7b_yellow.drawString(g, "« ĐẠI HỘI VÕ THUẬT VŨ TRỤ 13 - KHIÊU CHIẾN BXH & GIẢI ĐẤU 20H00 »", 840, 352, mFont.CENTER);
+				for (int n2 = 0; n2 < vNpc.size(); n2++)
+				{
+					Npc npc2 = (Npc)vNpc.elementAt(n2);
+					if (npc2 != null && npc2.template != null && npc2.template.npcTemplateId == 91)
+					{
+						mFont.tahoma_7b_red.drawString(g, "« TRỌNG TÀI LIÊN VŨ TRỤ »", npc2.cx, npc2.cy - 74, mFont.CENTER);
 					}
 				}
 			}
@@ -7800,102 +8440,211 @@ namespace Game1
 						break;
 					}
 				}
-				mFont.tahoma_7b_red.drawString(g, "« PHONG ẤN CỔ THẦN »", gx, gy - 162, mFont.CENTER);
-			}
-			else if (TileMap.mapID == 180)
-			{
-				int altarX = 960;
-				int altarY = 456;
-				bool sealBroken = (vt13Stage & 2) != 0 || (isCutsceneVt13 && cutsceneIdVt13 == 2 && cutsceneStepIdx >= 2);
-				if (!sealBroken)
+				bool gokuUnsealed = (vt13Stage & 32) != 0 || (isCutsceneVt13 && cutsceneIdVt13 == 7 && cutsceneStepIdx >= 2);
+				if (isCutsceneVt13 && cutsceneIdVt13 == 7)
 				{
-					mFont.tahoma_7b_yellow.drawString(g, "« BIA PHONG ẤN THẦN HỦY DIỆT VT13 »", altarX, altarY - 92, mFont.CENTER);
+					int cTk = getClampedCutsceneAnimTick();
+					if (cutsceneStepIdx == 0 || cutsceneStepIdx == 1)
+					{
+						double radius = ((cutsceneStepIdx == 0) ? 74.0 : System.Math.Max(14.0, 74.0 - cTk * 0.45));
+						for (int s = 0; s < 7; s++)
+						{
+							double ang = GameCanvas.gameTick * 0.09 + s * (System.Math.PI * 2.0 / 7.0);
+							int rx = gx + (int)(System.Math.Cos(ang) * radius);
+							int ry = (gy - 58) + (int)(System.Math.Sin(ang) * (radius * 0.55));
+							SmallImage.drawSmallImage(g, 27290 + s, rx, ry, 0, mGraphics.VCENTER | mGraphics.HCENTER);
+						}
+						if (cutsceneStepIdx == 1)
+						{
+							int pFrame = (GameCanvas.gameTick / 2) % 6;
+							Draw3DSprite(g, 27377 + pFrame, gx, gy + 4, 1.1f, 1.15f, 0f, bottomAnchor: true);
+							Draw3DSprite(g, 27371 + pFrame, gx, gy - 26, 1.1f, 1.1f, GameCanvas.gameTick * 3f, bottomAnchor: false);
+						}
+					}
+				}
+				if (!gokuUnsealed)
+				{
+					mFont.tahoma_7b_red.drawString(g, "« PHONG ẤN GOKU »", gx, gy - 162, mFont.CENTER);
 				}
 				else
 				{
-					mFont.tahoma_7b_red.drawString(g, "« ĐIỆN THỜ CỔ THẦN HỦY DIỆT VŨ TRỤ 13 »", altarX, altarY - 92, mFont.CENTER);
+					for (int s2 = 0; s2 < 7; s2++)
+					{
+						double ang2 = GameCanvas.gameTick * 0.04 + s2 * (System.Math.PI * 2.0 / 7.0);
+						int rx2 = gx + (int)(System.Math.Cos(ang2) * 58.0);
+						int ry2 = (gy - 54) + (int)(System.Math.Sin(ang2) * 18.0);
+						SmallImage.drawSmallImage(g, 27290 + s2, rx2, ry2, 0, mGraphics.VCENTER | mGraphics.HCENTER);
+					}
+					mFont.tahoma_7b_yellow.drawString(g, "« SON GOKU - ĐÃ GIẢI PHONG ẤN (BẢN NĂNG VÔ CỰC) »", gx, gy - 164, mFont.CENTER);
 				}
 			}
 		}
 
 		private void paintVuTru13Foreground(mGraphics g)
 		{
-			// 1) Passive Front-Layer Aura for any live Boss Thần Hủy Diệt VT13 (head == 2126)
-			for (int i = 0; i < vCharInMap.size(); i++)
-			{
-				Char c = (Char)vCharInMap.elementAt(i);
-				if (c != null && c.head == 2126 && c.statusMe != 14 && c.cHP > 0)
-				{
-					paintBossVt13PassiveAuraLayer(g, c.cx, c.cy, frontLayer: true);
-				}
-			}
+			// 1) Active Boss Combat Skill VFX (3D Front-Layer Volumetric Ray-Traced Sprites, ZERO passive boss aura!)
+			paintBossVt13SkillVfxLayer(g, frontLayer: true);
 
-			// 2) Active Boss Thần Hủy Diệt VT13 Combat Skill VFX (subCmd = 3, 1/2 speed)
-			for (int i = 0; i < MAX_BOSS_VT13_VFX; i++)
-			{
-				if (bossVfxMaxTick[i] <= 0)
-				{
-					continue;
-				}
-				float ft = bossVfxTick[i] * 0.5f;
-				int t = bossVfxTick[i] / 2;
-				int sx = bossVfxSrcX[i];
-				int sy = bossVfxSrcY[i];
-				int dx = bossVfxDstX[i];
-				int dy = bossVfxDstY[i];
-				if (bossVfxType[i] == 1)
-				{
-					if (ft <= 22f)
-					{
-						int curX = (int)(sx + (dx - sx) * (ft / 22f));
-						int curY = (int)((sy - 44) + ((dy - 26) - (sy - 44)) * (ft / 22f));
-						DrawHakaiBeamLine(g, sx, sy - 44, curX, curY, 6, 5, 0x581C87, 0xE879F9);
-						SmallImage.drawSmallImage(g, 27238, curX, curY, (t / 3 % 2 == 0) ? 0 : 2, mGraphics.VCENTER | mGraphics.HCENTER);
-					}
-					else
-					{
-						int rad = (int)((ft - 22f) * 8f + 18f);
-						g.FillRect(dx - rad, dy - 26 - rad / 2, rad * 2, rad, 0x6B21A8, 0.5f);
-						SmallImage.drawSmallImage(g, 27239, dx, dy - 26, (t % 2 == 0) ? 0 : 2, mGraphics.VCENTER | mGraphics.HCENTER);
-						SmallImage.drawSmallImage(g, 27238, dx, dy - 26, 0, mGraphics.VCENTER | mGraphics.HCENTER);
-					}
-				}
-				else if (bossVfxType[i] == 2)
-				{
-					SmallImage.drawSmallImage(g, 27239, dx, dy - 8, (t / 4 % 2 == 0) ? 0 : 2, mGraphics.VCENTER | mGraphics.HCENTER);
-					if (ft >= 8f)
-					{
-						int wBeam = System.Math.Max(8, (int)(38f - (ft - 8f)));
-						g.FillRect(dx - wBeam, dy - 340, wBeam * 2, 340, 0x4C1D95, 0.6f);
-						g.FillRect(dx - wBeam / 2, dy - 340, wBeam, 340, 0xFACC15, 0.75f);
-						for (int k = 0; k < 4; k++)
-						{
-							int shX = dx + (k - 2) * 24 + ((k >= 2) ? 12 : 0);
-							int shY = dy - 20 - ((int)(ft * 9f + k * 45) % 240);
-							SmallImage.drawSmallImage(g, 27237, shX, shY, (k % 2 == 0) ? 0 : 2, mGraphics.VCENTER | mGraphics.HCENTER);
-						}
-					}
-				}
-				else if (bossVfxType[i] == 3)
-				{
-					int radius = (int)(24f + ft * 5f);
-					g.FillRect(sx - radius, sy - 42 - radius / 2, radius * 2, radius, 0x581C87, 0.35f);
-					SmallImage.drawSmallImage(g, 27239, sx, sy - 38, (t / 3 % 2 == 0) ? 0 : 2, mGraphics.VCENTER | mGraphics.HCENTER);
-					SmallImage.drawSmallImage(g, 27238, sx, sy - 44, (t / 2 % 2 == 0) ? 0 : 2, mGraphics.VCENTER | mGraphics.HCENTER);
-					for (int k = 0; k < 8; k++)
-					{
-						double ang = ft * 0.24 + k * (System.Math.PI * 2.0 / 8.0);
-						int ox = sx + (int)(System.Math.Cos(ang) * radius);
-						int oy = (sy - 40) + (int)(System.Math.Sin(ang) * (radius * 0.45));
-						DrawPurpleSoulOrb(g, ox, oy, k);
-					}
-				}
-			}
-
-			// 3) 4-Scene Choreographed Anime Cutscene on Map 178 (cutsceneIdVt13 == 5)
+			// 2) 4-Scene Choreographed Anime Cutscene on Map 178 (cutsceneIdVt13 == 5)
 			if (isCutsceneVt13 && cutsceneIdVt13 == 5 && TileMap.mapID == 178)
 			{
 				paintKheNut12GodsCutsceneWorld(g);
+			}
+			// 3) Multiplayer Boss Finisher Cutscene ("Cassin" kết liễu Thần Hủy Diệt VT13 - cutsceneIdVt13 == 6)
+			if (isCutsceneVt13 && cutsceneIdVt13 == 6)
+			{
+				paintGodBossFinisherCutsceneWorld(g);
+			}
+		}
+
+		private bool shouldSuppressGroundCharInFinisher(Char c)
+		{
+			if (!isCutsceneVt13 || cutsceneIdVt13 != 6 || c == null)
+			{
+				return false;
+			}
+			if (c.head == 2126)
+			{
+				return true;
+			}
+			if (c.charID == finisherKillerCharId)
+			{
+				return true;
+			}
+			return false;
+		}
+
+		private void paintGodBossFinisherCutsceneWorld(mGraphics g)
+		{
+			int bx = finisherBossX;
+			int fy = finisherFloorY;
+			int bossSkyY = fy - 172;
+			int kx0 = finisherKillerGroundX;
+			int kDirToBoss = ((kx0 <= bx) ? 1 : (-1));
+			int st = cutsceneStepIdx;
+			int tk = getClampedCutsceneAnimTick();
+
+			if (st == 0)
+			{
+				float riseRatio = System.Math.Min(1f, tk / 85f);
+				int curBossY = (int)(fy + (bossSkyY - fy) * riseRatio);
+				DrawRiggedCutsceneChar(g, 2126, 2127, 2128, (tk < 75) ? 7 : 12, bx, curBossY, -kDirToBoss);
+				mFont.tahoma_7b_red.drawString(g, "« THẦN HỦY DIỆT BUNNY »", bx, curBossY - 76, mFont.CENTER);
+
+				if (tk >= 45)
+				{
+					int sphereY = curBossY - 110;
+					Draw3DSprite(g, 27365 + ((tk / 2) % 6), bx, sphereY, 1.15f, 1.15f, tk * 2f, bottomAnchor: false);
+					for (int a = 0; a < 6; a++)
+					{
+						double ang = tk * 0.14 + a * (System.Math.PI * 2.0 / 6.0);
+						float ox = bx + (float)(System.Math.Cos(ang) * 58.0);
+						float oy = sphereY + (float)(System.Math.Sin(ang) * 34.0);
+						float oSc = 0.65f + 0.55f * (float)((System.Math.Sin(ang) + 1.0) * 0.5);
+						Draw3DSprite(g, 27401 + ((tk / 2 + a) % 4), ox, oy, oSc, oSc, 0f, bottomAnchor: false);
+					}
+				}
+
+				if (TileMap.bong != null)
+				{
+					g.drawImage(TileMap.bong, kx0, fy, 3);
+				}
+				Draw3DSprite(g, 27383 + ((GameCanvas.gameTick / 3) % 4), kx0, fy + 2, 0.95f, 0.9f, 0f, bottomAnchor: false);
+				DrawRiggedCutsceneChar(g, finisherKillerHead, finisherKillerBody, finisherKillerLeg, (tk / 8 % 2 == 0) ? 0 : 12, kx0, fy, kDirToBoss);
+				mFont.tahoma_7b_yellow.drawString(g, "« " + finisherKillerName + " »", kx0, fy - 70, mFont.CENTER);
+			}
+			else if (st == 1)
+			{
+				int sphereY = bossSkyY - 110;
+				int bossRecoilX = ((tk >= 116) ? (bx + kDirToBoss * System.Math.Min(42, (tk - 116) * 2)) : bx);
+				int bossCf = ((tk < 116) ? 12 : 11);
+
+				if (tk < 116)
+				{
+					Draw3DSprite(g, 27365 + ((tk / 2) % 6), bx, sphereY, 1.2f, 1.2f, tk * 2.5f, bottomAnchor: false);
+				}
+				else if (tk < 148)
+				{
+					int expIdx = System.Math.Min(5, (tk - 116) / 5);
+					float eSc = 1.0f + (tk - 116) * 0.025f;
+					Draw3DSprite(g, 27371 + expIdx, bx, sphereY, eSc, eSc, (tk - 116) * 4f, bottomAnchor: false);
+				}
+				DrawRiggedCutsceneChar(g, 2126, 2127, 2128, bossCf, bossRecoilX, bossSkyY, -kDirToBoss);
+
+				int curKx;
+				int curKy;
+				int killerCf;
+				int punchTargetX = bx - kDirToBoss * 26;
+				int punchTargetY = bossSkyY + 4;
+
+				if (tk < 42)
+				{
+					curKx = kx0;
+					curKy = fy;
+					killerCf = 12;
+					Draw3DSprite(g, 27377 + ((tk / 2) % 6), curKx, curKy + 4, 0.95f, 1.05f, 0f, bottomAnchor: true);
+				}
+				else if (tk < 116)
+				{
+					float tDash = (tk - 42f) / 74f;
+					curKx = (int)(kx0 + (punchTargetX - kx0) * tDash);
+					curKy = (int)(fy + (punchTargetY - fy) * tDash);
+					killerCf = 7;
+					DrawHakaiBeamLine(g, kx0, fy - 24, curKx, curKy - 24, 6, 4, 0, 0);
+					for (int gh = 3; gh >= 1; gh--)
+					{
+						float gt = System.Math.Max(0f, tDash - gh * 0.08f);
+						int gx = (int)(kx0 + (punchTargetX - kx0) * gt);
+						int gy = (int)(fy + (punchTargetY - fy) * gt);
+						DrawRiggedCutsceneChar(g, finisherKillerHead, finisherKillerBody, finisherKillerLeg, 25, gx, gy, kDirToBoss);
+					}
+				}
+				else
+				{
+					curKx = punchTargetX + kDirToBoss * 12;
+					curKy = punchTargetY;
+					killerCf = (((tk / 4) % 2 == 0) ? 18 : 21);
+					int expIdx2 = ((tk - 116) / 4) % 6;
+					Draw3DSprite(g, 27371 + expIdx2, bx, bossSkyY - 32, 1.25f, 1.25f, tk * 4f, bottomAnchor: false);
+					DrawHakaiBeamLine(g, curKx, curKy - 28, bossRecoilX + kDirToBoss * 54, bossSkyY - 28, 5, 4, 0, 0);
+				}
+
+				DrawRiggedCutsceneChar(g, finisherKillerHead, finisherKillerBody, finisherKillerLeg, killerCf, curKx, curKy, kDirToBoss);
+				mFont.tahoma_7b_yellow.drawString(g, "« " + finisherKillerName + " »", curKx, curKy - 68, mFont.CENTER);
+			}
+			else
+			{
+				if (tk < 95)
+				{
+					if (tk < 36)
+					{
+						Draw3DSprite(g, 27371 + System.Math.Min(5, tk / 6), bx, bossSkyY - 32, 1.1f + tk * 0.02f, 1.1f + tk * 0.02f, tk * 4f, bottomAnchor: false);
+					}
+					if (tk % 4 < 2)
+					{
+						DrawRiggedCutsceneChar(g, 2126, 2127, 2128, 11, bx + kDirToBoss * 42, bossSkyY - tk / 3, -kDirToBoss);
+					}
+					for (int f = 0; f < 10; f++)
+					{
+						double ang = f * (System.Math.PI * 2.0 / 10.0) + tk * 0.03;
+						double dist = 16.0 + tk * 2.4;
+						float fx2 = bx + (float)(System.Math.Cos(ang) * dist);
+						float fy2 = (bossSkyY - 36) + (float)(System.Math.Sin(ang) * dist * 0.65);
+						Draw3DSprite(g, 27401 + ((tk / 2 + f) % 4), fx2, fy2, 0.95f, 0.95f, 0f, bottomAnchor: false);
+					}
+				}
+
+				float landT = System.Math.Min(1f, tk / 90f);
+				int startX = bx - kDirToBoss * 14;
+				int curKx2 = (int)(startX + (kx0 - startX) * landT);
+				int curKy2 = (int)((bossSkyY + 4) + (fy - (bossSkyY + 4)) * landT);
+				int landCf = ((landT < 1f) ? 8 : 0);
+				if (landT >= 1f && TileMap.bong != null)
+				{
+					g.drawImage(TileMap.bong, curKx2, fy, 3);
+				}
+				DrawRiggedCutsceneChar(g, finisherKillerHead, finisherKillerBody, finisherKillerLeg, landCf, curKx2, curKy2, kDirToBoss);
+				mFont.tahoma_7b_yellow.drawString(g, "« NGƯỜI KẾT LIỄU BOSS: " + finisherKillerName + " »", curKx2, curKy2 - 70, mFont.CENTER);
 			}
 		}
 
@@ -7935,18 +8684,17 @@ namespace Game1
 			int px = 840;
 			int py = 456;
 			int st = cutsceneStepIdx;
-			// Chạy toàn bộ tiến trình hoạt ảnh ở tốc độ 1/2 (mượt 60 FPS nhờ nội suy float fTk)
-			float fTk = cutsceneStepTick * 0.5f;
-			int tk = cutsceneStepTick / 2;
+			int clampedTick = getClampedCutsceneAnimTick();
+			float fTk = clampedTick * 0.5f;
+			int tk = GameCanvas.gameTick / 2;
 
 			if (st == 0)
 			{
-				// CẢNH 1A: Tháp Ai Cập rung chuyển dữ dội -> Nổ tung ở fTk >= 85
 				if (fTk >= 85f)
 				{
 					float dt = fTk - 85f;
-					int rW = (int)(70f + dt * 2f);
-					g.FillRect(px - rW, py - 180, rW * 2, 180, 0x7E22CE, 0.45f);
+					int expIdx = System.Math.Min(5, (int)(dt / 5f));
+					Draw3DSprite(g, 27371 + expIdx, px, py - 68, 1.0f + dt * 0.025f, 1.0f + dt * 0.025f, dt * 3f, bottomAnchor: false);
 					for (int k = 0; k < 10; k++)
 					{
 						double ang = -System.Math.PI * (0.12 + 0.76 * k / 9.0);
@@ -7959,24 +8707,20 @@ namespace Game1
 			}
 			else if (st == 1)
 			{
-				// CẢNH 1B: Thần Hủy Diệt VT13 bay lên giữa không trung + Nổ Flash chói lòa
 				float riseT = System.Math.Min(55f, fTk);
 				int bossY = (int)(415f - (415f - 278f) * (riseT / 55f));
-				g.FillRect(px - 32, bossY - 90, 64, py - bossY + 80, 0x581C87, 0.38f);
-				SmallImage.drawSmallImage(g, 27239, px, bossY - 30, (tk / 4 % 2 == 0) ? 0 : 2, mGraphics.VCENTER | mGraphics.HCENTER);
 				DrawRiggedCutsceneChar(g, 2126, 2127, 2128, (fTk < 65f) ? 7 : 12, px, bossY, -1);
-				mFont.tahoma_7b_red.drawString(g, "Thần Hủy Diệt Vũ Trụ 13", px, bossY - 82, mFont.CENTER);
-				if (fTk >= 75f)
+				mFont.tahoma_7b_red.drawString(g, "Thần Hủy Diệt Bunny", px, bossY - 82, mFont.CENTER);
+				if (fTk >= 75f && cutsceneStepTick < 245)
 				{
-					int rad = (int)((fTk - 75f) * 9f + 20f);
-					g.FillRect(px - rad, bossY - 35 - rad / 2, rad * 2, rad, 0xE879F9, 0.55f);
+					int expIdx = System.Math.Min(5, (int)((fTk - 75f) / 7f));
+					float eSc = 0.95f + (fTk - 75f) * 0.025f;
+					Draw3DSprite(g, 27371 + expIdx, px, bossY - 34, eSc, eSc, (fTk - 75f) * 3.5f, bottomAnchor: false);
 				}
 			}
 			else if (st == 2)
 			{
-				// CẢNH 2A: 12 Thần Hủy Diệt giáng lâm bao vây
-				int bossBob = (int)(System.Math.Sin(fTk * 0.12) * 4.0);
-				SmallImage.drawSmallImage(g, 27239, px, 245 + bossBob, 0, mGraphics.VCENTER | mGraphics.HCENTER);
+				int bossBob = (int)(System.Math.Sin(GameCanvas.gameTick * 0.06) * 4.0);
 				DrawRiggedCutsceneChar(g, 2126, 2127, 2128, (tk / 10) % 2, px, 275 + bossBob, 1);
 				for (int i = 0; i < 12; i++)
 				{
@@ -7985,10 +8729,9 @@ namespace Game1
 					{
 						continue;
 					}
-					if (fTk < appearTick + 20f)
+					if (fTk < appearTick + 18f)
 					{
-						g.FillRect(GOD12_X[i] - 12, GOD12_Y[i] - 260, 24, 260, 0xFACC15, 0.55f);
-						g.FillRect(GOD12_X[i] - 6, GOD12_Y[i] - 260, 12, 260, 0xFFFFFF, 0.8f);
+						Draw3DSprite(g, 27377 + ((tk + i) % 6), GOD12_X[i], GOD12_Y[i] + 4, 0.92f, 1.0f, 0f, bottomAnchor: true);
 					}
 					DrawCutsceneGodActor(g, i, fallen: false, -9999, -9999, -1, 0);
 					mFont.tahoma_7_white.drawString(g, GOD12_LABEL[i], GOD12_X[i], GOD12_Y[i] - 62, mFont.CENTER);
@@ -7996,15 +8739,12 @@ namespace Game1
 			}
 			else if (st == 3)
 			{
-				// CẢNH 2B: Boss hóa hình thái chiến đấu tối thượng & oanh tạc cả 12 Thần Hủy Diệt
 				int bossX = 840;
 				int bossY = 268;
-				g.FillRect(bossX - 42, bossY - 96, 84, 120, 0x4C1D95, 0.5f);
-				SmallImage.drawSmallImage(g, 27239, bossX, bossY - 34, (tk / 3 % 2 == 0) ? 0 : 2, mGraphics.VCENTER | mGraphics.HCENTER);
-				SmallImage.drawSmallImage(g, 27238, bossX, bossY - 96, (tk / 2 % 2 == 0) ? 0 : 2, mGraphics.VCENTER | mGraphics.HCENTER);
+				Draw3DSprite(g, 27365 + (tk % 6), bossX, bossY - 96, 1.15f, 1.15f, tk * 3f, bottomAnchor: false);
 				int bossCf = ((tk / 8 % 2 == 0) ? 22 : 18);
 				DrawRiggedCutsceneChar(g, 2126, 2127, 2128, bossCf, bossX, bossY, (tk / 16 % 2 == 0) ? (-1) : 1);
-				mFont.tahoma_7b_yellow.drawString(g, "« BOSS CỔ THẦN HỦY DIỆT VT13 »", bossX, bossY - 138, mFont.CENTER);
+				mFont.tahoma_7b_yellow.drawString(g, "« THẦN HỦY DIỆT BUNNY »", bossX, bossY - 138, mFont.CENTER);
 
 				for (int i = 0; i < 12; i++)
 				{
@@ -8013,16 +8753,14 @@ namespace Game1
 					DrawCutsceneGodActor(g, i, fallen: false, GOD12_X[i] + jitX, GOD12_Y[i], beingHit ? 11 : (-1), 0);
 					if (tk >= 22 && (tk + i * 5) % 14 < 7)
 					{
-						DrawHakaiBeamLine(g, bossX, bossY - 40, GOD12_X[i], GOD12_Y[i] - 28, 7, 4, 0x6B21A8, 0xF0ABFC);
-						g.FillRect(GOD12_X[i] - 18, GOD12_Y[i] - 44, 36, 36, 0x9333EA, 0.55f);
+						DrawHakaiBeamLine(g, bossX, bossY - 40, GOD12_X[i], GOD12_Y[i] - 28, 6, 4, 0, 0);
+						Draw3DSprite(g, 27371 + ((tk + i) % 6), GOD12_X[i], GOD12_Y[i] - 28, 0.85f, 0.85f, (tk + i) * 10f, bottomAnchor: false);
 					}
 				}
 			}
 			else if (st == 4)
 			{
-				// CẢNH 3A: VT7 (Beerus), VT11 (Belmod), VT1 (Iwan) đứng vững; 9 Thần còn lại gục ngã -> hóa Cục Năng Lượng Tím
-				int bossY = 278 + (int)(System.Math.Sin(fTk * 0.1) * 4.0);
-				SmallImage.drawSmallImage(g, 27239, px, bossY - 32, 0, mGraphics.VCENTER | mGraphics.HCENTER);
+				int bossY = 278 + (int)(System.Math.Sin(GameCanvas.gameTick * 0.05) * 4.0);
 				DrawRiggedCutsceneChar(g, 2126, 2127, 2128, 0, px, bossY, -1);
 
 				for (int i = 0; i < 12; i++)
@@ -8030,7 +8768,6 @@ namespace Game1
 					bool isSurvivor = (i == 5 || i == 6 || i == 7);
 					if (isSurvivor)
 					{
-						g.FillRect(GOD12_X[i] - 22, GOD12_Y[i] - 58, 44, 60, 0x7E22CE, 0.28f);
 						DrawCutsceneGodActor(g, i, fallen: false, -9999, -9999, (i == 5) ? 24 : (-1), 0);
 						mFont.tahoma_7b_yellow.drawString(g, GOD12_LABEL[i], GOD12_X[i], GOD12_Y[i] - 66, mFont.CENTER);
 					}
@@ -8039,7 +8776,7 @@ namespace Game1
 						DrawCutsceneGodActor(g, i, fallen: true, -9999, -9999, 11, 0);
 						if (fTk >= 54f)
 						{
-							g.FillRect(GOD12_X[i] - 20, GOD12_Y[i] - 32, 40, 32, 0xA855F7, 0.45f);
+							Draw3DSprite(g, 27401 + ((tk + i) % 4), GOD12_X[i], GOD12_Y[i] - 18, 0.9f, 0.9f, 0f, bottomAnchor: false);
 						}
 					}
 					else
@@ -8050,10 +8787,8 @@ namespace Game1
 			}
 			else if (st == 5)
 			{
-				// CẢNH 3B: Boss lướt tàn ảnh thu thập 8 Cục Năng Lượng Tím (chừa lại duy nhất Hồn Tím Champa VT6 ở index 4!)
 				for (int sIdx = 5; sIdx <= 7; sIdx++)
 				{
-					g.FillRect(GOD12_X[sIdx] - 20, GOD12_Y[sIdx] - 56, 40, 58, 0x6B21A8, 0.25f);
 					DrawCutsceneGodActor(g, sIdx, fallen: false, -9999, -9999, -1, 0);
 				}
 
@@ -8072,13 +8807,12 @@ namespace Game1
 				{
 					float prevTick = System.Math.Max(0f, fTk - ghost * 3f);
 					GetBossSweepPosition(prevTick, out int gx, out int gy, out int gdir, out int _);
-					g.FillRect(gx - 16, gy - 54, 32, 50, 0x7E22CE, 0.3f);
 					DrawRiggedCutsceneChar(g, 2126, 2127, 2128, 25, gx, gy, gdir);
 				}
 
 				for (int c = 0; c < collectedCount; c++)
 				{
-					double ang = fTk * 0.2 + c * 0.78;
+					double ang = GameCanvas.gameTick * 0.1 + c * 0.78;
 					int ox = bx + (int)(System.Math.Cos(ang) * 40.0);
 					int oy = (by - 32) + (int)(System.Math.Sin(ang) * 14.0);
 					DrawPurpleSoulOrb(g, ox, oy, c);
@@ -8087,9 +8821,8 @@ namespace Game1
 			}
 			else if (st == 6)
 			{
-				// CẢNH 4A: Beerus (VT7) lao ra đoạt Hồn Tím ở vị trí Champa (VT6) -> Va chạm trực diện với Boss VT13!
-				DrawCutsceneGodActor(g, 6, fallen: false, -9999, -9999, -1, 0); // Belmod VT11
-				DrawCutsceneGodActor(g, 7, fallen: false, -9999, -9999, -1, 0); // Iwan VT1
+				DrawCutsceneGodActor(g, 6, fallen: false, -9999, -9999, -1, 0);
+				DrawCutsceneGodActor(g, 7, fallen: false, -9999, -9999, -1, 0);
 
 				int beerusX;
 				int beerusY;
@@ -8129,37 +8862,28 @@ namespace Game1
 					bossY = 325;
 					bossCf = ((tk / 5 % 2 == 0) ? 13 : 26);
 
-					int clashR = 26 + ((tk - 52) % 24) * 3;
-					g.FillRect(820 - clashR, 298 - clashR / 2, clashR * 2, clashR, 0x9333EA, 0.45f);
-					SmallImage.drawSmallImage(g, 27239, 820, 298, (tk / 2 % 2 == 0) ? 0 : 2, mGraphics.VCENTER | mGraphics.HCENTER);
-					g.FillRect(817, 170, 6, 286, 0xFACC15, 0.7f);
+					Draw3DSprite(g, 27371 + ((tk / 2) % 6), 820, 298, 1.05f, 1.05f, tk * 5f, bottomAnchor: false);
 				}
 
 				if (orbSnatched)
 				{
 					DrawPurpleSoulOrb(g, beerusX - 18, beerusY - 38, 4);
 				}
-				paintBossVt13PassiveAuraLayer(g, bossX, bossY, frontLayer: false);
 				DrawRiggedCutsceneChar(g, 2126, 2127, 2128, bossCf, bossX, bossY, -1);
-				paintBossVt13PassiveAuraLayer(g, bossX, bossY, frontLayer: true);
 
-				g.FillRect(beerusX - 20, beerusY - 58, 40, 56, 0xA855F7, 0.35f);
 				DrawRiggedCutsceneChar(g, 508, 509, 510, beerusCf, beerusX, beerusY, 1);
 				mFont.tahoma_7b_yellow.drawString(g, "Beerus (VT7)", beerusX, beerusY - 70, mFont.CENTER);
 			}
 			else
 			{
-				// CẢNH 4B (Step 7): Đối thoại -> Boss VT13 rời đi về Điện Thờ -> Beerus đáp xuống (840, 456) hóa thành NPC mặc định!
-				DrawCutsceneGodActor(g, 6, fallen: false, -9999, -9999, -1, 0); // Belmod (730, 456)
-				DrawCutsceneGodActor(g, 7, fallen: false, -9999, -9999, -1, 0); // Iwan (950, 456)
+				DrawCutsceneGodActor(g, 6, fallen: false, -9999, -9999, -1, 0);
+				DrawCutsceneGodActor(g, 7, fallen: false, -9999, -9999, -1, 0);
 
 				if (fTk < 95f)
 				{
 					DrawPurpleSoulOrb(g, 770 - 16, 330 - 36, 4);
 					DrawRiggedCutsceneChar(g, 508, 509, 510, 0, 770, 330, 1);
-					paintBossVt13PassiveAuraLayer(g, 885, 310, frontLayer: false);
 					DrawRiggedCutsceneChar(g, 2126, 2127, 2128, 0, 885, 310, -1);
-					paintBossVt13PassiveAuraLayer(g, 885, 310, frontLayer: true);
 				}
 				else
 				{
@@ -8167,8 +8891,7 @@ namespace Game1
 					int bossFlyY = (int)(310f - dt * 7f);
 					if (bossFlyY > -140)
 					{
-						g.FillRect(885 - 24, 0, 48, py, 0x581C87, 0.5f);
-						g.FillRect(885 - 10, 0, 20, py, 0xE879F9, 0.75f);
+						Draw3DSprite(g, 27377 + (tk % 6), 885, bossFlyY + 120, 0.9f, 1.0f, 0f, bottomAnchor: true);
 						DrawRiggedCutsceneChar(g, 2126, 2127, 2128, 7, 885, bossFlyY, -1);
 					}
 					float landT = System.Math.Min(55f, dt);
@@ -8215,19 +8938,14 @@ namespace Game1
 					g.FillRect(0, 0, GameCanvas.w, GameCanvas.h, 0xF3E8FF, alpha);
 				}
 			}
-			int topBarH = 40;
+			// Đã bỏ hoàn toàn thanh div thu hẹp phía trên màn hình, bỏ tiêu đề và bỏ đếm số cảnh theo yêu cầu!
 			int botBarH = 84;
 			int botBarY = GameCanvas.h - botBarH;
-			g.FillRect(0, 0, GameCanvas.w, topBarH, 524300, 0.9f);
 			g.FillRect(0, botBarY, GameCanvas.w, botBarH, 524300, 0.92f);
 			g.setColor(13107240);
-			g.fillRect(0, topBarH - 2, GameCanvas.w, 2);
 			g.fillRect(0, botBarY, GameCanvas.w, 2);
 			g.setColor(16755200);
-			g.fillRect(24, topBarH - 1, GameCanvas.w - 48, 1);
 			g.fillRect(24, botBarY + 2, GameCanvas.w - 48, 1);
-			string stepBadge = " (" + (cutsceneStepIdx + 1) + "/" + cutsceneTexts.Length + ")";
-			mFont.tahoma_7b_yellow.drawString(g, "« " + cutsceneTitle + " »" + stepBadge, GameCanvas.w / 2, 13, mFont.CENTER);
 			string speaker = ((cutsceneSpeakers != null && cutsceneStepIdx < cutsceneSpeakers.Length) ? cutsceneSpeakers[cutsceneStepIdx] : string.Empty);
 			if (!string.IsNullOrEmpty(speaker))
 			{
@@ -8243,9 +8961,9 @@ namespace Game1
 			{
 				mFont.tahoma_7b_white.drawString(g, wrapped[i], 22, botBarY + 12 + i * 14, mFont.LEFT);
 			}
-			if (cutsceneStepTick >= 18 && GameCanvas.gameTick % 20 < 14)
+			if (cutsceneStepTick >= 10 && GameCanvas.gameTick % 20 < 14)
 			{
-				string hint = ((cutsceneStepIdx + 1 < cutsceneTexts.Length) ? "Nhấn màn hình / Phím bất kỳ để tiếp tục >>" : "Nhấn màn hình / Phím bất kỳ để hoàn tất >>");
+				string hint = ((cutsceneStepIdx + 1 < cutsceneTexts.Length) ? "Nhấn phím bất kỳ để tiếp tục >>" : "Nhấn phím bất kỳ để kết thúc >>");
 				mFont.tahoma_7b_red.drawString(g, hint, GameCanvas.w - 18, GameCanvas.h - 16, mFont.RIGHT);
 			}
 		}

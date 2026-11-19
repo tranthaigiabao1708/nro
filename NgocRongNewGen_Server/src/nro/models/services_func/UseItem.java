@@ -1033,6 +1033,16 @@ public class UseItem {
                                     Service.gI().sendThongBao(pl, "Bạn đã có quả trứng đang ấp ở Nhà rồi!");
                                 }
                                 break;
+                            case 2033: // Trứng Đệ Tử Thiên Sứ (Hợp thể 200% SM & Hồi 5% HP tối đa/giây kể cả khi hợp thể)
+                                if (pl.pet != null && pl.pet.typePet == 7) {
+                                    Service.gI().sendThongBao(pl, "Đệ tử của bạn đã là Đệ Tử Thiên Sứ tối thượng rồi!");
+                                } else {
+                                    InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+                                    InventoryService.gI().sendItemBags(pl);
+                                    PetService.gI().hatchOrUpgradeAngelPet(pl);
+                                    nro.models.database.PlayerDAO.savePlayerAsync(pl);
+                                }
+                                break;
                             case 2006:
                                 Input.gI().createFormChangeNameByItem(pl);
                                 break;

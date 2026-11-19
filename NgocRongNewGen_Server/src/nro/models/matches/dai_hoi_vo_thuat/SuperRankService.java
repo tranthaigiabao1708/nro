@@ -26,7 +26,11 @@ public class SuperRankService {
     }
 
     public void competing(Player player, long id) {
-        if (player.zone.map.mapId != 113 || id == -1) {
+        if (player == null || player.zone == null || player.zone.map == null) {
+            return;
+        }
+        int curMapId = player.zone.map.mapId;
+        if ((curMapId != 113 && curMapId != 186) || id == -1) {
             return;
         }
         int menuType = player.idMark.getMenuType();
@@ -73,7 +77,10 @@ public class SuperRankService {
                 }
             }
             case 2 -> {
-                SuperRankManager.gI().addSPR(new SuperRank(player, id, getZone(113)));
+                Zone arenaZone = getZone(curMapId);
+                if (arenaZone != null) {
+                    SuperRankManager.gI().addSPR(new SuperRank(player, id, arenaZone));
+                }
             }
         }
     }
@@ -213,7 +220,7 @@ public class SuperRankService {
         Map map = MapService.gI().getMapById(mapId);
         try {
             if (map != null) {
-                int zoneId = 0;
+                int zoneId = (mapId == 186 && map.zones.size() > 10) ? 10 : 0;
                 while (zoneId < map.zones.size()) {
                     Zone zonez = map.zones.get(zoneId);
                     if (!SuperRankManager.gI().SPRCheck(zonez)) {

@@ -95,6 +95,7 @@ import nro.models.boss.vodai_vt6.ChampaVt6;
 import nro.models.boss.vodai_vt6.FrostVt6;
 import nro.models.boss.vodai_vt6.HitVt6;
 import nro.models.boss.vu_tru_13.DaiDeFideVt13;
+import nro.models.boss.vu_tru_13.FideDen;
 import nro.models.boss.vu_tru_13.ThanHuyDietVt13;
 import nro.models.map.Zone;
 import nro.models.server.ServerManager;
@@ -157,8 +158,8 @@ public class BossManager implements Runnable {
         this.createBoss(BossID.AUTA_MAGETTA, 1);
         this.createBoss(BossID.CABBA_VT6, 1);
         this.createBoss(BossID.CAULIFLA_VT6, 1);
-        // Boss Vũ Trụ 13: Đại Đế Fide -> Black Fide & Trùm Cuối Cổ Thần Hủy Diệt VT13 (Điện Thờ - Map 180)
-        this.createBoss(BossID.DAI_DE_FIDE_VT13, 1);
+        // Boss Vũ Trụ 13: Fide Đen (xuất hiện ngẫu nhiên khắp 3 map 178, 179, 182) & Trùm Cuối Thần Hủy Diệt Bunny (Điện Thờ - Map 180)
+        this.createBoss(BossID.FIDE_DEN, 1);
         this.createBoss(BossID.THAN_HUY_DIET_VT13, 1);
     }
 
@@ -349,6 +350,8 @@ public class BossManager implements Runnable {
                     new ChampaVt6();
                 case BossID.DAI_DE_FIDE_VT13 ->
                     new DaiDeFideVt13();
+                case BossID.FIDE_DEN ->
+                    new FideDen();
                 case BossID.THAN_HUY_DIET_VT13 ->
                     new ThanHuyDietVt13();
                 default ->

@@ -692,7 +692,7 @@ public class SkillService {
             case Skill.THAI_DUONG_HA_SAN:
                 int timeStun = SkillUtil.getTimeStun(player.playerSkill.skillSelect.point);
                 if (player.setClothes.thienXinHang == 5) {
-                    timeStun *= 2;
+                    timeStun = (int) ((long) timeStun * (200L + player.setClothes.skhBonusThienXinHang) / 100L);
                 }
                 mobs = new ArrayList<>();
                 players = new ArrayList<>();
@@ -845,9 +845,11 @@ public class SkillService {
                         int skillPct = player.playerSkill.skillSelect.damage > 0 ? player.playerSkill.skillSelect.damage : 100;
                         dame = player.nPoint.hp * skillPct / 100L;
                         if (player.setClothes.cadicM == 4) {
-                            dame += player.nPoint.hpMax * 30L / 100L;
+                            long cadicMBonusPct = 30L + (30L * player.setClothes.skhBonusCadicM / 100L);
+                            dame += (player.nPoint.hpMax / 100L) * cadicMBonusPct + ((player.nPoint.hpMax % 100L) * cadicMBonusPct / 100L);
                         } else if (player.setClothes.cadicM >= 5) {
-                            dame += player.nPoint.hpMax * 60L / 100L;
+                            long cadicMBonusPct = 60L + (60L * player.setClothes.skhBonusCadicM / 100L);
+                            dame += (player.nPoint.hpMax / 100L) * cadicMBonusPct + ((player.nPoint.hpMax % 100L) * cadicMBonusPct / 100L);
                         }
                     }
                     if (!player.isBoss) {

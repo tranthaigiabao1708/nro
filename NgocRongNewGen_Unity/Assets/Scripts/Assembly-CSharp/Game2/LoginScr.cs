@@ -234,7 +234,9 @@ namespace Game2
 			isLogin2 = false;
 			tfUser.isFocus = true;
 			tfPass.isFocus = false;
-			GameCanvas.loadBG(1);
+			GameCanvas.paintBG = true;
+			TileMap.bgType = 0;
+			GameCanvas.loadBG(0);
 			base.switchToMe();
 		}
 

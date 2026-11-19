@@ -965,6 +965,7 @@ public class MrBlue {
                     case 2: // Uub
                     case 3: // kid beer
                     case 4: // kid jiren
+                    case 7: // Đệ Tử Thiên Sứ
                         requiredSize = 9;
                         break;
                     default:
@@ -1023,7 +1024,7 @@ public class MrBlue {
                 }
 
                 int maxSkillCount = 4;
-                if (pet.typePet == 3 || pet.typePet == 4) {
+                if (pet.typePet == 3 || pet.typePet == 4 || pet.typePet == 7) {
                     maxSkillCount = 5;
                 }
                 while (pet.playerSkill.skills.size() < maxSkillCount) {

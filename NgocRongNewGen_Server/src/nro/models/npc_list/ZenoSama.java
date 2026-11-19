@@ -28,8 +28,10 @@ public class ZenoSama extends Npc {
         this.createOtherMenu(player, ConstNpc.BASE_MENU,
                 "|8|TOÀN VƯƠNG ZENO-SAMA (MAP HOME VŨ TRỤ 13)\n"
                 + "|2|Chào bạn mới nha~ Đây là Thánh Điện Toàn Vương không có quái vật đâu, cứ nghỉ ngơi hồi sức thoải mái nhé!\n"
-                + "|1|- Hãy gặp Đại Thần Quan ở đầu map để tu luyện Bản Năng Vô Cực hoặc Bản Ngã Vô Cực.\n"
-                + "- Đi sang cổng bên phải để tiến vào Khe Nứt Nguyền Rủa Vũ Trụ 13!",
+                + "|1|- Cổng bên TRÁI (Map -1): Đại Hội Võ Thuật Vũ Trụ 13 (Khiêu chiến BXH & Giải đấu 20h00 hằng ngày).\n"
+                + "- Đại Thiên Sứ (Đại Thần Quan): Tu luyện Vô Cực & Đổi Set Thần Vực Vô Cực.\n"
+                + "- Cổng bên PHẢI: Khe Nứt Nguyền Rủa -> Điện Thờ Thần Hủy Diệt VT13 ("
+                + nro.models.boss.vu_tru_13.ThanHuyDietVt13.getScheduleStatusText() + ")",
                 "Hồi phục\n100% HP/KI",
                 "Mở Rương Đồ\nTại Nhà",
                 "Dịch chuyển\nVũ Trụ 13",
@@ -53,6 +55,7 @@ public class ZenoSama extends Npc {
                 case 2 -> this.createOtherMenu(player, MENU_FAST_TRAVEL_VT13,
                         "|8|CHỌN KHU VỰC TRONG VŨ TRỤ 13\n"
                         + "|2|Bạn muốn bay thẳng tới khu vực nào?",
+                        "Map -1: Đại Hội\nVõ Thuật VT13",
                         "Map 1: Khe Nứt\nNguyền Rủa",
                         "Map 2: Vực Thẳm\nNguyền Rủa",
                         "Map 3: Ngục Tù\nPhong Ấn Goku",
@@ -62,10 +65,11 @@ public class ZenoSama extends Npc {
             }
         } else if (player.idMark.getIndexMenu() == MENU_FAST_TRAVEL_VT13) {
             switch (select) {
-                case 0 -> ChangeMapService.gI().changeMapBySpaceShip(player, VuTru13Service.MAP_KHE_NUT_VT13, -1, 120);
-                case 1 -> ChangeMapService.gI().changeMapBySpaceShip(player, VuTru13Service.MAP_VUC_THAM_VT13, -1, 120);
-                case 2 -> ChangeMapService.gI().changeMapBySpaceShip(player, VuTru13Service.MAP_NGUC_TU_GOKU_VT13, -1, 160);
-                case 3 -> ChangeMapService.gI().changeMapBySpaceShip(player, VuTru13Service.MAP_DIEN_THO_HUY_DIET_VT13, -1, 120);
+                case 0 -> ChangeMapService.gI().changeMapNonSpaceship(player, VuTru13Service.MAP_DAI_HOI_VT13, 840, 456);
+                case 1 -> ChangeMapService.gI().changeMapBySpaceShip(player, VuTru13Service.MAP_KHE_NUT_VT13, -1, 120);
+                case 2 -> ChangeMapService.gI().changeMapBySpaceShip(player, VuTru13Service.MAP_VUC_THAM_VT13, -1, 120);
+                case 3 -> ChangeMapService.gI().changeMapBySpaceShip(player, VuTru13Service.MAP_NGUC_TU_GOKU_VT13, -1, 160);
+                case 4 -> ChangeMapService.gI().changeMapBySpaceShip(player, VuTru13Service.MAP_DIEN_THO_HUY_DIET_VT13, -1, 120);
             }
         }
     }

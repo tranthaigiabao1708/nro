@@ -1305,7 +1305,7 @@ namespace Game1
 			{
 				if (imgLogoBig == null)
 				{
-					imgLogoBig = GameCanvas.loadImage("/mainimage/logo1.png");
+					imgLogoBig = GameCanvas.loadCustomLogoImage();
 				}
 				if (imgLogoBig != null)
 				{
@@ -2315,7 +2315,7 @@ namespace Game1
 			{
 				isLogo = false;
 				imgLogoBig = null;
-				logo = GameCanvas.loadImage("/mainimage/logo1.png");
+				logo = GameCanvas.loadCustomLogoImage();
 				Rms.saveRMSInt("logo", 0);
 				if (isLogoGif)
 				{
@@ -2327,7 +2327,7 @@ namespace Game1
 			{
 				Rms.saveRMSInt("logo", 1);
 				isLogo = true;
-				imgLogoBig = GameCanvas.loadImage("/mainimage/logo1.png");
+				imgLogoBig = GameCanvas.loadCustomLogoImage();
 				if (isLogoGif)
 				{
 					Rms.saveRMSInt("logogif", 1);
@@ -2407,7 +2407,7 @@ namespace Game1
 		public static void LoadLogoImages()
 		{
 			imgBg = GameCanvas.LoadImageFromRoot("/bg/bg.png");
-			imgLogoBig = GameCanvas.loadImage("/mainimage/logo1.png");
+			imgLogoBig = GameCanvas.loadCustomLogoImage();
 			if (!isLogo)
 			{
 				imgLogoBig = null;
@@ -2422,15 +2422,16 @@ namespace Game1
 		{
 			if (imgLogoBig != null)
 			{
-				g.drawImage(imgLogoBig, x, y + 10, anchor);
+				g.drawImage(imgLogoBig, x, y + 6, anchor);
 			}
 		}
 
 		public static void LoadLogoGifMenu()
 		{
+            Image customLogo = GameCanvas.loadCustomLogoImage();
             for (int i = 0; i < maxGif; i++)
             {
-                gif[i] = GameCanvas.loadImage("/logogif/logo-" + i + ".png");
+                gif[i] = customLogo ?? GameCanvas.loadImage("/logogif/logo-" + i + ".png");
             }
         }
         private static Image[] gif = new Image[55];

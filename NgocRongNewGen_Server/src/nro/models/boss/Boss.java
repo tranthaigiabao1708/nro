@@ -170,11 +170,15 @@ public class Boss extends Player implements IBoss {
 
     protected boolean soulDroppedForCurrentLife;
     protected boolean manhGiay726DroppedForCurrentLife;
+    protected boolean specialMatDroppedForCurrentLife;
+    protected boolean petRongConDroppedForCurrentLife;
 
     @Override
     public void initBase() {
         this.soulDroppedForCurrentLife = false;
         this.manhGiay726DroppedForCurrentLife = false;
+        this.specialMatDroppedForCurrentLife = false;
+        this.petRongConDroppedForCurrentLife = false;
         BossData data = this.data[this.currentLevel];
         this.name = String.format(data.getName(), Util.nextInt(0, 100));
         this.gender = data.getGender();
@@ -488,6 +492,8 @@ public class Boss extends Player implements IBoss {
     public void joinMapByZone(Zone zone) {
         this.soulDroppedForCurrentLife = false;
         this.manhGiay726DroppedForCurrentLife = false;
+        this.specialMatDroppedForCurrentLife = false;
+        this.petRongConDroppedForCurrentLife = false;
         if (zone != null) {
             this.zone = zone;
             int rawX = this.zone.map.mapWidth > 100 ? Util.nextInt(100, this.zone.map.mapWidth - 100) : Util.nextInt(100);
@@ -652,6 +658,7 @@ public class Boss extends Player implements IBoss {
                  BossID.BABY,
                  BossID.GOLDEN_FRIEZA,
                  BossID.DAI_DE_FIDE_VT13,
+                 BossID.FIDE_DEN,
                  BossID.THAN_HUY_DIET_VT13,
                  BossID.SIEU_BO_HUNG,
                  BossID.XEN_CON_1,
@@ -791,8 +798,90 @@ public class Boss extends Player implements IBoss {
         tryDropManhGiay726Static(targetZone, baseX, baseY, plKill);
     }
 
+    public void tryDropSpecialUpgradeMaterials(Zone targetZone, int baseX, int baseY, Player plKill) {
+        if (this.specialMatDroppedForCurrentLife) {
+            return;
+        }
+        if (targetZone == null || targetZone.map == null || plKill == null || plKill.isBot) {
+            return;
+        }
+        if (this instanceof nro.models.boss.luyen_tap_tu_dong.TrainingBoss
+                || this instanceof nro.models.boss.dai_hoi_vo_thuat.The23rdMartialArtCongress
+                || this instanceof nro.models.boss.sieu_hang.SuperRank
+                || this instanceof nro.models.boss.vo_dai_hat_mit.DeathOrAliveArena
+                || this instanceof nro.models.boss.nhan_ban.NhanBan
+                || this instanceof nro.models.boss.ma_vuong_picolo.Pocolo
+                || this instanceof nro.models.boss.doanh_trai.NinjaClone) {
+            return;
+        }
+        this.specialMatDroppedForCurrentLife = true;
+        try {
+            Player owner = resolveRewardOwner(plKill);
+            long ownerId = (owner != null) ? owner.id : plKill.id;
+            int roll = Util.nextInt(100);
+            int dropItemId = -1;
+            int dropQty = 1;
+            if (roll < 5) {
+                dropItemId = 1794; // 5%: Con dấu
+            } else if (roll < 15) {
+                dropItemId = 1826; // 10%: Đá nâng cấp SKH
+            } else if (roll < 30) {
+                dropItemId = 1285; // 15%: Kìm bấm giấy (1-2 cái)
+                dropQty = Util.nextInt(1, 2);
+            }
+            if (dropItemId != -1) {
+                int xDrop = clampDropX(targetZone, baseX + 14);
+                int yDrop = targetZone.map.yPhysicInTop(xDrop, baseY - 24);
+                nro.models.map.ItemMap mat = new nro.models.map.ItemMap(targetZone, dropItemId, dropQty, xDrop, yDrop, ownerId);
+                mat.options.add(new nro.models.item.Item.ItemOption(73, 0));
+                Service.gI().dropItemMap(targetZone, mat);
+            }
+        } catch (Exception e) {
+            Logger.logException(Boss.class, e);
+        }
+    }
+
+    public void tryDropPetRongCon(Zone targetZone, int baseX, int baseY, Player plKill) {
+        if (this.petRongConDroppedForCurrentLife) {
+            return;
+        }
+        if (targetZone == null || targetZone.map == null || plKill == null || plKill.isBot) {
+            return;
+        }
+        if (this instanceof nro.models.boss.luyen_tap_tu_dong.TrainingBoss
+                || this instanceof nro.models.boss.dai_hoi_vo_thuat.The23rdMartialArtCongress
+                || this instanceof nro.models.boss.sieu_hang.SuperRank
+                || this instanceof nro.models.boss.vo_dai_hat_mit.DeathOrAliveArena
+                || this instanceof nro.models.boss.nhan_ban.NhanBan
+                || this instanceof nro.models.boss.ma_vuong_picolo.Pocolo
+                || this instanceof nro.models.boss.doanh_trai.NinjaClone) {
+            return;
+        }
+        this.petRongConDroppedForCurrentLife = true;
+        try {
+            // Tỉ lệ 30% rơi ngẫu nhiên Pet Rồng Con từ 1 đến 7 [ID 1765 -> 1771]
+            if (Util.isTrue(30, 100)) {
+                Player owner = resolveRewardOwner(plKill);
+                long ownerId = (owner != null) ? owner.id : plKill.id;
+                int petItemId = 1765 + Util.nextInt(7); // 1765..1771 (Pet Rồng Con 1..7)
+                int xDrop = clampDropX(targetZone, baseX - 22);
+                int yDrop = targetZone.map.yPhysicInTop(xDrop, baseY - 24);
+                nro.models.map.ItemMap petMap = new nro.models.map.ItemMap(targetZone, petItemId, 1, xDrop, yDrop, ownerId);
+                petMap.options.add(new nro.models.item.Item.ItemOption(50, Util.nextInt(8, 15)));  // Sức đánh +8~15%
+                petMap.options.add(new nro.models.item.Item.ItemOption(77, Util.nextInt(8, 15)));  // HP +8~15%
+                petMap.options.add(new nro.models.item.Item.ItemOption(103, Util.nextInt(8, 15))); // KI +8~15%
+                petMap.options.add(new nro.models.item.Item.ItemOption(5, Util.nextInt(3, 6)));    // Sức đánh chí mạng +3~6%
+                Service.gI().dropItemMap(targetZone, petMap);
+            }
+        } catch (Exception e) {
+            Logger.logException(Boss.class, e);
+        }
+    }
+
     public void dropBossSoul(Zone targetZone, int baseX, int baseY, Player plKill) {
         tryDropManhGiay726(targetZone, baseX, baseY, plKill);
+        tryDropSpecialUpgradeMaterials(targetZone, baseX, baseY, plKill);
+        tryDropPetRongCon(targetZone, baseX, baseY, plKill);
         if (this.soulDroppedForCurrentLife) {
             return;
         }
@@ -849,8 +938,42 @@ public class Boss extends Player implements IBoss {
     }
 
     /**
-     * Rơi Thỏi vàng [457] cố định (KHÔNG bị ảnh hưởng bởi chỉ số buff thêm vàng).
-     * Nếu highTierWingJackpot = true: kiểm tra riêng nội tại Cánh (Opt 251 -> 20% rơi thêm 100 Thỏi vàng),
+     * Rải các cọc Thỏi vàng [457] ra mặt đất để mọi người chơi trong khu đều nhìn thấy và nhặt trực tiếp.
+     */
+    public static void scatterGoldBarsOnGround(Zone targetZone, int centerX, int baseY, long ownerId, int totalBars, int offsetShift) {
+        if (targetZone == null || targetZone.map == null || totalBars <= 0) {
+            return;
+        }
+        int piles;
+        if (totalBars <= 1) {
+            piles = 1;
+        } else if (totalBars <= 10) {
+            piles = Math.min(totalBars, 5);
+        } else if (totalBars < 50) {
+            piles = 5;
+        } else {
+            piles = 10;
+        }
+        int basePerPile = totalBars / piles;
+        int remainder = totalBars % piles;
+        int spacing = piles >= 10 ? 22 : 18;
+        int startOffset = -((piles - 1) * spacing) / 2 + offsetShift;
+        for (int i = 0; i < piles; i++) {
+            int qty = basePerPile + (i < remainder ? 1 : 0);
+            if (qty <= 0) {
+                continue;
+            }
+            int xDrop = clampDropX(targetZone, centerX + startOffset + i * spacing);
+            int yDrop = targetZone.map.yPhysicInTop(xDrop, baseY - 24);
+            nro.models.map.ItemMap tv = new nro.models.map.ItemMap(targetZone, 457, qty, xDrop, yDrop, ownerId);
+            tv.options.add(new nro.models.item.Item.ItemOption(73, 0));
+            Service.gI().dropItemMap(targetZone, tv);
+        }
+    }
+
+    /**
+     * Rơi Thỏi vàng [457] cố định ra ngoài mặt đất (KHÔNG bị ảnh hưởng bởi chỉ số buff thêm vàng).
+     * Nếu highTierWingJackpot = true: kiểm tra riêng nội tại Cánh (Opt 251 -> 20% rơi thêm 100 Thỏi vàng ra mặt đất),
      * tuyệt đối KHÔNG stack với chỉ số May mắn.
      */
     public static void dropGoldBarsStatic(Zone targetZone, int baseX, int baseY, Player plKill, int baseCount, boolean highTierWingJackpot) {
@@ -861,21 +984,13 @@ public class Boss extends Player implements IBoss {
             Player owner = resolveRewardOwner(plKill);
             long ownerId = (owner != null) ? owner.id : -1L;
             if (baseCount > 0) {
-                int xDrop = clampDropX(targetZone, baseX);
-                int yDrop = targetZone.map.yPhysicInTop(xDrop, baseY - 24);
-                nro.models.map.ItemMap tv = new nro.models.map.ItemMap(targetZone, 457, baseCount, xDrop, yDrop, ownerId);
-                tv.options.add(new nro.models.item.Item.ItemOption(73, 0));
-                Service.gI().dropItemMap(targetZone, tv);
+                scatterGoldBarsOnGround(targetZone, baseX, baseY, ownerId, baseCount, 0);
             }
             if (highTierWingJackpot && owner != null && !owner.isPet && owner.nPoint != null
                     && owner.nPoint.tlJackpotThoiVangBoss > 0
                     && Util.isTrue(Math.min(100, owner.nPoint.tlJackpotThoiVangBoss), 100)) {
-                int xJackpot = clampDropX(targetZone, baseX + 16);
-                int yJackpot = targetZone.map.yPhysicInTop(xJackpot, baseY - 24);
-                nro.models.map.ItemMap jackpotTV = new nro.models.map.ItemMap(targetZone, 457, 100, xJackpot, yJackpot, ownerId);
-                jackpotTV.options.add(new nro.models.item.Item.ItemOption(73, 0));
-                Service.gI().dropItemMap(targetZone, jackpotTV);
-                Service.gI().sendThongBao(owner, "Nội tại Cánh kích hoạt: Rơi thêm 100 Thỏi vàng từ Boss!");
+                scatterGoldBarsOnGround(targetZone, baseX, baseY, ownerId, 100, 11);
+                Service.gI().sendThongBao(owner, "Nội tại Cánh kích hoạt: Rơi văng thêm 100 Thỏi vàng ra mặt đất từ Boss!");
             }
         } catch (Exception e) {
             Logger.logException(Boss.class, e);
@@ -1171,6 +1286,9 @@ public class Boss extends Player implements IBoss {
                  BossID.CUMBER,
                  BossID.BABY,
                  BossID.GOLDEN_FRIEZA,
+                 BossID.DAI_DE_FIDE_VT13,
+                 BossID.FIDE_DEN,
+                 BossID.THAN_HUY_DIET_VT13,
                  BossID.DRABURA,
                  BossID.BUI_BUI,
                  BossID.BUI_BUI_2,
@@ -1206,22 +1324,7 @@ public class Boss extends Player implements IBoss {
     protected void dropThoiVangBoss(Player plKill) {
         try {
             if (plKill != null && this.zone != null) {
-                Player owner = (plKill.isPet && ((Pet) plKill).master != null) ? ((Pet) plKill).master : plKill;
-                int yGround = this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24);
-                nro.models.map.ItemMap thoiVangThuong = new nro.models.map.ItemMap(this.zone, 457, 1, this.location.x, yGround, owner.id);
-                thoiVangThuong.options.add(new nro.models.item.Item.ItemOption(73, 0));
-                Service.gI().dropItemMap(this.zone, thoiVangThuong);
-
-                if (isHighTierBoss() && owner != null && !owner.isPet && owner.nPoint != null
-                        && owner.nPoint.tlJackpotThoiVangBoss > 0
-                        && Util.isTrue(Math.min(100, owner.nPoint.tlJackpotThoiVangBoss), 100)) {
-                    int xJackpot = Math.max(24, Math.min(this.zone.map.mapWidth - 24, this.location.x + 15));
-                    int yJackpot = this.zone.map.yPhysicInTop(xJackpot, this.location.y - 24);
-                    nro.models.map.ItemMap jackpotTV = new nro.models.map.ItemMap(this.zone, 457, 100, xJackpot, yJackpot, owner.id);
-                    jackpotTV.options.add(new nro.models.item.Item.ItemOption(73, 0));
-                    Service.gI().dropItemMap(this.zone, jackpotTV);
-                    Service.gI().sendThongBao(owner, "Nội tại Cánh kích hoạt: Rơi thêm 100 Thỏi vàng từ Boss!");
-                }
+                dropGoldBarsStatic(this.zone, this.location.x, this.location.y, plKill, 1, isHighTierBoss());
             }
         } catch (Exception e) {
             Logger.logException(Boss.class, e);

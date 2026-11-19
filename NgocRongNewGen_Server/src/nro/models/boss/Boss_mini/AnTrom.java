@@ -131,6 +131,7 @@ public class AnTrom extends Boss {
         BadgesTaskService.updateCountBagesTask(plKill, ConstTaskBadges.BI_MOC_SACH_TUI, 1);
         this.reward(plKill);
         tryDropManhGiay726(this.zone, this.location.x, this.location.y, plKill);
+        tryDropPetRongCon(this.zone, this.location.x, this.location.y, plKill);
         this.changeStatus(BossStatus.DIE);
     }
 

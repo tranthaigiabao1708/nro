@@ -46,7 +46,10 @@ public class BaHatMit extends Npc {
                             "Phân rã\nTrang bị\nKích hoạt",
                             "Tái tạo\nCapsule\nKích hoạt",
                             "Nâng cấp\nTrang bị\nKích hoạt",
-                            "Hướng dẫn\nSet Kích Hoạt"
+                            "Hướng dẫn\nSet Kích Hoạt",
+                            "Chuyển hóa\nTrang bị",
+                            "Sách\nTuyệt Kỹ",
+                            "Làm phép\nNhập đá"
                     );
 
                 case 112 -> {
@@ -161,18 +164,58 @@ public class BaHatMit extends Npc {
                                         "Từ chối");
                             case 4 ->
                                 createOtherMenu(player, ConstNpc.MENU_BA_HAT_MIT_NANG_CAP_SKH,
-                                        "|8|NÂNG CẤP ĐỒ THẦN LINH, HỦY DIỆT & THIÊN SỨ KÍCH HOẠT\n"
-                                        + "|2|- Bắt buộc dùng trang bị CÙNG LOẠI & CÙNG HÀNH TINH:\n"
-                                        + "  Áo-Áo | Quần-Quần | Găng-Găng | Giày-Giày | Rada-Nhẫn\n"
-                                        + "- Chỉ dùng Đồ SKH + Đồ Thần/Hủy Diệt/Thiên Sứ + Khoáng tái chế, cấm đặt đồ khác!\n"
-                                        + "|1|- Thành công: Truyền Set Kích Hoạt sang trang bị mới & mở khóa cho phép giao dịch (giữ nguyên chỉ số & dòng thưởng của phôi mới).\n"
-                                        + "|7|- Thất bại: Chỉ mất Khoáng tái chế & trang bị chưa kích hoạt, GIỮ NGUYÊN trang bị Kích Hoạt!",
+                                        "|8|NÂNG CẤP & CƯỜNG HÓA CẤP ĐỘ SET KÍCH HOẠT\n"
+                                        + "|2|- Nâng bậc SKH: Truyền Set Kích Hoạt sang Đồ Thần / Hủy Diệt / Thiên Sứ (giữ nguyên cấp cường hóa SKH đã đập!).\n"
+                                        + "|1|- Cường hóa Cấp SKH (Lv1 -> Lv10): Dùng 1 Đồ Hủy Diệt + 1 Đá nâng cấp SKH + 2 Tỷ vàng (+2% uy lực/cấp; 5 món Lv10 = X2 uy lực Set!).\n"
+                                        + "|7|- An toàn tuyệt đối: Thất bại KHÔNG BAO GIỜ mất trang bị Kích Hoạt đang nâng!",
                                         "Lên Đồ Thần\nKích hoạt\n(40%)",
                                         "Lên Hủy Diệt\nKích hoạt\n(30%)",
                                         "Lên Thiên Sứ\nKích hoạt\n(20%)",
+                                        "Cường hóa\nCấp SKH\n(Lv1 -> 10)",
+                                        "Chế tạo\nĐá Nâng Cấp\nSKH",
                                         "Cẩm nang\nSet Kích Hoạt");
                             case 5 ->
                                 nro.models.services.SkhCollectionService.gI().showGuide(player);
+                            case 6 ->
+                                CombineService.gI().openTabCombine(player, CombineService.CHUYEN_HOA_TRANG_BI_VANG);
+                            case 7 ->
+                                createOtherMenu(player, ConstNpc.MENU_SACH_TUYET_KY, "Ta có thể giúp gì cho ngươi ?",
+                                        "Đóng thành\nSách cũ",
+                                        "Đổi Sách\nTuyệt kỹ",
+                                        "Giám định\nSách",
+                                        "Tẩy\nSách",
+                                        "Nâng cấp\nSách\nTuyệt kỹ",
+                                        "Hồi phục\nSách",
+                                        "Phân rã\nSách");
+                            case 8 ->
+                                CombineService.gI().openTabCombine(player, CombineService.LAM_PHEP_NHAP_DA);
+                        }
+                    } else if (player.idMark.getIndexMenu() == ConstNpc.MENU_SACH_TUYET_KY) {
+                        switch (select) {
+                            case 0 ->
+                                CheTaoCuonSachCu.showCombine(player);
+                            case 1 ->
+                                DoiSachTuyetKy.showCombine(player);
+                            case 2 ->
+                                CombineService.gI().openTabCombine(player, CombineService.GIAM_DINH_SACH);
+                            case 3 ->
+                                CombineService.gI().openTabCombine(player, CombineService.TAY_SACH);
+                            case 4 ->
+                                CombineService.gI().openTabCombine(player, CombineService.NANG_CAP_SACH_TUYET_KY);
+                            case 5 ->
+                                CombineService.gI().openTabCombine(player, CombineService.HOI_PHUC_SACH);
+                            case 6 ->
+                                CombineService.gI().openTabCombine(player, CombineService.PHAN_RA_SACH);
+                        }
+                    } else if (player.idMark.getIndexMenu() == ConstNpc.DONG_THANH_SACH_CU) {
+                        if (select == 0) {
+                            CheTaoCuonSachCu.cheTaoCuonSachCu(player);
+                        }
+                    } else if (player.idMark.getIndexMenu() == ConstNpc.DOI_SACH_TUYET_KY) {
+                        if (select == 0) {
+                            DoiSachTuyetKy.doiSachTuyetKy(player, false);
+                        } else if (select == 1 && InventoryService.gI().getTotalQuantityBag(player, 1794) > 0) {
+                            DoiSachTuyetKy.doiSachTuyetKy(player, true);
                         }
                     } else if (player.idMark.getIndexMenu() == ConstNpc.MENU_BA_HAT_MIT_TAI_TAO_CAPSULE) {
                         switch (select) {
@@ -190,6 +233,10 @@ public class BaHatMit extends Npc {
                             case 2 ->
                                 CombineService.gI().openTabCombine(player, CombineService.NANG_CAP_THIEN_SU_SKH);
                             case 3 ->
+                                CombineService.gI().openTabCombine(player, CombineService.CUONG_HOA_CAP_SKH);
+                            case 4 ->
+                                CombineService.gI().openTabCombine(player, CombineService.CHE_TAO_DA_NANG_CAP_SKH);
+                            case 5 ->
                                 nro.models.services.SkhCollectionService.gI().showGuide(player);
                         }
                     } else if (player.idMark.getIndexMenu() == 3) {
@@ -221,7 +268,7 @@ public class BaHatMit extends Npc {
                         }
                     } else if (player.idMark.getIndexMenu() == ConstNpc.MENU_START_COMBINE) {
                         switch (player.combineNew.typeCombine) {
-                            case CombineService.EP_SAO_TRANG_BI, CombineService.PHA_LE_HOA_TRANG_BI, CombineService.CHUYEN_HOA_TRANG_BI_VANG, CombineService.CHUYEN_HOA_TRANG_BI_NGOC, CombineService.PHAN_RA_TRANG_BI_KH, CombineService.TAI_TAO_CAPSULE_KH, CombineService.TAI_TAO_CAPSULE_KH_VIP, CombineService.NANG_CAP_THAN_LINH_SKH, CombineService.NANG_CAP_HUY_DIET_SKH, CombineService.NANG_CAP_THIEN_SU_SKH, CombineService.NANG_CAP_SAO_PHA_LE, CombineService.DANH_BONG_SAO_PHA_LE, CombineService.CUONG_HOA_LO_SAO_PHA_LE, CombineService.TAO_DA_HEMATITE, CombineService.DUI_DUC, CombineService.DA_MAI -> {
+                            case CombineService.EP_SAO_TRANG_BI, CombineService.PHA_LE_HOA_TRANG_BI, CombineService.CHUYEN_HOA_TRANG_BI_VANG, CombineService.PHAN_RA_TRANG_BI_KH, CombineService.TAI_TAO_CAPSULE_KH, CombineService.TAI_TAO_CAPSULE_KH_VIP, CombineService.NANG_CAP_THAN_LINH_SKH, CombineService.NANG_CAP_HUY_DIET_SKH, CombineService.NANG_CAP_THIEN_SU_SKH, CombineService.CHE_TAO_DA_NANG_CAP_SKH, CombineService.CUONG_HOA_CAP_SKH, CombineService.LAM_PHEP_NHAP_DA, CombineService.GIAM_DINH_SACH, CombineService.TAY_SACH, CombineService.NANG_CAP_SACH_TUYET_KY, CombineService.HOI_PHUC_SACH, CombineService.PHAN_RA_SACH, CombineService.NANG_CAP_SAO_PHA_LE, CombineService.DANH_BONG_SAO_PHA_LE, CombineService.CUONG_HOA_LO_SAO_PHA_LE, CombineService.TAO_DA_HEMATITE, CombineService.DUI_DUC, CombineService.DA_MAI -> {
                                 switch (select) {
                                     case 0 ->
                                         CombineService.gI().startCombine(player);
@@ -454,7 +501,9 @@ public class BaHatMit extends Npc {
                             }
                         }
                     } else if (player.idMark.getIndexMenu() == ConstNpc.DONG_THANH_SACH_CU) {
-                        CheTaoCuonSachCu.cheTaoCuonSachCu(player);
+                        if (select == 0) {
+                            CheTaoCuonSachCu.cheTaoCuonSachCu(player);
+                        }
                     } else if (player.idMark.getIndexMenu() == ConstNpc.DOI_SACH_TUYET_KY) {
                         if (select == 0) {
                             DoiSachTuyetKy.doiSachTuyetKy(player, false);

@@ -62,7 +62,7 @@ public class DaiDeFideVt13 extends Universe6Boss {
         if (this.currentLevel >= 1 && Util.isTrue(25, 100)) {
             applyPercentMaxHpStrike(target, 12, true, true);
             if (Util.isTrue(30, 100) && target.effectSkill != null && !target.effectSkill.isStun) {
-                this.chat("Hắc Ám Đế Vương Trảm!!");
+                this.chat("Cú Đấm Hắc Ám Tối Thượng!!");
                 EffectSkillService.gI().startStun(target, System.currentTimeMillis(), 1500);
             }
         }
@@ -75,7 +75,7 @@ public class DaiDeFideVt13 extends Universe6Boss {
             // Hoàn thành mốc chạm trán Đại Đế Fide (Phase 1 -> biến hình Black Fide)
             if (owner != null) {
                 TaskService.gI().checkDoneTaskKillBoss(owner, this);
-                Service.gI().sendThongBao(owner, "Đại Đế Fide gầm rú hấp thụ tà khí cổ thần... Hắn đang biến hình thành BLACK FIDE!");
+                Service.gI().sendThongBao(owner, "Đại Đế Fide gầm rú giải phóng toàn bộ Ki đen... Hắn đang biến hình thành BLACK FIDE!");
             }
             return;
         }

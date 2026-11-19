@@ -1,9 +1,9 @@
 /*M!999999\- enable the sandbox mode */ 
--- MariaDB dump 10.19-11.4.4-MariaDB, for Win64 (AMD64)
+-- MariaDB dump 10.19  Distrib 10.11.11-MariaDB, for Win64 (AMD64)
 --
 -- Host: 127.0.0.1    Database: nro_newgen
 -- ------------------------------------------------------
--- Server version	11.4.4-MariaDB
+-- Server version	10.11.11-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -14,7 +14,7 @@
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*M!100616 SET @OLD_NOTE_VERBOSITY=@@NOTE_VERBOSITY, NOTE_VERBOSITY=0 */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
 -- Table structure for table `achievement_template`
@@ -22,7 +22,7 @@
 
 DROP TABLE IF EXISTS `achievement_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `achievement_template` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `info1` text NOT NULL,
@@ -74,7 +74,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `array_head_2_frames`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `array_head_2_frames` (
   `id` int(11) NOT NULL,
   `data` text NOT NULL,
@@ -150,7 +150,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `bg_item_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `bg_item_template` (
   `id` int(11) NOT NULL,
   `image_id` int(11) NOT NULL,
@@ -774,7 +774,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `clan_task_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `clan_task_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -862,7 +862,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `data_badges`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `data_badges` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `idEffect` int(11) NOT NULL,
@@ -908,7 +908,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `flag_bag`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `flag_bag` (
   `id` int(11) NOT NULL,
   `icon_data` varchar(1000) NOT NULL,
@@ -1095,7 +1095,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `head_avatar`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `head_avatar` (
   `head_id` int(11) NOT NULL,
   `avatar_id` int(11) NOT NULL,
@@ -1618,7 +1618,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `img_by_name`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `img_by_name` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `NAME` varchar(55) NOT NULL,
@@ -1924,7 +1924,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `intrinsic`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `intrinsic` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -2161,7 +2161,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `item_option_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `item_option_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -2431,7 +2431,11 @@ INSERT INTO `item_option_template` VALUES
 (252,'+#% tỉ lệ rơi Đồ Thần Linh từ Boss'),
 (253,'Tăng mạnh tỉ lệ rơi Ngọc Rồng'),
 (254,'Tăng mạnh tỉ lệ rơi Thỏi vàng'),
-(255,'Nội tại hợp thể: +#% Sức đánh');
+(255,'Nội tại hợp thể: +#% Sức đánh'),
+(256,'Set Thần Vực Vô Cực'),
+(257,'$[5] +40% Xuyên giáp, +35% SĐ/HP/KI/SĐCM & Hào Quang Vô Cực'),
+(258,'$Cường hóa SKH Cấp #'),
+(259,'$+Thêm #% uy lực Set Kích Hoạt');
 /*!40000 ALTER TABLE `item_option_template` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2441,7 +2445,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `item_shop`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `item_shop` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `tab_id` int(11) NOT NULL,
@@ -2455,7 +2459,7 @@ CREATE TABLE `item_shop` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `tab_id` (`tab_id`) USING BTREE,
   KEY `temp_id` (`temp_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=1081 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=1083 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3249,7 +3253,8 @@ INSERT INTO `item_shop` VALUES
 (1077,72,2026,1,1,3,60,16187,'2026-11-12 09:26:36'),
 (1078,72,2027,1,1,3,90,16187,'2026-11-12 09:26:36'),
 (1079,72,2028,1,1,3,75,16187,'2026-11-12 09:26:36'),
-(1080,73,2029,1,1,3,120,16187,'2026-11-12 09:26:36');
+(1080,73,2029,1,1,3,120,16187,'2026-11-12 09:26:36'),
+(1081,17,1794,1,1,1,10,4028,'2026-11-18 04:50:53');
 /*!40000 ALTER TABLE `item_shop` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3259,7 +3264,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `item_shop_option`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `item_shop_option` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `item_shop_id` int(11) NOT NULL,
@@ -4645,7 +4650,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `item_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `item_template` (
   `id` int(11) NOT NULL,
   `TYPE` int(11) NOT NULL,
@@ -6438,13 +6443,13 @@ INSERT INTO `item_template` VALUES
 (1762,5,3,'hùng vương ','Vật phẩm sự kiện',0,15068,1659,0,0,0,0,1659,1660,1661),
 (1763,5,3,'Sơn tinh ','Vật phẩm sự kiện',0,15163,1683,0,0,0,0,1683,1684,1685),
 (1764,5,3,'Thủy Tinh ','Vật phẩm sự kiện',0,15196,1686,0,0,0,0,1686,1687,1688),
-(1765,27,3,'Bé Rồng Cute','Vật phẩm sự kiện',0,15077,1662,0,0,0,0,1662,1663,1664),
-(1766,27,3,'Bé Rồng Cute','Vật phẩm sự kiện',0,15085,1665,0,0,0,0,1665,1666,1667),
-(1767,27,3,'Bé Rồng Cute','Vật phẩm sự kiện',0,15093,1668,0,0,0,0,1668,1669,1670),
-(1768,27,3,'Bé Rồng Cute','Vật phẩm sự kiện',0,15101,1671,0,0,0,0,1671,1672,1673),
-(1769,27,3,'Bé Rồng Cute','Vật phẩm sự kiện',0,15109,1674,0,0,0,0,1674,1675,1676),
-(1770,27,3,'Bé Rồng Cute','Vật phẩm sự kiện',0,15117,1677,0,0,0,0,1677,1678,1679),
-(1771,27,3,'Bé Rồng Cute','Vật phẩm sự kiện',0,16187,1680,0,0,0,0,1680,1681,1682),
+(1765,27,3,'Pet Rồng Con 1','Linh thú Rồng Con 1 sao đi theo hỗ trợ chiến đấu (Sưu tập đủ bộ 1 -> 7 mở danh hiệu Mẹ Rồng)',0,15077,1662,0,0,0,0,1662,1663,1664),
+(1766,27,3,'Pet Rồng Con 2','Linh thú Rồng Con 2 sao đi theo hỗ trợ chiến đấu (Sưu tập đủ bộ 1 -> 7 mở danh hiệu Mẹ Rồng)',0,15085,1665,0,0,0,0,1665,1666,1667),
+(1767,27,3,'Pet Rồng Con 3','Linh thú Rồng Con 3 sao đi theo hỗ trợ chiến đấu (Sưu tập đủ bộ 1 -> 7 mở danh hiệu Mẹ Rồng)',0,15093,1668,0,0,0,0,1668,1669,1670),
+(1768,27,3,'Pet Rồng Con 4','Linh thú Rồng Con 4 sao đi theo hỗ trợ chiến đấu (Sưu tập đủ bộ 1 -> 7 mở danh hiệu Mẹ Rồng)',0,15101,1671,0,0,0,0,1671,1672,1673),
+(1769,27,3,'Pet Rồng Con 5','Linh thú Rồng Con 5 sao đi theo hỗ trợ chiến đấu (Sưu tập đủ bộ 1 -> 7 mở danh hiệu Mẹ Rồng)',0,15109,1674,0,0,0,0,1674,1675,1676),
+(1770,27,3,'Pet Rồng Con 6','Linh thú Rồng Con 6 sao đi theo hỗ trợ chiến đấu (Sưu tập đủ bộ 1 -> 7 mở danh hiệu Mẹ Rồng)',0,15117,1677,0,0,0,0,1677,1678,1679),
+(1771,27,3,'Pet Rồng Con 7','Linh thú Rồng Con 7 sao đi theo hỗ trợ chiến đấu (Sưu tập đủ bộ 1 -> 7 mở danh hiệu Mẹ Rồng)',0,16187,1680,0,0,0,0,1680,1681,1682),
 (1772,11,3,'búa sơn tinh','Vật phẩm sự kiện',0,15001,148,0,0,0,0,-1,-1,-1),
 (1773,11,3,'bút thủy tinh','Vật phẩm sự kiện',0,14993,149,0,0,0,0,-1,-1,-1),
 (1774,29,3,'Đệ Black Goku','Vật phẩm sự kiện',0,14334,0,1,0,0,0,-1,-1,-1),
@@ -6499,7 +6504,7 @@ INSERT INTO `item_template` VALUES
 (1823,75,3,'Rada ngọc rồng Vip','Vật phẩm sự kiện',0,15003,0,0,0,0,0,-1,-1,-1),
 (1824,75,3,'Cậu Vàng','Đến gặp Anh Hai rồi,\nVất ra đất để nhận thưởng.',0,16290,0,1,1500000,0,0,-1,-1,-1),
 (1825,75,3,'Vé Nhệm Vụ KOL Vip','Vật phầm sự kiện',0,15293,0,1,0,0,0,-1,-1,-1),
-(1826,75,3,'','',0,0,0,0,0,0,0,-1,-1,-1),
+(1826,27,3,'Đá nâng cấp SKH','Đá tinh luyện đặc biệt dùng để cường hóa cấp độ dòng Set Kích Hoạt (Lv1 -> Lv10) tại Bà Hạt Mít Đảo Kamê',0,27297,-1,1,0,0,0,-1,-1,-1),
 (1827,75,3,'','',0,0,0,0,0,0,0,-1,-1,-1),
 (1828,75,3,'','',0,0,0,0,0,0,0,-1,-1,-1),
 (1829,75,3,'','',0,0,0,0,0,0,0,-1,-1,-1),
@@ -6705,7 +6710,32 @@ INSERT INTO `item_template` VALUES
 (2029,27,3,'Ấn Triệu Tập Zeno','Bảo vật vĩnh viễn của Đấng Toàn Năng Zeno mở cổng sang chiến trường Phase 3: Đại chiến Bang hội tranh đoạt Ngọc Rồng Siêu Cấp để triệu hồi Rồng Thần ước nguyện!',0,15415,-1,0,0,0,0,-1,-1,-1),
 (2030,27,3,'Rương Siêu Cấp','Chiến lợi phẩm Giải Đấu Liên Vũ Trụ 6 & 7. Cấp rương càng cao (1-9), vật phẩm bên trong càng quý giá!',0,12846,-1,0,0,0,0,-1,-1,-1),
 (2031,27,3,'Ấn Khai Mở Vũ Trụ 13','Thánh vật mở cổng không gian đến Vũ Trụ 13 - Thế giới khắc nghiệt của những vị thần bị nguyền rủa (Dùng vô hạn)',0,27000,-1,0,0,0,0,-1,-1,-1),
-(2032,5,3,'Cải trang Black Fide','Hóa thân thành Black Fide - Đế Vương Hắc Ám Vũ Trụ 13',0,27209,2114,0,0,0,0,2114,2115,2116);
+(2032,5,3,'Cải trang Black Fide','Hóa thân thành Black Fide - Đế Vương Hắc Ám Vũ Trụ 13',0,27209,2114,0,0,0,0,2114,2115,2116),
+(2033,27,3,'Trứng Đệ Tử Thiên Sứ','Ấp nở Đệ Tử Thiên Sứ tối thượng (Hợp thể 200% sức mạnh, liên tục hồi 5% HP tối đa mỗi giây cho Sư Phụ kể cả khi đang hợp thể)',1,27270,-1,1,0,0,0,-1,-1,-1),
+(2034,27,3,'Mảnh Đại Thiên Sứ','Mảnh thần lực cực hiếm rơi tại Vũ Trụ 13 & Đại Hội Võ Thuật VT13. Đem tới Đại Thiên Sứ để đổi Trang bị Thần Vực Vô Cực!',1,27271,-1,1,0,0,0,-1,-1,-1),
+(2035,0,0,'Áo Thần Vực Vô Cực','Áo giáp tối thượng Vũ Trụ 13 (Mặc đủ 5 món Vô Cực: +40% xuyên giáp, +35% SĐ/HP/KI/SĐCM & Hào Quang Vô Cực)',16,27272,1105,0,0,0,0,-1,-1,-1),
+(2036,0,1,'Áo Thần Vực Vô Cực','Áo giáp tối thượng Vũ Trụ 13 (Mặc đủ 5 món Vô Cực: +40% xuyên giáp, +35% SĐ/HP/KI/SĐCM & Hào Quang Vô Cực)',16,27273,1115,0,0,0,0,-1,-1,-1),
+(2037,0,2,'Áo Thần Vực Vô Cực','Áo giáp tối thượng Vũ Trụ 13 (Mặc đủ 5 món Vô Cực: +40% xuyên giáp, +35% SĐ/HP/KI/SĐCM & Hào Quang Vô Cực)',16,27274,1110,0,0,0,0,-1,-1,-1),
+(2038,1,0,'Quần Thần Vực Vô Cực','Quần tối thượng Vũ Trụ 13 (Mặc đủ 5 món Vô Cực: +40% xuyên giáp, +35% SĐ/HP/KI/SĐCM & Hào Quang Vô Cực)',16,27275,1106,0,0,0,0,-1,-1,-1),
+(2039,1,1,'Quần Thần Vực Vô Cực','Quần tối thượng Vũ Trụ 13 (Mặc đủ 5 món Vô Cực: +40% xuyên giáp, +35% SĐ/HP/KI/SĐCM & Hào Quang Vô Cực)',16,27276,1116,0,0,0,0,-1,-1,-1),
+(2040,1,2,'Quần Thần Vực Vô Cực','Quần tối thượng Vũ Trụ 13 (Mặc đủ 5 món Vô Cực: +40% xuyên giáp, +35% SĐ/HP/KI/SĐCM & Hào Quang Vô Cực)',16,27277,1111,0,0,0,0,-1,-1,-1),
+(2041,2,0,'Găng Thần Vực Vô Cực','Găng tay tối thượng Vũ Trụ 13 (Mặc đủ 5 món Vô Cực: +40% xuyên giáp, +35% SĐ/HP/KI/SĐCM & Hào Quang Vô Cực)',16,27278,-1,0,0,0,0,-1,-1,-1),
+(2042,2,1,'Găng Thần Vực Vô Cực','Găng tay tối thượng Vũ Trụ 13 (Mặc đủ 5 món Vô Cực: +40% xuyên giáp, +35% SĐ/HP/KI/SĐCM & Hào Quang Vô Cực)',16,27279,-1,0,0,0,0,-1,-1,-1),
+(2043,2,2,'Găng Thần Vực Vô Cực','Găng tay tối thượng Vũ Trụ 13 (Mặc đủ 5 món Vô Cực: +40% xuyên giáp, +35% SĐ/HP/KI/SĐCM & Hào Quang Vô Cực)',16,27280,-1,0,0,0,0,-1,-1,-1),
+(2044,3,0,'Giầy Thần Vực Vô Cực','Giầy tối thượng Vũ Trụ 13 (Mặc đủ 5 món Vô Cực: +40% xuyên giáp, +35% SĐ/HP/KI/SĐCM & Hào Quang Vô Cực)',16,27281,-1,0,0,0,0,-1,-1,-1),
+(2045,3,1,'Giầy Thần Vực Vô Cực','Giầy tối thượng Vũ Trụ 13 (Mặc đủ 5 món Vô Cực: +40% xuyên giáp, +35% SĐ/HP/KI/SĐCM & Hào Quang Vô Cực)',16,27282,-1,0,0,0,0,-1,-1,-1),
+(2046,3,2,'Giầy Thần Vực Vô Cực','Giầy tối thượng Vũ Trụ 13 (Mặc đủ 5 món Vô Cực: +40% xuyên giáp, +35% SĐ/HP/KI/SĐCM & Hào Quang Vô Cực)',16,27283,-1,0,0,0,0,-1,-1,-1),
+(2047,4,0,'Nhẫn Thần Vực Vô Cực','Nhẫn tối thượng Vũ Trụ 13 (Mặc đủ 5 món Vô Cực: +40% xuyên giáp, +35% SĐ/HP/KI/SĐCM & Hào Quang Vô Cực)',16,27284,-1,0,0,0,0,-1,-1,-1),
+(2048,4,1,'Nhẫn Thần Vực Vô Cực','Nhẫn tối thượng Vũ Trụ 13 (Mặc đủ 5 món Vô Cực: +40% xuyên giáp, +35% SĐ/HP/KI/SĐCM & Hào Quang Vô Cực)',16,27285,-1,0,0,0,0,-1,-1,-1),
+(2049,4,2,'Nhẫn Thần Vực Vô Cực','Nhẫn tối thượng Vũ Trụ 13 (Mặc đủ 5 món Vô Cực: +40% xuyên giáp, +35% SĐ/HP/KI/SĐCM & Hào Quang Vô Cực)',16,27286,-1,0,0,0,0,-1,-1,-1),
+(2050,27,3,'Ấn mở khóa 1','Ấn cổ đại số 1/7 rơi từ Thần Hủy Diệt Bunny. Thu thập đủ 7 Ấn (1 -> 7) đưa cho Goku Bị Phong Ấn để giải phong ấn!',0,27290,-1,1,0,0,0,-1,-1,-1),
+(2051,27,3,'Ấn mở khóa 2','Ấn cổ đại số 2/7 rơi từ Thần Hủy Diệt Bunny. Thu thập đủ 7 Ấn (1 -> 7) đưa cho Goku Bị Phong Ấn để giải phong ấn!',0,27291,-1,1,0,0,0,-1,-1,-1),
+(2052,27,3,'Ấn mở khóa 3','Ấn cổ đại số 3/7 rơi từ Thần Hủy Diệt Bunny. Thu thập đủ 7 Ấn (1 -> 7) đưa cho Goku Bị Phong Ấn để giải phong ấn!',0,27292,-1,1,0,0,0,-1,-1,-1),
+(2053,27,3,'Ấn mở khóa 4','Ấn cổ đại số 4/7 rơi từ Thần Hủy Diệt Bunny. Thu thập đủ 7 Ấn (1 -> 7) đưa cho Goku Bị Phong Ấn để giải phong ấn!',0,27293,-1,1,0,0,0,-1,-1,-1),
+(2054,27,3,'Ấn mở khóa 5','Ấn cổ đại số 5/7 rơi từ Thần Hủy Diệt Bunny. Thu thập đủ 7 Ấn (1 -> 7) đưa cho Goku Bị Phong Ấn để giải phong ấn!',0,27294,-1,1,0,0,0,-1,-1,-1),
+(2055,27,3,'Ấn mở khóa 6','Ấn cổ đại số 6/7 rơi từ Thần Hủy Diệt Bunny. Thu thập đủ 7 Ấn (1 -> 7) đưa cho Goku Bị Phong Ấn để giải phong ấn!',0,27295,-1,1,0,0,0,-1,-1,-1),
+(2056,27,3,'Ấn mở khóa 7','Ấn cổ đại số 7/7 rơi từ Thần Hủy Diệt Bunny. Thu thập đủ 7 Ấn (1 -> 7) đưa cho Goku Bị Phong Ấn để giải phong ấn!',0,27296,-1,1,0,0,0,-1,-1,-1),
+(2057,5,3,'Cải trang Thần Hủy Diệt Bunny','Hóa thân thành Thần Hủy Diệt Bunny cổ đại của Vũ Trụ 13',0,27234,-1,0,2147483647,0,0,2126,2127,2128);
 /*!40000 ALTER TABLE `item_template` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -6715,7 +6745,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `map_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `map_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(55) NOT NULL,
@@ -6917,11 +6947,12 @@ INSERT INTO `map_template` VALUES
 (178,'Khe Nứt Nguyền Rủa VT13',10,15,'[0,2,0,43,34]',0,2,0,43,34,'[[\"Thánh Điện Toàn Vương VT13\",0,360,24,480,0,0,181,1620,456],[\"Vực Thẳm Nguyền Rủa VT13\",1656,360,1680,480,0,0,182,60,456]]','[[119,30,1800000000,264,456],[119,30,1800000000,456,456],[119,30,1800000000,1224,456],[119,30,1800000000,1416,456],[119,30,1800000000,456,336],[119,30,1800000000,840,264],[119,30,1800000000,1224,336]]','[[88,840,456],[89,730,456],[90,950,456]]',0),
 (179,'Ngục Tù Phong Ấn Goku',10,15,'[0,2,0,43,36]',0,2,0,43,36,'[[\"Vực Thẳm Nguyền Rủa VT13\",0,360,24,480,0,0,182,1620,456],[\"Điện Thờ Thần Hủy Diệt VT13\",1656,360,1680,480,0,0,180,60,456]]','[]','[[85,840,456]]',0),
 (180,'Điện Thờ Thần Hủy Diệt VT13',10,15,'[0,2,0,43,21]',0,2,0,43,21,'[[\"Ngục Tù Phong Ấn Goku\",0,360,24,480,0,0,179,1620,456]]','[[120,32,2500000000,408,456],[120,32,2500000000,600,456],[120,32,2500000000,792,456],[120,32,2500000000,1008,456],[120,32,2500000000,1224,456],[120,32,2500000000,456,336],[120,32,2500000000,840,288],[120,32,2500000000,1224,336]]','[]',0),
-(181,'Thánh Điện Toàn Vương VT13',5,20,'[500,500]',0,2,0,27,35,'[[\"Khe Nứt Nguyền Rủa VT13\",1656,360,1680,480,0,0,178,60,456]]','[]','[[86,168,456],[87,420,456]]',0),
+(181,'Thánh Điện Toàn Vương VT13',5,20,'[500,500]',0,2,0,27,35,'[[\"Đại Hội Võ Thuật VT13\",0,360,24,480,0,0,186,1620,456],[\"Khe Nứt Nguyền Rủa VT13\",1656,360,1680,480,0,0,178,60,456]]','[]','[[86,168,456],[87,420,456]]',0),
 (182,'Vực Thẳm Nguyền Rủa VT13',10,15,'[0,2,0,43,34]',0,2,0,43,34,'[[\"Khe Nứt Nguyền Rủa VT13\",0,360,24,480,0,0,178,1620,456],[\"Ngục Tù Phong Ấn Goku\",1656,360,1680,480,0,0,179,60,456]]','[[120,32,2500000000,264,456],[120,32,2500000000,456,456],[120,32,2500000000,648,456],[120,32,2500000000,840,456],[120,32,2500000000,1032,456],[120,32,2500000000,1224,456],[120,32,2500000000,1416,456],[120,32,2500000000,408,312],[120,32,2500000000,840,336],[120,32,2500000000,1248,312]]','[]',0),
 (183,'Thành cổ 1',10,15,'[0,0,0,41,0]',0,0,0,41,1,'[]','[[15,21,400000,345,480],[54,21,500000,514,480],[15,21,500000,657,480],[54,21,400000,813,480]]','[]',0),
 (184,'Thành cổ 2',10,15,'[0,0,0,42,0]',0,0,0,42,1,'[]','[[56,21,4000000,234,624],[57,21,5000000,410,624],[56,21,5000000,597,624],[57,21,4000000,791,624],[50,21,4000000,686,456],[50,21,4000000,402,456]]','[]',0),
-(185,'Đấu trường thành cổ',10,15,'[0,0,0,42,0]',0,0,0,42,1,'[]','[]','[]',0);
+(185,'Đấu trường thành cổ',10,15,'[0,0,0,42,0]',0,0,0,42,1,'[]','[]','[]',0),
+(186,'Đại Hội Võ Thuật VT13',20,30,'[500,500]',0,2,0,27,35,'[[\"Thánh Điện Toàn Vương VT13\",1656,360,1680,480,0,0,181,60,456]]','[]','[[91,840,456]]',0);
 /*!40000 ALTER TABLE `map_template` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -6931,7 +6962,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `mob_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `mob_template` (
   `id` int(11) NOT NULL,
   `TYPE` int(11) NOT NULL,
@@ -7083,7 +7114,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `notify`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `notify` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
@@ -7107,7 +7138,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `npc_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `npc_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(50) NOT NULL,
@@ -7217,6 +7248,7 @@ INSERT INTO `npc_template` VALUES
 (88,'Thần Hủy Diệt Beerus',508,509,510,5067),
 (89,'Thần Hủy Diệt Belmod',2129,2130,2131,27256),
 (90,'Thần Hủy Diệt Iwan',2132,2133,2134,27240),
+(91,'Trọng Tài Liên Vũ Trụ',114,115,116,1411),
 (103,'Chú Bé Đần',844,845,846,7775),
 (104,'Khá BảnH',2028,1066,1067,15273),
 (105,'Tiến Bry',2027,253,254,15272),
@@ -7234,7 +7266,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `part`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `part` (
   `id` int(11) NOT NULL,
   `TYPE` int(11) NOT NULL,
@@ -9355,24 +9387,24 @@ INSERT INTO `part` VALUES
 (2102,0,'[[2955,0,0],[2955,0,0],[2955,0,0]]'),
 (2103,1,'[[20828,0,0],[20827,-24,-52],[20829,-23,-45],[20830,-25,-47],[20831,-29,-47],[20832,-16,-47],[20833,-20,-50],[20834,-17,-39],[34,0,0],[34,0,0],[34,0,0],[34,0,0],[34,0,0],[34,0,0],[34,0,0],[34,0,0],[34,0,0]]'),
 (2104,2,'[[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0]]'),
-(2105,0,'[[27110,-2,-33],[27111,-5,-26],[27112,-6,-23]]'),
-(2106,1,'[[27113,-1,-16],[27114,-2,-23],[27115,-8,-25],[27116,-7,-25],[27117,-11,-24],[27118,-7,-25],[27119,-9,-22],[27120,4,-16],[27121,5,-11],[27122,-5,-8],[27123,-10,-23],[27124,-9,-23],[27115,-7,-18],[27125,-4,-23],[27126,1,-20],[27126,-3,-19],[27127,-5,-16]]'),
-(2107,2,'[[27128,12,-6],[27129,-3,-17],[27130,-2,-15],[27131,-4,-14],[27132,-4,-15],[27133,-2,-11],[27134,-3,-14],[27135,-2,-11],[27136,-7,-14],[27137,-3,-16],[27135,-10,-1],[27138,-12,-2],[27138,-4,-5],[27135,-7,-7]]'),
-(2108,0,'[[27150,0,-15],[27151,-3,-16],[27152,-4,-13]]'),
-(2109,1,'[[27153,-7,-3],[27154,-7,-11],[27155,-8,-11],[27156,-5,-12],[27157,-9,-10],[27158,-7,-10],[27159,-8,-11],[27160,-1,-3],[27161,-1,1],[27162,-9,3],[27163,-9,-8],[27164,-6,-8],[27160,-6,-1],[27165,-4,-11],[27166,-8,-9],[27166,-10,-8],[27167,-5,-2]]'),
-(2110,2,'[[27168,7,5],[27169,-6,-6],[27170,-4,-5],[27171,-2,-6],[27172,-6,-5],[27173,-2,-5],[27174,-4,-6],[27175,-6,1],[27176,-9,-3],[27177,-2,-7],[27175,-11,9],[27175,-11,9],[27178,-6,5],[27175,-9,1]]'),
+(2105,0,'[[27110,-4,-22],[27111,-2,-17],[27112,0,-20]]'),
+(2106,1,'[[27113,-5,-7],[27114,-4,-13],[27115,-5,-16],[27116,-7,-19],[27117,-10,-19],[27118,-7,-17],[27119,-9,-15],[27120,-5,-11],[27121,-5,-10],[27122,-7,1],[27123,-6,-14],[27124,-5,-15],[27115,-3,-9],[27125,-4,-16],[27126,-7,-13],[27126,-11,-12],[27127,1,-14]]'),
+(2107,2,'[[27128,8,2],[27129,-4,-10],[27130,-1,-10],[27131,-6,-13],[27132,-5,-12],[27133,-6,-12],[27134,-3,-10],[27135,-10,-5],[27136,-6,-5],[27137,-6,-9],[27135,-12,-1],[27138,-11,-2],[27138,-6,-5],[27135,-7,-7]]'),
+(2108,0,'[[27150,-3,-18],[27151,-4,-21],[27152,-2,-10]]'),
+(2109,1,'[[27153,-6,-7],[27154,-4,-11],[27155,-5,-15],[27156,-5,-17],[27157,-10,-14],[27158,-6,-15],[27159,-9,-13],[27160,-1,-8],[27161,2,-4],[27162,-8,3],[27163,-7,-12],[27164,-3,-13],[27160,-2,-5],[27165,-2,-14],[27166,-7,-15],[27166,-8,-12],[27167,-1,-1]]'),
+(2110,2,'[[27168,7,3],[27169,-4,-10],[27170,-4,-10],[27171,-3,-9],[27172,-7,-7],[27173,-3,-9],[27174,-4,-8],[27175,-6,-5],[27176,-9,-8],[27177,0,-8],[27175,-9,6],[27175,-10,4],[27178,-4,2],[27175,-4,3]]'),
 (2111,0,'[[27100,0,-7],[27100,-3,-8],[27100,-4,-5]]'),
 (2112,1,'[[27101,-6,-9],[27101,-6,-9],[27101,-6,-9],[27101,-6,-9],[27101,-6,-9],[27101,-6,-9],[27101,-6,-9],[27101,-6,-9],[27101,-6,-9],[27101,-6,-9],[27101,-6,-9],[27101,-6,-9],[27101,-6,-9],[27101,-6,-9],[27101,-6,-9],[27101,-6,-9],[27101,-6,-9]]'),
 (2113,2,'[[27102,-1,-1],[27102,-1,-1],[27102,-1,-1],[27102,-1,-1],[27102,-1,-1],[27102,-1,-1],[27102,-1,-1],[27102,-1,-1],[27102,-1,-1],[27102,-1,-1],[27102,-1,-1],[27102,-1,-1],[27102,-1,-1],[27102,-1,-1]]'),
-(2114,0,'[[27180,4,-7],[27181,2,-8],[27182,1,-5]]'),
-(2115,1,'[[27183,-7,-2],[27184,-7,-10],[27185,-8,-10],[27186,-5,-11],[27187,-9,-9],[27188,-7,-9],[27189,-8,-10],[27190,-1,-2],[27191,-1,2],[27192,-9,4],[27193,-9,-7],[27194,-6,-7],[27190,-6,0],[27195,-4,-10],[27196,-8,-8],[27196,-10,-7],[27197,-5,-1]]'),
-(2116,2,'[[27198,6,5],[27199,-7,-6],[27200,-5,-5],[27201,-3,-6],[27202,-7,-5],[27203,-3,-5],[27204,-5,-6],[27205,-7,1],[27206,-10,-3],[27207,-3,-7],[27205,-12,9],[27205,-12,9],[27208,-7,5],[27205,-10,1]]'),
+(2114,0,'[[27405,2,-7],[27406,0,-8],[27407,-1,-5]]'),
+(2115,1,'[[27408,-11,-2],[27409,-12,-10],[27410,-12,-10],[27411,-10,-11],[27412,-14,-9],[27413,-12,-9],[27414,-13,-10],[27415,-5,-2],[27416,-6,2],[27417,-14,4],[27418,-14,-7],[27419,-11,-7],[27415,-11,0],[27420,-9,-10],[27421,-13,-8],[27421,-15,-7],[27422,-10,-1]]'),
+(2116,2,'[[27423,2,5],[27424,-12,-6],[27425,-10,-5],[27426,-8,-6],[27427,-12,-5],[27428,-8,-5],[27429,-10,-6],[27430,-11,1],[27431,-14,-3],[27432,-8,-7],[27430,-16,9],[27430,-16,9],[27433,-12,5],[27430,-14,1]]'),
 (2117,0,'[[27210,-35,-52],[27210,-38,-53],[27210,-39,-50]]'),
 (2118,1,'[[27212,-17,-39],[27212,-17,-47],[27212,-18,-47],[27212,-15,-48],[27212,-19,-46],[27212,-17,-46],[27212,-18,-47],[27212,-11,-39],[27212,-11,-35],[27212,-19,-33],[27212,-19,-44],[27212,-16,-44],[27212,-16,-37],[27212,-14,-47],[27212,-18,-45],[27212,-20,-44],[27212,-15,-38]]'),
 (2119,2,'[[27215,-74,-105],[27214,-87,-116],[27215,-85,-115],[27214,-83,-116],[27215,-87,-115],[27214,-83,-115],[27215,-85,-116],[27214,-87,-109],[27215,-90,-113],[27214,-83,-117],[27215,-92,-101],[27214,-92,-101],[27215,-87,-105],[27214,-90,-109]]'),
-(2126,0,'[[27220,2,-35],[27221,2,-34],[27222,-4,-34]]'),
-(2127,1,'[[27228,-8,-24],[27223,-4,-32],[27224,-5,-30],[27224,-1,-32],[27223,-6,-32],[27224,-3,-30],[27224,-4,-30],[27225,-11,-24],[27227,2,-20],[27228,-5,-15],[27226,-4,-26],[27226,-1,-26],[27225,-12,-22],[27226,1,-28],[27227,-5,-28],[27226,-5,-26],[27225,-12,-24]]'),
-(2128,2,'[[27231,-1,-9],[27229,-1,-20],[27230,-7,-17],[27230,-5,-18],[27229,-1,-19],[27230,-5,-17],[27230,-7,-18],[27231,-14,-14],[27232,-12,-14],[27232,-5,-18],[27231,-16,-6],[27231,-16,-6],[27233,-9,-6],[27231,-14,-14]]'),
+(2126,0,'[[27350,-5,-23],[27351,-4,-22],[27352,-5,-22]]'),
+(2127,1,'[[27358,-12,-21],[27353,-10,-24],[27354,-9,-23],[27354,-7,-24],[27353,-11,-24],[27354,-7,-23],[27354,-8,-23],[27355,-16,-21],[27357,-4,-20],[27358,-10,-16],[27356,-11,-19],[27356,-9,-19],[27355,-16,-20],[27356,-13,-20],[27357,-4,-25],[27356,-10,-19],[27355,-16,-21]]'),
+(2128,2,'[[27361,-8,-9],[27359,-4,-20],[27360,-13,-17],[27360,-11,-18],[27359,-4,-19],[27360,-11,-17],[27360,-13,-18],[27361,-21,-14],[27362,-18,-14],[27362,-11,-18],[27361,-23,-6],[27361,-23,-6],[27363,-15,-6],[27361,-21,-14]]'),
 (2129,0,'[[27260,0,0],[27260,0,0],[27260,0,0]]'),
 (2130,1,'[[27256,-7,-27],[27256,-4,-33],[27256,-6,-34],[27256,-2,-34],[27256,-6,-32],[27256,-4,-32],[27256,-5,-33],[27256,-2,-26],[27256,2,-21],[27256,-5,-20],[27256,-6,-30],[27256,-3,-30],[27256,-3,-23],[27256,-1,-33],[27256,-5,-31],[27256,-7,-30],[27256,-2,-24]]'),
 (2131,2,'[[27260,0,0],[27260,0,0],[27260,0,0],[27260,0,0],[27260,0,0],[27260,0,0],[27260,0,0],[27260,0,0],[27260,0,0],[27260,0,0],[27260,0,0],[27260,0,0],[27260,0,0],[27260,0,0]]'),
@@ -9388,7 +9420,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `radar`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `radar` (
   `id` int(11) NOT NULL,
   `iconId` int(11) DEFAULT 0,
@@ -9443,7 +9475,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `settings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `settings` (
   `Title` varchar(100) DEFAULT 'Nguyen Duc Kien',
   `Description` longtext DEFAULT NULL,
@@ -9481,7 +9513,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `shop`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `shop` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `npc_id` int(11) NOT NULL,
@@ -9535,7 +9567,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `side_task_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `side_task_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -9623,7 +9655,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `skill_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `skill_template` (
   `nclass_id` int(11) NOT NULL,
   `id` int(11) NOT NULL,
@@ -9682,7 +9714,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tab_shop`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tab_shop` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `shop_id` int(11) NOT NULL,
@@ -9764,7 +9796,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `task_badges_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_badges_template` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `NAME` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
@@ -9808,7 +9840,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `task_main_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_main_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -9853,8 +9885,9 @@ INSERT INTO `task_main_template` VALUES
 (26,'Chạm trán Xên bọ hung','Đến thị trấn Ginder\nTiêu diệt Xên Bọ Hung cấp 1\nTiêu diệt Xên Bọ Hung cấp 2\nTiêu diệt Xên Bọ Hung hoàn thiện\nCùng 2 đồng bang diệt 700 Xên con cấp 8\nBáo với Bunma tương lai\n- Thưởng 1.000.000 sức mạnh\n- Thưởng 1.000.000 tiềm năng'),
 (27,'Cuộc dạo chơi của xên','Cẩn thận !!!\nNhững vị khách không mời mà tới\nthường tỏ ra nguy hiểm'),
 (28,'Cuộc đối đầu không cân sức','Vào lúc 12h trưa các ngày, bạn đến gặp NPC Ô sin tại map Đại hội võ thuật.'),
-(29,'Vũ Trụ 13 - Vũ Trụ Bị Nguyền Rủa','Thế giới khắc nghiệt của những vị thần bị nguyền rủa đã mở ra! Goku đang bị xiềng xích phong ấn giữa ngục tối, còn Đại Đế Fide đã tiến hóa thành Black Fide nhằm phá vỡ phong ấn Thần Hủy Diệt Vũ Trụ 13!'),
-(30,'..','...');
+(29,'Vũ Trụ 13 - Vũ Trụ Bị Nguyền Rủa','Thế giới khắc nghiệt của những vị thần bị nguyền rủa đã mở ra! Goku đang bị xiềng xích phong ấn giữa ngục tối, hãy lùng sục khắp 3 bản đồ Vũ Trụ 13 và tiêu diệt Fide Đen!'),
+(30,'Giải Phong Ấn Goku & Đại Chiến Thần Vực','Săn Thần Hủy Diệt Bunny tại Điện Thờ VT13 để thu thập đủ 7 Ấn mở khóa (1 -> 7), giải thoát Son Goku khỏi xiềng xích phong ấn và bước vào cuộc chiến Thần Vực Vô Cực!'),
+(31,'Huyền Thoại Dragon Boy Z','Chúc mừng bạn đã hoàn thành toàn bộ nhiệm vụ cốt truyện hiện tại của Dragon Boy Z!');
 /*!40000 ALTER TABLE `task_main_template` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -9864,7 +9897,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `task_sub_template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_sub_template` (
   `task_main_id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -9875,7 +9908,7 @@ CREATE TABLE `task_sub_template` (
   `ducvupro` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`ducvupro`) USING BTREE,
   KEY `task_main_id` (`task_main_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=164 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=170 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -10014,10 +10047,14 @@ INSERT INTO `task_sub_template` VALUES
 (29,'Tìm Goku Bị Phong Ấn tại Ngục Tù Phong Ấn',1,'Tiến sang Ngục Tù Phong Ấn Goku và trò chuyện với Goku đang bị xiềng xích!',85,-1,127),
 (29,'Luyện tập: Hạ 30 Chiến Binh Ám Ảnh VT13',30,'Rèn luyện bản thân giữa trọng lực nguyền rủa: Hạ 30 Chiến Binh Ám Ảnh VT13!',-1,-1,128),
 (29,'Luyện tập: Hạ 30 Thực Thể Nguyền Rủa VT13',30,'Tiếp tục tiêu diệt 30 Thực Thể Nguyền Rủa VT13 để thích nghi sát khí thần vực!',-1,-1,129),
-(29,'Chạm trán và đánh bại Đại Đế Fide tại Điện Thờ',1,'Tiến vào Điện Thờ Thần Hủy Diệt VT13 và đánh bại Đại Đế Fide!',-1,-1,130),
-(29,'Quyết chiến Black Fide ngăn chặn mở phong ấn',1,'Đại Đế Fide đã biến hình thành Black Fide! Hãy đánh bại hắn ngay!',-1,-1,131),
-(29,'Quay lại báo tin dữ cho Goku Bị Phong Ấn',1,'Phong ấn Thần Hủy Diệt Vũ Trụ 13 đã bị Black Fide phá vỡ! Mau báo cho Goku!',85,-1,132),
-(30,'bạn đã xong nhiệm vụ rồi',-1,'.....',-1,-1,133);
+(29,'Tiêu diệt Fide Đen tại Vũ Trụ 13 (Khe Nứt, Ngục Tù hoặc Vực Thẳm)',1,'Truy lùng và tiêu diệt Boss Fide Đen xuất hiện ngẫu nhiên tại 1 trong 3 map Vũ Trụ 13!',-1,-1,130),
+(29,'Quay lại báo tin cho Goku Bị Phong Ấn',1,'Đã đánh bại Fide Đen! Mau quay lại Ngục Tù Phong Ấn báo tin cho Son Goku!',85,-1,132),
+(30,'Thu thập đủ 7 Ấn mở khóa (1 -> 7) từ Boss Bunny và Giải Phong Ấn cho Goku',1,'Săn Thần Hủy Diệt Bunny tại Điện Thờ VT13 nhặt đủ 7 Ấn mở khóa (1 -> 7) rồi đưa cho Goku Bị Phong Ấn!',85,179,164),
+(30,'Sát cánh cùng ý chí Goku: Hạ 50 Thực Thể Nguyền Rủa VT13 tại Vực Thẳm',50,'Goku đã thoát khỏi xiềng xích! Hãy rèn luyện tiêu diệt 50 Thực Thể Nguyền Rủa VT13!',-1,182,165),
+(30,'Thu thập 15 Mảnh Đại Thiên Sứ tại Vũ Trụ 13',15,'Tiêu diệt quái vật hoặc Boss tại Vũ Trụ 13 để thu thập 15 Mảnh Đại Thiên Sứ!',-1,180,166),
+(30,'Hạ gục Thần Hủy Diệt Bunny tại Điện Thờ Thần Hủy Diệt VT13',1,'Tiến vào Điện Thờ Thần Hủy Diệt VT13 và kết liễu Thần Hủy Diệt Bunny!',-1,180,167),
+(30,'Đến Thánh Điện gặp Đại Thần Quan nhận ban phước Vô Cực',1,'Quay về Thánh Điện Zeno VT13 gặp Đại Thần Quan để nhận đại thưởng hoàn tất nhiệm vụ!',86,181,168),
+(31,'Bạn đã hoàn thành hết nhiệm vụ chính tuyến!',-1,'Chúc mừng chiến binh huyền thoại của Dragon Boy Z!',-1,-1,169);
 /*!40000 ALTER TABLE `task_sub_template` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -10028,6 +10065,6 @@ UNLOCK TABLES;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed

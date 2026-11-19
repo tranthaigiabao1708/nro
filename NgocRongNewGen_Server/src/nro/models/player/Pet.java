@@ -83,7 +83,8 @@ public class Pet extends Player {
         if (status != GOHOME && status != FUSION && !isDie()) {
             this.location.x = master.location.x + Util.nextInt(-10, 10);
             this.location.y = master.location.y;
-            if (MapService.gI().isMapOffline(this.master.zone.map.mapId) || this.master.zone.map.mapId == 113) {
+            if (MapService.gI().isMapOffline(this.master.zone.map.mapId) || this.master.zone.map.mapId == 113
+                    || (this.master.zone.map.mapId == 186 && this.master.isPKDHVT)) {
                 ChangeMapService.gI().goToMap(this, MapService.gI().getMapCanJoin(this, master.gender + 21, -1));
                 if (this.zone != null) {
                     this.zone.load_Me_To_Another(this);
@@ -119,6 +120,15 @@ public class Pet extends Player {
     }
 
     private String getTextStatus(byte status) {
+        if (this.typePet == 7) {
+            return switch (status) {
+                case FOLLOW -> "Thần lực Thiên Sứ luôn đồng hành và trị thương cho Sư phụ!";
+                case PROTECT -> "Thánh Quang Thiên Sứ sẽ hộ vệ Sư phụ tuyệt đối!";
+                case ATTACK -> "Để con thanh tẩy kẻ địch bằng quyền năng Thiên Sứ!";
+                case GOHOME -> "Con xin phép lui về Thánh Điện nghỉ ngơi ạ!";
+                default -> "Cảnh giới Thiên Sứ của con vừa thăng hoa!";
+            };
+        }
         if (this.typePet == 4) {
             switch (status) {
                 case FOLLOW:
@@ -809,6 +819,8 @@ public class Pet extends Player {
                 return 1422;
             case 4:
                 return 876;
+            case 7:
+                return (short) (this.gender == 1 ? 530 : (this.gender == 2 ? 703 : 505));
             default:
                 return PET_ID[3][this.gender];
         }
@@ -837,6 +849,14 @@ public class Pet extends Player {
             return 1422;
         } else if (this.typePet == 4) {
             return 876;
+        } else if (this.typePet == 7) {
+            if (inventory != null && inventory.itemsBody != null && inventory.itemsBody.size() > 5 && inventory.itemsBody.get(5).isNotNullItem()) {
+                int part = inventory.itemsBody.get(5).template.head;
+                if (part != -1) {
+                    return (short) part;
+                }
+            }
+            return (short) (this.gender == 1 ? 530 : (this.gender == 2 ? 703 : 505));
         } else if (inventory.itemsBody.get(5).isNotNullItem()) {
             int part = inventory.itemsBody.get(5).template.head;
             if (part != -1) {
@@ -873,6 +893,14 @@ public class Pet extends Player {
             return 1423;
         } else if (this.typePet == 4) {
             return 877;
+        } else if (this.typePet == 7) {
+            if (inventory != null && inventory.itemsBody != null && inventory.itemsBody.size() > 5 && inventory.itemsBody.get(5).isNotNullItem()) {
+                int body = inventory.itemsBody.get(5).template.body;
+                if (body != -1) {
+                    return (short) body;
+                }
+            }
+            return (short) (this.gender == 1 ? 531 : (this.gender == 2 ? 704 : 506));
         } else if (inventory.itemsBody.get(5).isNotNullItem()) {
             int body = inventory.itemsBody.get(5).template.body;
             if (body != -1) {
@@ -912,6 +940,14 @@ public class Pet extends Player {
             return 1424;
         } else if (this.typePet == 4) {
             return 878;
+        } else if (this.typePet == 7) {
+            if (inventory != null && inventory.itemsBody != null && inventory.itemsBody.size() > 5 && inventory.itemsBody.get(5).isNotNullItem()) {
+                int leg = inventory.itemsBody.get(5).template.leg;
+                if (leg != -1) {
+                    return (short) leg;
+                }
+            }
+            return (short) (this.gender == 1 ? 532 : (this.gender == 2 ? 705 : 507));
         } else if (inventory.itemsBody.get(5).isNotNullItem()) {
             int leg = inventory.itemsBody.get(5).template.leg;
             if (leg != -1) {
@@ -1004,7 +1040,7 @@ public class Pet extends Player {
                     }
                     break;
                 case 4:
-                    if ((this.typePet == 2 || this.typePet == 3 || this.typePet == 4) && this.nPoint.power >= 40000000000L) {
+                    if ((this.typePet == 2 || this.typePet == 3 || this.typePet == 4 || this.typePet == 7) && this.nPoint.power >= 40000000000L) {
                         openSkill5();
                     }
                     break;

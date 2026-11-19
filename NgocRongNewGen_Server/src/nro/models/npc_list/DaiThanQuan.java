@@ -30,32 +30,33 @@ public class DaiThanQuan extends Npc {
         int curThoiVang = InventoryService.gI().getTotalQuantityBag(player, 457);
 
         String upgradeRequirementLine = lv >= 5
-                ? "\n|8|★ Cảnh giới Vô Cực đã đạt viên mãn tối đa (Cấp 5/5)!"
-                : "\n|8|▶ Đột phá Cấp " + (lv + 1) + " cần: " + (lv * 20) + " Hồn Boss Tím (có " + curHonTim + ") + "
+                ? "\n|8|★ Sức mạnh Vô Cực đã đạt tối đa (Cấp 5/5)!"
+                : "\n|8|▶ Nâng cấp lên Cấp " + (lv + 1) + " cần: " + (lv * 20) + " Hồn Boss Tím (có " + curHonTim + ") + "
                         + (lv * 50) + " Thỏi vàng (có " + curThoiVang + ")";
 
         String curStatus;
         if (player.voCucType == VuTru13Service.BAN_NANG_VO_CUC) {
             curStatus = "|2|Hướng hiện tại: [BẢN NĂNG VÔ CỰC - Cấp " + lv + "/5] (Hào Quang Bạc)\n"
                     + "- Buff tại Vũ Trụ 13: +" + (10 + lv * 10) + "% Né đòn, +" + (20 + lv * 10) + "% Sức đánh, +" + (30 + lv * 10) + "% SĐ Chí mạng\n"
-                    + "|7|- Về hành tinh thường: Giảm còn 1/10 (do thu liễm trạng thái chiến đấu)"
+                    + "|7|- Về hành tinh thường: Giảm còn 1/10 (kiềm nén sức mạnh khi rời Vũ Trụ 13)"
                     + upgradeRequirementLine;
         } else if (player.voCucType == VuTru13Service.BAN_NGA_VO_CUC) {
             curStatus = "|2|Hướng hiện tại: [BẢN NGÃ VÔ CỰC - Cấp " + lv + "/5] (Hào Quang Tím Đen)\n"
                     + "- Buff tại Vũ Trụ 13: +" + (10 + lv * 10) + "% Giáp (+" + (30_000 * lv) + " Giáp), +" + (30 + lv * 10) + "% HP & KI, +"
                     + (10 + lv * 5) + "% Dame từ lượng HP đang có & tối đa +" + (50 + lv * 10) + "% Dame theo HP đã mất\n"
-                    + "|7|- Về hành tinh thường: Giảm còn 1/10 (do thu liễm trạng thái chiến đấu)"
+                    + "|7|- Về hành tinh thường: Giảm còn 1/10 (kiềm nén sức mạnh khi rời Vũ Trụ 13)"
                     + upgradeRequirementLine;
         } else {
-            curStatus = "|1|Ngươi chưa chọn hướng phát triển Thần Lực Vô Cực!\n"
-                    + "|2|- Hãy chọn 1 trong 2 con đường tối thượng: [Bản Năng Vô Cực] hoặc [Bản Ngã Vô Cực].\n"
+            curStatus = "|1|Ngươi chưa chọn hướng phát triển Sức Mạnh Vô Cực!\n"
+                    + "|2|- Hãy chọn 1 trong 2 trạng thái tối thượng: [Bản Năng Vô Cực] hoặc [Bản Ngã Vô Cực].\n"
                     + "- Sau khi chọn, Hào Quang Bạc / Tím Đen sẽ bao quanh hào quang set trang bị, và khi bỏ hoặc ẩn Cải Trang sẽ hóa thành Chibi Vô Cực!\n"
                     + "|8|- Nguyên liệu nâng cấp (Cấp 1 -> 5): Sử dụng [Hồn Boss Tím] + [Thỏi vàng].";
         }
 
         if (player.voCucType == VuTru13Service.VO_CUC_NONE) {
             this.createOtherMenu(player, ConstNpc.BASE_MENU,
-                    "|8|ĐẠI THẦN QUAN - THÁNH ĐIỆN TOÀN VƯƠNG VT13\n" + curStatus,
+                    "|8|ĐẠI THIÊN SỨ - THÁNH ĐIỆN VT13\n" + curStatus,
+                    "Đổi Trang Bị\nThần Vực\nVô Cực",
                     "Chọn hướng\nBản Năng\nVô Cực",
                     "Chọn hướng\nBản Ngã\nVô Cực",
                     "Chi tiết\n2 Hướng",
@@ -66,10 +67,11 @@ public class DaiThanQuan extends Npc {
                     ? "Đổi sang\nBản Ngã\n(50 TV)"
                     : "Đổi sang\nBản Năng\n(50 TV)";
             String upgradeLabel = lv >= 5
-                    ? "Cảnh Giới\nTối Đa (Lv5)"
-                    : "Đột phá Cấp " + (lv + 1) + "\n(" + (lv * 20) + " Hồn Boss Tím\n+ " + (lv * 50) + " Thỏi vàng)";
+                    ? "Đã Đạt Cấp\nTối Đa (Lv5)"
+                    : "Nâng lên Cấp " + (lv + 1) + "\n(" + (lv * 20) + " Hồn Boss Tím\n+ " + (lv * 50) + " Thỏi vàng)";
             this.createOtherMenu(player, ConstNpc.BASE_MENU,
-                    "|8|ĐẠI THẦN QUAN - THÁNH ĐIỆN TOÀN VƯƠNG VT13\n" + curStatus,
+                    "|8|ĐẠI THIÊN SỨ - THÁNH ĐIỆN VT13\n" + curStatus,
+                    "Đổi Trang Bị\nThần Vực\nVô Cực",
                     upgradeLabel,
                     switchLabel,
                     player.hideCaiTrang ? "Hiện lại\nCải Trang" : "Ẩn Cải Trang\n(Hiện Chibi)",
@@ -96,10 +98,10 @@ public class DaiThanQuan extends Npc {
 
         String nextBuffPreview;
         if (player.voCucType == VuTru13Service.BAN_NANG_VO_CUC) {
-            nextBuffPreview = "- Chỉ số sau đột phá (Cấp " + nextLv + " tại VT13): +" + (10 + nextLv * 10)
+            nextBuffPreview = "- Chỉ số sau nâng cấp (Cấp " + nextLv + " tại VT13): +" + (10 + nextLv * 10)
                     + "% Né đòn, +" + (20 + nextLv * 10) + "% Sức đánh, +" + (30 + nextLv * 10) + "% SĐ Chí mạng.";
         } else {
-            nextBuffPreview = "- Chỉ số sau đột phá (Cấp " + nextLv + " tại VT13): +" + (10 + nextLv * 10)
+            nextBuffPreview = "- Chỉ số sau nâng cấp (Cấp " + nextLv + " tại VT13): +" + (10 + nextLv * 10)
                     + "% Giáp (+" + (30_000 * nextLv) + " Giáp), +" + (30 + nextLv * 10) + "% HP & KI, +"
                     + (10 + nextLv * 5) + "% Dame từ HP hiện có & tối đa +" + (50 + nextLv * 10) + "% Dame theo HP đã mất.";
         }
@@ -108,13 +110,13 @@ public class DaiThanQuan extends Npc {
         String tvColor = curThoiVang >= reqThoiVang ? "|2|" : "|7|";
 
         this.createOtherMenu(player, MENU_CONFIRM_UPGRADE,
-                "|8|ĐỘT PHÁ " + pathTitle + " (CẤP " + curLv + " -> CẤP " + nextLv + ")\n"
+                "|8|NÂNG CẤP " + pathTitle + " (CẤP " + curLv + " -> CẤP " + nextLv + ")\n"
                 + "|2|" + nextBuffPreview + "\n"
                 + "|8|Nguyên liệu yêu cầu:\n"
                 + honColor + "• Hồn Boss Tím: cần " + reqHonTim + " (hành trang đang có: " + curHonTim + ")\n"
                 + tvColor + "• Thỏi vàng (gộp cả khóa + thường): cần " + reqThoiVang + " (đang có: " + curThoiVang + ")\n"
-                + "|1|(Mẹo kiếm Hồn Boss Tím: Săn Boss Cấp Cao / Boss Vũ Trụ 13, nhận quà từ Beerus Map 1 VT13 hoặc luyện từ Hồn Boss Lam/Lục tại Chi Chi Đảo Kamê)",
-                "Xác nhận\nĐột phá Cấp " + nextLv,
+                + "|1|(Mẹo kiếm Hồn Boss Tím: Săn Boss Cấp Cao / Boss Vũ Trụ 13, nhận quà từ Beerus Map 1 VT13 hoặc ghép từ Hồn Boss Lam/Lục tại Chi Chi Đảo Kamê)",
+                "Xác nhận\nNâng Cấp " + nextLv,
                 "Quay lại");
     }
 
@@ -152,14 +154,14 @@ public class DaiThanQuan extends Npc {
 
     private void showFullGuide(Player player) {
         this.createOtherMenu(player, ConstNpc.IGNORE_MENU,
-                "|8|BÍ PHÁP 2 HƯỚNG PHÁT TRIỂN VÔ CỰC\n"
+                "|8|CHI TIẾT 2 HƯỚNG PHÁT TRIỂN VÔ CỰC\n"
                 + "|2|1. BẢN NĂNG VÔ CỰC (Hào Quang Bạc - Chibi Tóc Bạc):\n"
                 + "+ Tăng mạnh Tỉ lệ Né Đòn, Sức Đánh (%) và Sát Thương Chí Mạng (%).\n"
                 + "|2|2. BẢN NGÃ VÔ CỰC (Hào Quang Tím Đen - Chibi Tóc Tím):\n"
                 + "+ Tăng mạnh Giáp, +% HP và +% KI, tăng Dame dựa trên HP đã mất & tăng thêm Dame dựa trên lượng HP đang có.\n"
-                + "|8|3. NGUYÊN LIỆU ĐỘT PHÁ CẢNH GIỚI (Cấp 1 -> 5):\n"
+                + "|8|3. NGUYÊN LIỆU NÂNG CẤP (Cấp 1 -> 5):\n"
                 + "+ Sử dụng [Hồn Boss Tím] + [Thỏi vàng] (Cấp tiếp theo cần Cấp hiện tại x20 Hồn Boss Tím & x50 Thỏi vàng).\n"
-                + "|7|* Quy tắc Vũ Trụ: Về hành tinh thường không cần vào trạng thái chiến đấu nên buff giảm còn 1/10. Bỏ hoặc Ẩn Cải Trang sẽ hiện Chibi Vô Cực!",
+                + "|7|* Quy tắc Vũ Trụ: Về hành tinh thường không ở trong vùng trọng lực đặc biệt của Vũ Trụ 13 nên chỉ số cộng thêm giảm còn 1/10. Bỏ hoặc Ẩn Cải Trang sẽ hiện Chibi Vô Cực!",
                 "Đã hiểu");
     }
 
@@ -169,23 +171,28 @@ public class DaiThanQuan extends Npc {
             return;
         }
         int menuIdx = player.idMark.getIndexMenu();
+        if (VuTru13Service.gI().handleVoCucSetMenuConfirm(player, this, menuIdx, select)) {
+            return;
+        }
         if (player.idMark.isBaseMenu()) {
             if (player.voCucType == VuTru13Service.VO_CUC_NONE) {
                 switch (select) {
-                    case 0 -> showConfirmPath(player, VuTru13Service.BAN_NANG_VO_CUC);
-                    case 1 -> showConfirmPath(player, VuTru13Service.BAN_NGA_VO_CUC);
-                    case 2 -> showFullGuide(player);
-                    case 3 -> VuTru13Service.gI().toggleHideCaiTrang(player);
+                    case 0 -> VuTru13Service.gI().openVoCucSetPlanetMenu(player, this);
+                    case 1 -> showConfirmPath(player, VuTru13Service.BAN_NANG_VO_CUC);
+                    case 2 -> showConfirmPath(player, VuTru13Service.BAN_NGA_VO_CUC);
+                    case 3 -> showFullGuide(player);
+                    case 4 -> VuTru13Service.gI().toggleHideCaiTrang(player);
                 }
             } else {
                 byte otherType = player.voCucType == VuTru13Service.BAN_NANG_VO_CUC
                         ? VuTru13Service.BAN_NGA_VO_CUC
                         : VuTru13Service.BAN_NANG_VO_CUC;
                 switch (select) {
-                    case 0 -> showConfirmUpgrade(player);
-                    case 1 -> showConfirmPath(player, otherType);
-                    case 2 -> VuTru13Service.gI().toggleHideCaiTrang(player);
-                    case 3 -> showFullGuide(player);
+                    case 0 -> VuTru13Service.gI().openVoCucSetPlanetMenu(player, this);
+                    case 1 -> showConfirmUpgrade(player);
+                    case 2 -> showConfirmPath(player, otherType);
+                    case 3 -> VuTru13Service.gI().toggleHideCaiTrang(player);
+                    case 4 -> showFullGuide(player);
                 }
             }
         } else if (menuIdx == MENU_CONFIRM_UPGRADE) {

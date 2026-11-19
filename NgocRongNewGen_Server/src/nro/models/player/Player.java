@@ -464,6 +464,7 @@ public class Player implements Runnable {
     public final java.util.concurrent.atomic.AtomicBoolean savingAsync = new java.util.concurrent.atomic.AtomicBoolean(false);
     public volatile boolean pendingAsyncSave = false;
     public volatile boolean isDisposed = false;
+    public long lastTimeAngelPetHeal = 0L;
 
     public void update() {
         if (!this.beforeDispose) {
@@ -542,6 +543,19 @@ public class Player implements Runnable {
                     }
                     if (this.nPoint.timeXinbatoBuff + 10_000 < System.currentTimeMillis()) {
                         this.nPoint.tlNeDonBuffXinbato = 0;
+                    }
+                    // Nội tại Đệ Tử Thiên Sứ (typePet == 7): Liên tục hồi 5% HP tối đa mỗi giây cho Sư Phụ KỂ CẢ KHI ĐANG HỢP THỂ!
+                    if (this.isPl() && !this.isBot && !this.isDie()
+                            && this.pet != null && this.pet.typePet == 7
+                            && ((this.fusion != null && this.fusion.typeFusion != ConstPlayer.NON_FUSION)
+                            || (this.pet.status != Pet.GOHOME && !this.pet.isDie()))
+                            && Util.canDoWithTime(this.lastTimeAngelPetHeal, 1000)) {
+                        this.lastTimeAngelPetHeal = System.currentTimeMillis();
+                        if (this.nPoint.hp < this.nPoint.hpMax) {
+                            long healHp = Math.max(1L, this.nPoint.hpMax * 5L / 100L);
+                            this.nPoint.addHp(healHp);
+                            PlayerService.gI().sendInfoHpMp(this);
+                        }
                     }
                     if (this.isPl() && !this.isBot && !this.isDie() && this.effectSkill != null && this.effectSkill.isChibi && Util.canDoWithTime(lastTimeUpdateChibi, 1000)) {
                         if (this.typeChibi == 1) {
@@ -783,6 +797,7 @@ public class Player implements Runnable {
         // Ưu tiên 1: Hào quang theo bậc Full 5 món (Thiên Sứ > Hủy Diệt > Thần Linh) & Sao Pha Lê (7-9 sao)
         if (this.inventory != null && this.inventory.itemsBody != null && this.inventory.itemsBody.size() >= 5) {
             boolean allEquipped = true;
+            boolean fullVC = true;
             boolean fullTS = true;
             boolean fullHD = true;
             boolean fullTL = true;
@@ -791,6 +806,7 @@ public class Player implements Runnable {
                 Item it = this.inventory.itemsBody.get(i);
                 if (it == null || !it.isNotNullItem() || it.template == null) {
                     allEquipped = false;
+                    fullVC = false;
                     fullTS = false;
                     fullHD = false;
                     fullTL = false;
@@ -798,6 +814,9 @@ public class Player implements Runnable {
                     break;
                 }
                 int tid = it.template.id;
+                if (tid < 2035 || tid > 2049) {
+                    fullVC = false;
+                }
                 if (tid < 1048 || tid > 1062) {
                     fullTS = false;
                 }
@@ -822,6 +841,9 @@ public class Player implements Runnable {
             }
             if (!allEquipped) {
                 minStar = 0;
+            }
+            if (fullVC) {
+                return (byte) (minStar >= 7 ? 24 : 25);
             }
             if (fullTS) {
                 return (byte) (minStar >= 7 ? 25 : 56);
@@ -870,6 +892,7 @@ public class Player implements Runnable {
         if (this.inventory == null || this.inventory.itemsBody == null || this.inventory.itemsBody.size() < 5) {
             return -1;
         }
+        boolean fullVC = true;
         boolean fullTS = true;
         boolean fullHD = true;
         boolean fullTL = true;
@@ -880,6 +903,9 @@ public class Player implements Runnable {
                 return -1;
             }
             int tid = item.template.id;
+            if (tid < 2035 || tid > 2049) {
+                fullVC = false;
+            }
             if (tid < 1048 || tid > 1062) {
                 fullTS = false;
             }
@@ -901,6 +927,9 @@ public class Player implements Runnable {
             if (lv < minLevel72) {
                 minLevel72 = lv;
             }
+        }
+        if (fullVC) {
+            return 13;
         }
         if (fullTS) {
             return 12;
@@ -1381,7 +1410,7 @@ public class Player implements Runnable {
                     return 0;
                 }
             }
-            if (this.zone.map.mapId == 51) {
+            if (this.zone.map.mapId == 51 || this.zone.map.mapId == 186) {
                 this.totalDamageTaken += damage;
             }
             this.nPoint.subHP(damage);

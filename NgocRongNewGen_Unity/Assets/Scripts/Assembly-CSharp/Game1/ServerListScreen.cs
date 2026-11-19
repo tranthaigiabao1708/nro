@@ -282,7 +282,7 @@ namespace Game1
 			for (int i = 0; i < array.Length - 2; i++)
 			{
 				string[] array2 = Res.split(array[i].Trim(), ":", 0);
-				nameServer[i] = array2[0];
+				nameServer[i] = array2[0].Replace("Ngọc Rồng NewGen", "Dragon boy Z");
 				address[i] = array2[1];
 				port[i] = short.Parse(array2[2]);
 				language[i] = sbyte.Parse(array2[3].Trim());
@@ -697,7 +697,7 @@ namespace Game1
 						}
 						try
 						{
-							nameServer[j] = array4[0];
+							nameServer[j] = array4[0].Replace("Ngọc Rồng NewGen", "Dragon boy Z");
 							address[j] = array4[1];
 							port[j] = short.Parse(array4[2]);
 							language[j] = 0;
@@ -751,12 +751,10 @@ namespace Game1
 			initCommand();
 			isWait = false;
 			GameCanvas.loginScr = null;
-			string text = Rms.loadRMSString("ResVersion");
-			if (((text == null || !(text != string.Empty)) ? (-1) : int.Parse(text)) > 0)
-			{
-				loadScreen = true;
-				GameCanvas.loadBG(1);
-			}
+			loadScreen = true;
+			GameCanvas.paintBG = true;
+			TileMap.bgType = 0;
+			GameCanvas.loadBG(0);
 			bigOk = true;
 			cmd[2 + nCmdPlay].caption = mResources.server + ": " + nameServer[ipSelect];
 			center = new Command(string.Empty, this, cmd[selected].idAction, null);
@@ -778,12 +776,10 @@ namespace Game1
 			initCommand();
 			isWait = false;
 			GameCanvas.loginScr = null;
-			string text = Rms.loadRMSString("ResVersion");
-			if (((text == null || !(text != string.Empty)) ? (-1) : int.Parse(text)) > 0)
-			{
-				loadScreen = true;
-				GameCanvas.loadBG(1);
-			}
+			loadScreen = true;
+			GameCanvas.paintBG = true;
+			TileMap.bgType = 0;
+			GameCanvas.loadBG(0);
 			bigOk = true;
 			cmd[2 + nCmdPlay].caption = mResources.server + ": " + nameServer[ipSelect];
 			center = new Command(string.Empty, this, cmd[selected].idAction, null);

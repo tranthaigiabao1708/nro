@@ -275,6 +275,7 @@ public abstract class Universe6Boss extends Boss {
             return;
         }
         tryDropManhGiay726(targetZone, baseX, baseY, plKill);
+        tryDropPetRongCon(targetZone, baseX, baseY, plKill);
         if (this.soulDroppedForCurrentLife) {
             return;
         }

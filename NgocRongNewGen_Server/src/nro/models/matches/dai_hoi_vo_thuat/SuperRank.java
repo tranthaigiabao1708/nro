@@ -113,8 +113,9 @@ public final class SuperRank implements Runnable {
         switch (timeUp++) {
             case 0 -> {
                 Service.gI().sendThongBao(player, "Trận đấu bắt đầu");
-                Service.gI().setPos0(player, 334, 264);
-                Service.gI().setPos0(rival, 434, 264);
+                boolean isVt13 = zone != null && zone.map != null && zone.map.mapId == 186;
+                Service.gI().setPos0(player, isVt13 ? 740 : 334, isVt13 ? 456 : 264);
+                Service.gI().setPos0(rival, isVt13 ? 940 : 434, isVt13 ? 456 : 264);
             }
             case 2 ->
                 Service.gI().chat(rival, ConstSuperRank.TEXT_SAN_SANG_CHUA);
@@ -218,7 +219,13 @@ public final class SuperRank implements Runnable {
 
     public void dispose() {
         if (player != null && player.location != null) {
-            Service.gI().setPos(player, Util.nextInt(250, 450), 360);
+            boolean isVt13 = zone != null && zone.map != null && zone.map.mapId == 186;
+            if (isVt13 && player.zone != null && player.zone.map != null && player.zone.map.mapId == 186 && player.zone.zoneId != 0) {
+                ChangeMapService.gI().changeZoneBySystem(player, 0);
+                Service.gI().setPos(player, Util.nextInt(760, 920), 456);
+            } else {
+                Service.gI().setPos(player, isVt13 ? Util.nextInt(760, 920) : Util.nextInt(250, 450), isVt13 ? 456 : 360);
+            }
         }
         resetZoneInfo();
         isCompeting = false;

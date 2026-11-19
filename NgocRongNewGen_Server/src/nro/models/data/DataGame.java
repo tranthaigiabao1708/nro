@@ -29,14 +29,14 @@ import nro.models.player_system.Template.BgItem;
 
 public class DataGame {
 
-    public static byte vsData = 19;
-    public static byte vsMap = 13;
+    public static byte vsData = 26;
+    public static byte vsMap = 14;
     public static byte vsSkill = 2;
-    public static byte vsItem = 67;
+    public static byte vsItem = 73;
     public static int vsRes = 4;
     public static short maxSmallVersion = 32767;
 
-    public static String LINK_IP_PORT = "Ngọc Rồng NewGen:127.0.0.1:14445:0";
+    public static String LINK_IP_PORT = "Dragon boy Z:127.0.0.1:14445:0";
     public static Map<Object, Object> MAP_MOUNT_NUM = new HashMap<>();
 
     public static void sendVersionGame(MySession session) {

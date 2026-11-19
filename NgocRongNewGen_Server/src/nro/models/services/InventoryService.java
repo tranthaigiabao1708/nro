@@ -563,6 +563,10 @@ public class InventoryService {
             Service.gI().sendFlagBag(player);
             Service.gI().point(player);
             RadarService.gI().sendAura(player, player.getAura(), player.getEffFront());
+            if (player.isPl()) {
+                VuTru13Service.gI().sendState(player);
+                VuTru13Service.gI().broadcastVoCucAura(player);
+            }
         }
     }
 
@@ -592,6 +596,10 @@ public class InventoryService {
             Service.gI().sendFlagBag(player);
             Service.gI().point(player);
             RadarService.gI().sendAura(player, player.getAura(), player.getEffFront());
+            if (player.isPl()) {
+                VuTru13Service.gI().sendState(player);
+                VuTru13Service.gI().broadcastVoCucAura(player);
+            }
         }
     }
 

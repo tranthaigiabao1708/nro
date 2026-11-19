@@ -60,7 +60,11 @@ public class Whis extends Npc {
         if (player.idMark.isBaseMenu()) {
             handleBaseMenu(player, select);
         } else {
-            switch (player.idMark.getIndexMenu()) {
+            int menuIdx = player.idMark.getIndexMenu();
+            if (nro.models.services.VuTru13Service.gI().handleVoCucSetMenuConfirm(player, this, menuIdx, select)) {
+                return;
+            }
+            switch (menuIdx) {
                 case 5 ->
                     handleCheTaoTrangBiThienSu(player, select);
                 case CombineService.CHE_TAO_TRANG_BI_THIEN_SU -> {
@@ -88,8 +92,8 @@ public class Whis extends Npc {
             case 0 -> {
                 if (this.mapId == 154) {
                     createOtherMenu(player, 5,
-                            "Ta sẽ giúp ngươi chế tạo trang bị thiên sứ",
-                            "Shop thiên sứ", "Chế tạo", "Từ chối");
+                            "Ta sẽ giúp ngươi chế tạo trang bị Thiên Sứ hoặc đổi trang bị Thần Vực Vô Cực",
+                            "Shop thiên sứ", "Chế tạo\nĐồ Thiên Sứ", "Đổi Đồ\nThần Vực Vô Cực", "Từ chối");
                 } else if (this.mapId == 164) {
                     ChangeMapService.gI().changeMapInYard(player, 154, -1, 758);
                 }
@@ -115,6 +119,8 @@ public class Whis extends Npc {
                     CombineService.gI().openTabCombine(player, CombineService.CHE_TAO_TRANG_BI_THIEN_SU);
                 }
             }
+            case 2 ->
+                nro.models.services.VuTru13Service.gI().openVoCucSetPlanetMenu(player, this);
         }
     }
 

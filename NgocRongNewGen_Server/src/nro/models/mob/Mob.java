@@ -813,7 +813,9 @@ public class Mob {
         double percentFromOption236 = Math.pow(armorOption236Param / 100.0, 1.5) * 20.0 + directOption236Percent;
         int luckDragon = isUsingLuckDragon(owner) ? 20 : 0; // Ước NR 1 Sao: +20% trong 60 phút
         int luckRX = (owner.itemTime != null && owner.itemTime.isUseLuckRX) ? 20 : 0; // Ước Rồng Xương: +20% May mắn
-        int gohanLuck = (allowSetGohan && killer == owner && owner.setClothes != null && owner.setClothes.gohan == 5) ? 150 : 0;
+        int gohanLuck = (allowSetGohan && killer == owner && owner.setClothes != null && owner.setClothes.gohan == 5)
+                ? (150 + 150 * owner.setClothes.skhBonusGohan / 100)
+                : 0;
         return percentFromOption236 + luckDragon + luckRX + gohanLuck;
     }
 
@@ -1230,13 +1232,29 @@ public class Mob {
             list.add(manhGiayIt);
         }
 
-        //======================== Trang Sách Cũ (1281) - Tương Lai / Cold / Ngục Tù ========================
-        if ((MapService.gI().isMapTuongLai(mapid) || MapService.gI().isMapCold(mapid) || MapService.gI().isMapNgucTu(mapid))
-                && Util.isTrue(scalePerMillion(50_000.0 * dropMult * upgradeMatMult, generalLuckWithClover), 1_000_000L)) {
+        //======================== Trang Sách Cũ (1281) & Phụ Liệu Sách / SKH - Tương Lai / Cold / Ngục Tù / VT6 / VT13 ========================
+        boolean isHighEndFarmMap = MapService.gI().isMapTuongLai(mapid)
+                || MapService.gI().isMapCold(mapid)
+                || MapService.gI().isMapNgucTu(mapid)
+                || MapService.gI().isMapVuTru6(mapid)
+                || nro.models.services.VuTru13Service.isMapVuTru13(mapid);
+        if (isHighEndFarmMap && Util.isTrue(scalePerMillion(50_000.0 * dropMult * upgradeMatMult, generalLuckWithClover), 1_000_000L)) {
             int bookPages = Util.nextInt(5, 20);
             ItemMap pageIt = new ItemMap(zone, 1281, bookPages, x, yEnd, owner.id);
             pageIt.options.add(new Item.ItemOption(73, 0));
             list.add(pageIt);
+        }
+        if (isHighEndFarmMap && Util.isTrue(scalePerMillion(2_500.0 * dropMult * upgradeMatMult, generalLuckWithClover), 1_000_000L)) {
+            int[] bookSubMats = {1282, 1284, 1285}; // Bìa sách, Bùa giám định, Kìm bấm giấy
+            ItemMap subMatIt = new ItemMap(zone, bookSubMats[Util.nextInt(bookSubMats.length)], 1, x, yEnd, owner.id);
+            subMatIt.options.add(new Item.ItemOption(73, 0));
+            list.add(subMatIt);
+        }
+        if ((MapService.gI().isMapNgucTu(mapid) || MapService.gI().isMapVuTru6(mapid) || nro.models.services.VuTru13Service.isMapVuTru13(mapid))
+                && Util.isTrue(scalePerMillion(1_500.0 * dropMult * upgradeMatMult, generalLuckWithClover), 1_000_000L)) {
+            ItemMap daSkhIt = new ItemMap(zone, 1826, 1, x, yEnd, owner.id);
+            daSkhIt.options.add(new Item.ItemOption(73, 0));
+            list.add(daSkhIt);
         }
 
         //======================== Ngọc Rồng 4 Sao - 7 Sao & Sao Pha Lê ========================
@@ -1300,6 +1318,17 @@ public class Mob {
                     }
                 }
                 list.add(customIt);
+            }
+        }
+
+        //======================== Mảnh Thần Vực Vô Cực (2034) - Cực hiếm khi farm quái tại các Map Vũ Trụ 13 ========================
+        if (nro.models.services.VuTru13Service.isCombatMapVuTru13(mapid)) {
+            // Tỉ lệ rơi cực hiếm: ~0.28% (1/357 quái), riêng Điện Thờ VT13 (Map 180) ~0.40% (1/250 quái)
+            double baseVoCucShard = (mapid == nro.models.services.VuTru13Service.MAP_DIEN_THO_HUY_DIET_VT13 ? 4_000.0 : 2_800.0) * dropMult;
+            if (Util.isTrue(scalePerMillion(baseVoCucShard, luckNoGohanWithClover * 0.35), 1_000_000L)) {
+                ItemMap shardVc = new ItemMap(zone, nro.models.services.VuTru13Service.ITEM_MANH_THAN_VUC_VO_CUC, 1, x, yEnd, owner.id);
+                shardVc.options.add(new Item.ItemOption(30, 0));
+                list.add(shardVc);
             }
         }
 

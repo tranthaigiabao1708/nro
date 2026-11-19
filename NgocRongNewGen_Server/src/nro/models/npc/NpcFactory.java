@@ -1,6 +1,7 @@
 package nro.models.npc;
 
 import nro.models.npc_list.Whis;
+import nro.models.npc_list.TrongTaiVt13;
 import nro.models.npc_list.LinhCanh;
 import nro.models.npc_list.Bulma;
 import nro.models.npc_list.Cargo;
@@ -237,6 +238,8 @@ public class NpcFactory {
                     new BelmodVt13(mapId, status, cx, cy, tempId, avatar);
                 case ConstNpc.IWAN_VT13 ->
                     new IwanVt13(mapId, status, cx, cy, tempId, avatar);
+                case ConstNpc.TRONG_TAI_VT13 ->
+                    new TrongTaiVt13(mapId, status, cx, cy, tempId, avatar);
                 default ->
                     new Npc(mapId, status, cx, cy, tempId, avatar) {
                         @Override

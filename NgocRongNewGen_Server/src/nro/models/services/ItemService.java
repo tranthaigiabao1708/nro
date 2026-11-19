@@ -873,6 +873,23 @@ public class ItemService {
             item.itemOptions.add(new Item.ItemOption(72, capParam));
             return;
         }
+        if (item.template.id >= 1765 && item.template.id <= 1771) {
+            boolean hasPetStat = false;
+            for (Item.ItemOption io : item.itemOptions) {
+                if (io != null && io.optionTemplate != null && (io.optionTemplate.id == 50 || io.optionTemplate.id == 77 || io.optionTemplate.id == 103)) {
+                    hasPetStat = true;
+                    break;
+                }
+            }
+            if (!hasPetStat) {
+                item.itemOptions.removeIf(io -> io == null || io.optionTemplate == null || io.optionTemplate.id == 73);
+                item.itemOptions.add(new Item.ItemOption(50, 10));
+                item.itemOptions.add(new Item.ItemOption(77, 10));
+                item.itemOptions.add(new Item.ItemOption(103, 10));
+                item.itemOptions.add(new Item.ItemOption(5, 5));
+            }
+            return;
+        }
         // Mở khóa giao dịch (gỡ Opt 30) cho Trang bị Thần Linh / Hủy Diệt / Thiên Sứ Kích Hoạt
         if ((item.isDTL() || item.isDHD() || item.isDTS()) && item.isSKH()) {
             item.itemOptions.removeIf(io -> io != null && io.optionTemplate != null && io.optionTemplate.id == 30);
@@ -1031,7 +1048,12 @@ public class ItemService {
         if (list.isEmpty()) {
             Template.ItemTemplate temp = getTemplate(id);
             if (temp != null) {
-                if (id >= 1048 && id <= 1062) {
+                if (id >= 2035 && id <= 2049) {
+                    Item dvc = DoThanVucVoCuc(id, temp.gender);
+                    if (dvc != null && dvc.itemOptions != null) {
+                        list.addAll(dvc.itemOptions);
+                    }
+                } else if (id >= 1048 && id <= 1062) {
                     Item dts = DoThienSu(id, temp.gender);
                     if (dts != null && dts.itemOptions != null) {
                         list.addAll(dts.itemOptions);
@@ -1396,6 +1418,37 @@ public class ItemService {
         dots.itemOptions.add(new ItemOption(21, 30));
         dots.itemOptions.add(new ItemOption(30, 1));
         return dots;
+    }
+
+    public Item DoThanVucVoCuc(int itemId, int gender) {
+        Item item = createItemSetKichHoat(itemId, 1);
+        List<Integer> ao = Arrays.asList(2035, 2036, 2037);
+        List<Integer> quan = Arrays.asList(2038, 2039, 2040);
+        List<Integer> gang = Arrays.asList(2041, 2042, 2043);
+        List<Integer> giay = Arrays.asList(2044, 2045, 2046);
+        List<Integer> nhan = Arrays.asList(2047, 2048, 2049);
+        Random rng = new Random();
+        if (ao.contains(itemId)) {
+            item.itemOptions.add(new ItemOption(47, Util.highlightsItem(gender == 2, rng.nextInt(1801) + 5000))); // 5000 - 6800 giáp
+            item.itemOptions.add(new ItemOption(94, 10)); // 10% Giảm sát thương
+        } else if (quan.contains(itemId)) {
+            item.itemOptions.add(new ItemOption(22, Util.highlightsItem(gender == 0, rng.nextInt(61) + 200))); // 200k - 260k HP
+            item.itemOptions.add(new ItemOption(77, 15)); // +15% HP
+        } else if (gang.contains(itemId)) {
+            item.itemOptions.add(new ItemOption(0, Util.highlightsItem(gender == 2, rng.nextInt(3001) + 16500))); // 16500 - 19500 sức đánh
+            item.itemOptions.add(new ItemOption(50, 15)); // +15% Sức đánh
+        } else if (giay.contains(itemId)) {
+            item.itemOptions.add(new ItemOption(23, Util.highlightsItem(gender == 1, rng.nextInt(61) + 180))); // 180k - 240k KI
+            item.itemOptions.add(new ItemOption(103, 15)); // +15% KI
+        } else if (nhan.contains(itemId)) {
+            item.itemOptions.add(new ItemOption(14, Util.highlightsItem(gender == 1, rng.nextInt(5) + 24))); // 24% - 28% chí mạng
+            item.itemOptions.add(new ItemOption(5, 20)); // +20% Sức đánh chí mạng
+        }
+        item.itemOptions.add(new ItemOption(256, 0)); // Set Thần Vực Vô Cực
+        item.itemOptions.add(new ItemOption(257, 0)); // $[5] +40% Xuyên giáp, +35% SĐ/HP/KI/SĐCM & Pháp Trận Vô Cực
+        item.itemOptions.add(new ItemOption(21, 80)); // Yêu cầu sức mạnh 80 tỉ
+        item.itemOptions.add(new ItemOption(30, 0));  // Không thể giao dịch
+        return item;
     }
 
     public void AddOption(ItemMap item, int skhId) {

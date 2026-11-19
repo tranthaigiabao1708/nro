@@ -490,6 +490,26 @@ namespace Game1
 			g.translate(-g.getTranslateX(), -g.getTranslateY());
 		}
 
+		public void forceHideMenuWithoutAction()
+		{
+			isClose = false;
+			showMenu = false;
+			touch = false;
+			close = true;
+			waitToPerform = 0;
+			menuSelectedItem = -1;
+			InfoDlg.hide();
+			if (GameCanvas.panel != null)
+			{
+				GameCanvas.panel.cp = null;
+			}
+			Char.chatPopup = null;
+			if (GameCanvas.panel2 != null)
+			{
+				GameCanvas.panel2.cp = null;
+			}
+		}
+
 		public void doCloseMenu()
 		{
 			isClose = false;
@@ -510,6 +530,7 @@ namespace Game1
 				{
 					return;
 				}
+				touch = false;
 				GameCanvas.panel.cp = null;
 				if (GameCanvas.panel2 != null && GameCanvas.panel2.cp != null)
 				{

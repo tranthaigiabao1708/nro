@@ -287,6 +287,24 @@ namespace Game2
 		private void FixedUpdate()
 		{
 			Rms.update();
+			if (Management.tab == TabType.Tab2 && GameScr.isCutsceneVt13 && GameScr.instance != null)
+			{
+				bool heldNow = Input.anyKey || Input.GetMouseButton(0) || Input.GetMouseButton(1) || Input.GetMouseButton(2);
+				if (heldNow && !wasCutsceneInputHeld)
+				{
+					GameScr.instance.notifyCutsceneAnyKey();
+				}
+				wasCutsceneInputHeld = heldNow;
+				if (!heldNow)
+				{
+					lastCutsceneKeyDownCode = KeyCode.None;
+				}
+			}
+			else
+			{
+				wasCutsceneInputHeld = Input.anyKey || Input.GetMouseButton(0);
+				lastCutsceneKeyDownCode = KeyCode.None;
+			}
 			count++;
 			if (count >= 10)
 			{
@@ -322,9 +340,75 @@ namespace Game2
 			}
 		}
 
+		private bool wasCutsceneInputHeld;
+
+		private KeyCode lastCutsceneKeyDownCode = KeyCode.None;
+
+		private void Update()
+		{
+			if (Management.tab == TabType.Tab2 && GameScr.isCutsceneVt13 && GameScr.instance != null)
+			{
+				bool heldNow = Input.anyKey || Input.GetMouseButton(0) || Input.GetMouseButton(1) || Input.GetMouseButton(2);
+				bool triggered = (heldNow && !wasCutsceneInputHeld)
+					|| Input.anyKeyDown
+					|| Input.GetMouseButtonDown(0)
+					|| Input.GetMouseButtonDown(1)
+					|| Input.GetMouseButtonDown(2)
+					|| !string.IsNullOrEmpty(Input.inputString);
+				wasCutsceneInputHeld = heldNow;
+				if (!heldNow)
+				{
+					lastCutsceneKeyDownCode = KeyCode.None;
+				}
+				if (triggered)
+				{
+					GameScr.instance.notifyCutsceneAnyKey();
+				}
+			}
+			else
+			{
+				wasCutsceneInputHeld = Input.anyKey || Input.GetMouseButton(0);
+				lastCutsceneKeyDownCode = KeyCode.None;
+			}
+		}
+
         internal void checkInput()
         {
             if (Management.tab != TabType.Tab2) return;
+            if (GameScr.isCutsceneVt13 && GameScr.instance != null)
+            {
+                if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.anyKeyDown || !string.IsNullOrEmpty(Input.inputString))
+                {
+                    GameScr.instance.notifyCutsceneAnyKey();
+                }
+                if (Event.current != null)
+                {
+                    if (Event.current.type == EventType.KeyUp && Event.current.keyCode == lastCutsceneKeyDownCode)
+                    {
+                        lastCutsceneKeyDownCode = KeyCode.None;
+                    }
+                    else if (Event.current.type == EventType.MouseDown)
+                    {
+                        GameScr.instance.notifyCutsceneAnyKey();
+                    }
+                    else if (Event.current.type == EventType.KeyDown)
+                    {
+                        if (Event.current.keyCode != KeyCode.None)
+                        {
+                            if (Event.current.keyCode != lastCutsceneKeyDownCode)
+                            {
+                                lastCutsceneKeyDownCode = Event.current.keyCode;
+                                GameScr.instance.notifyCutsceneAnyKey();
+                            }
+                        }
+                        else if (Event.current.character != '\0')
+                        {
+                            GameScr.instance.notifyCutsceneAnyKey();
+                        }
+                    }
+                }
+                return;
+            }
             if (Input.GetMouseButtonDown(0))
 			{
 				Vector3 mousePosition = Input.mousePosition;

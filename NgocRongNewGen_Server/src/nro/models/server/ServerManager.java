@@ -125,6 +125,7 @@ public class ServerManager {
             new Thread(nro.models.matches.giai_dau.VoDaiVuTru6Manager.gI(), "Update VoDai VT6").start();
             new Thread(DeathOrAliveArenaManager.gI(), "Update Võ Đài Sinh Tử").start();
             new Thread(WorldMartialArtsTournamentManager.gI(), "Update WMAT").start();
+            new Thread(nro.models.matches.giai_dau.DaiHoiVt13Manager.gI(), "Update DaiHoi VT13").start();
             AutoMaintenance.AutoMaintenance = false;
             AutoMaintenance.gI().start();
             new Thread(ShenronEventManager.gI(), "Update Shenron").start();

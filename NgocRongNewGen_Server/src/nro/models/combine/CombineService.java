@@ -42,6 +42,8 @@ public class CombineService {
     public static final int NANG_CAP_THAN_LINH_SKH = 999;
     public static final int NANG_CAP_HUY_DIET_SKH = 1000;
     public static final int NANG_CAP_THIEN_SU_SKH = 1001;
+    public static final int CHE_TAO_DA_NANG_CAP_SKH = 1002;
+    public static final int CUONG_HOA_CAP_SKH = 1003;
     public static final int NANG_CAP_SAO_PHA_LE = 100;
     public static final int DANH_BONG_SAO_PHA_LE = 101;
     public static final int CUONG_HOA_LO_SAO_PHA_LE = 102;
@@ -111,9 +113,6 @@ public class CombineService {
             case CHUYEN_HOA_TRANG_BI_VANG:
                 ChuyenHoaTrangBi_Vang.chuyenHoaTrangBiVang(player);
                 break;
-            case CHUYEN_HOA_TRANG_BI_NGOC:
-                ChuyenHoaTrangBi_Ngoc.chuyenHoaTrangBiNgoc(player);
-                break;
             case PHAN_RA_TRANG_BI_KH:
                 PhanRaTrangBi.showInfoCombine(player);
                 break;
@@ -129,6 +128,15 @@ public class CombineService {
                 break;
             case NANG_CAP_THIEN_SU_SKH:
                 NangCapTrangBiKichHoat.showInfoThienSuSKH(player);
+                break;
+            case CHE_TAO_DA_NANG_CAP_SKH:
+                CuongHoaCapSkh.showInfoCheTaoDaSkh(player);
+                break;
+            case CUONG_HOA_CAP_SKH:
+                CuongHoaCapSkh.showInfoCuongHoaSkh(player);
+                break;
+            case LAM_PHEP_NHAP_DA:
+                LamPhepNhapDa.showInfoCombine(player);
                 break;
             case NHAP_NGOC_RONG:
                 NhapNgocRong.showInfoCombine(player);
@@ -211,9 +219,6 @@ public class CombineService {
                 case CHUYEN_HOA_TRANG_BI_VANG:
                     ChuyenHoaTrangBi_Vang.thucHienChuyenHoa(player);
                     break;
-                case CHUYEN_HOA_TRANG_BI_NGOC:
-                    ChuyenHoaTrangBi_Ngoc.thucHienChuyenHoa(player);
-                    break;
                 case PHAN_RA_TRANG_BI_KH:
                     PhanRaTrangBi.ThucHienPhanRa(player);
                     break;
@@ -229,6 +234,15 @@ public class CombineService {
                     break;
                 case NANG_CAP_THIEN_SU_SKH:
                     NangCapTrangBiKichHoat.thucHienThienSuSKH(player);
+                    break;
+                case CHE_TAO_DA_NANG_CAP_SKH:
+                    CuongHoaCapSkh.thucHienCheTaoDaSkh(player);
+                    break;
+                case CUONG_HOA_CAP_SKH:
+                    CuongHoaCapSkh.thucHienCuongHoaSkh(player);
+                    break;
+                case LAM_PHEP_NHAP_DA:
+                    LamPhepNhapDa.lamphepnhapda(player);
                     break;
                 case NHAP_NGOC_RONG:
                     NhapNgocRong.nhapNgocRong(player);
@@ -692,9 +706,8 @@ public class CombineService {
                 return "Ta sẽ phù phép\ncho trang bị của ngươi\ntrở lên mạnh mẽ";
             case PHA_LE_HOA_TRANG_BI:
                 return "Ta sẽ phù phép\ncho trang bị của ngươi\ntrở thành trang bị pha lê";
-            case CHUYEN_HOA_TRANG_BI_NGOC:
             case CHUYEN_HOA_TRANG_BI_VANG:
-                return "Lưu ý trang bị mới\nphải hơn trang bị gốc\n1 bậc";
+                return "Chuyển hóa Trang bị\n(Phí: 5 Thỏi vàng)\nTrang bị mới hơn gốc 1 bậc";
             case PHAN_RA_TRANG_BI_KH:
                 return "Ta sẽ phù phép phân rã\n1 hoặc nhiều đồ SKH thường\n(1 món = 1 Khoáng tái chế)";
             case TAI_TAO_CAPSULE_KH:
@@ -707,6 +720,10 @@ public class CombineService {
                 return "Truyền nguyên Set KH\nsang Đồ Hủy Diệt cùng loại\n(Thất bại giữ nguyên đồ SKH)";
             case NANG_CAP_THIEN_SU_SKH:
                 return "Truyền nguyên Set KH\nsang Đồ Thiên Sứ cùng loại\n(Thất bại giữ nguyên đồ SKH)";
+            case CHE_TAO_DA_NANG_CAP_SKH:
+                return "Chế tạo Đá nâng cấp SKH\n(10 Khoáng tái chế + 200 Tr vàng)";
+            case CUONG_HOA_CAP_SKH:
+                return "Cường hóa Cấp độ SKH\n(Lv1 -> Lv10: +2% uy lực/cấp)\nThất bại giữ nguyên đồ SKH";
             case NHAP_NGOC_RONG:
                 return "Ta sẽ phù phép\ncho 7 viên Ngọc Rồng\nthành 1 viên Ngọc Rồng cấp cao";
             case NANG_CAP_VAT_PHAM:
@@ -773,9 +790,12 @@ public class CombineService {
                 return "BẮT BUỘC đặt ĐÚNG 3 ô:\n- 1 Đồ Thần Linh SKH (chỉ chuyển dòng Kích Hoạt, không chuyển cấp [+] & sao pha lê)\n- 1 Đồ Hủy Diệt CÙNG LOẠI & HÀNH TINH\n  (Áo-Áo, Quần-Quần, Găng-Găng, Giày-Giày, Nhẫn-Nhẫn)\n- 5 Khoáng tái chế (+ 2 Tỷ vàng, tỉ lệ 30%)\nThất bại chỉ mất Đồ Hủy Diệt & Khoáng, GIỮ NGUYÊN Đồ Thần SKH!";
             case NANG_CAP_THIEN_SU_SKH:
                 return "BẮT BUỘC đặt ĐÚNG 3 ô:\n- 1 Đồ Hủy Diệt SKH (chỉ chuyển dòng Kích Hoạt, không chuyển cấp [+] & sao pha lê)\n- 1 Đồ Thiên Sứ CÙNG LOẠI & HÀNH TINH\n  (Áo-Áo, Quần-Quần, Găng-Găng, Giày-Giày, Nhẫn-Nhẫn)\n- 10 Khoáng tái chế (+ 2 Tỷ vàng, tỉ lệ 20%)\nThất bại chỉ mất Đồ Thiên Sứ & Khoáng, GIỮ NGUYÊN Đồ Hủy Diệt SKH!";
-            case CHUYEN_HOA_TRANG_BI_NGOC:
+            case CHE_TAO_DA_NANG_CAP_SKH:
+                return "Vào hành trang\nChọn ô Khoáng tái chế (tối thiểu 10 viên)\nPhí: 200 Tr vàng (Tỉ lệ 100%)\nNhận 1 Đá nâng cấp SKH";
+            case CUONG_HOA_CAP_SKH:
+                return "BẮT BUỘC đặt ĐÚNG 3 ô:\n- 1 Trang bị Set Kích Hoạt (Thường/Thần/Hủy Diệt/Thiên Sứ/Vô Cực)\n- 1 Trang bị Hủy Diệt chưa có SKH (làm phôi tế)\n- 1 Đá nâng cấp SKH (+ 2 Tỷ vàng, tỉ lệ 50%)\nMỗi cấp +2% uy lực Set KH (Lv10 = +20%/món, đủ 5 món Lv10 = +100% uy lực Set!)\nThất bại chỉ mất Đồ Hủy Diệt & Đá nâng cấp SKH, GIỮ NGUYÊN đồ SKH!";
             case CHUYEN_HOA_TRANG_BI_VANG:
-                return "Vào hành trang\nChọn trang bị gốc\n(Áo,quần,găng,giày hoặc rada)\ntừ cấp[+4] trở lên\nChọn tiếp trang bị mới\nchưa nâng cấp cần nhập thể\nsau đó chọn 'Nâng cấp'";
+                return "Vào hành trang chọn:\n- 1 Trang bị gốc (Áo, Quần, Găng, Giày, Rada) từ [+4] trở lên\n- 1 Trang bị mới cùng loại cao hơn đúng 1 bậc (chưa nâng cấp [+])\nPhí chuyển hóa: 5 Thỏi vàng (tỉ lệ thành công 100%)";
             case NHAP_NGOC_RONG:
                 return "Vào hành trang\nChọn 7 viên ngọc cùng sao\nSau đó chọn 'Làm phép'";
             case NANG_CAP_VAT_PHAM:

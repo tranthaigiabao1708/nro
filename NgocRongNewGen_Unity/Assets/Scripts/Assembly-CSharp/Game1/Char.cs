@@ -847,6 +847,8 @@ namespace Game1
 
 		public sbyte voCucType;
 
+		public bool hasVoCucSet;
+
 		private FrameImage fraEff;
 
 		private FrameImage fraEffSub;
@@ -5359,7 +5361,7 @@ namespace Game1
 				{
 					myFullSetTier = idEff_Set_Item;
 				}
-				if (myFullSetTier >= 10 && myFullSetTier <= 12)
+				if (myFullSetTier >= 10 && myFullSetTier <= 13)
 				{
 					SkhSlotEffect.PaintOverheadFullSetTag(g, cx, myTagBottom, myFullSetTier, cgender);
 				}
@@ -5442,7 +5444,7 @@ namespace Game1
 				}
 				num += mFont.tahoma_7.getHeight();
 			}
-			if (!isPet && !isMiniPet && charID > 0 && idEff_Set_Item >= 10 && idEff_Set_Item <= 12)
+			if (!isPet && !isMiniPet && charID > 0 && idEff_Set_Item >= 10 && idEff_Set_Item <= 13)
 			{
 				int otherTagBottom = cy - num - 2;
 				if (fraDanhHieu != null && myCharz().charFocus != null && myCharz().charFocus.Equals(this))
@@ -7309,10 +7311,10 @@ namespace Game1
 				fraEffSub = null;
 				lastIdEffSetItem = curEff;
 			}
-			if (curEff >= 10 && curEff <= 12)
+			if (curEff >= 10 && curEff <= 13)
 			{
 				SkhSlotEffect.PaintMapFullSetBehind(g, cx, cy, curEff);
-				int spriteId = (curEff == 12) ? 8 : ((curEff == 11) ? 7 : 6);
+				int spriteId = (curEff >= 12) ? 8 : ((curEff == 11) ? 7 : 6);
 				if (fraEff == null)
 				{
 					fraEff = mSystem.getFraImage(strEff_Set_Item + spriteId + "_0");
@@ -7349,11 +7351,11 @@ namespace Game1
 				fraEffSub = null;
 				lastIdEffSetItem = curEff;
 			}
-			if (curEff >= 10 && curEff <= 12)
+			if (curEff >= 10 && curEff <= 13)
 			{
 				if (curEff >= 11 && !GameCanvas.lowGraphic)
 				{
-					int spriteId = (curEff == 12) ? 8 : 7;
+					int spriteId = (curEff >= 12) ? 8 : 7;
 					if (fraEffSub == null)
 					{
 						fraEffSub = mSystem.getFraImage(strEff_Set_Item + spriteId + "_1");

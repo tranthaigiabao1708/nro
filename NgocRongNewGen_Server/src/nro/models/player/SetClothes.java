@@ -35,9 +35,24 @@ public class SetClothes {
     public byte cadicM;
     public byte gohan;
 
+    public int skhBonusSongoku;
+    public int skhBonusThienXinHang;
+    public int skhBonusKirin;
+    public int skhBonusThanVuTruKaio;
+    public int skhBonusOcTieu;
+    public int skhBonusPikkoroDaimao;
+    public int skhBonusPicolo;
+    public int skhBonusNail;
+    public int skhBonusKakarot;
+    public int skhBonusCadic;
+    public int skhBonusNappa;
+    public int skhBonusCadicM;
+    public int skhBonusGohan;
+
     public byte worldcup;
     public byte setDHD;
     public byte setThienSu;
+    public byte setVoCuc;
 
     public boolean godClothes;
     public int ctHaiTac = -1;
@@ -95,11 +110,25 @@ public class SetClothes {
             if (item.template != null && item.template.id >= 1048 && item.template.id <= 1062) {
                 this.setThienSu++;
             }
+            if (item.template != null && item.template.id >= 2035 && item.template.id <= 2049) {
+                this.setVoCuc++;
+            }
             boolean isActSet = false;
             boolean countedDHD = false;
             if (item.isDHD()) {
                 this.setDHD++;
                 countedDHD = true;
+            }
+            int itemSkhUpgradePct = 0;
+            for (Item.ItemOption io : item.itemOptions) {
+                if (io != null && io.optionTemplate != null) {
+                    if (io.optionTemplate.id == 259) {
+                        itemSkhUpgradePct = Math.max(0, Math.min(20, io.param));
+                        break;
+                    } else if (io.optionTemplate.id == 258 && itemSkhUpgradePct == 0) {
+                        itemSkhUpgradePct = Math.max(0, Math.min(20, io.param * 2));
+                    }
+                }
             }
             for (Item.ItemOption io : item.itemOptions) {
                 if (io == null || io.optionTemplate == null) {
@@ -117,46 +146,55 @@ public class SetClothes {
                     case 141:
                         isActSet = true;
                         songoku++;
+                        skhBonusSongoku = Math.min(100, skhBonusSongoku + itemSkhUpgradePct);
                         break;
                     case 127:
                     case 139:
                         isActSet = true;
                         thienXinHang++;
+                        skhBonusThienXinHang = Math.min(100, skhBonusThienXinHang + itemSkhUpgradePct);
                         break;
                     case 128:
                     case 140:
                         isActSet = true;
                         kirin++;
+                        skhBonusKirin = Math.min(100, skhBonusKirin + itemSkhUpgradePct);
                         break;
                     case 131:
                     case 143:
                         isActSet = true;
                         ocTieu++;
+                        skhBonusOcTieu = Math.min(100, skhBonusOcTieu + itemSkhUpgradePct);
                         break;
                     case 132:
                     case 144:
                         isActSet = true;
                         pikkoroDaimao++;
+                        skhBonusPikkoroDaimao = Math.min(100, skhBonusPikkoroDaimao + itemSkhUpgradePct);
                         break;
                     case 130:
                     case 142:
                         isActSet = true;
                         picolo++;
+                        skhBonusPicolo = Math.min(100, skhBonusPicolo + itemSkhUpgradePct);
                         break;
                     case 135:
                     case 138:
                         isActSet = true;
                         nappa++;
+                        skhBonusNappa = Math.min(100, skhBonusNappa + itemSkhUpgradePct);
                         break;
                     case 133:
                     case 136:
                         isActSet = true;
                         kakarot++;
+                        skhBonusKakarot = Math.min(100, skhBonusKakarot + itemSkhUpgradePct);
                         break;
                     case 134:
                     case 137:
                         isActSet = true;
                         cadic++;
+                        skhBonusCadic = Math.min(100, skhBonusCadic + itemSkhUpgradePct);
                         break;
                     case 253:
                         isActSet = true;
@@ -177,6 +215,7 @@ public class SetClothes {
                     case 248:
                         isActSet = true;
                         thanVuTruKaio++;
+                        skhBonusThanVuTruKaio = Math.min(100, skhBonusThanVuTruKaio + itemSkhUpgradePct);
                         break;
                     case 237:
                     case 238:
@@ -184,6 +223,7 @@ public class SetClothes {
                     case 240:
                         isActSet = true;
                         nail++;
+                        skhBonusNail = Math.min(100, skhBonusNail + itemSkhUpgradePct);
                         break;
                     case 241:
                     case 242:
@@ -191,11 +231,13 @@ public class SetClothes {
                     case 244:
                         isActSet = true;
                         cadicM++;
+                        skhBonusCadicM = Math.min(100, skhBonusCadicM + itemSkhUpgradePct);
                         break;
                     case 233:
                     case 234:
                         isActSet = true;
                         gohan++;
+                        skhBonusGohan = Math.min(100, skhBonusGohan + itemSkhUpgradePct);
                         break;
                 }
             }
@@ -219,8 +261,22 @@ public class SetClothes {
         this.nail = 0;
         this.cadicM = 0;
         this.gohan = 0;
+        this.skhBonusSongoku = 0;
+        this.skhBonusThienXinHang = 0;
+        this.skhBonusKirin = 0;
+        this.skhBonusThanVuTruKaio = 0;
+        this.skhBonusOcTieu = 0;
+        this.skhBonusPikkoroDaimao = 0;
+        this.skhBonusPicolo = 0;
+        this.skhBonusNail = 0;
+        this.skhBonusKakarot = 0;
+        this.skhBonusCadic = 0;
+        this.skhBonusNappa = 0;
+        this.skhBonusCadicM = 0;
+        this.skhBonusGohan = 0;
         this.setDHD = 0;
         this.setThienSu = 0;
+        this.setVoCuc = 0;
         this.worldcup = 0;
         this.godClothes = false;
         this.ctHaiTac = -1;

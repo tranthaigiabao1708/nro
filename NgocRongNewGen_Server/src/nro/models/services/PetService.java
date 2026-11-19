@@ -141,6 +141,81 @@ public class PetService {
         }).start();
     }
 
+    public void hatchOrUpgradeAngelPet(Player player) {
+        if (player == null) {
+            return;
+        }
+        if (player.pet == null) {
+            synchronized (player) {
+                Pet pet = new Pet(player);
+                pet.name = "$Đệ Thiên Sứ";
+                pet.gender = player.gender;
+                pet.id = player.isPl() ? -player.id : -Math.abs(player.id) - 100000;
+                pet.typePet = 7;
+                pet.nPoint.power = 40_000_000_000L;
+                pet.nPoint.limitPower = 9;
+                pet.nPoint.stamina = 1000;
+                pet.nPoint.maxStamina = 1000;
+                pet.nPoint.hpg = 600_000;
+                pet.nPoint.mpg = 600_000;
+                pet.nPoint.dameg = 35_000;
+                pet.nPoint.defg = 80;
+                pet.nPoint.critg = 5;
+                for (int i = 0; i < 9; i++) {
+                    pet.inventory.itemsBody.add(ItemService.gI().createItemNull());
+                }
+                pet.playerSkill.skills.add(SkillUtil.createSkill(Util.nextInt(0, 2) * 2, 1));
+                for (int i = 0; i < 6; i++) {
+                    pet.playerSkill.skills.add(SkillUtil.createEmptySkill());
+                }
+                pet.unlockSkillsByPower();
+                pet.nPoint.calPoint();
+                pet.nPoint.setFullHpMp();
+                player.pet = pet;
+                if (player.isPl()) {
+                    Service.gI().sendHavePet(player);
+                }
+                pet.joinMapMaster();
+            }
+            Service.gI().point(player);
+            Service.gI().sendThongBao(player, "Chúc mừng! Bạn đã ấp nở thành công Đệ Tử Thiên Sứ (Hợp thể 200% SM & Hồi 5% HP/giây kể cả khi hợp thể)!");
+            return;
+        }
+
+        // Đã có đệ tử: tiến hóa trực tiếp lên Đệ Tử Thiên Sứ và GIỮ NGUYÊN toàn bộ đồ đang mặc, kỹ năng & chỉ số đã luyện!
+        if (player.fusion.typeFusion != ConstPlayer.NON_FUSION) {
+            player.pet.unFusion();
+        }
+        Pet pet = player.pet;
+        pet.typePet = 7;
+        pet.name = "$Đệ Thiên Sứ";
+        pet.nPoint.power = Math.max(pet.nPoint.power, 40_000_000_000L);
+        pet.nPoint.limitPower = (byte) Math.max(pet.nPoint.limitPower, 9);
+        pet.nPoint.hpg = Math.max(pet.nPoint.hpg, 600_000);
+        pet.nPoint.mpg = Math.max(pet.nPoint.mpg, 600_000);
+        pet.nPoint.dameg = Math.max(pet.nPoint.dameg, 35_000);
+        pet.nPoint.defg = Math.max(pet.nPoint.defg, 80);
+        pet.nPoint.critg = Math.max(pet.nPoint.critg, 5);
+        while (pet.inventory.itemsBody.size() < 9) {
+            pet.inventory.itemsBody.add(ItemService.gI().createItemNull());
+        }
+        while (pet.playerSkill.skills.size() < 5) {
+            pet.playerSkill.skills.add(SkillUtil.createEmptySkill());
+        }
+        pet.unlockSkillsByPower();
+        pet.nPoint.calPoint();
+        pet.nPoint.setFullHpMp();
+        if (pet.zone != null) {
+            Service.gI().Send_Caitrang(pet);
+            pet.zone.load_Me_To_Another(pet);
+        } else {
+            pet.joinMapMaster();
+        }
+        Service.gI().point(player);
+        Service.gI().chatJustForMe(player, pet, "Thánh Quang Thiên Sứ đã thức tỉnh! Con sẵn sàng hộ vệ Sư phụ!");
+        Service.gI().sendThongBao(player, "Đệ tử của bạn đã hóa thân thành ĐỆ TỬ THIÊN SỨ (Hợp thể 200% SM & Hồi 5% HP/giây kể cả khi hợp thể)!");
+    }
+
     public void createKidBeerPet(Player player, byte... limitPower) {
         new Thread(() -> {
             try {
